@@ -35,7 +35,7 @@
             {
                 "id": "introduction",
                 "title": "Introduction to Structured Visualization",
-                "image": "/src/assets/images/PBA207/U2/u2_hero.png",
+                "image": "/assets/images/PBA207/U2/u2_hero.png",
                 "text": "Structured data visualization involves taking organized data from tables or databases and turning it into charts, graphs, and dashboards. Because structured data is 'neat'—organized in rows and columns—it maps perfectly to visual attributes.",
                 "list": [
                     "<b>Pattern Recognition:</b> Humans spot trends visually significantly faster than by scanning numbers.",
@@ -88,7 +88,7 @@
             {
                 "id": "hierarchical",
                 "title": "Hierarchical & Power Analysis",
-                "image": "/src/assets/images/PBA207/U2/treemap.png",
+                "image": "/assets/images/PBA207/U2/treemap.png",
                 "text": "Hierarchical visualization shows data organized in tree-like levels, such as product categories within divisions.",
                 "list": [
                     "<b>Treemaps:</b> Nested rectangles where size represents value (e.g., Furniture -> Tables).",

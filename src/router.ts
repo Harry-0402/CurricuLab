@@ -20,7 +20,7 @@ class Router {
     }
 
     async getSubjects(): Promise<Subject[]> {
-        return await this.fetchData<Subject[]>('/src/assets/json/subjects.json');
+        return await this.fetchData<Subject[]>('/assets/json/subjects.json');
     }
 
     async getSubject(subjectId: string): Promise<Subject | undefined> {
@@ -29,35 +29,35 @@ class Router {
     }
 
     async getSyllabus(subjectId: string): Promise<Syllabus> {
-        return await this.fetchData<Syllabus>(`/src/assets/json/${subjectId}/syllabus.json`);
+        return await this.fetchData<Syllabus>(`/assets/json/${subjectId}/syllabus.json`);
     }
 
     async getUnits(subjectId: string): Promise<Unit[]> {
-        return await this.fetchData<Unit[]>(`/src/assets/json/${subjectId}/units.json`);
+        return await this.fetchData<Unit[]>(`/assets/json/${subjectId}/units.json`);
     }
 
     async getNotes(subjectId: string, unitId: string): Promise<Note[]> {
-        return await this.fetchData<Note[]>(`/src/assets/json/${subjectId}/${unitId}/notes.json`);
+        return await this.fetchData<Note[]>(`/assets/json/${subjectId}/${unitId}/notes.json`);
     }
 
     async getMaterials(): Promise<any> {
-        return await this.fetchData<any>('/src/assets/json/materials.json');
+        return await this.fetchData<any>('/assets/json/materials.json');
     }
 
     async getUnitDetails(subjectId: string, unitId: string): Promise<any> {
-        return await this.fetchData<any>(`/src/assets/json/${subjectId}/${unitId}/details.json`);
+        return await this.fetchData<any>(`/assets/json/${subjectId}/${unitId}/details.json`);
     }
 
     async getUnitQuestions(subjectId: string, unitId: string): Promise<any> {
-        return await this.fetchData<any>(`/src/assets/json/${subjectId}/${unitId}/questions.json`);
+        return await this.fetchData<any>(`/assets/json/${subjectId}/${unitId}/questions.json`);
     }
 
     async getTimetable(): Promise<Timetable> {
-        return await this.fetchData<Timetable>('/src/assets/json/timetable.json');
+        return await this.fetchData<Timetable>('/assets/json/timetable.json');
     }
 
     async getConfig(): Promise<Config> {
-        return await this.fetchData<Config>('/src/assets/json/config.json');
+        return await this.fetchData<Config>('/assets/json/config.json');
     }
 }
 

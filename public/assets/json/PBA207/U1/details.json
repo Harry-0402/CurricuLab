@@ -41,7 +41,7 @@
             {
                 "id": "intro",
                 "title": "Fundamentals of Visualization",
-                "image": "/src/assets/images/PBA207/U1/fundamentals_hero.png",
+                "image": "/assets/images/PBA207/U1/fundamentals_hero.png",
                 "text": "Data visualization is the practice of turning raw, complex numbers into graphical elements like charts, graphs, and maps. Its primary goal is to reveal hidden insights and share them effectively across a business organization.",
                 "list": [
                     "<b>Definition:</b> Mapping numerical values to visual attributes (length, color, position).",
@@ -82,7 +82,7 @@
             {
                 "id": "process",
                 "title": "The Data Visualization Process",
-                "image": "/src/assets/images/PBA207/U1/pipeline.png",
+                "image": "/assets/images/PBA207/U1/pipeline.png",
                 "text": "Creating effective visuals follows a modular pipeline. Each stage is critical: if research is poor (Acquire), the final dashboard will be misleading (Render).",
                 "list": [
                     "<b>Acquire & Filter:</b> Gathering raw data and cleaning outliers.",
