@@ -99,7 +99,7 @@
             {
                 "id": "dashboards",
                 "title": "Dashboard Design & Interactivity",
-                "image": "/src/assets/images/PBA207/U2/pivot.png",
+                "image": "/assets/images/PBA207/U2/pivot.png",
                 "text": "A dashboard combines charts, tables, and KPIs into one screen. Effective dashboards follow UX principles like the Z-pattern eye flow.",
                 "list": [
                     "<b>KPIs:</b> Single numbers (Sales, Margin) showing green/red for instant scorecard checks.",
