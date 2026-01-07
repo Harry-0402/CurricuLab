@@ -15,7 +15,12 @@ class Router {
     }
 
     getParam(name: string): string | null {
-        const urlParams = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+        const queryIndex = hash.indexOf('?');
+        if (queryIndex === -1) return null;
+
+        const search = hash.slice(queryIndex);
+        const urlParams = new URLSearchParams(search);
         return urlParams.get(name);
     }
 

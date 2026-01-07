@@ -45,8 +45,7 @@ export async function renderHome(container: HTMLElement) {
       code: subject.code,
       teacher: subject.teacher,
       onClick: () => {
-        window.history.pushState(null, '', `/resources?subject=${subject.subjectId}`);
-        window.dispatchEvent(new PopStateEvent('popstate'));
+        window.location.hash = `/resources?subject=${subject.subjectId}`;
       }
     });
     grid.appendChild(card);

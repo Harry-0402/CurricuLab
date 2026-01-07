@@ -59,7 +59,7 @@ export async function renderResources(container: HTMLElement) {
     switcher.querySelectorAll('.switcher-card').forEach(card => {
       card.addEventListener('click', () => {
         selectedSubjectId = card.getAttribute('data-id');
-        window.history.replaceState(null, '', `/resources?subject=${selectedSubjectId}`);
+        window.history.replaceState(null, '', `#/resources?subject=${selectedSubjectId}`);
         renderSwitcher();
         updateResults();
       });
@@ -127,8 +127,7 @@ export async function renderResources(container: HTMLElement) {
         badge: item.badge,
         icon: 'bi-journal-text',
         onClick: () => {
-          window.history.pushState(null, '', `/unit-details?subject=${selectedSubjectId}&unit=${item.unitId}`);
-          window.dispatchEvent(new PopStateEvent('popstate'));
+          window.location.hash = `/unit-details?subject=${selectedSubjectId}&unit=${item.unitId}`;
         }
       });
 

@@ -32,37 +32,30 @@ async function init() {
     handleRoute();
 
     // Listen for navigation
-    window.addEventListener('popstate', handleRoute);
-
-    // Intercept all clicks for SPA routing
-    document.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        const anchor = target.closest('a');
-        if (anchor && anchor.hasAttribute('data-link')) {
-            e.preventDefault();
-            const href = anchor.getAttribute('href')!;
-            window.history.pushState(null, '', href);
-            handleRoute();
-        }
-    });
+    window.addEventListener('hashchange', handleRoute);
 }
 
 function handleRoute() {
-    const path = window.location.pathname;
+    // Get path from hash, default to '/' if empty
+    let path = window.location.hash.slice(1) || '/';
+
+    // Handle parameterized routes (remove query string for matching)
+    const cleanPath = path.split('?')[0];
+
     appElement.innerHTML = ''; // Clear main content
 
-    if (path === '/' || path === '/index.html') {
+    if (cleanPath === '/' || cleanPath === '/index.html') {
         renderHome(appElement);
-    } else if (path.startsWith('/resources')) {
+    } else if (cleanPath.startsWith('/resources')) {
         renderResources(appElement);
-    } else if (path.startsWith('/unit-details')) {
+    } else if (cleanPath.startsWith('/unit-details')) {
         renderUnitDetails(appElement);
-    } else if (path === '/privacy') {
+    } else if (cleanPath === '/privacy') {
         renderPrivacy(appElement);
-    } else if (path === '/terms') {
+    } else if (cleanPath === '/terms') {
         renderTerms(appElement);
     } else {
-        appElement.innerHTML = '<h1>404 - Page Not Found</h1><a href="/" data-link>Go Home</a>';
+        appElement.innerHTML = '<h1>404 - Page Not Found</h1><a href="#/" data-link>Go Home</a>';
     }
 }
 

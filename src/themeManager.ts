@@ -11,7 +11,7 @@ class ThemeManager {
 
     async init() {
         try {
-            const response = await fetch('/src/assets/json/theme.json');
+            const response = await fetch('/assets/json/theme.json');
             this.themeData = await response.json();
             this.applyTheme(this.currentTheme);
             this.injectTypography(this.themeData!.typography);

@@ -6,10 +6,10 @@ export function createHeader(config: Config): HTMLElement {
   const header = document.createElement('header');
   header.innerHTML = `
     <div class="container header-content">
-      <a href="/" class="logo" data-link>${config.appName || 'CurricuLab'}</a>
+      <a href="#/" class="logo" data-link>${config.appName || 'CurricuLab'}</a>
       <div class="nav-links">
-        <a href="/" class="nav-link" data-link>Home</a>
-        <a href="/resources" class="nav-link" data-link>Resources</a>
+        <a href="#/" class="nav-link" data-link>Home</a>
+        <a href="#/resources" class="nav-link" data-link>Resources</a>
         <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">
           🌓
         </button>

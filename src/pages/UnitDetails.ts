@@ -10,15 +10,14 @@ export async function renderUnitDetails(container: HTMLElement) {
     const unitId = router.getParam('unit');
 
     if (!subjectId || !unitId) {
-        window.history.pushState(null, '', '/resources');
-        window.dispatchEvent(new PopStateEvent('popstate'));
+        window.location.hash = '/resources';
         return;
     }
 
     container.innerHTML = `
     <div class="container" style="padding: 40px 20px;">
         <nav style="margin-bottom: 24px; font-size: 0.875rem;">
-            <a href="/resources?subject=${subjectId}" data-link style="color: var(--linkColor)">← Back to Resources</a>
+            <a href="#/resources?subject=${subjectId}" data-link style="color: var(--linkColor)">← Back to Resources</a>
         </nav>
         
         <div id="unit-hub-loading" style="text-align: center; padding: 100px 0;">

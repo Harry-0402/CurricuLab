@@ -14,7 +14,7 @@ export function createBreadcrumb(items: BreadcrumbItem[]): HTMLElement {
         if (isLast) {
             return `<span>${item.label}</span>`;
         }
-        return `<a href="${item.link || '#'}" data-link>${item.label}</a> <span class="separator">/</span>`;
+        return `<a href="#${item.link || '/'}" data-link>${item.label}</a> <span class="separator">/</span>`;
     }).join(' ');
 
     return nav;
