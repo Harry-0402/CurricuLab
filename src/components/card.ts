@@ -10,7 +10,7 @@ interface CardProps {
   teacher?: string;
 }
 
-export function createCard({ title, description, badge, onClick, icon, code, teacher }: CardProps): HTMLElement {
+export function createCard({ title, description, onClick, icon, code, teacher }: CardProps): HTMLElement {
   const card = document.createElement('div');
   card.className = 'card';
 
