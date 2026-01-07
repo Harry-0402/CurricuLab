@@ -1,0 +1,193 @@
+{
+    "unitId": "U1",
+    "title": "Visualization",
+    "pptLink": "/assets/docs/PBA207_U1_Visualization.pptx",
+    "studyNotes": {
+        "toc": [
+            {
+                "id": "intro",
+                "label": "Fundamentals"
+            },
+            {
+                "id": "psychology",
+                "label": "Psychology of Viz"
+            },
+            {
+                "id": "process",
+                "label": "The Viz Pipeline"
+            },
+            {
+                "id": "analysis",
+                "label": "Analysis Techniques"
+            },
+            {
+                "id": "catalog",
+                "label": "Global Chart Catalog"
+            },
+            {
+                "id": "design",
+                "label": "Design & Perception"
+            },
+            {
+                "id": "best-practices",
+                "label": "Best Practices"
+            },
+            {
+                "id": "case-study",
+                "label": "Superstore Case Study"
+            }
+        ],
+        "content": [
+            {
+                "id": "intro",
+                "title": "Fundamentals of Visualization",
+                "image": "/src/assets/images/PBA207/U1/fundamentals_hero.png",
+                "text": "Data visualization is the practice of turning raw, complex numbers into graphical elements like charts, graphs, and maps. Its primary goal is to reveal hidden insights and share them effectively across a business organization.",
+                "list": [
+                    "<b>Definition:</b> Mapping numerical values to visual attributes (length, color, position).",
+                    "<b>Goal:</b> Transform 'math' into 'pictures' our brains can understand 60,000x faster.",
+                    "<b>Scope:</b> From static reports to interactive real-time dashboards."
+                ]
+            },
+            {
+                "id": "psychology",
+                "title": "Psychology & Cognitive Benefits",
+                "text": "Why do we visualize? Because human perception is hard-wired for visuals. Visualization cuts decision mistakes by 80% and boosts memory retention.",
+                "table": {
+                    "headers": [
+                        "Benefit",
+                        "How it Works",
+                        "Business Impact"
+                    ],
+                    "rows": [
+                        [
+                            "Pattern Spotting",
+                            "Eyes find trends auto-visually",
+                            "Identify sales spikes fast"
+                        ],
+                        [
+                            "Memory Boost",
+                            "Pics last longer than digits",
+                            "Teams remember strategy better"
+                        ],
+                        [
+                            "Quick Grasp",
+                            "60k times faster than text",
+                            "Instant situational awareness"
+                        ]
+                    ]
+                },
+                "text_2": "In a dashboard setting, using color-coded alerts (Green for high, Red for low) ensures the team 'remembers' where help is needed without scanning deep tables."
+            },
+            {
+                "id": "process",
+                "title": "The Data Visualization Process",
+                "image": "/src/assets/images/PBA207/U1/pipeline.png",
+                "text": "Creating effective visuals follows a modular pipeline. Each stage is critical: if research is poor (Acquire), the final dashboard will be misleading (Render).",
+                "list": [
+                    "<b>Acquire & Filter:</b> Gathering raw data and cleaning outliers.",
+                    "<b>Represent:</b> Choosing the right chart (Bar vs Line).",
+                    "<b>Refine:</b> Adding context, labels, and removing clutter."
+                ]
+            },
+            {
+                "id": "analysis",
+                "title": "Core Analysis Techniques",
+                "text": "Before presenting data, an analyst must perform deep exploration to find the 'story' inside the numbers.",
+                "list": [
+                    "<b>Univariate Analysis:</b> Looking at one variable alone (e.g., Histogram of profits) to see its shape or spread.",
+                    "<b>Exploratory Analysis (EDA):</b> Poking around data with simple charts to find surprises or outliers without a fixed plan.",
+                    "<b>Descriptive Analysis:</b> Using Summary Stats (Box Plots) to find the 'middle' 50% of your data performance."
+                ]
+            },
+            {
+                "id": "catalog",
+                "title": "Global Chart Catalog",
+                "text": "Choosing the right chart is the difference between a clear message and total confusion.",
+                "table": {
+                    "headers": [
+                        "Chart Type",
+                        "Scenario / Best For",
+                        "Pros",
+                        "Cons"
+                    ],
+                    "rows": [
+                        [
+                            "Bar",
+                            "Category compares",
+                            "Very accurate length",
+                            "Clutters with >15 items"
+                        ],
+                        [
+                            "Line",
+                            "Time-series trends",
+                            "Smooth flow/speed",
+                            "Bad for static categories"
+                        ],
+                        [
+                            "Pie",
+                            "Parts of a whole",
+                            "Quick share %",
+                            "Hard to judge angles (>5 slices)"
+                        ],
+                        [
+                            "Scatter",
+                            "2-Variable relations",
+                            "Spots correlations",
+                            "Crowded with high volume"
+                        ],
+                        [
+                            "Histogram",
+                            "Distribution shape",
+                            "Shows frequency/skew",
+                            "Bin sizes can bias results"
+                        ]
+                    ]
+                }
+            },
+            {
+                "id": "design",
+                "title": "Design Principles & Perception",
+                "text": "Good design follows 'Gestalt' rules so the eye automatically groups related information.",
+                "list": [
+                    "<b>Proximity:</b> Items close together are seen as a group (e.g., regional bars).",
+                    "<b>Similarity:</b> Items with the same color are linked (e.g., 'Action' genre across years).",
+                    "<b>Position vs Color:</b> Brains rank Position (x/y) as the most accurate feature, and Color as the least accurate for numbers."
+                ]
+            },
+            {
+                "id": "best-practices",
+                "title": "Best Practices vs Common Mistakes",
+                "image": "/src/assets/images/PBA207/U1/best_practices.png",
+                "text": "Efficiency in visualization comes from minimalism. Avoid 'chart-junk'—decorative elements that don't add value—and focus on the signal-to-noise ratio.",
+                "list": [
+                    "<b>Do:</b> Use clear labels, start axes at zero for bar charts, and use color sparingly.",
+                    "<b>Don't:</b> Use 3D effects, over-clutter with multiple fonts, or use pie charts for more than 5 categories."
+                ],
+                "text_2": "Common mistakes include using 3D effects (distorts size), over-labeling, and using rainbow colors that confuse the meaning."
+            },
+            {
+                "id": "case-study",
+                "title": "Unified Case Study: Superstore Analytics",
+                "text": "Applying everything to our sample Superstore dataset (10,000+ orders).",
+                "list": [
+                    "<b>Exploration:</b> A Histogram of profits shows most are $100-500, but a Scatter plot reveals 'Profit Leaks' where high sales have low profit due to huge discounts.",
+                    "<b>Process:</b> We Acquire the CSV, Clean return data, Map Sales to a Line chart (showing a Q4 holiday boom), and Render a Power BI Dashboard.",
+                    "<b>Impact:</b> By spotting that 'Furniture' has high sales but negative profit in the East, managers can cut discounts and boost tech focus, increasing total profit by 15%."
+                ]
+            }
+        ]
+    },
+    "assignments": [
+        {
+            "title": "Interactive Superstore Dashboard",
+            "dueDate": "2026-02-15",
+            "description": "Using Power BI or Tableau, create a 3-page dashboard that answers: 1) Which region is most profitable? 2) Is there a link between Discount % and Profit? 3) Which month has the highest sales spike?"
+        },
+        {
+            "title": "Visual Perception Critique",
+            "dueDate": "2026-03-01",
+            "description": "Find a 'bad' chart from a news source. Rewrite its story using Gestalt principles and provide an improved alternative using the correct chart type."
+        }
+    ]
+}

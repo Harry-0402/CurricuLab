@@ -1,0 +1,66 @@
+[
+    {
+        "subjectId": "PBA204",
+        "title": "Production and Operations Management",
+        "code": "PBA204",
+        "teacher": "Dr. Amit Verma",
+        "description": "Managing the production of goods and services efficiently.",
+        "icon": "bi-truck"
+    },
+    {
+        "subjectId": "PBA205",
+        "title": "Digital Transformation",
+        "code": "PBA205",
+        "teacher": "Prof. Megha Sharma",
+        "description": "Integrating digital technology into all areas of business.",
+        "icon": "bi-robot"
+    },
+    {
+        "subjectId": "PBA206",
+        "title": "Legal Aspects of Business",
+        "code": "PBA206",
+        "teacher": "Adv. Rajesh Kumar",
+        "description": "Understanding the legal framework and ethics in business.",
+        "icon": "bi-megaphone"
+    },
+    {
+        "subjectId": "PBA207",
+        "title": "Data Visualization and Story Telling",
+        "code": "PBA207",
+        "teacher": "Dr. Sonal Jain",
+        "description": "Representing data visually and narrating insights.",
+        "icon": "bi-graph-up"
+    },
+    {
+        "subjectId": "PBA208",
+        "title": "Business Research Methods",
+        "code": "PBA208",
+        "teacher": "Dr. Rajesh Kumar",
+        "description": "Scientific methods for identifying and solving business problems.",
+        "icon": "bi-crystal-ball"
+    },
+    {
+        "subjectId": "PBA211",
+        "title": "Data Analysis using Python",
+        "code": "PBA211",
+        "teacher": "Prof. Alok Gupta",
+        "description": "Exploratory data analysis and modeling using Python libraries.",
+        "icon": "bi-robot"
+    },
+    {
+        "subjectId": "PBA212",
+        "title": "Data Analysis using Power BI",
+        "code": "PBA212",
+        "teacher": "Dr. Arvinder Singh",
+        "description": "Creating interactive dashboards and reports using Power BI.",
+        "icon": "bi-graph-up"
+    },
+    {
+        "subjectId": "PBA213",
+        "title": "Business Communication Skills II",
+        "code": "PBA213",
+        "teacher": "Prof. Amit Verma",
+        "description": "Advanced communication techniques for business environments.",
+        "icon": "bi-megaphone"
+    }
+]

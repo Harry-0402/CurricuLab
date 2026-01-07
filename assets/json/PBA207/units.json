@@ -1,0 +1,22 @@
+[
+    {
+        "unitId": "U1",
+        "title": "Visual Perception"
+    },
+    {
+        "unitId": "U2",
+        "title": "Effective Charts"
+    },
+    {
+        "unitId": "U3",
+        "title": "Storytelling with Data"
+    },
+    {
+        "unitId": "U4",
+        "title": "Dashboard Design"
+    },
+    {
+        "unitId": "U5",
+        "title": "Advanced Viz"
+    }
+]

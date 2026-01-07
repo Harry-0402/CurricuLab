@@ -1,0 +1,22 @@
+[
+    {
+        "unitId": "U1",
+        "title": "Digital Strategy"
+    },
+    {
+        "unitId": "U2",
+        "title": "Emerging Tech"
+    },
+    {
+        "unitId": "U3",
+        "title": "Customer Experience"
+    },
+    {
+        "unitId": "U4",
+        "title": "Security & Ethics"
+    },
+    {
+        "unitId": "U5",
+        "title": "Agile Enterprise"
+    }
+]

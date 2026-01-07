@@ -1,0 +1,22 @@
+[
+    {
+        "unitId": "U1",
+        "title": "Operations Strategy"
+    },
+    {
+        "unitId": "U2",
+        "title": "Process Design"
+    },
+    {
+        "unitId": "U3",
+        "title": "Quality Management"
+    },
+    {
+        "unitId": "U4",
+        "title": "Supply Chain Mgmt"
+    },
+    {
+        "unitId": "U5",
+        "title": "Lean Systems"
+    }
+]

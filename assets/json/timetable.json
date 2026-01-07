@@ -1,0 +1,104 @@
+{
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "time": "09:00 - 10:00",
+                    "subject": "PBA204",
+                    "room": "Room 201"
+                },
+                {
+                    "time": "10:00 - 11:00",
+                    "subject": "PBA205",
+                    "room": "Room 201"
+                },
+                {
+                    "time": "11:15 - 12:15",
+                    "subject": "PBA211",
+                    "room": "Lab 1"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "time": "09:00 - 10:00",
+                    "subject": "PBA206",
+                    "room": "Room 202"
+                },
+                {
+                    "time": "10:00 - 11:00",
+                    "subject": "PBA207",
+                    "room": "Room 202"
+                },
+                {
+                    "time": "11:15 - 12:15",
+                    "subject": "PBA212",
+                    "room": "Lab 2"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "time": "09:00 - 10:00",
+                    "subject": "PBA208",
+                    "room": "Room 201"
+                },
+                {
+                    "time": "10:00 - 11:00",
+                    "subject": "PBA213",
+                    "room": "Room 201"
+                },
+                {
+                    "time": "11:15 - 12:15",
+                    "subject": "PBA211",
+                    "room": "Lab 1"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "time": "09:00 - 10:00",
+                    "subject": "PBA204",
+                    "room": "Room 203"
+                },
+                {
+                    "time": "10:00 - 11:00",
+                    "subject": "PBA205",
+                    "room": "Room 203"
+                },
+                {
+                    "time": "11:15 - 12:15",
+                    "subject": "PBA212",
+                    "room": "Lab 2"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "time": "09:00 - 10:00",
+                    "subject": "PBA207",
+                    "room": "Room 201"
+                },
+                {
+                    "time": "10:00 - 11:00",
+                    "subject": "PBA213",
+                    "room": "Room 201"
+                },
+                {
+                    "time": "11:15 - 12:15",
+                    "subject": "PBA208",
+                    "room": "Room 201"
+                }
+            ]
+        }
+    ]
+}

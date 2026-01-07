@@ -1,0 +1,28 @@
+[
+    {
+        "category": "E-Books",
+        "items": [
+            {
+                "title": "Business Intelligence: A Managerial Approach",
+                "link": "#"
+            },
+            {
+                "title": "Predictive Analytics with Python",
+                "link": "#"
+            }
+        ]
+    },
+    {
+        "category": "Tools",
+        "items": [
+            {
+                "title": "Tableau Desktop Training",
+                "link": "#"
+            },
+            {
+                "title": "PowerBI Quickstart",
+                "link": "#"
+            }
+        ]
+    }
+]

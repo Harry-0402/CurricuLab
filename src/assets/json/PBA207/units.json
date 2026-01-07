@@ -1,0 +1,22 @@
+[
+    {
+        "unitId": "U1",
+        "title": "Visualization"
+    },
+    {
+        "unitId": "U2",
+        "title": "Visualization of Structured Data"
+    },
+    {
+        "unitId": "U3",
+        "title": "Visualization of Unstructured Data"
+    },
+    {
+        "unitId": "U4",
+        "title": "Visual Story Telling"
+    },
+    {
+        "unitId": "U5",
+        "title": "Story Telling Framework"
+    }
+]

@@ -1,0 +1,50 @@
+/* assets/css/theme.css */
+/* This file will be populated with CSS variables dynamically by themeManager.js, 
+   but we can define the skeleton structure or common mappings here. */
+
+:root {
+    /* Default fallbacks if JS fails or before JS loads */
+    --bg-color: #f8f9fa;
+    --surface-color: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+
+    --card-bg: #ffffff;
+    --card-text: #212529;
+    --card-title: #000000;
+    --card-border: #dee2e6;
+    --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    --primary-bg: #0d6efd;
+    --primary-text: #ffffff;
+    --secondary-bg: #6c757d;
+    --secondary-text: #ffffff;
+    --hover-bg: #0b5ed7;
+
+    --badge-bg: #e9ecef;
+    --badge-text: #495057;
+
+    --link-color: #0d6efd;
+    --link-hover-color: #0a58ca;
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --surface-color: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --border-color: #333333;
+
+    --card-bg: #1e1e1e;
+    --card-text: #e0e0e0;
+    --card-title: #ffffff;
+    --card-border: #333333;
+    --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+    --primary-bg: #3700b3;
+    --primary-text: #ffffff;
+    --secondary-bg: #03dac6;
+    --secondary-text: #000000;
+    --hover-bg: #6200ee;
+}

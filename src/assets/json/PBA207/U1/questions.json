@@ -1,0 +1,560 @@
+{
+    "2_marks": [
+        {
+            "question": "Define data visualization",
+            "answer": {
+                "definition": "Data visualization represents data through graphical elements like charts, graphs, and maps to reveal patterns, trends, and insights. This practice transforms complex datasets into accessible formats, aiding decision-making in business analytics.",
+                "types": "Common types include bar charts for comparisons, line charts for trends over time, pie charts for proportions, and scatter plots for relationships.",
+                "explanation": "It leverages human visual perception to process information faster than text or numbers, highlighting outliers and correlations effectively.",
+                "application": "In superstore sales analysis, bar charts visualize regional profits, enabling managers to identify top performers and allocate resources—like boosting underperforming areas through targeted marketing"
+            }
+        },
+        {
+            "question": "Why visualize data?",
+            "answer": {
+                "definition": "We visualize data to make hard numbers easy to understand at a glance, spot problems fast, and share ideas clearly with anyone. It turns boring spreadsheets into quick stories that help people decide better.",
+                "types": "Understand better (see patterns), Find issues (spot low performers), Share simply (no confusing math).",
+                "explanation": "Our brains love pictures—they grab attention 60,000 times faster than words or tables. Instead of reading 100 rows, one chart tells the whole tale.",
+                "application": "In a superstore like your project, a line chart shows monthly sales dropping in summer. The manager sees it instantly, adds AC promos, and sales bounce back—no digging through Excel."
+            }
+        },
+        {
+            "question": "State the stages of data visualizing",
+            "answer": {
+                "definition": "The main stages of data visualizing are: get the data ready, clean and pick what matters, turn it into charts or pictures, and show it nicely on screen. Think of it as a simple flow: start with raw numbers, end with a clear picture everyone gets.",
+                "types": "Acquire/Prepare (Grab data), Filter/Clean (Fix mess), Map/Represent (Choose chart), Render/Refine (Make it look good).",
+                "explanation": "It's like cooking: first shop for ingredients (data), chop and clean (filter), mix into a dish (map to visuals), then plate it pretty (render). Each step builds on the last.",
+                "application": "In your superstore sales project: start with Excel (acquire), remove bad entries (filter), make a bar chart (map), polish colors in Power BI (render)."
+            }
+        },
+        {
+            "question": "List usages of visualization",
+            "answer": {
+                "definition": "Key usages include exploring data for patterns, explaining insights to teams, tracking changes over time, comparing groups or items, and spotting problems quick.",
+                "types": "Explore (find hidden stories), Explain (share findings), Monitor (watch trends), Compare (best region), Decide (smart moves).",
+                "explanation": "Pics beat long lists—charts let you see the big picture fast, talk about it easily, and act without confusion. It's like a map for numbers.",
+                "application": "In superstore sales: use a dashboard to track profits by region—spot low East sales, compare to West boom, and shift stock for quick wins."
+            }
+        },
+        {
+            "question": "Name four types of charts",
+            "answer": {
+                "definition": "Four common types are bar chart, line chart, pie chart, and scatter plot.",
+                "types": "Bar (compare groups), Line (trends over time), Pie (circle slices for shares), Scatter (dots for links).",
+                "explanation": "Pick the right one based on your story—bars for groups, lines for trends, pies for shares, scatters for connections. Wrong pick confuses everyone.",
+                "application": "In superstore sales: bar for region profits, line for yearly trends, pie for product shares, scatter for sales vs profit."
+            }
+        },
+        {
+            "question": "What is the importance of data visualization?",
+            "answer": {
+                "definition": "Data visualization matters because it makes tough data simple to grasp, helps find key insights fast, and lets teams make smart choices together.",
+                "types": "Quick understanding (catch trends in seconds), Better decisions (see problems early), Easy sharing (no one gets lost).",
+                "explanation": "Numbers alone bore or confuse—charts list up stories, like a photo vs plain words. Brains handle visuals 60 times quicker.",
+                "application": "Your superstore project: Chart shows profit dips in one region—team spots it, fixes stock, saves money. Without viz, too late."
+            }
+        },
+        {
+            "question": "Differentiate graphical representation from tabular data",
+            "answer": {
+                "definition": "Graphs show the 'big picture' story quick using shapes and colors, while tables list exact numbers in rows and columns for detailed checking.",
+                "table": {
+                    "headers": [
+                        "Aspect",
+                        "Graphical (Charts)",
+                        "Tabular (Tables)"
+                    ],
+                    "rows": [
+                        [
+                            "How it looks",
+                            "Pictures, bars, lines",
+                            "Rows and columns of numbers"
+                        ],
+                        [
+                            "Best for",
+                            "Trends, patterns at a glance",
+                            "Exact values, calculations"
+                        ],
+                        [
+                            "Speed",
+                            "Super fast—eyes love pics",
+                            "Slower, need to read/scan"
+                        ],
+                        [
+                            "Example",
+                            "Bar chart for sales trends",
+                            "Spreadsheet of daily sales"
+                        ]
+                    ]
+                },
+                "explanation": "Graphs are like a movie trailer (fast overview), while tables are like the book (exact detail). Use graphs to decide and tables to verify.",
+                "application": "Superstore sales: Graph instantly shows profit leader (graph wins trends), table lists exact $ amounts (table for bills)."
+            }
+        },
+        {
+            "question": "What concept is used in data visualization?",
+            "answer": {
+                "definition": "The main concept is mapping numerical values to visual attributes—like length, color, or position—so patterns hidden in data become visible.",
+                "types": "Encoding (map math to visuals), Perception (how eyes work), Design rules (keep it simple/clutter-free).",
+                "explanation": "It's like translating: data speaks 'math,' viz makes it 'pictures' brains love. Right choices make info pop; wrong ones hide it.",
+                "application": "Superstore sales: Concept turns profit numbers into bar heights—tall bar screams 'top region!' without reading a single digit."
+            }
+        },
+        {
+            "question": "Give an example of univariate visualization",
+            "answer": {
+                "definition": "A univariate visualization looks at just one single type of data (variable) at a time to see its shape or spread.",
+                "types": "Histogram (bars for ranges), Box plot (shows middle/outliers), Density plot (smooth curve).",
+                "explanation": "Univariate means 'one variable'—just look at that one thing alone to see if it's normal, skewed, or wild.",
+                "application": "Your pharma sales project: Histogram of sales amounts shows most meds sell low, few big hits—guides stock focus on top-sellers."
+            }
+        },
+        {
+            "question": "Explain exploratory analysis briefly",
+            "answer": {
+                "definition": "Exploratory analysis is when you first look at data using simple charts to find patterns, surprises, or questions, without any fixed plan.",
+                "types": "Summary charts (histograms, box plots), Relationship checks (scatter plots), Trend looks (line charts).",
+                "explanation": "It's like first walk around new place—see what's there, ask 'what's interesting?' before deep study.",
+                "application": "Superstore sales: Histogram shows most profits $100-500. Scatter sales vs region spots East low—start questions there."
+            }
+        }
+    ],
+    "7_marks": [
+        {
+            "question": "Explain introduction to visualization with real-world application in business reporting",
+            "answer": {
+                "definition": "Visualization is the practice of turning raw data into graphical elements like charts to reveal hidden insights and share them effectively.",
+                "types": "Static (fixed images), Interactive (dashboards), Animated (show changes over time).",
+                "explanation": "It's the first step in making data useful—pick right chart, color simply, avoid mess. Humans get 90% of info from visuals.",
+                "application": "In business reporting, like a quarterly review: Line chart shows sales climb from Jan to Dec. Bosses see the peak season and plan accordingly."
+            }
+        },
+        {
+            "question": "Discuss why to visualize data, types of benefits, explanation, and sales dashboard example",
+            "answer": {
+                "definition": "We visualize data to grab insights fast, cut confusion, and act smart.",
+                "types": "Speed (see trends quick), Clarity (patterns pop), Communication (share easy).",
+                "explanation": "Brains process pics way faster than tables—turns 'what's this?' to 'aha!' in seconds.",
+                "application": "Superstore dashboard: Bars show region sales, line monthly—spot low Q2, launch deals, sales up."
+            }
+        },
+        {
+            "question": "Describe stages of data visualizing (introduction, types, explanation, marketing campaign example)",
+            "answer": {
+                "definition": "Stages of data visualizing are steps from raw mess to clear chart.",
+                "types": "Acquire (get data), Filter/clean, Map to visuals, Render.",
+                "explanation": "Like recipe: Gather ingredients, prep, cook, serve—each wrong ruins.",
+                "application": "Marketing campaign: Get CSV, clean bots, bar channels (email wins), dashboard live—shift budget."
+            }
+        },
+        {
+            "question": "Elaborate usages of visualization with types and healthcare analytics example",
+            "answer": {
+                "definition": "Usages of visualization help explore, explain, and watch data in real jobs.",
+                "types": "Exploratory (find hidden), Explanatory (tell story), Monitoring (track now).",
+                "explanation": "Explore asks questions, explain answers them, monitor keeps check—data to action.",
+                "application": "Healthcare analytics: COVID dashboard: Line cases over time (monitor), bar vaccines by age (explore gaps), pie severity (explain risks)."
+            }
+        },
+        {
+            "question": "Types of charts: introduction, common types, explanation, retail sales example",
+            "answer": {
+                "definition": "Charts are data pictures picked by what you want to show.",
+                "types": "Bar (compares groups), Line (shows changes), Pie (parts of total), Scatter (connections).",
+                "explanation": "Bar easy side-by-side, line flows time, pie slices %, scatter dots link vars.",
+                "application": "Retail sales: Superstore: Bar sales by store (top 3 clear), line weekly (trend up), pie categories."
+            }
+        },
+        {
+            "question": "What is data visualization? Introduction, importance (types), explanation, Tableau use case",
+            "answer": {
+                "definition": "Data visualization is making charts from numbers to see easy.",
+                "types": "Speed insights, Spot errors, Team share.",
+                "explanation": "Pics beat lists—brain quick grasp, less mistakes.",
+                "application": "Tableau: Superstore: Drag sales to bar—regions pop, filter live, story profits."
+            }
+        },
+        {
+            "question": "Explain Gestalt principles in visualization briefly with examples",
+            "answer": {
+                "definition": "Gestalt principles are eye tricks to group/make sense of charts.",
+                "types": "Proximity (close items group), Similarity (same look = related), Continuity (lines flow), Closure (fill gaps).",
+                "explanation": "Brain auto-organizes—use for clean message, wrong causes mess.",
+                "application": "Examples: Bars close = compare sales regions. Same color genres = category link."
+            }
+        },
+        {
+            "question": "Differentiate bar chart vs pie chart (table form, keywords)",
+            "answer": {
+                "definition": "Bar and pie both show data but in different ways based on categories and proportions.",
+                "table": {
+                    "headers": [
+                        "Feature",
+                        "Bar Chart",
+                        "Pie Chart"
+                    ],
+                    "rows": [
+                        [
+                            "Purpose",
+                            "Compares sizes",
+                            "Shows parts of %"
+                        ],
+                        [
+                            "Capacity",
+                            "Many categories",
+                            "Few slices only"
+                        ],
+                        [
+                            "Accuracy",
+                            "Length based (accurate)",
+                            "Angle based (tricky)"
+                        ],
+                        [
+                            "Layout",
+                            "Horizontal/vertical",
+                            "Circle slices"
+                        ]
+                    ]
+                },
+                "explanation": "Bar easy judge length, good lots items. Pie visual % but hard compare small.",
+                "application": "Sales: Bar regions (exact compare), pie categories (quick shares)."
+            }
+        },
+        {
+            "question": "How to visualize? Methods, types, explanation, stock market example",
+            "answer": {
+                "definition": "How to visualize: Clean data, pick chart, build simple.",
+                "types": "Tools (Tableau drag), Code (Python plot), Steps (filter-map-render).",
+                "explanation": "Match data to visual—time line, groups bar—test clear?",
+                "application": "Stock Market: Stock prices: Line chart daily close—see uptrend, buy signal."
+            }
+        },
+        {
+            "question": "Role of visualization in decision-making (intro, types, real-world e-commerce)",
+            "answer": {
+                "definition": "Visualization role in decisions: Pics prove facts for smart choices.",
+                "types": "Spot problems, Compare options, Track results.",
+                "explanation": "Fast see truth, share no argue—cuts risk.",
+                "application": "E-Commerce: Sales forecast line: Predict peak, stock up—revenue jumps."
+            }
+        }
+    ],
+    "8_marks": [
+        {
+            "question": "Detail types of charts for different data (intro, types like bar/line/pie, explanation, COVID trends example)",
+            "answer": {
+                "definition": "Charts come in many types to match your data story—pick wrong, message lost; right one, crystal clear.",
+                "table": {
+                    "headers": [
+                        "Chart Type",
+                        "Best For",
+                        "Example Data"
+                    ],
+                    "rows": [
+                        [
+                            "Bar",
+                            "Comparing categories",
+                            "Sales by region"
+                        ],
+                        [
+                            "Line",
+                            "Trends over time",
+                            "Monthly profits"
+                        ],
+                        [
+                            "Pie",
+                            "Parts of whole",
+                            "Product shares"
+                        ],
+                        [
+                            "Scatter",
+                            "Two-variable links",
+                            "Sales vs cost"
+                        ]
+                    ]
+                },
+                "explanation": "Bar stacks side-by-side for easy compare. Line connects points to show up/down moves. Pie slices show % shares (keep under 7 slices). Scatter dots reveal if big sales mean big profits.",
+                "application": "COVID trends: Line for cases over months (waves), bar for cases by country (compare), pie for age groups affected."
+            }
+        },
+        {
+            "question": "Stages of data visualizing process (intro, types, explanation, marketing campaign example)",
+            "answer": {
+                "definition": "Stages of data visualizing are simple steps to go from messy numbers to clear charts that tell a story.",
+                "types": "Acquire data (get numbers), Filter/Clean (fix errors), Map to visuals (choose chart), Render/Show (build final picture).",
+                "explanation": "It's like cooking: prep, chop, cook, plate. Skip steps? Chart fails.",
+                "application": "Marketing campaign: Acquire open rates. Filter bad data. Map to line chart (opens over weeks). Render dashboard."
+            }
+        },
+        {
+            "question": "Usages of visualization across industries (intro, types: exploratory/presentational, explanation, finance example)",
+            "answer": {
+                "definition": "Visualization uses pictures of data to explore secrets or present facts clearly in any job.",
+                "types": "Exploratory (find surprises), Presentational (share stories), Monitoring (watch live).",
+                "explanation": "Exploratory lets you play—what if? Presentational polishes for meetings. Both make data action-ready.",
+                "application": "Finance: Bank uses exploratory scatter for loan size vs default risk. Presentational pie shows portfolio health."
+            }
+        },
+        {
+            "question": "Why visualize? Psychological benefits (intro, cognitive types, explanation, dashboard storytelling)",
+            "answer": {
+                "definition": "We visualize because our brains love pictures—they make info stick, easy to get, and fun to share.",
+                "types": "Pattern spot (auto find trends), Memory boost (pics last longer), Quick grasp (60k times faster).",
+                "explanation": "Brain wired for visuals—position/color hit perception first. Numbers overload; charts simplify, cut mistakes.",
+                "application": "Dashboard storytelling: Superstore profit board with colors (green/red). Team remembers 'East needs help,' acts fast."
+            }
+        },
+        {
+            "question": "Introduction to visualization tools (intro, types: Tableau/Power BI, explanation, business analytics example)",
+            "answer": {
+                "definition": "Viz tools are apps that make charts from data super easy—no coding needed for most.",
+                "types": "Tableau (interactive), Power BI (Microsoft stats), Google Data Studio (free/online).",
+                "explanation": "Connect data, pick chart, auto-makes visuals. Tableau shines in stories; Power BI in reports.",
+                "application": "Business analytics: Power BI pulls superstore Excel, builds sales dashboard—filter regions, see profits live."
+            }
+        },
+        {
+            "question": "Explain univariate analysis visualizations (intro, types: histogram/box plot, explanation, superstore sales)",
+            "answer": {
+                "definition": "Univariate analysis looks at one data thing alone to see its shape, spread, or middle.",
+                "types": "Histogram (bars for ranges), Box plot (middle 50%/outliers), Violin plot (shape + stats).",
+                "explanation": "Histogram groups values into ranges. Box summarizes with median and common range. Spots if data is normal or wild.",
+                "application": "Superstore: Histogram of profits shows most $200-800. Box plot flags outlier high-profit orders."
+            }
+        },
+        {
+            "question": "Common mistakes in visualization (intro, types, explanation, customer segmentation fix)",
+            "answer": {
+                "definition": "Mistakes in viz hide truth or confuse—like a bad map sending you the wrong way.",
+                "types": "Clutter (too much info), Wrong chart (pie for 10+ slices), No labels, 3D tricks.",
+                "explanation": "Clutter overwhelms eyes. Wrong chart lies. Missing labels? Guesswork. Fix by keeping it simple and clear.",
+                "application": "Customer segmentation: Bad pie hides small groups. Fix: Bar chart shows clear top clusters, target ads right."
+            }
+        },
+        {
+            "question": "Compare line chart vs scatter plot (table: purpose, data type, example)",
+            "answer": {
+                "definition": "Line and scatter charts both show data links but fit different stories.",
+                "table": {
+                    "headers": [
+                        "Feature",
+                        "Line Chart",
+                        "Scatter Plot"
+                    ],
+                    "rows": [
+                        [
+                            "Purpose",
+                            "Show changes over time",
+                            "Check two-var relation"
+                        ],
+                        [
+                            "Data Type",
+                            "Ordered time series",
+                            "Two numeric variables"
+                        ],
+                        [
+                            "Strengths",
+                            "Smooth trends",
+                            "Spots clusters/outliers"
+                        ],
+                        [
+                            "Example",
+                            "Monthly sales rise",
+                            "Sales vs profit dots"
+                        ]
+                    ]
+                },
+                "explanation": "Line connects points for flow (like a road). Scatter drops dots free to see groups. Line needs time order; scatter any pair.",
+                "application": "Superstore: Line for yearly profits (growth). Scatter sales vs discount (spot discount trap)."
+            }
+        },
+        {
+            "question": "Visual perception in charts (intro, principles, explanation, Netflix data example)",
+            "answer": {
+                "definition": "Visual perception means how eyes/brain read charts best—design smart or info hides.",
+                "types": "Position (where things sit), Length/Size (heights/circles), Color (grouping), Gestalt (group similarity).",
+                "explanation": "Eyes rank: position first (exact), color last (tricky). Use top features (position) for the most important data.",
+                "application": "Netflix data: Position in scatter (time vs rating). Color genres. Viewers see what's hot instantly."
+            }
+        },
+        {
+            "question": "Exploratory analysis techniques (intro, types, explanation, pharmaceutical sales)",
+            "answer": {
+                "definition": "Exploratory analysis uses charts to poke around data and find surprises before deep study.",
+                "types": "Summary stats (hist/box), Relations (scatter/heatmaps), Trends (line).",
+                "explanation": "Start univariate (shape), add bivariate (links), zoom time. Iterative—ask 'what's odd?' till patterns pop.",
+                "application": "Pharma: Histogram profits. Scatter sales vs region (spot gaps). Line over months (see season dips)."
+            }
+        }
+    ],
+    "15_marks": [
+        {
+            "question": "Fully explain visualization: introduction, why/how/stages/usages/types of charts, with real-world retail analytics application",
+            "answer": {
+                "definition": "Data visualization is taking raw numbers and turning them into graphs that anyone can understand quick. It makes data tell stories, find facts, and help businesses win.",
+                "types": "Acquire, Clean, Map, Render (the 4 phases).",
+                "explanation": "Brains process pics 60,000x faster than tables. It's the core of modern Business Intelligence. Skip steps or pick the wrong chart, and you lose money.",
+                "application": "Superstore Retail Analytics: Take 10k orders. Raw CSV is chaos. Viz spots profit leaks. Acquire CSV -> Clean -> Map to bars for regions. Result: Dashboard shows 'Cut East discounts' -> Profit up 15%. Line for holidays, Pie for categories, Scatter for policy fixes."
+            }
+        },
+        {
+            "question": "Comprehensive overview of visualization process (intro, all stages, types of tools/charts, explanation, deployment in BI dashboard)",
+            "answer": {
+                "definition": "The visualization process is a roadmap from messy data to shiny dashboards that drive business wins—like a factory line for insights.",
+                "types": "Tableau (stories), Power BI (reports), Python Matplotlib (code).",
+                "explanation": "Stages: Acquire (SQL/CSV), Filter (calculate profit margins), Map (numbers to heights), Render (add zoom), Deploy (publish live). Each stage builds: Acquire wrong? Garbage in. Map bad? Lies out.",
+                "application": "Superstore BI: Load Excel -> Remove returns -> Map bars/lines/scatters -> Power BI dashboard tiles update. Bosses filter 'East only', see low profit, approve promo. Live refresh daily = 20% gain."
+            }
+        },
+        {
+            "question": "Discuss evolution and importance of data visualization (intro, historical types, detailed explanation, business intelligence example like superstore analysis)",
+            "answer": {
+                "definition": "Data visualization evolved from hand-drawn maps to AI dashboards. It turns petabytes of big data into simple, actionable plans.",
+                "types": "1700s (Playfair bars), 1800s (Minard maps), 1980s (Computer charts), Now (AI/VR).",
+                "explanation": "Evolution added layers: Static to dynamic. Principles stay: position > color. Importance: Spot trends, persuade via stories, scale to handle millions of rows in seconds.",
+                "application": "Superstore BI: Old way: Excel tables (slow). Modern: Power BI dashboard. Line chart peaks Q4 holidays. Bar profit by tech leads. Heatmap furniture weak. Result: furniture stock cut, tech pushed, profit up 12%."
+            }
+        },
+        {
+            "question": "Analyze types of charts for various scenarios (intro, 8+ types, pros/cons explanation, multiple real-world apps: sales/profit)",
+            "answer": {
+                "definition": "Charts match data type to story. Over 80 types exist, but 8-10 cover most business needs.",
+                "table": {
+                    "headers": [
+                        "Chart Type",
+                        "Best For",
+                        "Pros",
+                        "Cons"
+                    ],
+                    "rows": [
+                        [
+                            "Bar",
+                            "Category compares",
+                            "Easy read",
+                            "Clutter if many"
+                        ],
+                        [
+                            "Line",
+                            "Time trends",
+                            "Smooth flow",
+                            "No good categories"
+                        ],
+                        [
+                            "Pie",
+                            "Parts of whole",
+                            "Quick share %",
+                            "Bad for >5 slices"
+                        ],
+                        [
+                            "Scatter",
+                            "Relationships",
+                            "Spots clusters",
+                            "Crowded plots"
+                        ],
+                        [
+                            "Histogram",
+                            "Distribution",
+                            "Shows shape",
+                            "Bin size bias"
+                        ]
+                    ]
+                },
+                "explanation": "Bar for ranks, Line for time, Pie for % only, Scatter for links, Histogram for spread, Heatmap for matrices, Treemap for nesting. Pick by data type (nominal vs continuous).",
+                "application": "Superstore Apps: Bar reveals Central leads; shift stock (+10% profit). Line flags Q3 dip (plan inventory). Scatter identifies discount trap (cut 15%). Heatmap shows East tech is hot."
+            }
+        },
+        {
+            "question": "Visualization in business context (intro, exploratory/presentational types, full explanation, case study: customer segmentation)",
+            "answer": {
+                "definition": "In business, visualization bridges data to dollars—turns facts into fast actions for sales, ops, and strategy.",
+                "types": "Exploratory (Private hunt for secrets), Presentational (Polished share for meetings).",
+                "explanation": "Exploratory tools let you filter/zoom to find gems (raw, iterative). Presentational uses simple labels to persuade (exec-ready). Shift from Explore -> Clean -> Present reduces guesswork by 70%.",
+                "application": "Segmentation Case Study: Segment 5k customers. Explore: Scatter spend vs visits. Present: Pie segments. Result: Premium VIP perks (loyalty +25%), Casual discounts (buys +15%). Total revenue +18%."
+            }
+        },
+        {
+            "question": "Design principles for effective visualization (intro, Gestalt/encoding types, explanation, Power BI dashboard example)",
+            "answer": {
+                "definition": "Good viz follows rules so info pops clear without confusion—like clean, high-speed road signs.",
+                "types": "Gestalt Groups (Proximity, Similarity, Continuity), Encoding (Position, Length, Color).",
+                "explanation": "Gestalt groups items auto—use for clean messages. Encoding hierarchy: Position is most accurate for numbers. Lie factor: don't use 3D tricks. Test if a 10-sec glance delivers the core message.",
+                "application": "Power BI Sales Dashboard: Group region bars (proximity). Position x-axis regions. Bar length profits. KPI top, charts middle, filters bottom. User scans: 'Central leads, Q4 boom' effortlessly."
+            }
+        },
+        {
+            "question": "Role of visualization in data-driven decisions (intro, stages/usages, detailed explanation, e-commerce sales forecasting)",
+            "answer": {
+                "definition": "Visualization fuels data-driven decisions by making facts visual and shareable—turns 'gut feel' into hard proof.",
+                "types": "Explore options, Present evidence, Monitor outcomes.",
+                "explanation": "Viz speeds the cycle: See -> Think -> Act. It cuts cognitive bias. Interactive toggles allow you to test 'what if' scenarios live. ROI: 28% faster insights.",
+                "application": "E-Commerce Forecasting: Load 1M rows. Filter returns. Explore: Scatter ads vs sales. Decision: 'Boost Black Friday ads 20%'. Monitor: Live line actual vs predict. Result: Revenue +22% vs guessing."
+            }
+        },
+        {
+            "question": "Compare multiple chart types (table for 4-5 charts: features, best use, examples) followed by explanation",
+            "answer": {
+                "definition": "Different charts shine for different jobs. Mapping your data type to the right chart is the first rule of analytics.",
+                "table": {
+                    "headers": [
+                        "Chart Type",
+                        "Key Features",
+                        "Best Use",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "Bar",
+                            "Vertical/Horizontal",
+                            "Compares categories",
+                            "Profit by region"
+                        ],
+                        [
+                            "Line",
+                            "Connects points",
+                            "Continuous trends",
+                            "Sales over months"
+                        ],
+                        [
+                            "Pie",
+                            "Circle slices",
+                            "Proportions",
+                            "Market share"
+                        ],
+                        [
+                            "Scatter",
+                            "X/Y Dot axes",
+                            "Correlations",
+                            "Sales vs Discount"
+                        ],
+                        [
+                            "Histogram",
+                            "No-gap bars",
+                            "Distribution",
+                            "Profit buckets"
+                        ]
+                    ]
+                },
+                "explanation": "Bar for discrete categories (length judge). Line for slope and speed (flow). Pie for simple % (keep slices low). Scatter for clustered relations. Histogram for shape and spread. Pick by data constraints.",
+                "application": "Superstore Holistic View: Dashboard with Bar (Central 35% profit), Line (Q3 dip), Scatter (discount trap). Combined view drives 15% aggregate gains."
+            }
+        },
+        {
+            "question": "From raw data to visual story (intro, process types, explanation, Netflix dataset visualization)",
+            "answer": {
+                "definition": "Raw data to visual story is like turning a book into a movie—transform chaos into a gripping tale that sticks.",
+                "types": "Data Prep, Explore, Design Arc, Build, Polish.",
+                "explanation": "Prep fix nulls. Explore hunt plot points (why did ratings drop?). Story Arc: Hook (problem), Build (evidence), Climax (action point), Payoff. Goal is emotion + logic.",
+                "application": "Netflix Story: 1M rows. Hook: Ratings trend 2010-25 dip. Build: US high-growth. Climax: under 90min movies score best. Payoff: 'Invest in Indian short dramas'. Results: views up 20%."
+            }
+        },
+        {
+            "question": "Challenges and best practices in visualization (intro, common issues/types, solutions/explanation, pharma profit analysis)",
+            "answer": {
+                "definition": "Design challenges trip many—bad viz wastes data power. Best practices fix these for clear, actionable wins.",
+                "types": "Clutter/Overload, Wrong Chart, Misleading Scales, Color Abuse.",
+                "explanation": "Solutions: Declutter (less ink), Right Chart (time=line), Honest Scales (start at 0), Color Smart (2-5 hues), Story Context. Iterate and test on live users.",
+                "application": "Pharma Profit: Problem: 50 drug table clutter. Fix: Treemap sizes. Problem: Rainbow colors. Fix: 4 intensity groups. Result: Shifted $2M to high ROI vaccines, profit +18%."
+            }
+        }
+    ]
+}

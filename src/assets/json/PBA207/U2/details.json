@@ -1,0 +1,169 @@
+{
+    "unitId": "U2",
+    "title": "Visualization of Structured Data",
+    "pptLink": "",
+    "studyNotes": {
+        "title": "Visualization of Structured Data",
+        "description": "Mastering the art of transforming tabular data into actionable business dashboards and interactive reports.",
+        "toc": [
+            {
+                "id": "introduction",
+                "label": "Introduction"
+            },
+            {
+                "id": "chart-types",
+                "label": "Core Chart Types"
+            },
+            {
+                "id": "hierarchical",
+                "label": "Hierarchical Viz"
+            },
+            {
+                "id": "dashboards",
+                "label": "Dashboards & UX"
+            },
+            {
+                "id": "technical",
+                "label": "Optimization"
+            },
+            {
+                "id": "advanced-features",
+                "label": "Advanced Capabilities"
+            }
+        ],
+        "content": [
+            {
+                "id": "introduction",
+                "title": "Introduction to Structured Visualization",
+                "image": "/src/assets/images/PBA207/U2/u2_hero.png",
+                "text": "Structured data visualization involves taking organized data from tables or databases and turning it into charts, graphs, and dashboards. Because structured data is 'neat'—organized in rows and columns—it maps perfectly to visual attributes.",
+                "list": [
+                    "<b>Pattern Recognition:</b> Humans spot trends visually significantly faster than by scanning numbers.",
+                    "<b>Data Preparation:</b> Includes Extracting, Cleaning (fixing nulls/duplicates), and Transforming (calculated columns).",
+                    "<b>Aggregation:</b> Summarizing 50,000 rows into totals or averages before charting for better performance."
+                ]
+            },
+            {
+                "id": "chart-types",
+                "title": "Core Chart Types for Structured Data",
+                "text": "The choice of chart depends on the relationship being analyzed. Using the wrong chart can lead to misleading conclusions.",
+                "table": {
+                    "headers": [
+                        "Relationship",
+                        "Best Chart",
+                        "Business Example"
+                    ],
+                    "rows": [
+                        [
+                            "Category Comparison",
+                            "Bar Chart",
+                            "Profit by Region (Central vs East)"
+                        ],
+                        [
+                            "Time Trends",
+                            "Line Chart",
+                            "Monthly Sales Growth (2017-2018)"
+                        ],
+                        [
+                            "Part-to-Whole",
+                            "Pie Chart",
+                            "Product Category % (Furniture vs Tech)"
+                        ],
+                        [
+                            "Correlations",
+                            "Scatter Plot",
+                            "Sales vs Profit (Discount impacts)"
+                        ],
+                        [
+                            "Target vs Actual",
+                            "Bullet Chart",
+                            "Sales $1.2M vs $1.5M Goal"
+                        ]
+                    ]
+                },
+                "list": [
+                    "<b>Advanced Charts:</b> Heatmaps (value intensity), Waterfalls (profit buildup), and Parallel Coordinates (multi-variable)."
+                ]
+            },
+            {
+                "id": "hierarchical",
+                "title": "Hierarchical & Power Analysis",
+                "image": "/src/assets/images/PBA207/U2/treemap.png",
+                "text": "Hierarchical visualization shows data organized in tree-like levels, such as product categories within divisions.",
+                "list": [
+                    "<b>Treemaps:</b> Nested rectangles where size represents value (e.g., Furniture -> Tables).",
+                    "<b>Sunbursts:</b> Concentric rings showing proportions across levels.",
+                    "<b>Pivot Tables:</b> Dynamic summaries that allow 'magic' reorganization of data by dragging fields into rows and columns."
+                ]
+            },
+            {
+                "id": "dashboards",
+                "title": "Dashboard Design & Interactivity",
+                "image": "/src/assets/images/PBA207/U2/pivot.png",
+                "text": "A dashboard combines charts, tables, and KPIs into one screen. Effective dashboards follow UX principles like the Z-pattern eye flow.",
+                "list": [
+                    "<b>KPIs:</b> Single numbers (Sales, Margin) showing green/red for instant scorecard checks.",
+                    "<b>Filtering:</b> Allows users to select subsets (Region: East) for deep-dive analysis.",
+                    "<b>Drill-down:</b> Clicking a 'Region' bar to see 'City' level results.",
+                    "<b>Storytelling:</b> Explaining the 'Why' (Problem -> Analysis -> Solution) using annotations and sequenced visuals."
+                ]
+            },
+            {
+                "id": "technical",
+                "title": "Optimization & Future Trends",
+                "text": "As datasets grow towards millions of rows, performance optimization becomes critical.",
+                "list": [
+                    "<b>Performance:</b> Use Star Schemas, Pre-aggregations, and Data Extracts to load under 3 seconds.",
+                    "<b>Accessibility:</b> Ensure high contrast and colorblind-safe palettes for all managers.",
+                    "<b>AI Integration:</b> The future includes auto-insights, natural language queries ('Why is profit down?'), and AR overlays."
+                ]
+            },
+            {
+                "id": "advanced-features",
+                "title": "Advanced Dashboard Capabilities",
+                "text": "Modern dashboards go beyond static charts to include mobile responsiveness, security, and predictive intelligence.",
+                "table": {
+                    "headers": [
+                        "Feature",
+                        "Description",
+                        "Business Benefit"
+                    ],
+                    "rows": [
+                        [
+                            "Mobile Design",
+                            "Vertical stacking & touch targets",
+                            "Access analytics anywhere (Airport/Field)"
+                        ],
+                        [
+                            "Security (RLS)",
+                            "Row-Level Security",
+                            "East Manager sees ONLY East data"
+                        ],
+                        [
+                            "Animation",
+                            "Smooth transitions/trends",
+                            "Highlights changes without confusion"
+                        ]
+                    ]
+                },
+                "list": [
+                    "<b>Mobile-First:</b> Prioritize vertical scrolling and 'progressive disclosure' (KPIs first, details on tap).",
+                    "<b>Governance:</b> Use audit logs to track who views what (ROI measurement) and ensure data lineage trust.",
+                    "<b>ML Integration:</b> Embed forecasts (dotted lines) and anomaly detection (alerts) directly into the visual layer."
+                ]
+            }
+        ]
+    },
+    "assignments": [
+        {
+            "title": "Build a Sales Dashboard",
+            "dueDate": "2026-03-20",
+            "description": "Design an interactive sales dashboard using sample retail data. Include at least one KPI, one Bar Chart for regional comparison, and a Filter mechanism."
+        },
+        {
+            "title": "Hierarchical Data Analysis",
+            "dueDate": "2026-03-25",
+            "description": "Create a Treemap visualization to analyze product category performance. Identify which sub-category contributes the most to total sales."
+        }
+    ]
+}

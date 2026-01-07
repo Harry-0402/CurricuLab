@@ -1,0 +1,22 @@
+[
+    {
+        "unitId": "U1",
+        "title": "Legal Framework"
+    },
+    {
+        "unitId": "U2",
+        "title": "Contract Law"
+    },
+    {
+        "unitId": "U3",
+        "title": "Corporate Law"
+    },
+    {
+        "unitId": "U4",
+        "title": "IPR & Ethics"
+    },
+    {
+        "unitId": "U5",
+        "title": "Dispute Resolution"
+    }
+]

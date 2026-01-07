@@ -1,0 +1,93 @@
+{
+  "light": {
+    "global": {
+      "bgColor": "#f8fafc",
+      "surfaceColor": "rgba(255, 255, 255, 0.8)",
+      "textPrimary": "#0f172a",
+      "textSecondary": "#64748b",
+      "borderColor": "#e2e8f0",
+      "accentGradient": "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)"
+    },
+    "cards": {
+      "cardBg": "#ffffff",
+      "cardText": "#475569",
+      "cardTitle": "#1e293b",
+      "cardBorder": "#e2e8f0",
+      "cardShadow": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)"
+    },
+    "buttons": {
+      "primaryBg": "#4f46e5",
+      "primaryText": "#ffffff",
+      "secondaryBg": "#f1f5f9",
+      "secondaryText": "#475569",
+      "hoverBg": "#4338ca"
+    },
+    "badges": {
+      "badgeBg": "#f1f5f9",
+      "badgeText": "#4f46e5"
+    },
+    "links": {
+      "linkColor": "#4f46e5",
+      "linkHoverColor": "#4338ca"
+    },
+    "states": {
+      "successColor": "#10b981",
+      "warningColor": "#f59e0b",
+      "errorColor": "#ef4444",
+      "disabledOpacity": "0.5"
+    }
+  },
+  "dark": {
+    "global": {
+      "bgColor": "#0f172a",
+      "surfaceColor": "rgba(30, 41, 59, 0.7)",
+      "textPrimary": "#f8fafc",
+      "textSecondary": "#94a3b8",
+      "borderColor": "#334155",
+      "accentGradient": "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
+    },
+    "cards": {
+      "cardBg": "#1e293b",
+      "cardText": "#cbd5e1",
+      "cardTitle": "#f8fafc",
+      "cardBorder": "#334155",
+      "cardShadow": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+    },
+    "buttons": {
+      "primaryBg": "#6366f1",
+      "primaryText": "#ffffff",
+      "secondaryBg": "#334155",
+      "secondaryText": "#f8fafc",
+      "hoverBg": "#4f46e5"
+    },
+    "badges": {
+      "badgeBg": "rgba(99, 102, 241, 0.1)",
+      "badgeText": "#a5b4fc"
+    },
+    "links": {
+      "linkColor": "#a5b4fc",
+      "linkHoverColor": "#818cf8"
+    },
+    "states": {
+      "successColor": "#34d399",
+      "warningColor": "#fbbf24",
+      "errorColor": "#f87171",
+      "disabledOpacity": "0.5"
+    }
+  },
+  "typography": {
+    "fontFamily": "'Inter', -apple-system, sans-serif",
+    "fontSizeBase": "16px",
+    "fontSizeSmall": "14px",
+    "fontSizeLarge": "18px",
+    "headingWeight": "700",
+    "bodyWeight": "400"
+  },
+  "spacing": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "16px",
+    "lg": "24px",
+    "xl": "48px"
+  }
+}

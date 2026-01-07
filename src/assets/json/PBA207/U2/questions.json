@@ -1,0 +1,701 @@
+{
+    "2_marks": [
+        {
+            "question": "Define structured data visualization.",
+            "answer": {
+                "definition": "Structured data visualization means taking organized data from tables or databases and turning it into charts, graphs, and dashboards to spot patterns and trends easily.",
+                "types": "Bar charts for categories, Line charts for time trends, Scatter plots for relationships.",
+                "explanation": "Structured data is neat—rows and columns with labels. Makes charts simple because everything lines up perfectly.",
+                "application": "In superstore sales analysis, a bar chart shows Central region highest profit—clear decision to focus there."
+            }
+        },
+        {
+            "question": "What are the main components of a dashboard?",
+            "answer": {
+                "definition": "Dashboards combine charts, tables, and KPIs into one screen showing key business metrics at a glance.",
+                "types": "Charts (Bar/line), KPIs (Sales, Profit), Filters (Date range, Region).",
+                "explanation": "Like a car dashboard—speed, fuel, RPM all visible instantly. No digging through reports.",
+                "application": "Superstore dashboard: Sales bar chart + profit KPI + region filter. One screen shows 'East region down 15% last month'."
+            }
+        },
+        {
+            "question": "Differentiate between table and chart visualization.",
+            "answer": {
+                "definition": "Tables show exact numbers in rows/columns; charts show patterns/trends visually through shapes/colors.",
+                "table": {
+                    "headers": [
+                        "Aspect",
+                        "Table",
+                        "Chart"
+                    ],
+                    "rows": [
+                        [
+                            "Focus",
+                            "Exact values",
+                            "Patterns/trends"
+                        ],
+                        [
+                            "Best for",
+                            "Comparisons, lookups",
+                            "Relationships, changes"
+                        ],
+                        [
+                            "Speed",
+                            "Slow (scan numbers)",
+                            "Fast (see instantly)"
+                        ]
+                    ]
+                },
+                "explanation": "Table: 'Region A: $5,234'. Chart: Bar shows A tallest = biggest sales. Brain processes visual faster.",
+                "application": "Superstore profit table vs bar chart: Table needs math to compare regions; bar chart instantly shows Central leads."
+            }
+        },
+        {
+            "question": "What is data aggregation in visualization?",
+            "answer": {
+                "definition": "Data aggregation combines many data points into summary measures like totals, averages, or counts before visualizing.",
+                "types": "Sum (Total sales), Average (Mean profit), Count (Number of orders).",
+                "explanation": "Raw data = 50,000 rows. Aggregate = 4 region totals. Charts handle 4 bars better than 50k dots.",
+                "application": "Superstore: 9,994 orders transformed into 4 region sales totals for a clear bar chart comparison."
+            }
+        },
+        {
+            "question": "Define hierarchical data visualization.",
+            "answer": {
+                "definition": "Hierarchical data visualization shows data organized in tree-like levels (categories within categories) using treemaps, sunbursts, or dendrograms.",
+                "types": "Treemaps (nested rectangles), Sunburst (circular rings), Tree diagrams (branches).",
+                "explanation": "Like a company org chart: Company -> Department -> Team. Visual shows the whole structure at once.",
+                "application": "Superstore products: Furniture -> Tables -> Modern types. Treemap rectangle sizes show Modern tables = biggest sales."
+            }
+        },
+        {
+            "question": "What is a pivot table in data visualization?",
+            "answer": {
+                "definition": "A pivot table rearranges and summarizes data by dragging fields into rows, columns, and values to create custom summaries instantly.",
+                "types": "Rows (Categories), Columns (Time periods), Values (Sum/Average).",
+                "explanation": "Like Excel magic: Drag Region to rows and Sales to values -> instant crosstab showing sales by region/year.",
+                "application": "Superstore: Pivot shows 2017 Furniture sales $184k vs 2018 $223k. Drag Technology -> see it grew fastest."
+            }
+        },
+        {
+            "question": "Explain filtering in dashboards.",
+            "answer": {
+                "definition": "Filtering lets users select specific data subsets (by date, region, product) so the dashboard shows only relevant info.",
+                "types": "Dropdown (Region), Slider (Date range), Multi-select (Categories).",
+                "explanation": "A dashboard showing all data is confusing. Filtering Central region only allows seeing its trends clearly.",
+                "application": "Superstore dashboard: Filter 'Furniture + Central' -> bar chart focuses on 1 region, profit KPI shows $229k exactly."
+            }
+        },
+        {
+            "question": "What is drill-down functionality?",
+            "answer": {
+                "definition": "Drill-down lets users click chart elements to see more detailed data levels, moving from summary to specifics.",
+                "types": "Region -> Sub-region -> City -> Individual Store.",
+                "explanation": "Like Google Maps zoom: Country -> State -> City. It reveals hidden details step-by-step.",
+                "application": "Superstore: Bar chart regions -> click Central -> pie chart Central cities -> click City -> table of top 5 stores."
+            }
+        },
+        {
+            "question": "Define KPI in dashboard context.",
+            "answer": {
+                "definition": "KPI (Key Performance Indicator) is a single number measuring if a business goal is achieved (sales target, profit margin).",
+                "types": "Total Sales, Profit Margin, Orders Completed.",
+                "explanation": "A dashboard 'scorecard' where red/green colors show good/bad performance instantly.",
+                "application": "Superstore dashboard top: 'Profit Margin 11.5% (Target 15% RED)'. Manager knows action is needed."
+            }
+        },
+        {
+            "question": "What is real-time dashboard?",
+            "answer": {
+                "definition": "A real-time dashboard updates automatically as new data arrives, showing current business status instantly.",
+                "types": "Live data feeds, Auto-refresh, Current metrics.",
+                "explanation": "Unlike daily reports, it shows the 'now'. Perfect for operations control.",
+                "application": "Superstore live: 'Orders Today: 47 (+3 last hour)'. Manager sees Friday rush happening."
+            }
+        }
+    ],
+    "7_marks": [
+        {
+            "question": "Explain importance of data visualization in business analytics with examples.",
+            "answer": {
+                "definition": "Data visualization transforms complex datasets into visual formats, making patterns instantly understandable for decision-making.",
+                "types": "Pattern Recognition, Storytelling, Error Detection.",
+                "explanation": "Humans spot trends visually faster than numbers. Visuals reveal outliers/mistakes that tables hide.",
+                "application": "Superstore: Line chart shows seasonal peaks; bar chart reveals Central highest profit, guiding inventory decisions."
+            }
+        },
+        {
+            "question": "Describe different types of charts used for structured data with examples.",
+            "answer": {
+                "definition": "Structured data uses specific charts matching the data type: categorical, time-series, or numerical relationships.",
+                "table": {
+                    "headers": [
+                        "Chart",
+                        "Use Case",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "Bar Chart",
+                            "Category comparisons",
+                            "Superstore profit by region"
+                        ],
+                        [
+                            "Line Chart",
+                            "Time trends",
+                            "Monthly sales growth 2017-18"
+                        ],
+                        [
+                            "Pie Chart",
+                            "Part-to-whole",
+                            "Product category sales %"
+                        ],
+                        [
+                            "Scatter Plot",
+                            "Correlations",
+                            "Sales vs Profit"
+                        ]
+                    ]
+                },
+                "explanation": "Bars for categories; lines for time; pie for parts of a total; scatter for numerical connections.",
+                "application": "Superstore: Bar chart shows Central leads sales at $229K. Scatter shows high discount often means low profit."
+            }
+        },
+        {
+            "question": "Explain dashboard design principles with best practices.",
+            "answer": {
+                "definition": "Dashboard design follows principles ensuring clarity, relevance, and actionability for business users.",
+                "types": "Simplicity (4-6 visuals), Relevance (key KPIs), Layout (top-left focus).",
+                "explanation": "Consistent colors and whitespace prevent clutter. Good design delivers insight in <30 seconds.",
+                "application": "Good Superstore Dashboard: Top KPIs (Profit $235K) + Region bar + Trend line. Bad: 15 tiny charts with no filters."
+            }
+        },
+        {
+            "question": "What is interactive visualization? Explain with dashboard features.",
+            "answer": {
+                "definition": "Interactive visualization allows users to manipulate charts (filter, drill-down, zoom) for personalized insights.",
+                "table": {
+                    "headers": [
+                        "Feature",
+                        "Description",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "Filtering",
+                            "Select data subset",
+                            "Click 'Furniture' updates all"
+                        ],
+                        [
+                            "Drill-down",
+                            "Summary to Detail",
+                            "Region to City sales"
+                        ],
+                        [
+                            "Tooltips",
+                            "Hover details",
+                            "Mouseover bar shows $229K"
+                        ],
+                        [
+                            "Zoom/Slider",
+                            "Time range",
+                            "Drag to 2018 only"
+                        ]
+                    ]
+                },
+                "explanation": "Static charts tell one story; interactive visuals let users find multiple stories within the same data.",
+                "application": "Power BI Superstore: Slicing by East region and drilling into cities to see store-level profit."
+            }
+        },
+        {
+            "question": "Discuss pivot tables and pivot charts in data analysis.",
+            "answer": {
+                "definition": "Pivot tables and charts dynamically summarize and visualize structured data by dragging fields into custom views.",
+                "types": "Rows (Categories), Columns (Time), Values (Sum/Avg).",
+                "explanation": "Transforming 10k rows into a clean crosstab (Region vs Year) reveals that East grew fastest (70%).",
+                "application": "Superstore: Pivot table shows 2017 vs 2018 sales comparison. Pivot chart auto-generates a bar for the result."
+            }
+        },
+        {
+            "question": "Explain hierarchical visualization techniques with examples.",
+            "answer": {
+                "definition": "Hierarchical visualization displays tree-structured data using space-filling designs to show proportions at multiple levels.",
+                "table": {
+                    "headers": [
+                        "Technique",
+                        "Description",
+                        "Visual"
+                    ],
+                    "rows": [
+                        [
+                            "Treemap",
+                            "Nested rectangles",
+                            "Big box=Category, small=Sub"
+                        ],
+                        [
+                            "Sunburst",
+                            "Concentric rings",
+                            "Center=Cat, outer=Sub"
+                        ],
+                        [
+                            "Dendrogram",
+                            "Tree branches",
+                            "Nodes show levels"
+                        ]
+                    ]
+                },
+                "explanation": "Size represents value (sales); nesting shows the hierarchy from total to items.",
+                "application": "Superstore Treemap: Furniture (30% total) -> Office Supplies -> Binders (5%). Instant product focus."
+            }
+        },
+        {
+            "question": "Describe the role of color, layout, and typography in effective data visualization.",
+            "answer": {
+                "definition": "Color, layout, and typography guide viewer attention, convey meaning, and ensure readability.",
+                "types": "Color (Sequential/Diverging), Layout (Z-pattern/Grids), Typography (Hierarchy/Fonts).",
+                "explanation": "Brains rank position as the most accurate feature. Layout should place top KPIs at the top-left.",
+                "application": "Superstore Dashboard Fix: Blue sequential colors for sales, sans-serif fonts for labels, and 24pt titles for focus."
+            }
+        },
+        {
+            "question": "What are common visualization mistakes? How to avoid them?",
+            "answer": {
+                "definition": "Common visualization mistakes distort data truth or confuse viewers; avoid through best practices.",
+                "table": {
+                    "headers": [
+                        "Mistake",
+                        "Problem",
+                        "Fix"
+                    ],
+                    "rows": [
+                        [
+                            "3D Charts",
+                            "Distort proportions",
+                            "Use 2D only"
+                        ],
+                        [
+                            "Too Much Data",
+                            "Clutter hides insight",
+                            "Aggregate + filter"
+                        ],
+                        [
+                            "Wrong Chart",
+                            "Mismatch story",
+                            "Match chart to data type"
+                        ],
+                        [
+                            "Misleading Scale",
+                            "Starts at >0%",
+                            "0 baseline always"
+                        ]
+                    ]
+                },
+                "explanation": "Overloading with categories (e.g., 17-slice pie) hides truth. Fix by using a top-5 bar chart.",
+                "application": "Bad Superstore Chart: Profit line starting at 80% (exaggerates growth). Fix: Start at 0% for honesty."
+            }
+        },
+        {
+            "question": "Explain storytelling with data visualization.",
+            "answer": {
+                "definition": "Data storytelling uses sequenced visuals and narrative to explain a business problem, analysis, and recommended action.",
+                "types": "Problem, Analysis, Solution.",
+                "explanation": "Progressive disclosure (Overview -> Detail) and annotations guide the user through the 'why' behind the numbers.",
+                "application": "Superstore Story: 1. Sales dropping? 2. East region issue. 3. Cut discounts. 4. Profit +10% target."
+            }
+        },
+        {
+            "question": "Compare Power BI, Tableau, and Excel for structured data visualization.",
+            "answer": {
+                "definition": "Power BI, Tableau, and Excel balance ease vs power based on datasets and budget.",
+                "table": {
+                    "headers": [
+                        "Tool",
+                        "Strengths",
+                        "Weaknesses",
+                        "Best For"
+                    ],
+                    "rows": [
+                        [
+                            "Excel",
+                            "Universal, Free",
+                            "No interactivity",
+                            "Small data"
+                        ],
+                        [
+                            "Power BI",
+                            "$10/mo, MS native",
+                            "Steeper learning",
+                            "Enterprise BI"
+                        ],
+                        [
+                            "Tableau",
+                            "Best visuals",
+                            "Expensive",
+                            "Complex design"
+                        ]
+                    ]
+                },
+                "explanation": "Excel for pivots; Power BI for live enterprise dashboards; Tableau for high-end designer reports.",
+                "application": "Superstore Choice: Pivot tables in Excel for raw checks; Power BI for regional manager dashboards."
+            }
+        }
+    ],
+    "8_marks": [
+        {
+            "question": "Discuss how specific visual attributes (pre-attentive attributes) enhance data perception.",
+            "answer": {
+                "definition": "Pre-attentive attributes are visual properties (color, length, size) that the human brain processes instantly (<200ms) without conscious effort.",
+                "table": {
+                    "headers": [
+                        "Attribute",
+                        "Description",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "Color",
+                            "Hue or Intensity",
+                            "Red = Danger/Loss"
+                        ],
+                        [
+                            "Length",
+                            "Size of bars",
+                            "Long bar = High Sales"
+                        ],
+                        [
+                            "Position",
+                            "Location on scale",
+                            "Higher point = Better value"
+                        ]
+                    ]
+                },
+                "explanation": "Leveraging these attributes separates 'data noise' from 'insight signal'. A dashboard should use bold color ONLY for what matters (e.g., missed targets).",
+                "application": "Superstore: Using a 'Traffic Light' color scheme (Green/Yellow/Red) on a KPI card allows a manager to assess performance in 0.5 seconds."
+            }
+        },
+        {
+            "question": "Explain advanced chart types for structured data analysis.",
+            "answer": {
+                "definition": "Advanced charts handle complex relationships beyond basic bars, revealing multi-dimensional insights.",
+                "table": {
+                    "headers": [
+                        "Chart",
+                        "Purpose",
+                        "Superstore Example"
+                    ],
+                    "rows": [
+                        [
+                            "Heatmap",
+                            "Value intensity",
+                            "Sales by Region x Month"
+                        ],
+                        [
+                            "Waterfall",
+                            "Running total change",
+                            "Profit buildup: Sales - Cost"
+                        ],
+                        [
+                            "Bullet",
+                            "Target vs Actual",
+                            "Sales $1.2M vs $1.5M target"
+                        ],
+                        [
+                            "Parallel Coord",
+                            "Multi-var links",
+                            "Sales/Profit/Discount lines"
+                        ]
+                    ]
+                },
+                "explanation": "Waterfall explains 'why profit is down'. Heatmaps replace messy crosstab tables.",
+                "application": "Superstore: A waterfall chart showing how discounts drained $50k from the gross profit."
+            }
+        },
+        {
+            "question": "Describe the data preparation process before visualization.",
+            "answer": {
+                "definition": "Data preparation cleans and structures raw data into an analysis-ready format for accurate visuals.",
+                "types": "Extract, Clean, Transform, Aggregate.",
+                "explanation": "Standardizing labels (Central vs central) and converting text dates to actual date formats are critical.",
+                "application": "Superstore Prep: 10k raw rows -> Remove returns -> Sum by region -> Final bar chart."
+            }
+        },
+        {
+            "question": "What role does user experience play in dashboard adoption?",
+            "answer": {
+                "definition": "UX determines if managers actually use dashboards or ignore them—intuitive design drives daily adoption.",
+                "types": "Loading speed, Mobile ready, Guided analytics.",
+                "explanation": "Dashboards taking >20 clicks to filter are ignored. A single-click filter leads to 50% higher usage.",
+                "application": "Superstore Adoption: A mobile-ready dashboard with hover tooltips led to daily checks by regional heads."
+            }
+        },
+        {
+            "question": "Explain geospatial visualization for business data.",
+            "answer": {
+                "definition": "Geospatial visualization maps business data onto geographic areas to reveal location-based patterns.",
+                "types": "Choropleth (color by value), Proportional symbols, Heat maps.",
+                "explanation": "Requires Location data (ZIP/City) and Metrics (Sales). It reveals where performance is clustered.",
+                "application": "Superstore Map: States colored by profit (TX dark green). Slicing by Furniture reveals a Southwest sales cluster."
+            }
+        },
+        {
+            "question": "Discuss performance optimization techniques for large dashboards.",
+            "answer": {
+                "definition": "Performance optimization ensures fast load times (<5sec) even with millions of rows.",
+                "types": "Aggregations, Star Schema, Data Extracts.",
+                "explanation": "Pre-calculating summaries (totals by month) is 90% faster than querying raw rows every time.",
+                "application": "Superstore Scale: Moving from a 1M row live connection to a monthly aggregate extract reduced load time by 7 sec."
+            }
+        },
+        {
+            "question": "How do you handle outliers in data visualization?",
+            "answer": {
+                "definition": "Outliers are extreme values that distort charts; handle them through detection and appropriate visual treatment.",
+                "types": "Detection (Box plot/IQR), Treatment (Log scale/Annotate).",
+                "explanation": "A $2M single-order outlier should be annotated, not just deleted, to explain the variance.",
+                "application": "Superstore: A box plot flagging a 99th percentile order as a valid VIP client exception."
+            }
+        },
+        {
+            "question": "Explain the concept of data ink ratio in visualization design.",
+            "answer": {
+                "definition": "Data-ink ratio measures effectiveness: maximize pixels carrying info, minimize redundant 'clutter' ink.",
+                "types": "Tufte Principle, Remove Chart-junk.",
+                "explanation": "High ratio (0.8) means clean lines; Low ratio (0.3) means 3D effects and heavy gridlines.",
+                "application": "Superstore Fix: Removing bar shadows and heavy borders increased usable chart area by 40%."
+            }
+        },
+        {
+            "question": "Describe A/B testing for dashboard effectiveness.",
+            "answer": {
+                "definition": "A/B testing compares two dashboard versions to see which drives better engagement and decisions.",
+                "types": "Hypothesis, Metrics (time on page), Sample testing.",
+                "explanation": "Version A (no filter) vs Version B (prominent filter). Track which one helps users find issues faster.",
+                "application": "Superstore Test: Version B with top-placed region filters saw a 75% increase in manager interactions."
+            }
+        },
+        {
+            "question": "What are accessibility considerations in data visualization?",
+            "answer": {
+                "definition": "Accessibility ensures dashboards work for all, including colorblind and screen-reader users.",
+                "types": "Colorblind safe palettes, High contrast, Keyboard navigation.",
+                "explanation": "Don't use only red-green colors; add patterns or labels so a colorblind user can still distinguish profit vs loss.",
+                "application": "Superstore Fix: Adding 'Loss' icons next to red bars ensures accessibility for all managers."
+            }
+        }
+    ],
+    "15_marks": [
+        {
+            "question": "Explain the complete process of dashboard development from data preparation to deployment.",
+            "answer": {
+                "definition": "A 5-phase lifecycle ensuring business-relevant, performant visuals delivered to stakeholders.",
+                "types": "Phase 1: Planning, Phase 2: Prep (ETL), Phase 3: Build, Phase 4: Test, Phase 5: Deploy.",
+                "explanation": "The process moves from raw data extraction to star schema modeling, then UI design, and finally daily auto-refreshes.",
+                "application": "Superstore BI: Load Excel -> Clean returns -> Build Power BI dashboard -> Publish live for regional heads to track $2M sales."
+            }
+        },
+        {
+            "question": "Critically analyze strengths and limitations of popular visualization tools.",
+            "answer": {
+                "definition": "Tools must be evaluated based on datasets, user count, and complex calculation needs.",
+                "table": {
+                    "headers": [
+                        "Tool",
+                        "Strengths",
+                        "Limitations",
+                        "Score"
+                    ],
+                    "rows": [
+                        [
+                            "Excel",
+                            "Free, Universal",
+                            "Ugly, No scale",
+                            "7/10"
+                        ],
+                        [
+                            "Power BI",
+                            "Cheap, MS native",
+                            "Steep learning",
+                            "9/10"
+                        ],
+                        [
+                            "Tableau",
+                            "Best visuals",
+                            "Expensive",
+                            "8/10"
+                        ]
+                    ]
+                },
+                "explanation": "Strategic choice: Excel for quick pivots; Power BI for enterprise BI; Tableau for high-end designer storytelling.",
+                "application": "Superstore Choice: Graduate from Excel pivots to Power BI regional dashboards for 100+ employees."
+            }
+        },
+        {
+            "question": "Case study: Design a comprehensive sales performance dashboard for retail chain.",
+            "answer": {
+                "definition": "A multi-layered design tracking performance across regions, products, and time.",
+                "types": "KPI Cards, Maps, Trend Lines, Waterfall charts.",
+                "explanation": "Layout: Top-left KPIs (Sales/Profit), Middle Map (State sales), Bottom Details (Product bar charts).",
+                "application": "Superstore Dashboard: Manager filters 'Furniture' -> Map shows East losses -> Waterfall reveals huge discounts as the cause."
+            }
+        },
+        {
+            "question": "Discuss evaluation metrics and ROI measurement for visualization projects.",
+            "answer": {
+                "definition": "ROI measures project success by comparing the dollar value of insights vs development costs.",
+                "types": "Usage (views), Engagement (filters used), Impact (+% Revenue).",
+                "explanation": "ROI = (Benefit - Cost) / Cost. Proving a dashboard saved $100k vs $50k dev cost = 100% ROI.",
+                "application": "Superstore Proof: Dashboard spotted East losses; cutting discounts saved $28k. Dev cost $15k = 87% ROI in Year 1."
+            }
+        },
+        {
+            "question": "Future trends in structured data visualization.",
+            "answer": {
+                "definition": "The evolution toward AI auto-insights, immersive AR/VR, and conversational 'Natural Language' querying.",
+                "types": "AI Insights, AR Dashboards, Voice Query.",
+                "explanation": "Instead of clicking, a manager asks 'Why is Central profit up?' and the AI auto-generates the root cause analysis.",
+                "application": "2026 Superstore: A manager wears AR glasses to see profit heatmaps overlaid on physical warehouse pallets."
+            }
+        },
+        {
+            "question": "Compare static vs interactive vs dynamic dashboards with case scenarios.",
+            "answer": {
+                "definition": "Dashboards serve different roles from monthly PDF reports to per-second live production monitoring.",
+                "table": {
+                    "headers": [
+                        "Type",
+                        "Update",
+                        "Best For",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "Static",
+                            "Manual",
+                            "Presentations",
+                            "Monthly Board PDF"
+                        ],
+                        [
+                            "Interactive",
+                            "Daily",
+                            "Analysis",
+                            "Region Manager Hub"
+                        ],
+                        [
+                            "Dynamic",
+                            "Real-time",
+                            "Operations",
+                            "Friday Sales Rush"
+                        ]
+                    ]
+                },
+                "explanation": "Static for high-level strategy; Interactive for tactical analysis; Dynamic for real-time adjustments.",
+                "application": "Superstore Mix: Monthly PDF board report + interactive regional hub + real-time 'Units Sold' live ticker."
+            }
+        },
+        {
+            "question": "Design principles for mobile-first data visualization.",
+            "answer": {
+                "definition": "Mobile-first design prioritizes phone screens (used by 80% of business users) ensuring dashboards work anywhere.",
+                "table": {
+                    "headers": [
+                        "Challenge",
+                        "Principle",
+                        "Fix"
+                    ],
+                    "rows": [
+                        [
+                            "Small Screen",
+                            "Vertical Stack",
+                            "Single column layout"
+                        ],
+                        [
+                            "Touch Only",
+                            "Large Buttons",
+                            "48px min touch targets"
+                        ],
+                        [
+                            "Poor Connection",
+                            "Fast Load",
+                            "Aggregates first"
+                        ]
+                    ]
+                },
+                "explanation": "Responsive design rules: Progressive disclosure (KPIs -> Detail on tap), Swipe navigation, and Condensed charts (Sparklines).",
+                "application": "Superstore Mobile: Portrait mode shows Top 3 KPIs | Swipe region cards | Tap drill products. Manager checks sales at airport."
+            }
+        },
+        {
+            "question": "Role of animation and transitions in data visualization.",
+            "answer": {
+                "definition": "Strategic animations guide attention, show change over time, and smooth transitions between views without confusing users.",
+                "table": {
+                    "headers": [
+                        "Use Case",
+                        "Description",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "Highlight",
+                            "Pulsing alert",
+                            "KPI when target missed"
+                        ],
+                        [
+                            "Storytelling",
+                            "Growth progression",
+                            "Bars growing over time"
+                        ],
+                        [
+                            "Transitions",
+                            "Context preservation",
+                            "Filter change fade (not jump)"
+                        ]
+                    ]
+                },
+                "explanation": "Effective animation is under 1 second and purposeful. Avoid decorative 'sparkles'.",
+                "application": "Superstore: Timeline scrub shows live sales growth animation for the Friday rush, helping identify peak hours."
+            }
+        },
+        {
+            "question": "Security and governance considerations for shared dashboards.",
+            "answer": {
+                "definition": "Secure shared dashboards protect sensitive data while enabling collaboration through role-based access and audit trails.",
+                "table": {
+                    "headers": [
+                        "Control",
+                        "Purpose",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "Row-Level Security",
+                            "Restrict Data",
+                            "Manager sees own region only"
+                        ],
+                        [
+                            "Usage Audit",
+                            "Track Adoption",
+                            "Log views/downloads"
+                        ],
+                        [
+                            "Data Lineage",
+                            "Trust",
+                            "Show source -> visual path"
+                        ]
+                    ]
+                },
+                "explanation": "Governance ensures the right people see the right numbers. Audit logs prove ROI/usage.",
+                "application": "Superstore: East Manager sees East data only. Finance checks audit logs: 'Q1 sales view 500 times'."
+            }
+        },
+        {
+            "question": "Integration of machine learning predictions into dashboards.",
+            "answer": {
+                "definition": "ML predictions enhance dashboards by showing forecasts, anomalies, and recommendations alongside historical data.",
+                "types": "Forecast Lines, Anomaly Flags, What-if Analysis.",
+                "explanation": "Technical Flow: Python model -> Live prediction column -> Forecast visual. Moves analytics from descriptive to prescriptive.",
+                "application": "Superstore ML: Dotted forecast line +80% confidence band. Anomaly alert for East Q4 prompts action."
+            }
+        }
+    ]
+}

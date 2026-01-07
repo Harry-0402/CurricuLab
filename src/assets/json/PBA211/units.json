@@ -1,0 +1,22 @@
+[
+    {
+        "unitId": "U1",
+        "title": "Python Basics"
+    },
+    {
+        "unitId": "U2",
+        "title": "Numpy & Pandas"
+    },
+    {
+        "unitId": "U3",
+        "title": "Matplotlib & Seaborn"
+    },
+    {
+        "unitId": "U4",
+        "title": "Statistical Analysis"
+    },
+    {
+        "unitId": "U5",
+        "title": "Machine Learning"
+    }
+]

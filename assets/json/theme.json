@@ -1,0 +1,90 @@
+{
+  "light": {
+    "global": {
+      "bgColor": "#f8f9fa",
+      "surfaceColor": "#ffffff",
+      "textPrimary": "#212529",
+      "textSecondary": "#6c757d",
+      "borderColor": "#dee2e6"
+    },
+    "cards": {
+      "cardBg": "#ffffff",
+      "cardText": "#212529",
+      "cardTitle": "#000000",
+      "cardBorder": "#dee2e6",
+      "cardShadow": "0 2px 4px rgba(0,0,0,0.05)"
+    },
+    "buttons": {
+      "primaryBg": "#0d6efd",
+      "primaryText": "#ffffff",
+      "secondaryBg": "#6c757d",
+      "secondaryText": "#ffffff",
+      "hoverBg": "#0b5ed7"
+    },
+    "badges": {
+      "badgeBg": "#e9ecef",
+      "badgeText": "#495057"
+    },
+    "links": {
+      "linkColor": "#0d6efd",
+      "linkHoverColor": "#0a58ca"
+    },
+    "states": {
+      "successColor": "#198754",
+      "warningColor": "#ffc107",
+      "errorColor": "#dc3545",
+      "disabledOpacity": "0.6"
+    }
+  },
+  "dark": {
+    "global": {
+      "bgColor": "#121212",
+      "surfaceColor": "#1e1e1e",
+      "textPrimary": "#e0e0e0",
+      "textSecondary": "#b0b0b0",
+      "borderColor": "#333333"
+    },
+    "cards": {
+      "cardBg": "#1e1e1e",
+      "cardText": "#e0e0e0",
+      "cardTitle": "#ffffff",
+      "cardBorder": "#333333",
+      "cardShadow": "0 4px 8px rgba(0,0,0,0.3)"
+    },
+    "buttons": {
+      "primaryBg": "#3700b3",
+      "primaryText": "#ffffff",
+      "secondaryBg": "#03dac6",
+      "secondaryText": "#000000",
+      "hoverBg": "#6200ee"
+    },
+    "badges": {
+      "badgeBg": "#333333",
+      "badgeText": "#e0e0e0"
+    },
+    "links": {
+      "linkColor": "#bb86fc",
+      "linkHoverColor": "#03dac6"
+    },
+    "states": {
+      "successColor": "#4caf50",
+      "warningColor": "#ff9800",
+      "errorColor": "#f44336",
+      "disabledOpacity": "0.5"
+    }
+  },
+  "typography": {
+    "fontFamily": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    "fontSizeBase": "16px",
+    "fontSizeSmall": "14px",
+    "fontSizeLarge": "18px",
+    "headingWeight": "700",
+    "bodyWeight": "400"
+  },
+  "spacing": {
+    "spaceXS": "4px",
+    "spaceSM": "8px",
+    "spaceMD": "16px",
+    "spaceLG": "24px"
+  }
+}
