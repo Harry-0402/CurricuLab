@@ -9,8 +9,11 @@ import { useEffect } from 'react';
  */
 export function KeepAlive() {
     useEffect(() => {
-        // Only run in production
-        if (process.env.NODE_ENV !== 'production') {
+        // Only run in production (check multiple ways for Next.js compatibility)
+        const isProduction = process.env.NODE_ENV === 'production' ||
+            typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+
+        if (!isProduction) {
             return;
         }
 
