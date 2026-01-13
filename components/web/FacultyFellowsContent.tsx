@@ -10,6 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogDescription,
+    DialogFooter,
 } from "@/components/shared/Dialog";
 
 interface Person {
@@ -48,6 +49,11 @@ export function FacultyFellowsContent() {
     const [fellows, setFellows] = useState<Person[]>(INITIAL_FELLOWS);
     const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
+    // Form State
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+    const [formData, setFormData] = useState<Partial<Person>>({});
+
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
     };
@@ -61,15 +67,56 @@ export function FacultyFellowsContent() {
         setOpenMenuId(null);
     };
 
-    const handleEdit = (id: number) => {
-        console.log("Edit person", id);
-        alert("Edit functionality coming soon!");
+    const handleEdit = (person: Person) => {
+        setEditingPerson(person);
+        setFormData(person);
+        setIsFormOpen(true);
         setOpenMenuId(null);
     };
 
     const handleAdd = () => {
-        alert("Add functionality coming soon!");
-    }
+        setEditingPerson(null);
+        setFormData({
+            image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random().toString(36).substring(7)}`
+        });
+        setIsFormOpen(true);
+    };
+
+    const handleSave = () => {
+        if (!formData.name || !formData.role) {
+            alert("Please fill in the required fields (Name, Role)");
+            return;
+        }
+
+        const newPerson = {
+            id: editingPerson ? editingPerson.id : Date.now(),
+            name: formData.name,
+            role: formData.role,
+            email: formData.email,
+            specialization: formData.specialization || (activeTab === 'faculty' ? "General" : "Undecided"),
+            contactNo: formData.contactNo || "+1 (555) 000-0000",
+            whatsappNo: formData.whatsappNo,
+            image: formData.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.name}`,
+        } as Person;
+
+        if (activeTab === 'faculty') {
+            if (editingPerson) {
+                setFaculty(prev => prev.map(p => p.id === editingPerson.id ? newPerson : p));
+            } else {
+                setFaculty(prev => [...prev, newPerson]);
+            }
+        } else {
+            if (editingPerson) {
+                setFellows(prev => prev.map(p => p.id === editingPerson.id ? newPerson : p));
+            } else {
+                setFellows(prev => [...prev, newPerson]);
+            }
+        }
+
+        setIsFormOpen(false);
+        setEditingPerson(null);
+        setFormData({});
+    };
 
     const currentList = activeTab === 'faculty' ? faculty : fellows;
 
@@ -154,7 +201,7 @@ export function FacultyFellowsContent() {
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleEdit(person.id);
+                                                handleEdit(person);
                                             }}
                                             className="w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 text-gray-600 transition-colors"
                                         >
@@ -269,6 +316,92 @@ export function FacultyFellowsContent() {
                                 </div>
                             </div>
                         )}
+                    </DialogContent>
+                </Dialog>
+
+                {/* Add/Edit Form Modal */}
+                <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                    <DialogContent className="sm:max-w-lg">
+                        <DialogHeader>
+                            <DialogTitle>{editingPerson ? 'Edit Member' : 'Add New Member'}</DialogTitle>
+                            <DialogDescription>
+                                {editingPerson ? 'Update the details for this member.' : 'Add a new member to the list.'}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Name</label>
+                                <input
+                                    className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="e.g. Harry Potter"
+                                    value={formData.name || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Role</label>
+                                <input
+                                    className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="e.g. Student, Professor"
+                                    value={formData.role || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Email</label>
+                                    <input
+                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="email@example.com"
+                                        value={formData.email || ''}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Specialization</label>
+                                    <input
+                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="e.g. Physics"
+                                        value={formData.specialization || ''}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, specialization: e.target.value }))}
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Contact No</label>
+                                    <input
+                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="+1 (555) 000-0000"
+                                        value={formData.contactNo || ''}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, contactNo: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">WhatsApp</label>
+                                    <input
+                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Optional"
+                                        value={formData.whatsappNo || ''}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, whatsappNo: e.target.value }))}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <button
+                                onClick={() => setIsFormOpen(false)}
+                                className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                className="px-6 py-2 text-sm font-black text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95"
+                            >
+                                {editingPerson ? 'Save Changes' : 'Add Member'}
+                            </button>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </div>
