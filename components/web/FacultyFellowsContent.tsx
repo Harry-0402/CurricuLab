@@ -19,27 +19,27 @@ interface Person {
     status: string;
     email: string;
     specialization: string;
-    image: string;
+    gender: 'male' | 'female';
     contactNo: string;
     whatsappNo?: string;
 }
 
 const INITIAL_FACULTY: Person[] = [
-    { id: 1, name: "Dr. Albus Dumbledore", status: "Head of Department", email: "headmaster@curriculab.edu", specialization: "Leadership & Strategy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Albus", contactNo: "+1 (555) 010-1001" },
-    { id: 2, name: "Prof. Minerva McGonagall", status: "Senior Teacher", email: "minerva@curriculab.edu", specialization: "Transfiguration & Logic", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Minerva", contactNo: "+1 (555) 010-1002", whatsappNo: "+1 (555) 010-9999" },
-    { id: 3, name: "Prof. Severus Snape", status: "Senior Teacher", email: "severus@curriculab.edu", specialization: "Chemistry & Potions", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Severus", contactNo: "+1 (555) 010-1003" },
-    { id: 4, name: "Prof. Filius Flitwick", status: "Assistant Teacher", email: "filius@curriculab.edu", specialization: "Charms & Rhetoric", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Filius", contactNo: "+1 (555) 010-1004" },
-    { id: 5, name: "Prof. Pomona Sprout", status: "Senior Teacher", email: "pomona@curriculab.edu", specialization: "Botany & Herbology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pomona", contactNo: "+1 (555) 010-1005" },
-    { id: 6, name: "Rubeus Hagrid", status: "Lab Instructor", email: "hagrid@curriculab.edu", specialization: "Zoology & Field Work", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hagrid", contactNo: "+1 (555) 010-1006" }
+    { id: 1, name: "Dr. Albus Dumbledore", status: "Head of Department", email: "headmaster@curriculab.edu", specialization: "Leadership & Strategy", gender: 'male', contactNo: "+1 (555) 010-1001" },
+    { id: 2, name: "Prof. Minerva McGonagall", status: "Senior Teacher", email: "minerva@curriculab.edu", specialization: "Transfiguration & Logic", gender: 'female', contactNo: "+1 (555) 010-1002", whatsappNo: "+1 (555) 010-9999" },
+    { id: 3, name: "Prof. Severus Snape", status: "Senior Teacher", email: "severus@curriculab.edu", specialization: "Chemistry & Potions", gender: 'male', contactNo: "+1 (555) 010-1003" },
+    { id: 4, name: "Prof. Filius Flitwick", status: "Assistant Teacher", email: "filius@curriculab.edu", specialization: "Charms & Rhetoric", gender: 'male', contactNo: "+1 (555) 010-1004" },
+    { id: 5, name: "Prof. Pomona Sprout", status: "Senior Teacher", email: "pomona@curriculab.edu", specialization: "Botany & Herbology", gender: 'female', contactNo: "+1 (555) 010-1005" },
+    { id: 6, name: "Rubeus Hagrid", status: "Lab Instructor", email: "hagrid@curriculab.edu", specialization: "Zoology & Field Work", gender: 'male', contactNo: "+1 (555) 010-1006" }
 ];
 
 const INITIAL_FELLOWS: Person[] = [
-    { id: 7, name: "Harry Potter", status: "Senior Scholar", email: "harry.p@student.curriculab.edu", specialization: "Defense Against Dark Arts", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Harry", contactNo: "+1 (555) 020-2001" },
-    { id: 8, name: "Hermione Granger", status: "Research Fellow", email: "hermione.g@student.curriculab.edu", specialization: "Arithmancy & Runes", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hermione", contactNo: "+1 (555) 020-2002" },
-    { id: 9, name: "Ron Weasley", status: "Junior Scholar", email: "ron.w@student.curriculab.edu", specialization: "Strategic Chess", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ron", contactNo: "+1 (555) 020-2003" },
-    { id: 10, name: "Draco Malfoy", status: "Junior Scholar", email: "draco.m@student.curriculab.edu", specialization: "Potions & Alchemy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Draco", contactNo: "+1 (555) 020-2004" },
-    { id: 11, name: "Luna Lovegood", status: "Research Fellow", email: "luna.l@student.curriculab.edu", specialization: "Cryptozoology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna", contactNo: "+1 (555) 020-2005" },
-    { id: 12, name: "Cedric Diggory", status: "Senior Scholar", email: "cedric.d@student.curriculab.edu", specialization: "Sports Science", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cedric", contactNo: "+1 (555) 020-2006" }
+    { id: 7, name: "Harry Potter", status: "Senior Scholar", email: "harry.p@student.curriculab.edu", specialization: "Defense Against Dark Arts", gender: 'male', contactNo: "+1 (555) 020-2001" },
+    { id: 8, name: "Hermione Granger", status: "Research Fellow", email: "hermione.g@student.curriculab.edu", specialization: "Arithmancy & Runes", gender: 'female', contactNo: "+1 (555) 020-2002" },
+    { id: 9, name: "Ron Weasley", status: "Junior Scholar", email: "ron.w@student.curriculab.edu", specialization: "Strategic Chess", gender: 'male', contactNo: "+1 (555) 020-2003" },
+    { id: 10, name: "Draco Malfoy", status: "Junior Scholar", email: "draco.m@student.curriculab.edu", specialization: "Potions & Alchemy", gender: 'male', contactNo: "+1 (555) 020-2004" },
+    { id: 11, name: "Luna Lovegood", status: "Research Fellow", email: "luna.l@student.curriculab.edu", specialization: "Cryptozoology", gender: 'female', contactNo: "+1 (555) 020-2005" },
+    { id: 12, name: "Cedric Diggory", status: "Senior Scholar", email: "cedric.d@student.curriculab.edu", specialization: "Sports Science", gender: 'male', contactNo: "+1 (555) 020-2006" }
 ];
 
 export function FacultyFellowsContent() {
@@ -77,7 +77,7 @@ export function FacultyFellowsContent() {
     const handleAdd = () => {
         setEditingPerson(null);
         setFormData({
-            image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random().toString(36).substring(7)}`
+            gender: 'male' // Default
         });
         setIsFormOpen(true);
     };
@@ -96,7 +96,7 @@ export function FacultyFellowsContent() {
             specialization: formData.specialization || (activeTab === 'faculty' ? "General" : "Undecided"),
             contactNo: formData.contactNo || "+1 (555) 000-0000",
             whatsappNo: formData.whatsappNo,
-            image: formData.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.name}`,
+            gender: formData.gender || 'male',
         } as Person;
 
         if (activeTab === 'faculty') {
@@ -126,6 +126,17 @@ export function FacultyFellowsContent() {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, []);
+
+    const AvatarImage = ({ gender, className }: { gender: 'male' | 'female', className?: string }) => (
+        <div
+            className={cn("bg-no-repeat bg-cover", className)}
+            style={{
+                backgroundImage: 'url(/assets/faculty-avatars.jpg)',
+                backgroundSize: '200% 100%',
+                backgroundPosition: gender === 'male' ? '0% 0%' : '100% 0%'
+            }}
+        />
+    );
 
     return (
         <WebAppShell>
@@ -223,7 +234,7 @@ export function FacultyFellowsContent() {
                             </div>
 
                             <div className="w-24 h-24 rounded-[2.5rem] bg-gray-50 border-2 border-white shadow-xl shadow-gray-100 p-1 mb-6 group-hover:scale-110 transition-transform duration-300 overflow-hidden relative z-10">
-                                <img src={person.image} alt={person.name} className="w-full h-full rounded-[2.2rem] object-cover" />
+                                <AvatarImage gender={person.gender} className="w-full h-full rounded-[2.2rem]" />
                             </div>
 
                             <h3 className="text-lg font-black text-gray-900 leading-tight mb-1 relative z-10">{person.name}</h3>
@@ -243,7 +254,7 @@ export function FacultyFellowsContent() {
                         {selectedPerson && (
                             <div className="flex flex-col items-center pt-4">
                                 <div className="w-32 h-32 rounded-[3rem] bg-gray-50 border-4 border-white shadow-2xl shadow-blue-100 p-1.5 mb-6 overflow-hidden">
-                                    <img src={selectedPerson.image} alt={selectedPerson.name} className="w-full h-full rounded-[2.5rem] object-cover" />
+                                    <AvatarImage gender={selectedPerson.gender} className="w-full h-full rounded-[2.5rem]" />
                                 </div>
 
                                 <DialogHeader className="mb-8 w-full">
@@ -349,13 +360,15 @@ export function FacultyFellowsContent() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Email</label>
-                                    <input
-                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="email@example.com"
-                                        value={formData.email || ''}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                    />
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Gender</label>
+                                    <select
+                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        value={formData.gender || 'male'}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'male' | 'female' }))}
+                                    >
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
                                 </div>
                                 <div className="grid gap-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Specialization</label>
@@ -368,6 +381,15 @@ export function FacultyFellowsContent() {
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Email</label>
+                                    <input
+                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="email@example.com"
+                                        value={formData.email || ''}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                    />
+                                </div>
                                 <div className="grid gap-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Contact No</label>
                                     <input
