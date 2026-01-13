@@ -334,9 +334,17 @@ export function FacultyFellowsContent() {
                 <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                     <DialogContent className="sm:max-w-lg">
                         <DialogHeader>
-                            <DialogTitle>{editingPerson ? 'Edit Member' : 'Add New Member'}</DialogTitle>
+                            <DialogTitle>
+                                {editingPerson
+                                    ? `Edit ${activeTab === 'faculty' ? 'Faculty Member' : 'Fellow/Scholar'}`
+                                    : `Add New ${activeTab === 'faculty' ? 'Faculty Member' : 'Fellow/Scholar'}`
+                                }
+                            </DialogTitle>
                             <DialogDescription>
-                                {editingPerson ? 'Update the details for this member.' : 'Add a new member to the list.'}
+                                {editingPerson
+                                    ? 'Update the details for this member.'
+                                    : `Add a new ${activeTab === 'faculty' ? 'faculty member' : 'scholar'} to the list.`
+                                }
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -353,7 +361,7 @@ export function FacultyFellowsContent() {
                                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Status</label>
                                 <input
                                     className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="e.g. Senior Teacher, Assistant Teacher"
+                                    placeholder={activeTab === 'faculty' ? "e.g. Senior Teacher, Assistant Teacher, HOD" : "e.g. Senior Scholar, Research Fellow, Student"}
                                     value={formData.status || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
                                 />
@@ -374,7 +382,7 @@ export function FacultyFellowsContent() {
                                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Specialization</label>
                                     <input
                                         className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g. Physics"
+                                        placeholder={activeTab === 'faculty' ? "e.g. Mathematics, Physics, Bio" : "e.g. Computer Science, Arts, Commerce"}
                                         value={formData.specialization || ''}
                                         onChange={(e) => setFormData(prev => ({ ...prev, specialization: e.target.value }))}
                                     />
@@ -399,15 +407,15 @@ export function FacultyFellowsContent() {
                                         onChange={(e) => setFormData(prev => ({ ...prev, contactNo: e.target.value }))}
                                     />
                                 </div>
-                                <div className="grid gap-2">
-                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">WhatsApp</label>
-                                    <input
-                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="Optional"
-                                        value={formData.whatsappNo || ''}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, whatsappNo: e.target.value }))}
-                                    />
-                                </div>
+                            </div>
+                            <div className="grid gap-2">
+                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">WhatsApp</label>
+                                <input
+                                    className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Optional"
+                                    value={formData.whatsappNo || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, whatsappNo: e.target.value }))}
+                                />
                             </div>
                         </div>
                         <DialogFooter>
