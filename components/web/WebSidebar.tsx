@@ -13,7 +13,6 @@ const navItems = [
     { label: 'Assignments', href: '/assignments', icon: Icons.Questions, badge: 3 },
     { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.Users },
     { label: 'Team', href: '/team', icon: Icons.Profile },
-    { label: 'Grades', href: '/grades', icon: Icons.Analytics },
 ];
 
 const tools = [
