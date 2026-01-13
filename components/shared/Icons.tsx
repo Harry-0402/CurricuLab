@@ -31,7 +31,6 @@ export const Icons = {
     Edit,
     Delete: Trash2,
     Trash2,
-    Trash2,
     MoreVertical,
     Upload,
 };
