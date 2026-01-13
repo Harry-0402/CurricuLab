@@ -254,19 +254,19 @@ export const assignments: Assignment[] = [
 
 export const timetable: TimetableEntry[] = [
     // 09:00 AM
-    { id: "t1", day: "Monday", subjectTitle: "Production & Ops", subjectCode: "PBA204", location: "Hall A", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Prof. Sharma", progress: 35 },
-    { id: "t4", day: "Tuesday", subjectTitle: "Digital Trans", subjectCode: "PBA205", location: "Lab 2", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Prof. Gupta", progress: 5 },
-    { id: "t6", day: "Wednesday", subjectTitle: "Data Viz", subjectCode: "PBA207", location: "M-18", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Prof. Verma", progress: 15 },
-    { id: "t12", day: "Friday", subjectTitle: "Python Data", subjectCode: "PBA211", location: "Lab 1", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Prof. Das", progress: 15 },
+    { id: "t1", day: "Monday", subjectTitle: "Production and Operations Management", subjectCode: "PBA204", location: "Hall A", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Prof. Sharma", progress: 35 },
+    { id: "t4", day: "Tuesday", subjectTitle: "Digital Transformation", subjectCode: "PBA205", location: "Lab 2", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Prof. Gupta", progress: 5 },
+    { id: "t6", day: "Wednesday", subjectTitle: "Data Visualization & Story Telling", subjectCode: "PBA207", location: "M-18", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Prof. Verma", progress: 15 },
+    { id: "t12", day: "Friday", subjectTitle: "Data Analysis using Python", subjectCode: "PBA211", location: "Lab 1", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Prof. Das", progress: 15 },
     { id: "t11", day: "Saturday", subjectTitle: "Capstone Project", subjectCode: "PRJ2", location: "Online", startTime: "09:00 AM", endTime: "10:00 AM", teacher: "Self", progress: 60 },
 
     // 10:00 AM
-    { id: "t2", day: "Monday", subjectTitle: "Power BI BI", subjectCode: "PBA212", location: "Lab 3", startTime: "10:00 AM", endTime: "11:00 AM", teacher: "Prof. Iyer", progress: 20 },
-    { id: "t5", day: "Tuesday", subjectTitle: "Research Methods", subjectCode: "PBA208", location: "M-10", startTime: "10:00 AM", endTime: "11:00 AM", teacher: "Prof. Rao", progress: 50 },
-    { id: "t8", day: "Thursday", subjectTitle: "Legal Business", subjectCode: "PBA206", location: "Room 4", startTime: "10:00 AM", endTime: "11:00 AM", teacher: "Prof. Singh", progress: 40 },
+    { id: "t2", day: "Monday", subjectTitle: "Data Analysis using Power BI", subjectCode: "PBA212", location: "Lab 3", startTime: "10:00 AM", endTime: "11:00 AM", teacher: "Prof. Iyer", progress: 20 },
+    { id: "t5", day: "Tuesday", subjectTitle: "Business Research Methodology", subjectCode: "PBA208", location: "M-10", startTime: "10:00 AM", endTime: "11:00 AM", teacher: "Prof. Rao", progress: 50 },
+    { id: "t8", day: "Thursday", subjectTitle: "Legal Aspects of Business", subjectCode: "PBA206", location: "Room 4", startTime: "10:00 AM", endTime: "11:00 AM", teacher: "Prof. Singh", progress: 40 },
 
     // 11:00 AM
-    { id: "t3", day: "Monday", subjectTitle: "Communication II", subjectCode: "PBA213", location: "Seminar 1", startTime: "11:00 AM", endTime: "12:00 PM", teacher: "Prof. Nair", progress: 10 },
+    { id: "t3", day: "Monday", subjectTitle: "Business Communication Skills II", subjectCode: "PBA213", location: "Seminar 1", startTime: "11:00 AM", endTime: "12:00 PM", teacher: "Prof. Nair", progress: 10 },
 ];
 
 export const announcements: Announcement[] = [
