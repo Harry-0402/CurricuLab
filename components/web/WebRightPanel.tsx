@@ -23,13 +23,13 @@ export function WebRightPanel() {
     return (
         <aside className={cn(
             "h-full border-l border-gray-100 bg-white flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shrink-0 overflow-hidden relative",
-            isRightPanelMinimized ? "w-0 border-l-0" : "w-[400px]"
+            isRightPanelMinimized ? "w-0 border-l-0" : "w-[340px]"
         )}>
             {/* Toggle Button Handle */}
             <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-100/50" />
 
             <div className={cn(
-                "w-[400px] h-full flex flex-col px-10 pt-14 pb-10 space-y-12 overflow-y-auto no-scrollbar transition-opacity duration-300",
+                "w-[340px] h-full flex flex-col px-6 pt-14 pb-10 space-y-12 overflow-y-auto no-scrollbar transition-opacity duration-300",
                 isRightPanelMinimized ? "opacity-0 invisible" : "opacity-100 visible"
             )}>
 
