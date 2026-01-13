@@ -160,7 +160,7 @@ export default function TeamContent() {
                                 >
                                     <div className="flex items-center gap-3 mb-4">
                                         <span className="text-3xl">{team.icon}</span>
-                                        <div className="flex flex-wrap items-center gap-3">
+                                        <div className="flex-1 flex flex-wrap items-center justify-between gap-3">
                                             <h3 className="text-2xl font-black text-gray-900">
                                                 {team.title}
                                                 {team.lead && (
