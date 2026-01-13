@@ -144,9 +144,7 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                                                         </div>
                                                     </div>
 
-                                                    <button className="absolute top-2 md:top-3 right-2 md:right-3 p-1 md:p-1.5 bg-black/10 backdrop-blur-md opacity-0 group-hover/item:opacity-100 transition-all hover:bg-black/20 rounded-lg md:rounded-xl">
-                                                        <Icons.Settings size={12} className="text-white" />
-                                                    </button>
+
                                                 </div>
                                             ) : (
                                                 <div
