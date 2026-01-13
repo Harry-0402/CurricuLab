@@ -175,7 +175,10 @@ export default function TeamContent() {
                                     <p className="text-sm font-bold text-gray-400 mb-6">{team.description}</p>
 
                                     {/* Team Members */}
-                                    <div className={`grid gap-4 ${team.title === "Data Acquisition Team" ? "md:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-2"}`}>
+                                    <div className={`grid gap-4 ${team.title === "Data Acquisition Team" ? "md:grid-cols-2 lg:grid-cols-3" :
+                                        team.title === "Project Coordinators" ? "grid-cols-1" :
+                                            "md:grid-cols-2"
+                                        }`}>
                                         {team.members.map((member, mIdx) => (
                                             <div
                                                 key={mIdx}
@@ -369,7 +372,7 @@ The 'Translator' Rule: The book might use technical jargon. Your job is to simpl
                                         </div>
                                     </div>
                                     <p className="text-sm font-bold text-gray-500 mb-4">
-                                        Notes + Case Studies + Mini Project with stable formatting for website and PDF export.
+                                        Notes + Case Studies with stable formatting for website and PDF export.
                                     </p>
                                     <Link
                                         href="https://chatgpt.com/g/g-6962605ee32481918f2c0ee70c521b90-notesmith"
@@ -539,7 +542,7 @@ You are a business analytics and decision‑science expert...
                     </section>
 
                     {/* Footer Note */}
-                    <section className="bg-gray-900 p-10 rounded-[35px] text-center">
+                    <section className="bg-fill-900 p-10 rounded-[35px] text-center">
                         <p className="text-lg font-bold text-gray-300">
                             Working together to create the best MBA Semester 2 resource platform
                         </p>
