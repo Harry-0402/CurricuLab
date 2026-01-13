@@ -194,11 +194,7 @@ export function FacultyFellowsContent() {
                     {currentList.map((person) => (
                         <div
                             key={person.id}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedPerson(person);
-                            }}
-                            className="bg-white p-8 rounded-[40px] border border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] transition-all duration-300 cursor-pointer group flex flex-col items-center text-center relative overflow-hidden"
+                            className="bg-white p-8 rounded-[40px] border border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] transition-all duration-300 group flex flex-col items-center text-center relative overflow-hidden"
                         >
                             <div className="absolute top-0 w-full h-24 bg-gradient-to-b from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
@@ -209,13 +205,14 @@ export function FacultyFellowsContent() {
                                         e.stopPropagation();
                                         setOpenMenuId(openMenuId === person.id ? null : person.id);
                                     }}
-                                    className="p-2 text-gray-300 hover:text-blue-600 hover:bg-white rounded-xl transition-all active:scale-95"
+                                    className="p-2 text-gray-300 hover:text-blue-600 hover:bg-white rounded-xl transition-all active:scale-95 cursor-pointer"
+                                    title="More Options"
                                 >
                                     <Icons.MoreVertical size={20} />
                                 </button>
 
                                 {openMenuId === person.id && (
-                                    <div className="absolute right-0 top-full mt-2 w-32 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 animate-in fade-in zoom-in-95 origin-top-right overflow-hidden">
+                                    <div className="absolute right-0 top-full mt-2 w-32 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 animate-in fade-in zoom-in-95 origin-top-right overflow-hidden z-30">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -252,7 +249,10 @@ export function FacultyFellowsContent() {
                                 <p className="text-xs text-gray-400 font-medium uppercase tracking-widest relative z-10">{person.subject}</p>
                             )}
 
-                            <button className="mt-6 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                            <button
+                                onClick={() => setSelectedPerson(person)}
+                                className="mt-6 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest opacity-100 transition-all duration-300 transform translate-y-0 cursor-pointer"
+                            >
                                 View Profile
                             </button>
                         </div>
