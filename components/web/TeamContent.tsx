@@ -21,6 +21,16 @@ interface TeamSection {
 
 const TEAMS: TeamSection[] = [
     {
+        title: "Project Coordinators",
+        members: [
+            { name: "Harish", role: "Coordinator" },
+            { name: "Kaustubh", role: "Coordinator" }
+        ],
+        description: "Oversee project timeline, resource allocation, and team coordination.",
+        color: "yellow",
+        icon: "📋"
+    },
+    {
         title: "Technical Team",
         lead: "Kaif",
         members: [
@@ -66,16 +76,6 @@ const TEAMS: TeamSection[] = [
         description: "Responsible for content creation, quality assurance, and MBA Sem 2 resource assembly.",
         color: "green",
         icon: "📊"
-    },
-    {
-        title: "Project Coordinators",
-        members: [
-            { name: "Harish", role: "Coordinator" },
-            { name: "Kaustubh", role: "Coordinator" }
-        ],
-        description: "Oversee project timeline, resource allocation, and team coordination.",
-        color: "yellow",
-        icon: "📋"
     }
 ];
 
