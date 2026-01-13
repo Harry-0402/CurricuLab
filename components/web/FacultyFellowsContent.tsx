@@ -52,6 +52,7 @@ export function FacultyFellowsContent() {
     // Form State
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+    const [memberType, setMemberType] = useState<'faculty' | 'fellows'>('faculty');
     const [formData, setFormData] = useState<Partial<Person>>({});
 
     const copyToClipboard = (text: string) => {
@@ -69,6 +70,7 @@ export function FacultyFellowsContent() {
 
     const handleEdit = (person: Person) => {
         setEditingPerson(person);
+        setMemberType(activeTab); // Fixed to current list type when editing
         setFormData(person);
         setIsFormOpen(true);
         setOpenMenuId(null);
@@ -76,6 +78,7 @@ export function FacultyFellowsContent() {
 
     const handleAdd = () => {
         setEditingPerson(null);
+        setMemberType(activeTab); // Default to current tab
         setFormData({
             gender: 'male' // Default
         });
@@ -99,18 +102,22 @@ export function FacultyFellowsContent() {
             gender: formData.gender || 'male',
         } as Person;
 
-        if (activeTab === 'faculty') {
-            if (editingPerson) {
+        if (editingPerson) {
+            // Edit Mode: Update in the current list
+            if (activeTab === 'faculty') {
                 setFaculty(prev => prev.map(p => p.id === editingPerson.id ? newPerson : p));
             } else {
-                setFaculty(prev => [...prev, newPerson]);
+                setFellows(prev => prev.map(p => p.id === editingPerson.id ? newPerson : p));
             }
         } else {
-            if (editingPerson) {
-                setFellows(prev => prev.map(p => p.id === editingPerson.id ? newPerson : p));
+            // Add Mode: Add to the selected list (memberType)
+            if (memberType === 'faculty') {
+                setFaculty(prev => [...prev, newPerson]);
             } else {
                 setFellows(prev => [...prev, newPerson]);
             }
+            // Auto-switch tab to show the new member
+            setActiveTab(memberType);
         }
 
         setIsFormOpen(false);
@@ -341,18 +348,33 @@ export function FacultyFellowsContent() {
                         <DialogHeader>
                             <DialogTitle>
                                 {editingPerson
-                                    ? `Edit ${activeTab === 'faculty' ? 'Faculty Member' : 'Fellow/Scholar'}`
-                                    : `Add New ${activeTab === 'faculty' ? 'Faculty Member' : 'Fellow/Scholar'}`
+                                    ? `Edit ${memberType === 'faculty' ? 'Faculty Member' : 'Fellow/Scholar'}`
+                                    : `Add New ${memberType === 'faculty' ? 'Faculty Member' : 'Fellow/Scholar'}`
                                 }
                             </DialogTitle>
                             <DialogDescription>
                                 {editingPerson
                                     ? 'Update the details for this member.'
-                                    : `Add a new ${activeTab === 'faculty' ? 'faculty member' : 'scholar'} to the list.`
+                                    : `Add a new ${memberType === 'faculty' ? 'faculty member' : 'scholar'} to the list.`
                                 }
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
+                            {/* Category Selection for New Members */}
+                            {!editingPerson && (
+                                <div className="grid gap-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Category</label>
+                                    <select
+                                        className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        value={memberType}
+                                        onChange={(e) => setMemberType(e.target.value as 'faculty' | 'fellows')}
+                                    >
+                                        <option value="faculty">Faculty Member</option>
+                                        <option value="fellows">Fellow & Scholar</option>
+                                    </select>
+                                </div>
+                            )}
+
                             <div className="grid gap-2">
                                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Name</label>
                                 <input
@@ -366,7 +388,7 @@ export function FacultyFellowsContent() {
                                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Status</label>
                                 <input
                                     className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder={activeTab === 'faculty' ? "e.g. Senior Teacher, Assistant Teacher, HOD" : "e.g. Senior Scholar, Research Fellow, Student"}
+                                    placeholder={memberType === 'faculty' ? "e.g. Senior Teacher, Assistant Teacher, HOD" : "e.g. Senior Scholar, Research Fellow, Student"}
                                     value={formData.status || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
                                 />
@@ -385,11 +407,11 @@ export function FacultyFellowsContent() {
                                 </div>
                                 <div className="grid gap-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500">
-                                        {activeTab === 'faculty' ? 'Subject (Optional)' : 'Focus Area (Optional)'}
+                                        {memberType === 'faculty' ? 'Subject (Optional)' : 'Focus Area (Optional)'}
                                     </label>
                                     <input
                                         className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder={activeTab === 'faculty' ? "e.g. Mathematics" : "e.g. Computer Science"}
+                                        placeholder={memberType === 'faculty' ? "e.g. Mathematics" : "e.g. Computer Science"}
                                         value={formData.subject || ''}
                                         onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                                     />
