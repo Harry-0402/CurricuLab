@@ -16,7 +16,7 @@ import {
 interface Person {
     id: number;
     name: string;
-    role: string;
+    status: string;
     email: string;
     specialization: string;
     image: string;
@@ -25,21 +25,21 @@ interface Person {
 }
 
 const INITIAL_FACULTY: Person[] = [
-    { id: 1, name: "Dr. Albus Dumbledore", role: "Dean of Studies", email: "headmaster@curriculab.edu", specialization: "Leadership & Strategy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Albus", contactNo: "+1 (555) 010-1001" },
-    { id: 2, name: "Prof. Minerva McGonagall", role: "Professor", email: "minerva@curriculab.edu", specialization: "Transfiguration & Logic", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Minerva", contactNo: "+1 (555) 010-1002", whatsappNo: "+1 (555) 010-9999" },
-    { id: 3, name: "Prof. Severus Snape", role: "Associate Professor", email: "severus@curriculab.edu", specialization: "Chemistry & Potions", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Severus", contactNo: "+1 (555) 010-1003" },
-    { id: 4, name: "Prof. Filius Flitwick", role: "Lecturer", email: "filius@curriculab.edu", specialization: "Charms & Rhetoric", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Filius", contactNo: "+1 (555) 010-1004" },
-    { id: 5, name: "Prof. Pomona Sprout", role: "Professor", email: "pomona@curriculab.edu", specialization: "Botany & Herbology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pomona", contactNo: "+1 (555) 010-1005" },
-    { id: 6, name: "Rubeus Hagrid", role: "Practical Instructor", email: "hagrid@curriculab.edu", specialization: "Zoology & Field Work", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hagrid", contactNo: "+1 (555) 010-1006" }
+    { id: 1, name: "Dr. Albus Dumbledore", status: "Head of Department", email: "headmaster@curriculab.edu", specialization: "Leadership & Strategy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Albus", contactNo: "+1 (555) 010-1001" },
+    { id: 2, name: "Prof. Minerva McGonagall", status: "Senior Teacher", email: "minerva@curriculab.edu", specialization: "Transfiguration & Logic", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Minerva", contactNo: "+1 (555) 010-1002", whatsappNo: "+1 (555) 010-9999" },
+    { id: 3, name: "Prof. Severus Snape", status: "Senior Teacher", email: "severus@curriculab.edu", specialization: "Chemistry & Potions", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Severus", contactNo: "+1 (555) 010-1003" },
+    { id: 4, name: "Prof. Filius Flitwick", status: "Assistant Teacher", email: "filius@curriculab.edu", specialization: "Charms & Rhetoric", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Filius", contactNo: "+1 (555) 010-1004" },
+    { id: 5, name: "Prof. Pomona Sprout", status: "Senior Teacher", email: "pomona@curriculab.edu", specialization: "Botany & Herbology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pomona", contactNo: "+1 (555) 010-1005" },
+    { id: 6, name: "Rubeus Hagrid", status: "Lab Instructor", email: "hagrid@curriculab.edu", specialization: "Zoology & Field Work", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hagrid", contactNo: "+1 (555) 010-1006" }
 ];
 
 const INITIAL_FELLOWS: Person[] = [
-    { id: 7, name: "Harry Potter", role: "Student", email: "harry.p@student.curriculab.edu", specialization: "Defense Against Dark Arts", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Harry", contactNo: "+1 (555) 020-2001" },
-    { id: 8, name: "Hermione Granger", role: "Student", email: "hermione.g@student.curriculab.edu", specialization: "Arithmancy & Runes", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hermione", contactNo: "+1 (555) 020-2002" },
-    { id: 9, name: "Ron Weasley", role: "Student", email: "ron.w@student.curriculab.edu", specialization: "Strategic Chess", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ron", contactNo: "+1 (555) 020-2003" },
-    { id: 10, name: "Draco Malfoy", role: "Student", email: "draco.m@student.curriculab.edu", specialization: "Potions & Alchemy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Draco", contactNo: "+1 (555) 020-2004" },
-    { id: 11, name: "Luna Lovegood", role: "Student", email: "luna.l@student.curriculab.edu", specialization: "Cryptozoology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna", contactNo: "+1 (555) 020-2005" },
-    { id: 12, name: "Cedric Diggory", role: "Student", email: "cedric.d@student.curriculab.edu", specialization: "Sports Science", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cedric", contactNo: "+1 (555) 020-2006" }
+    { id: 7, name: "Harry Potter", status: "Senior Scholar", email: "harry.p@student.curriculab.edu", specialization: "Defense Against Dark Arts", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Harry", contactNo: "+1 (555) 020-2001" },
+    { id: 8, name: "Hermione Granger", status: "Research Fellow", email: "hermione.g@student.curriculab.edu", specialization: "Arithmancy & Runes", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hermione", contactNo: "+1 (555) 020-2002" },
+    { id: 9, name: "Ron Weasley", status: "Junior Scholar", email: "ron.w@student.curriculab.edu", specialization: "Strategic Chess", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ron", contactNo: "+1 (555) 020-2003" },
+    { id: 10, name: "Draco Malfoy", status: "Junior Scholar", email: "draco.m@student.curriculab.edu", specialization: "Potions & Alchemy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Draco", contactNo: "+1 (555) 020-2004" },
+    { id: 11, name: "Luna Lovegood", status: "Research Fellow", email: "luna.l@student.curriculab.edu", specialization: "Cryptozoology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna", contactNo: "+1 (555) 020-2005" },
+    { id: 12, name: "Cedric Diggory", status: "Senior Scholar", email: "cedric.d@student.curriculab.edu", specialization: "Sports Science", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cedric", contactNo: "+1 (555) 020-2006" }
 ];
 
 export function FacultyFellowsContent() {
@@ -83,15 +83,15 @@ export function FacultyFellowsContent() {
     };
 
     const handleSave = () => {
-        if (!formData.name || !formData.role) {
-            alert("Please fill in the required fields (Name, Role)");
+        if (!formData.name || !formData.status) {
+            alert("Please fill in the required fields (Name, Status)");
             return;
         }
 
         const newPerson = {
             id: editingPerson ? editingPerson.id : Date.now(),
             name: formData.name,
-            role: formData.role,
+            status: formData.status,
             email: formData.email,
             specialization: formData.specialization || (activeTab === 'faculty' ? "General" : "Undecided"),
             contactNo: formData.contactNo || "+1 (555) 000-0000",
@@ -227,7 +227,7 @@ export function FacultyFellowsContent() {
                             </div>
 
                             <h3 className="text-lg font-black text-gray-900 leading-tight mb-1 relative z-10">{person.name}</h3>
-                            <p className="text-sm font-bold text-blue-600 mb-2 relative z-10">{person.role}</p>
+                            <p className="text-sm font-bold text-blue-600 mb-2 relative z-10">{person.status}</p>
                             <p className="text-xs text-gray-400 font-medium uppercase tracking-widest relative z-10">{person.specialization}</p>
 
                             <button className="mt-6 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
@@ -248,7 +248,7 @@ export function FacultyFellowsContent() {
 
                                 <DialogHeader className="mb-8 w-full">
                                     <DialogTitle className="text-center text-2xl mb-1">{selectedPerson.name}</DialogTitle>
-                                    <DialogDescription className="text-center text-blue-600 font-bold">{selectedPerson.role} • {selectedPerson.specialization}</DialogDescription>
+                                    <DialogDescription className="text-center text-blue-600 font-bold">{selectedPerson.status} • {selectedPerson.specialization}</DialogDescription>
                                 </DialogHeader>
 
                                 <div className="w-full space-y-3">
@@ -339,12 +339,12 @@ export function FacultyFellowsContent() {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Role</label>
+                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Status</label>
                                 <input
                                     className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="e.g. Student, Professor"
-                                    value={formData.role || ''}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
+                                    placeholder="e.g. Senior Teacher, Assistant Teacher"
+                                    value={formData.status || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
