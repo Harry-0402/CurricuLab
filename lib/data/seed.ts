@@ -52,7 +52,7 @@ export const subjects: Subject[] = [
     {
         id: "s5",
         code: "PBA208",
-        title: "Business Research Methods",
+        title: "Business Research Methodology",
         icon: "🔍",
         color: "#0ea5e9",
         description: "Techniques for data collection and systematic investigation.",
@@ -100,55 +100,117 @@ export const subjects: Subject[] = [
 ];
 
 export const units: Unit[] = [
-    // Subject s1 Units
+    // Subject s1: Production and Operations Management (PBA204)
     {
-        id: "u1", subjectId: "s1", title: "Unit 1: Intro to Operations", description: "Nature and scope of production management.", order: 1, isCompleted: true,
-        topics: ["Definition and Scope", "Evolution of Production Management", "Production vs Service System", "Value Chain Concept"]
+        id: "u_pba204_1", subjectId: "s1", title: "Unit I: Introduction to Operations Management", description: "Nature, Scope, Importance and Functions", order: 1, isCompleted: false,
+        topics: ["Nature, Scope, Importance and Functions", "Evolution from manufacturing to operations management", "Evolution of the factory system", "Manufacturing systems", "Quality", "Mass customization", "Contribution of Henry Ford, Deming, Crossby, Taguchi"]
     },
     {
-        id: "u2", subjectId: "s1", title: "Unit 2: Process Planning", description: "Methodology and tools for production planning.", order: 2, isCompleted: false,
-        topics: ["Process Selection", "Capacity Planning", "Make or Buy Decisions", "BPR Fundamentals"]
+        id: "u_pba204_2", subjectId: "s1", title: "Unit II: Productivity and Work Study", description: "Productivity and Work Measurement", order: 2, isCompleted: false,
+        topics: ["Productivity", "Work Study – Objectives, Scope and Uses", "Methods Study", "Flow process chart", "Flow diagram", "Process mapping", "Work Measurement", "Elements", "Performance Rating", "Allowances", "Standard Time", "Synthetic Time Standards", "Work Sampling", "Numericals expected for Standard Time"]
     },
     {
-        id: "u3", subjectId: "s1", title: "Unit 3: Facilities Management", description: "Plant layout and location strategies.", order: 3, isCompleted: false,
-        topics: ["Location Factors", "Types of Layouts", "Material Handling", "Line Balancing"]
+        id: "u_pba204_3", subjectId: "s1", title: "Unit III: Facilities Location and Layout", description: "Strategic importance and layout types", order: 3, isCompleted: false,
+        topics: ["Strategic importance", "Factors affecting location and layout", "Installation of facilities", "Single location decisions", "Multi-location decisions", "Principles of Facilities Layout", "Types of Facilities Layout"]
     },
     {
-        id: "u4", subjectId: "s1", title: "Unit 4: Quality & Productivity", description: "Quality control and performance metrics.", order: 4, isCompleted: false,
-        topics: ["TQM Principles", "Statistical Quality Control", "JIT / Lean Systems", "Six Sigma Basics"]
+        id: "u_pba204_4", subjectId: "s1", title: "Unit IV: Types of Industries and Manufacturing Methods", description: "Manufacturing systems and characteristics", order: 4, isCompleted: false,
+        topics: ["Variety of Businesses", "Integration of Manufacturing and Services", "Scale of Operations", "Methods of Manufacturing", "Project / Jobbing", "Batch Production", "Flow / Continuous Production", "Process Production", "Characteristics of each method"]
     },
     {
-        id: "u5", subjectId: "s1", title: "Unit 5: Supply Chain Management", description: "End-to-end logistics and value delivery.", order: 5, isCompleted: false,
-        topics: ["Logistics Strategy", "Inventory Models", "Vendor Management", "Digital SCM Trends"]
+        id: "u_pba204_5", subjectId: "s1", title: "Unit V: Inspection, Quality Control and Lean Systems", description: "Quality assurance and lean methodologies", order: 5, isCompleted: false,
+        topics: ["Inspection", "Cent percent Inspection", "Sample Inspection", "Operation Characteristics Curves", "Statistical Quality Control", "Construction and Interpretation of Control Charts", "X-R, n, p, c, np charts", "Introduction to Six Sigma", "Numericals expected for Control Charts", "Lean Production Systems", "TOYOTA system", "JIT", "KANBAN", "Theory of Constraints"]
     },
 
-    // First units for other subjects
-    { id: "u6", subjectId: "s2", title: "Unit 1: Digital Landscape", description: "Understanding the digital ecosystem.", order: 1, isCompleted: false, topics: ["Digital Economy", "Cloud Computing", "AI in Business"] },
-    { id: "u7", subjectId: "s3", title: "Unit 1: Business Law", description: "Basics of commercial regulations.", order: 1, isCompleted: false, topics: ["Indian Contract Act", "Sales of Goods"] },
-    { id: "u8", subjectId: "s4", title: "Unit 1: Visual Perception", description: "How we see and interpret data.", order: 1, isCompleted: false, topics: ["Gestalt Laws", "Preattentive Attributes"] },
-
-    // Subject s5 (Business Research Methods) Units - Authentic Data
+    // Subject s2: Digital Transformation (PBA205)
     {
-        id: "u9", subjectId: "s5", title: "Unit 1: Intro to Research", description: "Basic concepts in research methodology.", order: 1, isCompleted: false,
+        id: "u_pba205_1", subjectId: "s2", title: "Unit I: Understanding Digital Transformation", description: "Definition and Scope", order: 1, isCompleted: false,
+        topics: ["Definition", "Scope of digital transformation", "Importance", "Benefits of digital transformation", "Key drivers", "Trends in digital transformation", "Overview of digital transformation frameworks"]
+    },
+    {
+        id: "u_pba205_2", subjectId: "s2", title: "Unit II: Leading Digital Transformation", description: "Leadership and Culture", order: 2, isCompleted: false,
+        topics: ["Role of leadership in driving digital transformation", "Key competencies for digital leaders", "Building a digital culture within organizations", "Introduction to Agile and Lean methodologies", "Applying Agile and Lean principles to digital transformation"]
+    },
+    {
+        id: "u_pba205_3", subjectId: "s2", title: "Unit III: Digital Transformation in Various Industries", description: "Industry trends and impact", order: 3, isCompleted: false,
+        topics: ["Trends and technologies in retail", "Omnichannel strategies and customer experience", "Fintech innovations and trends", "Impact of digital transformation on banking and financial services", "Technologies transforming healthcare", "Telemedicine", "Health informatics", "Challenges and opportunities in healthcare digital transformation"]
+    },
+    {
+        id: "u_pba205_4", subjectId: "s2", title: "Unit IV: Innovation in the Digital Age", description: "Types of innovation and tools", order: 4, isCompleted: false,
+        topics: ["Types of innovation (Incremental, Disruptive, Radical)", "Creating an innovation-friendly environment", "Encouraging creativity and experimentation", "Tools and Techniques for Digital Innovation", "Design thinking", "Open innovation", "Innovation labs and incubators", "Crowdsourcing"]
+    },
+    {
+        id: "u_pba205_5", subjectId: "s2", title: "Unit V: Digital Technologies and Trends", description: "Emerging Technologies", order: 5, isCompleted: false,
+        topics: ["Emerging Technologies", "Overview of key digital technologies", "Artificial Intelligence", "Internet of Things", "Blockchain", "Cloud computing", "Big data", "Machine learning", "Impact of technologies on businesses and industries"]
+    },
+
+    // Subject s3: Legal Aspects of Business (PBA206)
+    {
+        id: "u_pba206_1", subjectId: "s3", title: "Unit I: Law of Contract", description: "The Indian Contract Act, 1872", order: 1, isCompleted: false,
+        topics: ["The Indian Contract Act, 1872", "Nature and kinds of contracts", "Essential elements of a valid contract", "Offer and acceptance", "Consideration", "Capacity to contract", "Free consent", "Legality and object", "Types of Contracts", "Contingent contracts", "Performance of contract", "Discharge of contract", "Quasi contract", "Remedies for breach of contract", "Indemnity and guarantee", "Bailment and pledge", "Law of agency"]
+    },
+    {
+        id: "u_pba206_2", subjectId: "s3", title: "Unit II: Sale of Goods and Partnership", description: "Sales of Goods Act & Partnership Act", order: 2, isCompleted: false,
+        topics: ["Law of Sales of Goods Act, 1930", "General principles", "Conditions and warranties", "Doctrine of caveat emptor", "Transfer of ownership", "Performance of contract of sale", "Remedial measures", "Law of Partnership – Indian Partnership Act, 1932", "Definition and general principles", "Formation of partnership", "Rights and liabilities of partners", "Dissolution of partnership firms"]
+    },
+    {
+        id: "u_pba206_3", subjectId: "s3", title: "Unit III: Company Law", description: "The Indian Companies Act, 1956", order: 3, isCompleted: false,
+        topics: ["The Indian Companies Act, 1956", "Company and its various forms", "Formation of a company", "Memorandum of association", "Articles of association", "Prospectus", "Share allotment", "Shares and share capital", "Promoters", "Membership of a company", "Meetings and proceedings", "Directors", "Managers and remuneration", "Secretary", "Prevention of oppression and mismanagement", "Winding up of a company"]
+    },
+    {
+        id: "u_pba206_4", subjectId: "s3", title: "Unit IV: Insurance, Insolvency, Carriage and Arbitration", description: "Miscellaneous Commercial Laws", order: 4, isCompleted: false,
+        topics: ["Nature and principles of insurance", "Life insurance", "General insurance", "Fire insurance", "Marine insurance", "Insolvency law", "Objects and scope", "Procedure", "Property and debt of insolvent", "Discharge of insolvent", "Carriage of goods (By land, sea, air)", "Arbitration (General provisions, Modes)"]
+    },
+    {
+        id: "u_pba206_5", subjectId: "s3", title: "Unit V: Miscellaneous Laws", description: "Consumer Protection, FEMA, IT Act", order: 5, isCompleted: false,
+        topics: ["Essential Commodities Act, 1955", "Consumer Protection Act, 1986", "Co-operative Societies Act, 1912", "Multi-State Co-operative Societies Act, 1984", "Foreign Exchange Management Act, 1999", "MRTP Act", "Information Technology Act, 2000"]
+    },
+
+    // Subject s4: Data Visualization and Story Telling (PBA207)
+    {
+        id: "u_pba207_1", subjectId: "s4", title: "Unit I: Visualization Basics", description: "Introduction to visualization", order: 1, isCompleted: false,
+        topics: ["Introduction to visualization", "Why to visualize", "How to visualize", "Stages of data visualizing", "Usages of visualization", "Types of charts"]
+    },
+    {
+        id: "u_pba207_2", subjectId: "s4", title: "Unit II: Visualization of Structured Data", description: "Structured Data Analysis", order: 2, isCompleted: false,
+        topics: ["Introduction", "Exploratory analysis", "Univariate analysis", "Multivariate analysis", "Charts to visualize multiple measures", "Modeling", "Visualization during deployment"]
+    },
+    {
+        id: "u_pba207_3", subjectId: "s4", title: "Unit III: Visualization of Unstructured Data", description: "Text and Conversation Viz", order: 3, isCompleted: false,
+        topics: ["Introduction", "Importance and challenges of text data visualization", "Forms of text data", "Pre-processing pipeline", "Visualizing text data", "Visualizing conversations"]
+    },
+    {
+        id: "u_pba207_4", subjectId: "s4", title: "Unit IV: Visual Story Telling", description: "Narrative visualization", order: 4, isCompleted: false,
+        topics: ["Introduction", "Why storytelling matters", "Science behind storytelling"]
+    },
+    {
+        id: "u_pba207_5", subjectId: "s4", title: "Unit V: Storytelling Framework", description: "Business Storytelling", order: 5, isCompleted: false,
+        topics: ["Introduction", "Importance of business storytelling", "Data storytelling", "Narrative types", "Dimensions of narrative storytelling", "Data story types", "Analytics dashboard"]
+    },
+
+    // Subject s5: Business Research Methodology (PBA208)
+    {
+        id: "u_pba208_1", subjectId: "s5", title: "Unit I: Introduction to Business Research", description: "Research definition and process", order: 1, isCompleted: false,
         topics: ["Types of research", "Process of research", "Formulation of research problem", "Development of research hypothesis"]
     },
     {
-        id: "u13", subjectId: "s5", title: "Unit 2: Research Design", description: "Planning and structuring systematic investigations.", order: 2, isCompleted: false,
-        topics: ["Definitions and functions", "Exploratory, descriptive, experimental", "Experimental types (Pre, Quasi, True)", "Statistical designs"]
+        id: "u_pba208_2", subjectId: "s5", title: "Unit II: Research Design", description: "Design and Data Collection", order: 2, isCompleted: false,
+        topics: ["Definitions and functions", "Exploratory, descriptive and experimental research", "Experimental designs (Pre, Quasi, True, Statistical)", "Validity of research instruments", "Methods of data collection", "Attitudinal scales", "Questionnaire designing"]
     },
     {
-        id: "u14", subjectId: "s5", title: "Unit 3: Sampling", description: "Techniques for selecting representative data groups.", order: 3, isCompleted: false,
-        topics: ["Concept and Design", "Probability vs Non-probability", "Mixed sampling design", "Sample size determination"]
+        id: "u_pba208_3", subjectId: "s5", title: "Unit III: Sampling", description: "Sampling and Data Processing", order: 3, isCompleted: false,
+        topics: ["Concept of sampling", "Sampling design", "Types of sampling designs", "Sampling frame & size", "Data processing (Editing, Coding, Tabulating)"]
     },
     {
-        id: "u15", subjectId: "s5", title: "Unit 4: Data Analysis", description: "Statistical processing and hypothesis testing.", order: 4, isCompleted: false,
-        topics: ["Univariate, Bivariate, Multivariate", "Hypothesis testing concept", "Types of errors", "Steps in testing"]
+        id: "u_pba208_4", subjectId: "s5", title: "Unit IV: Data Analysis", description: "Analysis and Hypothesis Testing", order: 4, isCompleted: false,
+        topics: ["Univariate, Bivariate, Multivariate analysis", "Hypothesis testing", "Concept", "Types of errors", "Steps in hypothesis testing"]
     },
     {
-        id: "u16", subjectId: "s5", title: "Unit 5: Analytical Techniques", description: "Advanced statistical tools and tests.", order: 5, isCompleted: false,
-        topics: ["Parametric vs Non-parametric", "ANOVA", "Correlation & Regression", "Factor & Conjoint analysis"]
+        id: "u_pba208_5", subjectId: "s5", title: "Unit V: Analytical Techniques", description: "Advanced Tests", order: 5, isCompleted: false,
+        topics: ["Parametric vs non-parametric tests", "ANOVA", "Correlation and regression", "Chi-square test", "Non-parametric tests for normality", "Run test", "Factor analysis", "Discriminant analysis", "Conjoint analysis"]
     },
 
+    // Remaining subjects
     { id: "u10", subjectId: "s6", title: "Unit 1: Python Basics", description: "Fundamentals of data analysis.", order: 1, isCompleted: false, topics: ["NumPy Basics", "Pandas Intro"] },
     { id: "u11", subjectId: "s7", title: "Unit 1: BI Core", description: "Introduction to business intelligence.", order: 1, isCompleted: false, topics: ["Power Query", "Data Modeling"] },
     { id: "u12", subjectId: "s8", title: "Unit 1: Professional Comm", description: "Verbal and non-verbal foundations.", order: 1, isCompleted: false, topics: ["Barriers to Comm", "Non-verbal Cues"] },
