@@ -255,7 +255,7 @@ export default function TeamContent() {
                     <section className="space-y-6">
                         <h2 className="text-3xl font-black text-gray-900">Project Workflow</h2>
 
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid gap-6">
                             {WORKFLOW_STEPS.map((step, idx) => (
                                 <div
                                     key={idx}
