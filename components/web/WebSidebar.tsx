@@ -36,15 +36,7 @@ export function WebSidebar() {
             </div>
 
             <div className="px-4 py-2">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl mb-6">
-                    <div className="w-10 h-10 rounded-full bg-orange-200 overflow-hidden">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Hermione" alt="User" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 truncate">Hermione Granger</p>
-                        <p className="text-xs text-gray-500 truncate">2100029@campus.org</p>
-                    </div>
-                </div>
+
 
                 <nav className="space-y-1">
                     <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Main Menu</p>
