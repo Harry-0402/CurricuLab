@@ -194,7 +194,10 @@ export function FacultyFellowsContent() {
                     {currentList.map((person) => (
                         <div
                             key={person.id}
-                            className="bg-white p-8 rounded-[40px] border border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] transition-all duration-300 group flex flex-col items-center text-center relative h-full"
+                            className={cn(
+                                "bg-white p-8 rounded-[40px] border border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] transition-all duration-300 group flex flex-col items-center text-center relative h-full",
+                                openMenuId === person.id ? "z-50" : "z-0"
+                            )}
                         >
                             <div className="absolute top-0 w-full h-24 bg-gradient-to-b from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-t-[40px]" />
 
