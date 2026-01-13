@@ -1,0 +1,93 @@
+"use client"
+
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Icons } from '@/components/shared/Icons';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+    { label: 'Dashboard', href: '/', icon: Icons.Home },
+    { label: 'My Courses', href: '/subjects', icon: Icons.Subjects },
+    { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
+    { label: 'Assignments', href: '/assignments', icon: Icons.Questions, badge: 3 },
+    { label: 'Grades', href: '/grades', icon: Icons.Analytics },
+];
+
+const tools = [
+    { label: 'Kanban Board', href: '/projects', icon: Icons.Projects },
+    { label: 'Mind Mapping', href: '/mind-mapping', icon: Icons.Analytics },
+    { label: 'Flowchart', href: '/flowchart', icon: Icons.Trend },
+    { label: 'Online Whiteboard', href: '/whiteboard', icon: Icons.Analytics },
+    { label: 'Google Docs', href: '/docs', icon: Icons.Notes },
+];
+
+export function WebSidebar() {
+    const pathname = usePathname();
+
+    return (
+        <aside className="w-64 h-screen border-r border-gray-100 bg-white flex flex-col sticky top-0">
+            <div className="p-6 flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                    <Icons.Home size={20} />
+                </div>
+                <span className="text-xl font-bold text-gray-900 tracking-tight">CurricuLab</span>
+            </div>
+
+            <div className="px-4 py-2">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl mb-6">
+                    <div className="w-10 h-10 rounded-full bg-orange-200 overflow-hidden">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Hermione" alt="User" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">Hermione Granger</p>
+                        <p className="text-xs text-gray-500 truncate">2100029@campus.org</p>
+                    </div>
+                </div>
+
+                <nav className="space-y-1">
+                    <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Main Menu</p>
+                    {navItems.map((item) => {
+                        const isActive = pathname === item.href;
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    "flex items-center justify-between p-3 rounded-xl transition-all",
+                                    isActive ? "bg-blue-50 text-blue-600 shadow-sm" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                )}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <item.icon size={20} className={isActive ? "text-blue-600" : "text-gray-400"} />
+                                    <span className="text-sm font-medium">{item.label}</span>
+                                </div>
+                                {item.badge && (
+                                    <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{item.badge}</span>
+                                )}
+                            </Link>
+                        );
+                    })}
+                </nav>
+
+                <nav className="space-y-1 mt-8">
+                    <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Tools</p>
+                    {tools.map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all font-medium text-sm"
+                        >
+                            <item.icon size={20} className="text-gray-400" />
+                            <span>{item.label}</span>
+                        </Link>
+                    ))}
+                </nav>
+            </div>
+
+            <div className="mt-auto p-4 border-t border-gray-100 italic text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
+                CurricuLab v1.0
+            </div>
+        </aside>
+    );
+}
