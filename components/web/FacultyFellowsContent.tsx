@@ -16,7 +16,7 @@ import {
 interface Person {
     id: number;
     name: string;
-    status: string;
+    status?: string;
     email: string;
     subject?: string;
     gender: 'male' | 'female';
@@ -86,8 +86,8 @@ export function FacultyFellowsContent() {
     };
 
     const handleSave = () => {
-        if (!formData.name || !formData.status) {
-            alert("Please fill in the required fields (Name, Status)");
+        if (!formData.name) {
+            alert("Please fill in the required field (Name)");
             return;
         }
 
@@ -245,7 +245,9 @@ export function FacultyFellowsContent() {
                             </div>
 
                             <h3 className="text-lg font-black text-gray-900 leading-tight mb-1 relative z-10">{person.name}</h3>
-                            <p className="text-sm font-bold text-blue-600 mb-2 relative z-10">{person.status}</p>
+                            {person.status && (
+                                <p className="text-sm font-bold text-blue-600 mb-2 relative z-10">{person.status}</p>
+                            )}
                             {person.subject && (
                                 <p className="text-xs text-gray-400 font-medium uppercase tracking-widest relative z-10">{person.subject}</p>
                             )}
@@ -269,8 +271,9 @@ export function FacultyFellowsContent() {
                                 <DialogHeader className="mb-8 w-full">
                                     <DialogTitle className="text-center text-2xl mb-1">{selectedPerson.name}</DialogTitle>
                                     <DialogDescription className="text-center text-blue-600 font-bold">
-                                        {selectedPerson.status}
-                                        {selectedPerson.subject && ` • ${selectedPerson.subject}`}
+                                        {selectedPerson.status && <span>{selectedPerson.status}</span>}
+                                        {selectedPerson.status && selectedPerson.subject && <span> • </span>}
+                                        {selectedPerson.subject && <span>{selectedPerson.subject}</span>}
                                     </DialogDescription>
                                 </DialogHeader>
 
@@ -385,7 +388,7 @@ export function FacultyFellowsContent() {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Status</label>
+                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Status (Optional)</label>
                                 <input
                                     className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder={memberType === 'faculty' ? "e.g. Senior Teacher, Assistant Teacher, HOD" : "e.g. Senior Scholar, Research Fellow, Student"}
