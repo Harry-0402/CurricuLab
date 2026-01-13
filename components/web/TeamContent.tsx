@@ -319,7 +319,17 @@ export default function TeamContent() {
                                             <span className="text-xs font-black text-gray-400 uppercase">Prompt</span>
                                             <button
                                                 onClick={(e) => {
-                                                    const text = "I have an attached syllabus of a [subject name] along with a reference book. Create detailed Question with proper structure and language should be simple, clear and humanoid.";
+                                                    const text = `I have attached the Syllabus PDF and the Reference Book PDF for the subject [Subject Code and Name].
+
+Please initialize the Syllabrix protocol with these specific rules for this session:
+
+Source of Truth: Use the attached Reference Book as the primary source for all concepts, definitions, and theories.
+
+The 'Translator' Rule: The book might use technical jargon. Your job is to simplify it. Read the technical explanation in the book, but rewrite it in the simple, human, 'coffee-shop' style defined in your system instructions. Do not copy-paste complex sentences.
+
+Syllabus Mapping: Extract the unit titles and sub-topics exactly from the Syllabus PDF.
+
+Please map the syllabus content first, list the Units, and then STOP and wait for my confirmation to begin Unit 1.`;
                                                     navigator.clipboard.writeText(text);
                                                     const btn = e.currentTarget;
                                                     const original = btn.innerHTML;
@@ -331,9 +341,17 @@ export default function TeamContent() {
                                                 Copy
                                             </button>
                                         </div>
-                                        <p className="text-xs text-gray-300 font-mono leading-relaxed">
-                                            I have an attached syllabus of a [subject name] along with a reference book. Create detailed Question with proper structure and language should be simple, clear and humanoid.
-                                        </p>
+                                        <div className="h-40 overflow-y-auto bg-gray-900 rounded-lg p-2">
+                                            <p className="text-xs text-gray-300 font-mono leading-relaxed whitespace-pre-wrap">
+                                                {`I have attached the Syllabus PDF and the Reference Book PDF for the subject [Subject Code and Name].
+
+Please initialize the Syllabrix protocol with these specific rules for this session:
+
+Source of Truth: Use the attached Reference Book as the primary source for all concepts, definitions, and theories.
+
+The 'Translator' Rule: The book might use technical jargon. Your job is to simplify it. Read the technical explanation in the book, but rewrite it in the simple, human, 'coffee-shop' style defined in your system instructions...`}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -364,7 +382,17 @@ export default function TeamContent() {
                                             <span className="text-xs font-black text-gray-400 uppercase">Prompt</span>
                                             <button
                                                 onClick={(e) => {
-                                                    const text = "I have an attached syllabus of a [subject name] along with a reference book. Create detailed notes with proper structure and language should be simple, clear and humanoid.";
+                                                    const text = `I have attached the Syllabus and the Reference Book of a Subject [Subject Code & Name].
+
+Activate NoteSmith.
+
+Source Material: Use the Reference Book for all content logic, but map the topics strictly to the Syllabus.
+
+Language Check: I need Simple, Humanoid Language. If the book is dense or difficult, simplify it. Use short paragraphs and bullet points.
+
+Visuals: Where possible, generate text-based flowcharts (A -> B -> C) directly in the notes so I don't have to look elsewhere.
+
+Please map the Table of Contents first, and stop for my confirmation.`;
                                                     navigator.clipboard.writeText(text);
                                                     const btn = e.currentTarget;
                                                     const original = btn.innerHTML;
@@ -376,9 +404,17 @@ export default function TeamContent() {
                                                 Copy
                                             </button>
                                         </div>
-                                        <p className="text-xs text-gray-300 font-mono leading-relaxed">
-                                            I have an attached syllabus of a [subject name] along with a reference book. Create detailed notes with proper structure and language should be simple, clear and humanoid.
-                                        </p>
+                                        <div className="h-40 overflow-y-auto bg-gray-900 rounded-lg p-2">
+                                            <p className="text-xs text-gray-300 font-mono leading-relaxed whitespace-pre-wrap">
+                                                {`I have attached the Syllabus and the Reference Book of a Subject [Subject Code & Name].
+
+Activate NoteSmith.
+
+Source Material: Use the Reference Book for all content logic, but map the topics strictly to the Syllabus.
+
+Language Check: I need Simple, Humanoid Language. If the book is dense or difficult, simplify it. Use short paragraphs and bullet points...`}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
