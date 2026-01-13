@@ -175,7 +175,7 @@ export default function TeamContent() {
                                     <p className="text-sm font-bold text-gray-400 mb-6">{team.description}</p>
 
                                     {/* Team Members */}
-                                    <div className={`grid gap-4 ${team.title === "Data Acquisition Team" ? "md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
+                                    <div className={`grid gap-4 ${team.title === "Data Acquisition Team" ? "md:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-2"}`}>
                                         {team.members.map((member, mIdx) => (
                                             <div
                                                 key={mIdx}
@@ -203,7 +203,7 @@ export default function TeamContent() {
                                                                 className="flex items-center gap-2 text-xs font-black text-blue-600 hover:text-blue-800 transition-colors"
                                                             >
                                                                 <Icons.Database size={14} />
-                                                                View Drive Folder
+                                                                Resources
                                                             </Link>
                                                         )}
                                                     </>
