@@ -7,6 +7,7 @@ export const Icons = {
     Questions: CheckSquare,
     Projects: Code2,
     CaseStudies: Database,
+    Database, // Data Acquisition Team icon
     Search,
     Calendar,
     Settings,
