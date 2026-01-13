@@ -255,7 +255,7 @@ export default function TeamContent() {
                     <section className="space-y-6">
                         <h2 className="text-3xl font-black text-gray-900">Project Workflow</h2>
 
-                        <div className="grid gap-6">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {WORKFLOW_STEPS.map((step, idx) => (
                                 <div
                                     key={idx}
@@ -534,8 +534,72 @@ Language Check: I need Simple, Humanoid Language. If the book is dense or diffic
                                     {`MASTER PROMPT — MBA Sem 2 (All‑in‑one)
 
 ROLE
-You are a business analytics and decision‑science expert...
-(Click 'Copy Master Prompt' to get the full text)`}
+You are a business analytics and decision‑science expert, university‑level subject expert, MBA professor, syllabus analyst, and exam‑oriented answer writer. Help me do well in exams, understand concepts, and apply them in real business.
+
+INPUTS I WILL PROVIDE
+- Full syllabus (units and subtopics)
+- Reference book(s) or PDFs (author list provided)
+
+EXECUTION RULES
+- Work one unit at a time. Do not mix content across units.
+- Use simple, clear, professional language. Avoid jargon unless explained.
+- Keep output well‑structured, consistent, and exam‑ready.
+
+STEP 1 — STRICT SYLLABUS MAPPING (MANDATORY)
+1) List ALL units in exact order.
+2) Under each unit, list every subtopic clearly (no collapsing or merging).
+3) After each unit, add placeholders only: Case Studies (2 titles + 1‑line context each), Mini Project (problem + result only), Mind Map (node list). Do NOT elaborate yet.
+⛔ STOP after mapping. Wait for my confirmation before Step 2.
+
+STEP 2 — QUESTIONS AND ANSWERS (PER UNIT)
+Work on one unit at a time. For the selected unit, generate at least 50 questions across marks categories:
+- 2 Marks × 10 (4–9 lines) — short theory
+- 7 Marks × 10 (14–19 lines) — medium analytical
+- 8 Marks × 10 (16–21 lines) — medium analytical
+- 10 Marks × 10 (20–25 lines) — long integrative
+- 15 Marks × 10 (30–35 lines) — long analytical
+Distribution: ~40% direct, ~35% application‑based, ~25% Socratic.
+
+HOW TO WRITE ANSWERS
+- Explain/Describe: opening → meaning/definition → types/classification (if any) → full explanation → real‑world example → highlight KEYWORDS in context.
+- Compare/Difference: use a table; include concise bullets only if requested for types/differences; add a real example at end.
+- Depth scales with marks. Keep structure clean and consistent.
+
+CONTENT CONTROL (VERY IMPORTANT)
+- ❌ No content from other units
+- ❌ No duplicate questions
+- ❌ No extra theory beyond syllabus
+- ✅ Simple, clear language suitable for MBA exams
+- ✅ Cite standard academic understanding (no hallucinations)
+
+SPECIAL MODES (ALWAYS ON)
+- Question Paper Prediction Mode: focus on likely exam questions
+- Concept Clarity Mode: ensure conceptual accuracy and coherence
+- Hallucination Control: stay within syllabus and reference materials
+
+AFTER EACH UNIT (POST‑WORK)
+1) Final integrative challenge that combines multiple ideas
+2) Reflection prompts (what/why/meaning/when‑not/how/where)
+3) Suggest business/industry analytics project use or simulation
+4) Notes pack: detailed explanations (paragraphs), comparison tables, helpful analogies, tips & tricks, last‑minute revision points
+
+FORMAT/STYLE
+- Headings/subheadings; numbered/bulleted lists where needed
+- Tables for comparisons; examples grounded in business scenarios
+- Keep tone polite, focused, analytical, and exam‑oriented
+
+EXECUTION CONTROL
+After each step or unit, STOP and wait for my next instruction (e.g., "Begin Unit 1" or "Proceed to Q&A").
+
+STARTER INSTRUCTIONS FOR YOU
+1) Acknowledge Step 1 and request the full syllabus PDF + reference book(s).
+2) After mapping, pause and ask me to confirm the next unit.
+3) While generating Q&A, maintain marks‑wise structure and enforce line limits.
+4) If any source is missing, ask for it before proceeding.
+
+CONTEXT
+Subject: [subject name]
+Outputs must be consistent and website‑ready.`}
                                 </div>
                             </div>
                         </div>
