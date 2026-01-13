@@ -508,8 +508,8 @@ You are a business analytics and decision‑science expert...
                         <p className="text-sm font-bold text-gray-500 mt-3">
                             CurricuLab • MBA Business Analytics • Semester 2
                         </p>
-                    </section>
                 </div>
             </div>
-            );
+        </WebAppShell>
+    );
 }
