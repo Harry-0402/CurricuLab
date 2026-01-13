@@ -187,7 +187,9 @@ export default function TeamContent() {
                                                 <div className="flex items-center justify-between mb-2">
                                                     <span className="font-black text-gray-900">{member.name}</span>
                                                     {member.role && (
-                                                        <span className={`px-3 py-1 rounded-full text-xs font-black ${member.role === "Lead" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+                                                        <span className={`px-3 py-1 rounded-full text-xs font-black ${member.role === "Lead" ? "bg-blue-600 text-white" :
+                                                            member.role === "Coordinator" ? "bg-yellow-400 text-yellow-900" :
+                                                                "bg-gray-200 text-gray-700"
                                                             }`}>
                                                             {member.role}
                                                         </span>
