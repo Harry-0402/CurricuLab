@@ -620,7 +620,7 @@ Outputs must be consistent and website‑ready.`}
                         <p className="text-lg font-bold text-black-500">
                             Working together to create the best MBA Semester 2 resource platform
                         </p>
-                        <p className="text-sm font-bold text-black-500 mt-3">
+                        <p className="text-sm font-normal text-black-500 mt-3">
                             CurricuLab • MBA Business Analytics • Semester 2
                         </p>
                     </section>
