@@ -23,40 +23,79 @@ interface Person {
     whatsappNo?: string;
 }
 
+const INITIAL_FACULTY: Person[] = [
+    { id: 1, name: "Dr. Albus Dumbledore", role: "Dean of Studies", email: "headmaster@curriculab.edu", specialization: "Leadership & Strategy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Albus", contactNo: "+1 (555) 010-1001" },
+    { id: 2, name: "Prof. Minerva McGonagall", role: "Professor", email: "minerva@curriculab.edu", specialization: "Transfiguration & Logic", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Minerva", contactNo: "+1 (555) 010-1002", whatsappNo: "+1 (555) 010-9999" },
+    { id: 3, name: "Prof. Severus Snape", role: "Associate Professor", email: "severus@curriculab.edu", specialization: "Chemistry & Potions", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Severus", contactNo: "+1 (555) 010-1003" },
+    { id: 4, name: "Prof. Filius Flitwick", role: "Lecturer", email: "filius@curriculab.edu", specialization: "Charms & Rhetoric", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Filius", contactNo: "+1 (555) 010-1004" },
+    { id: 5, name: "Prof. Pomona Sprout", role: "Professor", email: "pomona@curriculab.edu", specialization: "Botany & Herbology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pomona", contactNo: "+1 (555) 010-1005" },
+    { id: 6, name: "Rubeus Hagrid", role: "Practical Instructor", email: "hagrid@curriculab.edu", specialization: "Zoology & Field Work", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hagrid", contactNo: "+1 (555) 010-1006" }
+];
+
+const INITIAL_FELLOWS: Person[] = [
+    { id: 7, name: "Harry Potter", role: "Student", email: "harry.p@student.curriculab.edu", specialization: "Defense Against Dark Arts", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Harry", contactNo: "+1 (555) 020-2001" },
+    { id: 8, name: "Hermione Granger", role: "Student", email: "hermione.g@student.curriculab.edu", specialization: "Arithmancy & Runes", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hermione", contactNo: "+1 (555) 020-2002" },
+    { id: 9, name: "Ron Weasley", role: "Student", email: "ron.w@student.curriculab.edu", specialization: "Strategic Chess", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ron", contactNo: "+1 (555) 020-2003" },
+    { id: 10, name: "Draco Malfoy", role: "Student", email: "draco.m@student.curriculab.edu", specialization: "Potions & Alchemy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Draco", contactNo: "+1 (555) 020-2004" },
+    { id: 11, name: "Luna Lovegood", role: "Student", email: "luna.l@student.curriculab.edu", specialization: "Cryptozoology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna", contactNo: "+1 (555) 020-2005" },
+    { id: 12, name: "Cedric Diggory", role: "Student", email: "cedric.d@student.curriculab.edu", specialization: "Sports Science", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cedric", contactNo: "+1 (555) 020-2006" }
+];
+
 export function FacultyFellowsContent() {
     const [activeTab, setActiveTab] = useState<'faculty' | 'fellows'>('faculty');
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-
-    const faculty: Person[] = [
-        { id: 1, name: "Dr. Albus Dumbledore", role: "Dean of Studies", email: "headmaster@curriculab.edu", specialization: "Leadership & Strategy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Albus", contactNo: "+1 (555) 010-1001" },
-        { id: 2, name: "Prof. Minerva McGonagall", role: "Professor", email: "minerva@curriculab.edu", specialization: "Transfiguration & Logic", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Minerva", contactNo: "+1 (555) 010-1002", whatsappNo: "+1 (555) 010-9999" },
-        { id: 3, name: "Prof. Severus Snape", role: "Associate Professor", email: "severus@curriculab.edu", specialization: "Chemistry & Potions", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Severus", contactNo: "+1 (555) 010-1003" },
-        { id: 4, name: "Prof. Filius Flitwick", role: "Lecturer", email: "filius@curriculab.edu", specialization: "Charms & Rhetoric", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Filius", contactNo: "+1 (555) 010-1004" },
-        { id: 5, name: "Prof. Pomona Sprout", role: "Professor", email: "pomona@curriculab.edu", specialization: "Botany & Herbology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pomona", contactNo: "+1 (555) 010-1005" },
-        { id: 6, name: "Rubeus Hagrid", role: "Practical Instructor", email: "hagrid@curriculab.edu", specialization: "Zoology & Field Work", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hagrid", contactNo: "+1 (555) 010-1006" }
-    ];
-
-    const fellows: Person[] = [
-        { id: 7, name: "Harry Potter", role: "Student", email: "harry.p@student.curriculab.edu", specialization: "Defense Against Dark Arts", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Harry", contactNo: "+1 (555) 020-2001" },
-        { id: 8, name: "Hermione Granger", role: "Student", email: "hermione.g@student.curriculab.edu", specialization: "Arithmancy & Runes", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hermione", contactNo: "+1 (555) 020-2002" },
-        { id: 9, name: "Ron Weasley", role: "Student", email: "ron.w@student.curriculab.edu", specialization: "Strategic Chess", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ron", contactNo: "+1 (555) 020-2003" },
-        { id: 10, name: "Draco Malfoy", role: "Student", email: "draco.m@student.curriculab.edu", specialization: "Potions & Alchemy", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Draco", contactNo: "+1 (555) 020-2004" },
-        { id: 11, name: "Luna Lovegood", role: "Student", email: "luna.l@student.curriculab.edu", specialization: "Cryptozoology", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna", contactNo: "+1 (555) 020-2005" },
-        { id: 12, name: "Cedric Diggory", role: "Student", email: "cedric.d@student.curriculab.edu", specialization: "Sports Science", image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cedric", contactNo: "+1 (555) 020-2006" }
-    ];
+    const [faculty, setFaculty] = useState<Person[]>(INITIAL_FACULTY);
+    const [fellows, setFellows] = useState<Person[]>(INITIAL_FELLOWS);
+    const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
-        // Could add a toast notification here
     };
+
+    const handleDelete = (id: number) => {
+        if (activeTab === 'faculty') {
+            setFaculty(prev => prev.filter(p => p.id !== id));
+        } else {
+            setFellows(prev => prev.filter(p => p.id !== id));
+        }
+        setOpenMenuId(null);
+    };
+
+    const handleEdit = (id: number) => {
+        console.log("Edit person", id);
+        alert("Edit functionality coming soon!");
+        setOpenMenuId(null);
+    };
+
+    const handleAdd = () => {
+        alert("Add functionality coming soon!");
+    }
+
+    const currentList = activeTab === 'faculty' ? faculty : fellows;
+
+    // Close menu when clicking outside
+    React.useEffect(() => {
+        const handleClickOutside = () => setOpenMenuId(null);
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
 
     return (
         <WebAppShell>
             <div className="space-y-8">
                 {/* Header Section */}
-                <div>
-                    <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">The Faculty & Fellows</h2>
-                    <p className="text-gray-500 font-medium">Connect with the brilliant minds shaping our academic journey.</p>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">The Faculty & Fellows</h2>
+                        <p className="text-gray-500 font-medium">Connect with the brilliant minds shaping our academic journey.</p>
+                    </div>
+                    <button
+                        onClick={handleAdd}
+                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all text-sm"
+                    >
+                        <Icons.Plus size={18} />
+                        <span>Add Member</span>
+                    </button>
                 </div>
 
                 {/* Tabs */}
@@ -87,13 +126,54 @@ export function FacultyFellowsContent() {
 
                 {/* Content Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {(activeTab === 'faculty' ? faculty : fellows).map((person) => (
+                    {currentList.map((person) => (
                         <div
                             key={person.id}
-                            onClick={() => setSelectedPerson(person)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedPerson(person);
+                            }}
                             className="bg-white p-8 rounded-[40px] border border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] transition-all duration-300 cursor-pointer group flex flex-col items-center text-center relative overflow-hidden"
                         >
                             <div className="absolute top-0 w-full h-24 bg-gradient-to-b from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                            {/* Menu Button */}
+                            <div className="absolute top-4 right-4 z-20">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenMenuId(openMenuId === person.id ? null : person.id);
+                                    }}
+                                    className="p-2 text-gray-300 hover:text-blue-600 hover:bg-white rounded-xl transition-all active:scale-95"
+                                >
+                                    <Icons.MoreVertical size={20} />
+                                </button>
+
+                                {openMenuId === person.id && (
+                                    <div className="absolute right-0 top-full mt-2 w-32 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 animate-in fade-in zoom-in-95 origin-top-right overflow-hidden">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEdit(person.id);
+                                            }}
+                                            className="w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 text-gray-600 transition-colors"
+                                        >
+                                            <Icons.Edit size={14} />
+                                            <span>Edit</span>
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDelete(person.id);
+                                            }}
+                                            className="w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors"
+                                        >
+                                            <Icons.Trash2 size={14} />
+                                            <span>Delete</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
 
                             <div className="w-24 h-24 rounded-[2.5rem] bg-gray-50 border-2 border-white shadow-xl shadow-gray-100 p-1 mb-6 group-hover:scale-110 transition-transform duration-300 overflow-hidden relative z-10">
                                 <img src={person.image} alt={person.name} className="w-full h-full rounded-[2.2rem] object-cover" />
