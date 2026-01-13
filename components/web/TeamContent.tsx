@@ -372,7 +372,7 @@ The 'Translator' Rule: The book might use technical jargon. Your job is to simpl
                                         </div>
                                     </div>
                                     <p className="text-sm font-bold text-gray-500 mb-4">
-                                        Notes + Case Studies with stable formatting for website and PDF export.
+                                        Notes + Case Studies with stable formatting for website, DOCX and PDF export.
                                     </p>
                                     <Link
                                         href="https://chatgpt.com/g/g-6962605ee32481918f2c0ee70c521b90-notesmith"
@@ -607,10 +607,10 @@ Outputs must be consistent and website‑ready.`}
 
                     {/* Footer Note */}
                     <section className="bg-fill-900 p-10 rounded-[35px] text-center">
-                        <p className="text-lg font-bold text-gray-300">
+                        <p className="text-lg font-bold text-black-300">
                             Working together to create the best MBA Semester 2 resource platform
                         </p>
-                        <p className="text-sm font-bold text-gray-500 mt-3">
+                        <p className="text-sm font-bold text-black-500 mt-3">
                             CurricuLab • MBA Business Analytics • Semester 2
                         </p>
                     </section>
