@@ -169,6 +169,16 @@ export default function TeamContent() {
                                                     </span>
                                                 )}
                                             </h3>
+                                            {team.title === "Data Acquisition Team" && (
+                                                <Link
+                                                    href="https://drive.google.com/drive/folders/14oGNaQxQGpiqt6pwZ6V4gN6XKERSRBQ0?usp=sharing"
+                                                    target="_blank"
+                                                    className="ml-auto flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-black hover:bg-blue-100 transition-colors border border-blue-100"
+                                                >
+                                                    <Icons.Upload size={14} />
+                                                    Upload
+                                                </Link>
+                                            )}
                                         </div>
                                     </div>
 
@@ -607,7 +617,7 @@ Outputs must be consistent and website‑ready.`}
 
                     {/* Footer Note */}
                     <section className="bg-fill-900 p-10 rounded-[35px] text-center">
-                        <p className="text-lg font-bold text-black-300">
+                        <p className="text-lg font-bold text-black-500">
                             Working together to create the best MBA Semester 2 resource platform
                         </p>
                         <p className="text-sm font-bold text-black-500 mt-3">
