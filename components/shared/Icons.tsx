@@ -1,4 +1,4 @@
-import { FileText, Database, Code2, BookOpen, Settings, Home, Search, Calendar, CheckSquare, BarChart3, Clock, TrendingUp, PlusCircle, User, ChevronRight, ChevronLeft, Bookmark as BookmarkIcon, Lightbulb, GraduationCap, PanelRight, Download, Check, Copy, Image as ImageIcon, Edit, Trash2, MoreVertical, Upload, Users, Bot, Send, Lock, LogIn, LogOut, Info, Share2, CheckCircle } from "lucide-react";
+import { FileText, Database, Code2, BookOpen, Settings, Home, Search, Calendar, CheckSquare, BarChart3, Clock, TrendingUp, PlusCircle, User, ChevronRight, ChevronLeft, ChevronDown, Bookmark as BookmarkIcon, Lightbulb, GraduationCap, PanelRight, Download, Check, Copy, Image as ImageIcon, Edit, Trash2, MoreVertical, Upload, Users, Bot, Send, Lock, LogIn, LogOut, Info, Share2, CheckCircle } from "lucide-react";
 
 export const Icons = {
     Home,
@@ -22,8 +22,10 @@ export const Icons = {
     Plus: PlusCircle,
     PlusCircle,
     Profile: User,
+    User,
     ChevronRight,
     ChevronLeft,
+    ChevronDown,
     Bookmark: BookmarkIcon,
     CheckSquare,
     Lightbulb,
