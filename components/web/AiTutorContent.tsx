@@ -12,7 +12,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 const MODELS = [
     { id: "groq-llama-3", name: "Groq (Llama 3 - Default)", provider: 'groq' },
-    { id: "gemini-3.0-flash-preview", name: "Gemini 3 Flash (Preview)", provider: 'gemini' },
+    { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)", provider: 'gemini' },
     { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: 'gemini' },
     { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: 'gemini' },
     { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash-Lite", provider: 'gemini' },
@@ -43,57 +43,77 @@ export function AiTutorContent() {
         scrollToBottom();
     }, [messages, isLoading]);
 
+    const generateResponse = async (modelId: string, currentMessages: Message[], userPrompt: string): Promise<string> => {
+        const selectedModel = MODELS.find(m => m.id === modelId) || MODELS[0];
+
+        if (selectedModel.provider === 'groq') {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: [...currentMessages, { role: 'user', content: userPrompt }] })
+            });
+
+            if (!response.ok) throw new Error(`Groq API Error: ${response.statusText}`);
+            const data = await response.json();
+            return data.message;
+        } else {
+            const history = currentMessages.slice(-10).map(m => ({
+                role: m.role === 'user' ? 'user' : 'model',
+                parts: [{ text: m.content }],
+            }));
+
+            const model = genAI.getGenerativeModel({ model: selectedModel.id });
+            const chat = model.startChat({
+                history: history, // history shouldn't include the new user prompt yet, standard gemini pattern is startChat -> sendMessage
+                generationConfig: { maxOutputTokens: 2000 },
+            });
+
+            const result = await chat.sendMessage(userPrompt);
+            const response = result.response;
+            return response.text();
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim() || isLoading) return;
 
         const userMessage = input.trim();
         setInput('');
-        setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+        const newMessages = [...messages, { role: 'user' as const, content: userMessage }];
+        setMessages(newMessages);
         setIsLoading(true);
 
         try {
-            const selectedModel = MODELS.find(m => m.id === selectedModelId) || MODELS[0];
-
-            if (selectedModel.provider === 'groq') {
-                // --- GROQ (Server-Side) ---
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: [...messages, { role: 'user', content: userMessage }] })
-                });
-
-                if (!response.ok) throw new Error('Failed to fetch from Groq API');
-
-                const data = await response.json();
-                setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
-
-            } else {
-                // --- GEMINI (Client-Side) ---
-                // Get chat history for context (last 10 messages)
-                const history = messages.slice(-10).map(m => ({
-                    role: m.role === 'user' ? 'user' : 'model',
-                    parts: [{ text: m.content }],
-                }));
-
-                const model = genAI.getGenerativeModel({ model: selectedModel.id });
-                const chat = model.startChat({
-                    history: history,
-                    generationConfig: {
-                        maxOutputTokens: 2000,
-                    },
-                });
-
-                const result = await chat.sendMessage(userMessage);
-                const response = result.response;
-                const text = response.text();
-
+            // Attempt 1: Selected Model
+            try {
+                const text = await generateResponse(selectedModelId, messages, userMessage);
                 setMessages(prev => [...prev, { role: 'assistant', content: text }]);
+            } catch (primaryError) {
+                console.warn(`Primary model ${selectedModelId} failed. Switching to fallback.`, primaryError);
+
+                // Fallback Logic
+                let fallbackModelId = 'groq-llama-3'; // Default fallback
+                if (selectedModelId === 'groq-llama-3') fallbackModelId = 'gemini-2.5-flash';
+                else if (selectedModelId.includes('gemini')) fallbackModelId = 'groq-llama-3';
+
+                const fallbackName = MODELS.find(m => m.id === fallbackModelId)?.name;
+
+                try {
+                    const text = await generateResponse(fallbackModelId, messages, userMessage);
+                    setMessages(prev => [...prev, {
+                        role: 'assistant',
+                        content: `${text}\n\n*— Answered by ${fallbackName} (Auto-switched due to high traffic)*`
+                    }]);
+                } catch (fallbackError) {
+                    console.error(`Fallback model ${fallbackModelId} also failed.`, fallbackError);
+                    throw new Error("Both primary and fallback models failed.");
+                }
             }
 
         } catch (error) {
-            console.error('Chat error:', error);
-            setMessages(prev => [...prev, { role: 'assistant', content: "I encountered an error. Please ensure the API services are configured correctly." }]);
+            console.error('Final Chat error:', error);
+            setMessages(prev => [...prev, { role: 'assistant', content: "I encountered an error connecting to all AI services. Please try again later or check your network." }]);
         } finally {
             setIsLoading(false);
         }
