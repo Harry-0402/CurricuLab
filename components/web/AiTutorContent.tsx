@@ -194,12 +194,31 @@ export function AiTutorContent() {
                                                         thead: ({ node, ...props }) => <thead className="bg-gray-50 text-gray-700 font-bold" {...props} />,
                                                         th: ({ node, ...props }) => <th className="px-4 py-3 border-b border-gray-200" {...props} />,
                                                         td: ({ node, ...props }) => <td className="px-4 py-3 border-b border-gray-100" {...props} />,
-                                                        code: ({ ...props }) => {
-                                                            // @ts-ignore
-                                                            const inline = props.inline || false;
-                                                            return inline
-                                                                ? <code className="bg-gray-100 text-pink-600 rounded px-1.5 py-0.5 text-xs font-mono font-bold" {...props} />
-                                                                : <code className="block bg-gray-900 text-gray-100 rounded-xl p-4 my-3 text-xs font-mono overflow-x-auto" {...props} />
+                                                        pre: ({ node, ...props }) => (
+                                                            <div className="w-full overflow-x-auto my-3 rounded-xl bg-gray-900 p-4">
+                                                                <pre className="text-xs font-mono text-gray-100" {...props} />
+                                                            </div>
+                                                        ),
+                                                        code: ({ node, className, children, ...props }) => {
+                                                            // Check if it's inline code by looking for absence of newline or parent tag analysis
+                                                            // Ideally, react-markdown distinguishes inline code. 
+                                                            // Usually, block code is inside 'pre'. Inline is not.
+                                                            // We can leave block styling to 'pre' and just styling text here.
+                                                            // But simpler check: if we are inside a pre, we don't need background.
+                                                            // Since we can't easily check parent here without complexity,
+                                                            // we will rely on the fact that `pre` renders its own bg.
+                                                            // So we just style inline code if it doesn't look like a block?
+                                                            // Actually, standard react-markdown:
+                                                            // Inline: <code>...</code>
+                                                            // Block: <pre><code>...</code></pre>
+
+                                                            // If we assume the generic code props:
+                                                            const match = /language-(\w+)/.exec(className || '');
+                                                            const isBlock = !!match || String(children).includes('\n');
+
+                                                            return isBlock
+                                                                ? <code className={cn("font-mono text-inherit", className)} {...props}>{children}</code>
+                                                                : <code className="bg-gray-100 text-pink-600 rounded px-1.5 py-0.5 text-xs font-mono font-bold" {...props}>{children}</code>
                                                         },
                                                         strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
                                                         ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-2 space-y-1" {...props} />,
