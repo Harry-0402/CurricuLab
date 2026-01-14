@@ -81,7 +81,7 @@ export function WebSidebar() {
             </div>
 
             <div className="mt-auto p-4 border-t border-gray-100 italic text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
-                CurricuLab v1.0
+                CurricuLab v1.2 Beta
             </div>
         </aside>
     );
