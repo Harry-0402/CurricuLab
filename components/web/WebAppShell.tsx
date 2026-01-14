@@ -1,9 +1,22 @@
-import React from 'react';
+"use client"
+
+import React, { useEffect } from 'react';
 import { WebSidebar } from './WebSidebar';
 import { WebHeader } from './WebHeader';
 import { WebRightPanel } from './WebRightPanel';
 
 export function WebAppShell({ children }: { children: React.ReactNode }) {
+    // Auto-reload every 14 minutes (14 * 60 * 1000 ms)
+    useEffect(() => {
+        const AUTO_RELOAD_INTERVAL = 14 * 60 * 1000;
+
+        const intervalId = setInterval(() => {
+            window.location.reload();
+        }, AUTO_RELOAD_INTERVAL);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
     return (
         <div className="flex h-screen w-full bg-[#fafbfc] overflow-hidden">
             <WebSidebar />
