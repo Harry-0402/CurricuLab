@@ -129,7 +129,11 @@ export function FacultyFellowsContent() {
 
     // Close menu when clicking outside
     React.useEffect(() => {
-        const handleClickOutside = () => setOpenMenuId(null);
+        const handleClickOutside = (e: MouseEvent) => {
+            // Prevents menu from closing if clicking inside the menu container
+            if ((e.target as Element).closest('.menu-container')) return;
+            setOpenMenuId(null);
+        };
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, []);
@@ -209,14 +213,14 @@ export function FacultyFellowsContent() {
                                         e.stopPropagation();
                                         setOpenMenuId(openMenuId === person.id ? null : person.id);
                                     }}
-                                    className="p-2 text-gray-300 hover:text-blue-600 hover:bg-white rounded-xl transition-all active:scale-95 cursor-pointer relative z-50"
+                                    className="menu-container p-2 text-gray-300 hover:text-blue-600 hover:bg-white rounded-xl transition-all active:scale-95 cursor-pointer relative z-50"
                                     title="More Options"
                                 >
                                     <Icons.MoreVertical size={20} />
                                 </button>
 
                                 {openMenuId === person.id && (
-                                    <div className="absolute right-0 top-full mt-2 w-36 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 py-2 animate-in fade-in zoom-in-95 origin-top-right z-50 overflow-hidden">
+                                    <div className="menu-container absolute right-0 top-full mt-2 w-36 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 py-2 animate-in fade-in zoom-in-95 origin-top-right z-50 overflow-hidden">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -254,10 +258,7 @@ export function FacultyFellowsContent() {
                             )}
 
                             <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedPerson(person);
-                                }}
+                                onClick={() => setSelectedPerson(person)}
                                 className="mt-auto px-6 py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest opacity-100 transition-all duration-300 transform translate-y-0 cursor-pointer w-full"
                             >
                                 View Profile
