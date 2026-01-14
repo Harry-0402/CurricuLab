@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
@@ -12,41 +12,14 @@ import {
     DialogDescription,
     DialogFooter,
 } from "@/components/shared/Dialog";
-
-interface Person {
-    id: number;
-    name: string;
-    status?: string;
-    email: string;
-    subject?: string;
-    gender: 'male' | 'female';
-    contactNo: string;
-    whatsappNo?: string;
-}
-
-const INITIAL_FACULTY: Person[] = [
-    { id: 1, name: "Dr. Albus Dumbledore", status: "Head of Department", email: "headmaster@curriculab.edu", subject: "Leadership", gender: 'male', contactNo: "+1 (555) 010-1001" },
-    { id: 2, name: "Prof. Minerva McGonagall", status: "Senior Teacher", email: "minerva@curriculab.edu", subject: "Transfiguration", gender: 'female', contactNo: "+1 (555) 010-1002", whatsappNo: "+1 (555) 010-9999" },
-    { id: 3, name: "Prof. Severus Snape", status: "Senior Teacher", email: "severus@curriculab.edu", subject: "Potions", gender: 'male', contactNo: "+1 (555) 010-1003" },
-    { id: 4, name: "Prof. Filius Flitwick", status: "Assistant Teacher", email: "filius@curriculab.edu", subject: "Charms", gender: 'male', contactNo: "+1 (555) 010-1004" },
-    { id: 5, name: "Prof. Pomona Sprout", status: "Senior Teacher", email: "pomona@curriculab.edu", subject: "Herbology", gender: 'female', contactNo: "+1 (555) 010-1005" },
-    { id: 6, name: "Rubeus Hagrid", status: "Lab Instructor", email: "hagrid@curriculab.edu", subject: "Zoology", gender: 'male', contactNo: "+1 (555) 010-1006" }
-];
-
-const INITIAL_FELLOWS: Person[] = [
-    { id: 7, name: "Harry Potter", status: "Senior Scholar", email: "harry.p@student.curriculab.edu", subject: "Defense Against Dark Arts", gender: 'male', contactNo: "+1 (555) 020-2001" },
-    { id: 8, name: "Hermione Granger", status: "Research Fellow", email: "hermione.g@student.curriculab.edu", subject: "Arithmancy", gender: 'female', contactNo: "+1 (555) 020-2002" },
-    { id: 9, name: "Ron Weasley", status: "Junior Scholar", email: "ron.w@student.curriculab.edu", subject: "Strategic Chess", gender: 'male', contactNo: "+1 (555) 020-2003" },
-    { id: 10, name: "Draco Malfoy", status: "Junior Scholar", email: "draco.m@student.curriculab.edu", subject: "Potions", gender: 'male', contactNo: "+1 (555) 020-2004" },
-    { id: 11, name: "Luna Lovegood", status: "Research Fellow", email: "luna.l@student.curriculab.edu", subject: "Cryptozoology", gender: 'female', contactNo: "+1 (555) 020-2005" },
-    { id: 12, name: "Cedric Diggory", status: "Senior Scholar", email: "cedric.d@student.curriculab.edu", subject: "Sports Science", gender: 'male', contactNo: "+1 (555) 020-2006" }
-];
+import { FacultyService, Person, INITIAL_DATA } from '@/lib/data/faculty-service';
 
 export function FacultyFellowsContent() {
     const [activeTab, setActiveTab] = useState<'faculty' | 'fellows'>('faculty');
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-    const [faculty, setFaculty] = useState<Person[]>(INITIAL_FACULTY);
-    const [fellows, setFellows] = useState<Person[]>(INITIAL_FELLOWS);
+    const [faculty, setFaculty] = useState<Person[]>([]);
+    const [fellows, setFellows] = useState<Person[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
     // Form State
@@ -55,22 +28,49 @@ export function FacultyFellowsContent() {
     const [memberType, setMemberType] = useState<'faculty' | 'fellows'>('faculty');
     const [formData, setFormData] = useState<Partial<Person>>({});
 
+    // Fetch Data on Mount
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const allMembers = await FacultyService.getAll();
+            setFaculty(allMembers.filter(p => p.category === 'faculty'));
+            setFellows(allMembers.filter(p => p.category === 'fellows'));
+        } catch (error) {
+            console.error("Failed to fetch faculty:", error);
+            alert("Failed to load data. Please check your connection.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
     };
 
-    const handleDelete = (id: number) => {
-        if (activeTab === 'faculty') {
-            setFaculty(prev => prev.filter(p => p.id !== id));
-        } else {
-            setFellows(prev => prev.filter(p => p.id !== id));
+    const handleDelete = async (id: number) => {
+        if (!confirm("Are you sure you want to delete this member?")) return;
+
+        try {
+            await FacultyService.delete(id);
+            if (activeTab === 'faculty') {
+                setFaculty(prev => prev.filter(p => p.id !== id));
+            } else {
+                setFellows(prev => prev.filter(p => p.id !== id));
+            }
+            setOpenMenuId(null);
+        } catch (error) {
+            console.error("Delete failed:", error);
+            alert("Failed to delete member.");
         }
-        setOpenMenuId(null);
     };
 
     const handleEdit = (person: Person) => {
         setEditingPerson(person);
-        setMemberType(activeTab); // Fixed to current list type when editing
+        setMemberType(activeTab);
         setFormData(person);
         setIsFormOpen(true);
         setOpenMenuId(null);
@@ -78,51 +78,65 @@ export function FacultyFellowsContent() {
 
     const handleAdd = () => {
         setEditingPerson(null);
-        setMemberType(activeTab); // Default to current tab
+        setMemberType(activeTab);
         setFormData({
             gender: 'male' // Default
         });
         setIsFormOpen(true);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!formData.name) {
             alert("Please fill in the required field (Name)");
             return;
         }
 
-        const newPerson = {
-            id: editingPerson ? editingPerson.id : Date.now(),
-            name: formData.name,
-            status: formData.status,
-            email: formData.email,
-            subject: formData.subject,
-            contactNo: formData.contactNo || "+1 (555) 000-0000",
-            whatsappNo: formData.whatsappNo,
-            gender: formData.gender || 'male',
-        } as Person;
+        try {
+            if (editingPerson) {
+                // Update
+                const updatedPerson = { ...editingPerson, ...formData } as Person;
+                await FacultyService.update(updatedPerson);
 
-        if (editingPerson) {
-            // Edit Mode: Update in the current list
-            if (activeTab === 'faculty') {
-                setFaculty(prev => prev.map(p => p.id === editingPerson.id ? newPerson : p));
+                // Optimistic UI Update or Refetch (Refetch ensures consistency)
+                await fetchData();
             } else {
-                setFellows(prev => prev.map(p => p.id === editingPerson.id ? newPerson : p));
+                // Add
+                const newPersonPayload = {
+                    ...formData,
+                    category: memberType,
+                    contactNo: formData.contactNo || "+1 (555) 000-0000",
+                    gender: formData.gender || 'male',
+                } as any;
+
+                await FacultyService.add(newPersonPayload);
+                await fetchData();
+                setActiveTab(memberType);
             }
-        } else {
-            // Add Mode: Add to the selected list (memberType)
-            if (memberType === 'faculty') {
-                setFaculty(prev => [...prev, newPerson]);
-            } else {
-                setFellows(prev => [...prev, newPerson]);
-            }
-            // Auto-switch tab to show the new member
-            setActiveTab(memberType);
+
+            setIsFormOpen(false);
+            setEditingPerson(null);
+            setFormData({});
+        } catch (error) {
+            console.error("Save failed:", error);
+            alert("Failed to save member. Please try again.");
         }
+    };
 
-        setIsFormOpen(false);
-        setEditingPerson(null);
-        setFormData({});
+    const handleSeedData = async () => {
+        if (!confirm("This will add default mock data to the database. Continue?")) return;
+        setIsLoading(true);
+        try {
+            for (const person of INITIAL_DATA) {
+                await FacultyService.add(person);
+            }
+            await fetchData();
+            alert("Data seeded successfully!");
+        } catch (error) {
+            console.error("Seeding failed:", error);
+            alert("Failed to seed data. Check console for details.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const currentList = activeTab === 'faculty' ? faculty : fellows;
@@ -130,7 +144,6 @@ export function FacultyFellowsContent() {
     // Close menu when clicking outside
     React.useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            // Prevents menu from closing if clicking inside the menu container
             if ((e.target as Element).closest('.menu-container')) return;
             setOpenMenuId(null);
         };
@@ -158,13 +171,26 @@ export function FacultyFellowsContent() {
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">The Faculty & Fellows</h2>
                         <p className="text-gray-500 font-medium">Connect with the brilliant minds shaping our academic journey.</p>
                     </div>
-                    <button
-                        onClick={handleAdd}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all text-sm"
-                    >
-                        <Icons.Plus size={18} />
-                        <span>Add Member</span>
-                    </button>
+                    <div className="flex gap-2">
+                        {/* Seed Data Button (Dev helper, shows only if list is empty) */}
+                        {faculty.length === 0 && fellows.length === 0 && !isLoading && (
+                            <button
+                                onClick={handleSeedData}
+                                className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-2xl font-bold hover:bg-gray-200 transition-all text-sm"
+                            >
+                                <Icons.Database size={18} />
+                                <span>Seed Data</span>
+                            </button>
+                        )}
+
+                        <button
+                            onClick={handleAdd}
+                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all text-sm"
+                        >
+                            <Icons.Plus size={18} />
+                            <span>Add Member</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Tabs */}
@@ -193,79 +219,92 @@ export function FacultyFellowsContent() {
                     </button>
                 </div>
 
-                {/* Content Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {currentList.map((person) => (
-                        <div
-                            key={person.id}
-                            className={cn(
-                                "bg-white p-8 rounded-[40px] border border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] transition-all duration-300 group flex flex-col items-center text-center relative h-full",
-                                openMenuId === person.id ? "z-50" : "z-0"
-                            )}
-                        >
-                            <div className="absolute top-0 w-full h-24 bg-gradient-to-b from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-t-[40px]" />
-
-                            {/* Menu Button */}
-                            <div className="absolute top-4 right-4 z-50">
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setOpenMenuId(openMenuId === person.id ? null : person.id);
-                                    }}
-                                    className="menu-container p-2 text-gray-300 hover:text-blue-600 hover:bg-white rounded-xl transition-all active:scale-95 cursor-pointer relative z-50"
-                                    title="More Options"
+                {/* Loading State */}
+                {isLoading ? (
+                    <div className="flex items-center justify-center h-64">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                ) : (
+                    /* Content Grid */
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {currentList.length === 0 ? (
+                            <div className="col-span-full py-12 text-center text-gray-400">
+                                <p>No members found. Add a member or seed data to get started.</p>
+                            </div>
+                        ) : (
+                            currentList.map((person) => (
+                                <div
+                                    key={person.id}
+                                    className={cn(
+                                        "bg-white p-8 rounded-[40px] border border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] transition-all duration-300 group flex flex-col items-center text-center relative h-full",
+                                        openMenuId === person.id ? "z-50" : "z-0"
+                                    )}
                                 >
-                                    <Icons.MoreVertical size={20} />
-                                </button>
+                                    <div className="absolute top-0 w-full h-24 bg-gradient-to-b from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-t-[40px]" />
 
-                                {openMenuId === person.id && (
-                                    <div className="menu-container absolute right-0 top-full mt-2 w-36 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 py-2 animate-in fade-in zoom-in-95 origin-top-right z-50 overflow-hidden">
+                                    {/* Menu Button */}
+                                    <div className="absolute top-4 right-4 z-50">
                                         <button
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation();
-                                                handleEdit(person);
+                                                setOpenMenuId(openMenuId === person.id ? null : person.id);
                                             }}
-                                            className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 text-gray-600 transition-colors"
+                                            className="menu-container p-2 text-gray-300 hover:text-blue-600 hover:bg-white rounded-xl transition-all active:scale-95 cursor-pointer relative z-50"
+                                            title="More Options"
                                         >
-                                            <Icons.Edit size={14} />
-                                            <span>Edit</span>
+                                            <Icons.MoreVertical size={20} />
                                         </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDelete(person.id);
-                                            }}
-                                            className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors"
-                                        >
-                                            <Icons.Trash2 size={14} />
-                                            <span>Delete</span>
-                                        </button>
+
+                                        {openMenuId === person.id && (
+                                            <div className="menu-container absolute right-0 top-full mt-2 w-36 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 py-2 animate-in fade-in zoom-in-95 origin-top-right z-50 overflow-hidden">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleEdit(person);
+                                                    }}
+                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 text-gray-600 transition-colors"
+                                                >
+                                                    <Icons.Edit size={14} />
+                                                    <span>Edit</span>
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDelete(person.id);
+                                                    }}
+                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors"
+                                                >
+                                                    <Icons.Trash2 size={14} />
+                                                    <span>Delete</span>
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
 
-                            <div className="w-24 h-24 rounded-[2.5rem] bg-gray-50 border-2 border-white shadow-xl shadow-gray-100 p-1 mb-6 group-hover:scale-110 transition-transform duration-300 overflow-hidden relative z-10">
-                                <AvatarImage gender={person.gender} className="w-full h-full rounded-[2.2rem]" />
-                            </div>
+                                    <div className="w-24 h-24 rounded-[2.5rem] bg-gray-50 border-2 border-white shadow-xl shadow-gray-100 p-1 mb-6 group-hover:scale-110 transition-transform duration-300 overflow-hidden relative z-10">
+                                        <AvatarImage gender={person.gender} className="w-full h-full rounded-[2.2rem]" />
+                                    </div>
 
-                            <h3 className="text-lg font-black text-gray-900 leading-tight mb-1 relative z-10">{person.name}</h3>
-                            {person.status && (
-                                <p className="text-sm font-bold text-blue-600 mb-2 relative z-10">{person.status}</p>
-                            )}
-                            {person.subject && (
-                                <p className="text-xs text-gray-400 font-medium uppercase tracking-widest relative z-10 mb-4">{person.subject}</p>
-                            )}
+                                    <h3 className="text-lg font-black text-gray-900 leading-tight mb-1 relative z-10">{person.name}</h3>
+                                    {person.status && (
+                                        <p className="text-sm font-bold text-blue-600 mb-2 relative z-10">{person.status}</p>
+                                    )}
+                                    {person.subject && (
+                                        <p className="text-xs text-gray-400 font-medium uppercase tracking-widest relative z-10 mb-4">{person.subject}</p>
+                                    )}
 
-                            <button
-                                onClick={() => setSelectedPerson(person)}
-                                className="mt-auto px-6 py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest opacity-100 transition-all duration-300 transform translate-y-0 cursor-pointer w-full"
-                            >
-                                View Profile
-                            </button>
-                        </div>
-                    ))}
-                </div>
+                                    <button
+                                        onClick={() => setSelectedPerson(person)}
+                                        className="mt-auto px-6 py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest opacity-100 transition-all duration-300 transform translate-y-0 cursor-pointer w-full"
+                                    >
+                                        View Profile
+                                    </button>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
 
                 {/* Detail Modal */}
                 <Dialog open={!!selectedPerson} onOpenChange={(open) => !open && setSelectedPerson(null)}>
