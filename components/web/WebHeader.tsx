@@ -60,49 +60,52 @@ export function WebHeader() {
 
                 <div className="w-px h-10 bg-gray-200 mx-2"></div>
 
-                {user ? (
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setShowAnalytics(true)}
-                            className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-2xl transition-all relative"
-                            title="Analytics"
-                        >
-                            <Icons.Analytics size={20} />
-                        </button>
-                        <button
-                            onClick={() => setShowSettings(true)}
-                            className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-2xl transition-all"
-                            title="Settings"
-                        >
-                            <Icons.Settings size={20} />
-                        </button>
-                        <button
-                            onClick={toggleRightPanel}
-                            className={cn(
-                                "p-3 rounded-2xl transition-all",
-                                isRightPanelMinimized ? "text-gray-400 hover:text-gray-900 hover:bg-gray-50" : "text-blue-600 bg-blue-50 shadow-sm"
-                            )}
-                            title={isRightPanelMinimized ? "Show Side Panel" : "Hide Side Panel"}
-                        >
-                            <Icons.Layout size={20} />
-                        </button>
-                        <button
-                            onClick={handleLogout}
-                            className="p-3 bg-white border border-gray-200 rounded-2xl text-red-500 hover:bg-red-50 hover:border-red-200 transition-all active:scale-95 shadow-sm hover:shadow-md ml-2"
-                            title="Sign Out"
-                        >
-                            <Icons.LogOut size={20} />
-                        </button>
-                    </div>
-                ) : (
-                    <Link
-                        href="/login"
-                        className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-sm hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 active:scale-95 transition-all flex items-center gap-2"
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={toggleRightPanel}
+                        className={cn(
+                            "p-3 rounded-2xl transition-all",
+                            isRightPanelMinimized ? "text-gray-400 hover:text-gray-900 hover:bg-gray-50" : "text-blue-600 bg-blue-50 shadow-sm"
+                        )}
+                        title={isRightPanelMinimized ? "Show Side Panel" : "Hide Side Panel"}
                     >
-                        <Icons.LogIn size={18} />
-                        Team Login
-                    </Link>
-                )}
+                        <Icons.Layout size={20} />
+                    </button>
+
+                    {user ? (
+                        <>
+                            <button
+                                onClick={() => setShowAnalytics(true)}
+                                className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-2xl transition-all relative"
+                                title="Analytics"
+                            >
+                                <Icons.Analytics size={20} />
+                            </button>
+                            <button
+                                onClick={() => setShowSettings(true)}
+                                className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-2xl transition-all"
+                                title="Settings"
+                            >
+                                <Icons.Settings size={20} />
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="p-3 bg-white border border-gray-200 rounded-2xl text-red-500 hover:bg-red-50 hover:border-red-200 transition-all active:scale-95 shadow-sm hover:shadow-md ml-2"
+                                title="Sign Out"
+                            >
+                                <Icons.LogOut size={20} />
+                            </button>
+                        </>
+                    ) : (
+                        <Link
+                            href="/login"
+                            className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-sm hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 active:scale-95 transition-all flex items-center gap-2"
+                        >
+                            <Icons.LogIn size={18} />
+                            Team Login
+                        </Link>
+                    )}
+                </div>
             </div>
 
             <AnalyticsModal

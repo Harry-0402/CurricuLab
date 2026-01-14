@@ -11,18 +11,65 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 // --- CONFIG ---
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 const MODELS = [
-    { id: "groq-llama-3", name: "Groq (Llama 3 - Default)", provider: 'groq' },
+    { id: "llama-3.3-70b-versatile", name: "Groq (Llama 3.3 - Flagship)", provider: 'groq' },
+    { id: "llama-3.1-8b-instant", name: "Groq (Llama 3.1 - Fast)", provider: 'groq' },
     { id: "copilot-gpt-4o", name: "GitHub Copilot (GPT-4o)", provider: 'copilot' },
     { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)", provider: 'gemini' },
-    { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: 'gemini' },
     { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: 'gemini' },
-    { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash-Lite", provider: 'gemini' },
 ];
 
 interface Message {
     role: 'user' | 'assistant';
     content: string;
 }
+
+// Helper to extract text from React nodes for the copy button
+const getCodeString = (children: any): string => {
+    if (typeof children === 'string') return children;
+    if (Array.isArray(children)) return children.map(getCodeString).join('');
+    if (children?.props?.children) return getCodeString(children.props.children);
+    return String(children || '');
+};
+
+const ChatCodeBlock = ({ children }: { children?: any }) => {
+    const [copied, setCopied] = useState(false);
+    const codeString = getCodeString(children);
+
+    const handleCopy = () => {
+        if (!codeString) return;
+        navigator.clipboard.writeText(codeString);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <div className="group relative my-4 overflow-hidden rounded-xl border border-white/5 bg-gray-950 shadow-2xl">
+            <div className="absolute right-3 top-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                    onClick={handleCopy}
+                    className="flex h-8 items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-gray-400 hover:bg-white/10 hover:text-white transition-all backdrop-blur-md border border-white/10 shadow-lg"
+                >
+                    {copied ? (
+                        <>
+                            <Icons.CheckCircle size={12} className="text-emerald-400" />
+                            <span className="text-emerald-400">Copied</span>
+                        </>
+                    ) : (
+                        <>
+                            <Icons.Copy size={12} />
+                            <span>Copy</span>
+                        </>
+                    )}
+                </button>
+            </div>
+            <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                <pre className="p-5 text-[13px] font-mono text-gray-300 leading-relaxed selection:bg-blue-500/30">
+                    {children}
+                </pre>
+            </div>
+        </div>
+    );
+};
 
 export function AiTutorContent() {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -93,11 +140,21 @@ export function AiTutorContent() {
         try {
             const text = await generateResponse(selectedModelId, messages, userMessage);
             setMessages(prev => [...prev, { role: 'assistant', content: text }]);
-        } catch (error) {
-            console.warn(`Model ${selectedModelId} failed.`, error);
+        } catch (error: any) {
+            console.error(`Model ${selectedModelId} failed:`, error);
+
+            // Extract a more helpful error message if possible
+            const errorMsg = error.message || "Unknown error";
+            const isRateLimit = errorMsg.toLowerCase().includes("limit") || errorMsg.includes("429");
+            const isNotFound = errorMsg.toLowerCase().includes("not found") || errorMsg.includes("404");
+
+            let displayMessage = "⚠️ **Service Unavailable**: The model encountered an error.";
+            if (isRateLimit) displayMessage = "⚠️ **Limit Exceeded**: You've hit the free tier rate limit for this model. Please wait a moment or try another model.";
+            if (isNotFound) displayMessage = `⚠️ **Model Not Found**: The ID \`${selectedModelId}\` might be incorrect or unavailable in your region.`;
+
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: "⚠️ **Limit Exceeded / Unavailable**: You have hit the free tier rate limit for this model or the service is temporarily down. Please wait a moment or try selecting a different model."
+                content: `${displayMessage}\n\n*Error Detail: ${errorMsg}*`
             }]);
         } finally {
             setIsLoading(false);
@@ -194,11 +251,7 @@ export function AiTutorContent() {
                                                         thead: ({ node, ...props }) => <thead className="bg-gray-50 text-gray-700 font-bold" {...props} />,
                                                         th: ({ node, ...props }) => <th className="px-4 py-3 border-b border-gray-200" {...props} />,
                                                         td: ({ node, ...props }) => <td className="px-4 py-3 border-b border-gray-100" {...props} />,
-                                                        pre: ({ node, ...props }) => (
-                                                            <div className="w-full overflow-x-auto my-3 rounded-xl bg-gray-900 p-4">
-                                                                <pre className="text-xs font-mono text-gray-100" {...props} />
-                                                            </div>
-                                                        ),
+                                                        pre: ({ node, ...props }) => <ChatCodeBlock {...props} />,
                                                         code: ({ node, className, children, ...props }) => {
                                                             // Check if it's inline code by looking for absence of newline or parent tag analysis
                                                             // Ideally, react-markdown distinguishes inline code. 

@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Bookmark, StudySession, TimetableEntry, Announcement } from '@/types';
-import { timetable as initialTimetable, announcements as initialAnnouncements } from '@/lib/data/seed';
 
 interface AppState {
     bookmarks: Bookmark[];
@@ -41,8 +40,8 @@ export const useAppStore = create<AppState>()(
             studySessions: [],
             recentlyOpened: [],
             unitProgress: {},
-            timetable: initialTimetable,
-            announcements: initialAnnouncements,
+            timetable: [],
+            announcements: [],
             isRightPanelMinimized: false,
 
             addBookmark: (itemId, type) => set((state) => ({

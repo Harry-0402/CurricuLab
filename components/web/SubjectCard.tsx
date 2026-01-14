@@ -12,7 +12,28 @@ interface SubjectCardProps {
 }
 
 export function SubjectCard({ subject }: SubjectCardProps) {
-    const IconComponent = (Icons as any)[subject.icon];
+    // Robust Icon Lookup & Emoji Mapping
+    let IconComponent = (Icons as any)[subject.icon];
+    let displayIcon = subject.icon;
+
+    // Map common "dirty" data keys to Emojis (User Preference)
+    const lowerIcon = subject.icon.toLowerCase();
+
+    if (lowerIcon.includes('graph') || lowerIcon.includes('chart') || lowerIcon.includes('analy')) { displayIcon = '📊'; IconComponent = null; }
+    else if (lowerIcon.includes('robot') || lowerIcon.includes('bot')) { displayIcon = '🤖'; IconComponent = null; }
+    else if (lowerIcon.includes('truck') || lowerIcon.includes('product')) { displayIcon = '🏭'; IconComponent = null; }
+    else if (lowerIcon.includes('law') || lowerIcon.includes('scale')) { displayIcon = '⚖️'; IconComponent = null; }
+    else if (lowerIcon.includes('shop') || lowerIcon.includes('store') || lowerIcon.includes('market')) { displayIcon = '🛍️'; IconComponent = null; }
+    else if (lowerIcon.includes('communication') || lowerIcon.includes('chat')) { displayIcon = '💬'; IconComponent = null; }
+    else if (lowerIcon.includes('research') || lowerIcon.includes('search')) { displayIcon = '🔍'; IconComponent = null; }
+    else if (lowerIcon.includes('python')) { displayIcon = '🐍'; IconComponent = null; }
+    else if (lowerIcon.includes('bi')) { displayIcon = '📈'; IconComponent = null; }
+
+    // Fallback if no icon and no emoji mapping found
+    if (!IconComponent && displayIcon.length > 4 && displayIcon === subject.icon) {
+        displayIcon = '📚';
+    }
+
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
 
@@ -46,13 +67,16 @@ export function SubjectCard({ subject }: SubjectCardProps) {
             >
                 <div className="flex items-start justify-between mb-6">
                     <div
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-100 group-hover:scale-110 transition-transform duration-300 overflow-hidden shrink-0"
-                        style={{ backgroundColor: subject.color }}
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300 overflow-hidden shrink-0"
+                        style={{
+                            backgroundColor: `${subject.color}15`,
+                            color: subject.color
+                        }}
                     >
                         {IconComponent ? (
                             <IconComponent size={28} />
                         ) : (
-                            <span className="text-2xl">{subject.icon}</span>
+                            <span className="text-2xl select-none" role="img" aria-label="subject-icon">{displayIcon}</span>
                         )}
                     </div>
 

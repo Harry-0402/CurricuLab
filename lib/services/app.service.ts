@@ -1,5 +1,4 @@
 import { supabase } from "@/utils/supabase/client";
-import { subjects, units, notes, questions, caseStudies, projects, timetable, announcements, assignments } from "@/lib/data/seed";
 import { Subject, Unit, Note, Question, CaseStudy, Project, KPIStats, TimetableEntry, Announcement, Assignment } from "@/types";
 
 // Helper to map DB snake_case to App camelCase
@@ -79,16 +78,13 @@ const mapAnnouncement = (a: any): Announcement => ({
 
 export const getSubjects = async (): Promise<Subject[]> => {
     const { data, error } = await supabase.from('subjects').select('*').order('code', { ascending: true });
-    if (error || !data || data.length === 0) {
-        console.warn('Supabase/Subjects: Fallback match.', error);
-        return subjects;
-    }
+    if (error || !data) return [];
     return data.map(mapSubject);
 };
 
 export const getSubjectById = async (id: string): Promise<Subject | undefined> => {
     const { data, error } = await supabase.from('subjects').select('*').eq('id', id).single();
-    if (error || !data) return subjects.find((s) => s.id === id);
+    if (error || !data) return undefined;
     return mapSubject(data);
 };
 
@@ -137,13 +133,13 @@ export const deleteSubject = async (id: string): Promise<void> => {
 
 export const getUnits = async (subjectId: string): Promise<Unit[]> => {
     const { data, error } = await supabase.from('units').select('*').eq('subject_id', subjectId).order('order', { ascending: true });
-    if (error || !data || data.length === 0) return units.filter((u) => u.subjectId === subjectId);
+    if (error || !data) return [];
     return data.map(mapUnit);
 };
 
 export const getUnitById = async (id: string): Promise<Unit | undefined> => {
     const { data, error } = await supabase.from('units').select('*').eq('id', id).single();
-    if (error || !data) return units.find((u) => u.id === id);
+    if (error || !data) return undefined;
     return mapUnit(data);
 };
 
@@ -186,13 +182,13 @@ export const deleteUnit = async (id: string): Promise<void> => {
 
 export const getNotesByUnit = async (unitId: string): Promise<Note[]> => {
     const { data, error } = await supabase.from('notes').select('*').eq('unit_id', unitId);
-    if (error || !data || data.length === 0) return notes.filter((n) => n.unitId === unitId);
+    if (error || !data) return [];
     return data.map(mapNote);
 };
 
 export const getNoteById = async (id: string): Promise<Note | undefined> => {
     const { data, error } = await supabase.from('notes').select('*').eq('id', id).single();
-    if (error || !data) return notes.find((n) => n.id === id);
+    if (error || !data) return undefined;
     return mapNote(data);
 };
 
@@ -238,14 +234,7 @@ export const getQuestions = async (filters: { subjectId?: string; unitId?: strin
     if (filters.marksType) query = query.eq('marks_type', filters.marksType);
 
     const { data, error } = await query;
-    if (error || !data || data.length === 0) {
-        // Fallback filtering logic
-        let filtered = questions;
-        if (filters.subjectId) filtered = filtered.filter((q) => q.subjectId === filters.subjectId);
-        if (filters.unitId) filtered = filtered.filter((q) => q.unitId === filters.unitId);
-        if (filters.marksType) filtered = filtered.filter((q) => q.marksType === filters.marksType);
-        return filtered;
-    }
+    if (error || !data) return [];
     return data.map(mapQuestion);
 };
 
@@ -291,24 +280,20 @@ export const deleteQuestion = async (id: string): Promise<void> => {
 // --- Others ---
 
 export const getCaseStudiesByUnit = async (unitId: string): Promise<CaseStudy[]> => {
-    // Current Schema does not have Case Studies table, use Fallback
-    return caseStudies.filter((cs) => cs.unitId === unitId);
+    return [];
 };
 
 export const getProjectsByUnit = async (unitId: string): Promise<Project[]> => {
-    // Current Schema does not have Projects table, use Fallback
-    return projects.filter((p) => p.unitId === unitId);
+    return [];
 };
 
 export const searchAll = async (query: string) => {
-    const q = query.toLowerCase();
-    // For search, we might want to do a combined search or just stick to local for speed/simplicity if backend search isn't optimized
-    // For now, let's keep local fallback for search or implement simple LIKE queries if needed. 
-    // Given the complexity of multi-table text search, keeping local fallback for now is safer unless requested.
+    // Basic Supabase search not implemented in this snippet, returning empty.
+    // Real implementation would use RPC or multiple queries.
     return {
-        notes: notes.filter((n) => n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q)),
-        questions: questions.filter((qu) => qu.question.toLowerCase().includes(q)),
-        subjects: subjects.filter((s) => s.title.toLowerCase().includes(q)),
+        notes: [],
+        questions: [],
+        subjects: [],
     };
 };
 
@@ -317,7 +302,7 @@ export const searchAll = async (query: string) => {
 
 export const getTimetable = async (): Promise<TimetableEntry[]> => {
     const { data, error } = await supabase.from('timetable').select('*');
-    if (error || !data || data.length === 0) return timetable;
+    if (error || !data) return [];
     return data.map(mapTimetable);
 };
 
@@ -342,7 +327,7 @@ export const updateTimetableEntry = async (entry: TimetableEntry): Promise<Timet
 
 export const getAnnouncements = async (): Promise<Announcement[]> => {
     const { data, error } = await supabase.from('announcements').select('*');
-    if (error || !data || data.length === 0) return announcements;
+    if (error || !data) return [];
     return data.map(mapAnnouncement);
 };
 
@@ -372,10 +357,7 @@ export const getAssignments = async (subjectId?: string): Promise<Assignment[]> 
     if (subjectId) query = query.eq('subject_id', subjectId);
 
     const { data, error } = await query;
-    if (error || !data || data.length === 0) {
-        if (subjectId) return assignments.filter(a => a.subjectId === subjectId);
-        return assignments;
-    }
+    if (error || !data) return [];
     return data.map(mapAssignment);
 };
 
@@ -410,19 +392,18 @@ export const deleteAssignment = async (id: string): Promise<void> => {
 };
 
 export const getKPIStats = async (): Promise<KPIStats> => {
-    // KPIs are usually aggregations. For now, return static or calculate if possible.
-    // Calculating this dynamically is expensive, keeping static for now.
+    // Return static default or 0's
     return {
-        totalStudyHours: 42,
-        todayStudyTimeMinutes: 125,
-        studyStreakDays: 14,
+        totalStudyHours: 0,
+        todayStudyTimeMinutes: 0,
+        studyStreakDays: 0,
         weeklyGoalHours: 20,
-        unitsCompleted: 8, // Could fetch count from units where is_completed = true
-        totalUnits: 50,
-        pendingTopicsCount: 12,
-        totalQuestionsPracticed: 156,
-        accuracyPercent: 88,
-        revisionDueTodayCount: 5,
-        lastStudiedSubjectId: "s1", // Could fetch from user_progress table if exists
+        unitsCompleted: 0,
+        totalUnits: 0,
+        pendingTopicsCount: 0,
+        totalQuestionsPracticed: 0,
+        accuracyPercent: 0,
+        revisionDueTodayCount: 0,
+        lastStudiedSubjectId: "",
     };
 };
