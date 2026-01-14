@@ -12,16 +12,11 @@ const navItems = [
     { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
     { label: 'Assignments', href: '/assignments', icon: Icons.Questions, badge: 3 },
     { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.Users },
-    { label: 'LearnPilot', href: '/ai-tutor', icon: Icons.Bot },
     { label: 'Team', href: '/team', icon: Icons.Profile },
 ];
 
 const tools = [
-    { label: 'Kanban Board', href: '/projects', icon: Icons.Projects },
-    { label: 'Mind Mapping', href: '/mind-mapping', icon: Icons.Analytics },
-    { label: 'Flowchart', href: '/flowchart', icon: Icons.Trend },
-    { label: 'Online Whiteboard', href: '/whiteboard', icon: Icons.Analytics },
-    { label: 'Google Docs', href: '/docs', icon: Icons.Notes },
+    { label: 'LearnPilot', href: '/ai-tutor', icon: Icons.Bot },
 ];
 
 export function WebSidebar() {
