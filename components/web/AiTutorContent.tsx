@@ -12,6 +12,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 const MODELS = [
     { id: "groq-llama-3", name: "Groq (Llama 3 - Default)", provider: 'groq' },
+    { id: "copilot-gpt-4o", name: "GitHub Copilot (GPT-4o)", provider: 'copilot' },
     { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)", provider: 'gemini' },
     { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: 'gemini' },
     { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: 'gemini' },
@@ -46,14 +47,19 @@ export function AiTutorContent() {
     const generateResponse = async (modelId: string, currentMessages: Message[], userPrompt: string): Promise<string> => {
         const selectedModel = MODELS.find(m => m.id === modelId) || MODELS[0];
 
-        if (selectedModel.provider === 'groq') {
+        // Handles both Groq and Copilot via server-side route
+        if (selectedModel.provider === 'groq' || selectedModel.provider === 'copilot') {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: [...currentMessages, { role: 'user', content: userPrompt }] })
+                body: JSON.stringify({
+                    messages: [...currentMessages, { role: 'user', content: userPrompt }],
+                    provider: selectedModel.provider,
+                    model: selectedModel.id
+                })
             });
 
-            if (!response.ok) throw new Error(`Groq API Error: ${response.statusText}`);
+            if (!response.ok) throw new Error(`${selectedModel.name} API Error: ${response.statusText}`);
             const data = await response.json();
             return data.message;
         } else {
@@ -85,35 +91,14 @@ export function AiTutorContent() {
         setIsLoading(true);
 
         try {
-            // Attempt 1: Selected Model
-            try {
-                const text = await generateResponse(selectedModelId, messages, userMessage);
-                setMessages(prev => [...prev, { role: 'assistant', content: text }]);
-            } catch (primaryError) {
-                console.warn(`Primary model ${selectedModelId} failed. Switching to fallback.`, primaryError);
-
-                // Fallback Logic
-                let fallbackModelId = 'groq-llama-3'; // Default fallback
-                if (selectedModelId === 'groq-llama-3') fallbackModelId = 'gemini-2.5-flash';
-                else if (selectedModelId.includes('gemini')) fallbackModelId = 'groq-llama-3';
-
-                const fallbackName = MODELS.find(m => m.id === fallbackModelId)?.name;
-
-                try {
-                    const text = await generateResponse(fallbackModelId, messages, userMessage);
-                    setMessages(prev => [...prev, {
-                        role: 'assistant',
-                        content: `${text}\n\n*— Answered by ${fallbackName} (Auto-switched due to high traffic)*`
-                    }]);
-                } catch (fallbackError) {
-                    console.error(`Fallback model ${fallbackModelId} also failed.`, fallbackError);
-                    throw new Error("Both primary and fallback models failed.");
-                }
-            }
-
+            const text = await generateResponse(selectedModelId, messages, userMessage);
+            setMessages(prev => [...prev, { role: 'assistant', content: text }]);
         } catch (error) {
-            console.error('Final Chat error:', error);
-            setMessages(prev => [...prev, { role: 'assistant', content: "I encountered an error connecting to all AI services. Please try again later or check your network." }]);
+            console.warn(`Model ${selectedModelId} failed.`, error);
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: "⚠️ **Limit Exceeded / Unavailable**: You have hit the free tier rate limit for this model or the service is temporarily down. Please wait a moment or try selecting a different model."
+            }]);
         } finally {
             setIsLoading(false);
         }
