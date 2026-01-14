@@ -1,7 +1,9 @@
-import { FileText, Database, Code2, BookOpen, Settings, Home, Search, Calendar, CheckSquare, BarChart3, Clock, TrendingUp, PlusCircle, User, ChevronRight, ChevronLeft, Bookmark as BookmarkIcon, Lightbulb, GraduationCap, PanelRight, Download, Check, Copy, Image as ImageIcon, Edit, Trash2, MoreVertical, Upload, Users } from "lucide-react";
+import { FileText, Database, Code2, BookOpen, Settings, Home, Search, Calendar, CheckSquare, BarChart3, Clock, TrendingUp, PlusCircle, User, ChevronRight, ChevronLeft, Bookmark as BookmarkIcon, Lightbulb, GraduationCap, PanelRight, Download, Check, Copy, Image as ImageIcon, Edit, Trash2, MoreVertical, Upload, Users, Bot, Send } from "lucide-react";
 
 export const Icons = {
     Home,
+    Bot,
+    Send,
     Subjects: BookOpen,
     Notes: FileText,
     Questions: CheckSquare,

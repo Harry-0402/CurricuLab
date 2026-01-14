@@ -12,6 +12,7 @@ const navItems = [
     { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
     { label: 'Assignments', href: '/assignments', icon: Icons.Questions, badge: 3 },
     { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.Users },
+    { label: 'AI Tutor', href: '/ai-tutor', icon: Icons.Bot },
     { label: 'Team', href: '/team', icon: Icons.Profile },
 ];
 
