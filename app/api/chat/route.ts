@@ -59,6 +59,36 @@ export async function POST(req: Request) {
             const data = await response.json();
             reply = data.choices[0]?.message?.content || "No response from Copilot.";
         }
+        // --- OPENROUTER HANDLER ---
+        else if (provider === 'openrouter') {
+            const orKey = process.env.OPENROUTER_API_KEY;
+            if (!orKey) return NextResponse.json({ message: "OpenRouter API Key is missing. Please configure OPENROUTER_API_KEY." });
+
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${orKey}`,
+                    "HTTP-Referer": "https://curriculab.vercel.app", // Optional, for rankings
+                    "X-Title": "CurricuLab" // Optional
+                },
+                body: JSON.stringify({
+                    messages: [systemPrompt, ...messages],
+                    model: model || "deepseek/deepseek-chat",
+                    temperature: 0.7,
+                    max_tokens: 1024
+                })
+            });
+
+            if (!response.ok) {
+                const err = await response.text();
+                console.error("OpenRouter API Error:", err);
+                throw new Error(`OpenRouter API Error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            reply = data.choices[0]?.message?.content || "No response from OpenRouter.";
+        }
         // --- GROQ HANDLER (Default) ---
         else {
             if (!process.env.GROQ_API_KEY) {
