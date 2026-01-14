@@ -8,7 +8,7 @@ const handle = app.getRequestHandler();
 const port = process.env.PORT || 3000;
 
 // Keep-Alive Configuration
-const KEEP_ALIVE_URL = 'https://harish-portfolio-3fqm.onrender.com';
+const KEEP_ALIVE_URL = 'https://curriculab-tyi9.onrender.com/';
 const KEEP_ALIVE_INTERVAL = 600000; // 10 minutes
 
 app.prepare().then(() => {
