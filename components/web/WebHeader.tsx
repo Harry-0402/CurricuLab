@@ -1,110 +1,63 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { cn } from '@/lib/utils';
 import { AnalyticsModal } from './AnalyticsModal';
 import { SystemSettingsModal } from './SystemSettingsModal';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { AuthService } from '@/lib/services/auth.service';
-import { User } from '@supabase/supabase-js';
 
 export function WebHeader() {
     const { toggleRightPanel, isRightPanelMinimized } = useAppStore();
     const [showAnalytics, setShowAnalytics] = React.useState(false);
     const [showSettings, setShowSettings] = React.useState(false);
 
-    const router = useRouter();
-    const [user, setUser] = useState<User | null>(null);
-
-    useEffect(() => {
-        // Initial check
-        AuthService.getCurrentUser().then(setUser);
-
-        // Listen for changes
-        const { unsubscribe } = AuthService.onAuthStateChange(setUser);
-        return () => unsubscribe();
-    }, []);
-
-    const handleLogout = async () => {
-        await AuthService.signOut();
-        router.push('/login');
-    };
-
     return (
-        <header className="h-24 px-8 flex items-center justify-between sticky top-0 bg-[#F8FAFC]/80 backdrop-blur-xl z-50 border-b border-gray-200/50">
+        <header className="h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-8 flex items-center justify-between">
             <div>
-                <h1 className="text-2xl font-black text-gray-900 tracking-tight">
-                    {user ? `Hello, ${user.email?.split('@')[0]}` : 'Hello, Guest'}
-                </h1>
-                <p className="text-sm font-bold text-gray-400">
-                    {user ? 'Team Member' : 'CurricuLab Explorer'}
-                </p>
+                <h1 className="text-sm font-medium text-gray-500 mb-0.5">Hello,</h1>
+                <p className="text-lg font-bold text-gray-900">Miss Hermione Granger</p>
             </div>
 
-            <div className="flex items-center gap-4">
-                <div className="relative group">
-                    <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={20} />
+            <div className="flex items-center gap-6">
+                <div className="relative group w-80">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                        <Icons.Search size={18} />
+                    </div>
                     <input
                         type="text"
-                        placeholder="Search anything..."
-                        className="pl-12 pr-6 py-3 bg-white border border-gray-200 rounded-2xl w-96 font-bold text-gray-600 placeholder:text-gray-300 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-sm hover:shadow-md"
+                        placeholder="Search subjects, notes, or questions..."
+                        className="w-full bg-gray-50 border-none rounded-2xl py-2.5 pl-11 pr-4 text-sm focus:ring-2 focus:ring-blue-100 transition-all outline-none"
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        <span className="px-2 py-1 bg-gray-100 rounded-lg text-[10px] font-black text-gray-400 border border-gray-200">CTRL</span>
-                        <span className="px-2 py-1 bg-gray-100 rounded-lg text-[10px] font-black text-gray-400 border border-gray-200">K</span>
+                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                        <span className="text-[10px] font-bold text-gray-300 border border-gray-200 px-1.5 py-0.5 rounded-md">/</span>
                     </div>
                 </div>
 
-                <div className="w-px h-10 bg-gray-200 mx-2"></div>
-
                 <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setShowAnalytics(true)}
+                        className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all relative"
+                    >
+                        <Icons.Analytics size={20} />
+                        <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <button
+                        onClick={() => setShowSettings(true)}
+                        className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all"
+                    >
+                        <Icons.Settings size={20} />
+                    </button>
                     <button
                         onClick={toggleRightPanel}
                         className={cn(
-                            "p-3 rounded-2xl transition-all",
+                            "p-2.5 rounded-xl transition-all",
                             isRightPanelMinimized ? "text-gray-400 hover:text-gray-900 hover:bg-gray-50" : "text-blue-600 bg-blue-50 shadow-sm"
                         )}
                         title={isRightPanelMinimized ? "Show Side Panel" : "Hide Side Panel"}
                     >
                         <Icons.Layout size={20} />
                     </button>
-
-                    {user ? (
-                        <>
-                            <button
-                                onClick={() => setShowAnalytics(true)}
-                                className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-2xl transition-all relative"
-                                title="Analytics"
-                            >
-                                <Icons.Analytics size={20} />
-                            </button>
-                            <button
-                                onClick={() => setShowSettings(true)}
-                                className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-2xl transition-all"
-                                title="Settings"
-                            >
-                                <Icons.Settings size={20} />
-                            </button>
-                            <button
-                                onClick={handleLogout}
-                                className="p-3 bg-white border border-gray-200 rounded-2xl text-red-500 hover:bg-red-50 hover:border-red-200 transition-all active:scale-95 shadow-sm hover:shadow-md ml-2"
-                                title="Sign Out"
-                            >
-                                <Icons.LogOut size={20} />
-                            </button>
-                        </>
-                    ) : (
-                        <Link
-                            href="/login"
-                            className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-sm hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 active:scale-95 transition-all flex items-center gap-2"
-                        >
-                            <Icons.LogIn size={18} />
-                            Team Login
-                        </Link>
-                    )}
                 </div>
             </div>
 
@@ -116,6 +69,6 @@ export function WebHeader() {
                 isOpen={showSettings}
                 onClose={() => setShowSettings(false)}
             />
-        </header >
+        </header>
     );
 }

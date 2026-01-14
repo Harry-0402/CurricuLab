@@ -24,6 +24,7 @@ const MODELS = [
     { id: "z-ai/glm-4.5-air:free", name: "OpenRouter (GLM 4.5 Air - Free)", provider: 'openrouter' },
     { id: "qwen/qwen3-4b:free", name: "OpenRouter (Qwen 3 - 4B - Free)", provider: 'openrouter' },
     { id: "arcee-ai/trinity-mini:free", name: "OpenRouter (Trinity Mini - Free)", provider: 'openrouter' },
+    { id: "nvidia/nemotron-3-nano-30b-a3b:free", name: "OpenRouter (Nemotron 3 Nano - Free)", provider: 'openrouter' },
 ];
 
 interface Message {
