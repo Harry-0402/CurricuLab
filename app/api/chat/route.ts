@@ -10,6 +10,20 @@ export async function POST(req: Request) {
     try {
         const { messages } = await req.json();
 
+        // 1. Check for API Key
+        if (!process.env.GROQ_API_KEY) {
+            console.warn("GROQ_API_KEY missing. Returning mock response.");
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            return NextResponse.json({
+                message: "I am currently running in **Demo Mode** because the AI service is not configured. \n\n" +
+                    "In a real environment, I would answer your question about: \"" +
+                    (messages[messages.length - 1]?.content || "business") + "\".\n\n" +
+                    "Please configure the `GROQ_API_KEY` to enable real-time AI responses."
+            });
+        }
+
         if (!messages || !Array.isArray(messages)) {
             return NextResponse.json({ error: 'Invalid messages format' }, { status: 400 });
         }
@@ -31,7 +45,7 @@ export async function POST(req: Request) {
 
         const chatCompletion = await groq.chat.completions.create({
             messages: [systemPrompt, ...messages],
-            model: 'llama-3.3-70b-versatile', // Or 'mixtral-8x7b-32768' depending on preference
+            model: 'llama-3.3-70b-versatile',
             temperature: 0.7,
             max_tokens: 1024,
             top_p: 1,

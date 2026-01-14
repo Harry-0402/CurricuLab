@@ -20,11 +20,13 @@ export const FacultyService = {
             .select('*')
             .order('id', { ascending: true });
 
-        if (error) {
-            console.error('Error fetching faculty:', error);
-            // Return empty array or throw, depending on preference.
-            // For now, let's return empty array to prevent crash.
-            return [];
+        if (error || !data) {
+            console.warn('Supabase fetch failed or empty, falling back to mock data:', error);
+            // Fallback to initial mock data if DB fails (e.g., missing keys on Render)
+            return INITIAL_DATA.map((item, index) => ({
+                id: index + 1000,
+                ...item
+            })) as Person[];
         }
 
         // Map database columns (snake_case) to application model (camelCase)
