@@ -11,20 +11,20 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 // --- CONFIG ---
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 const MODELS = [
-    { id: "llama-3.3-70b-versatile", name: "Groq (Llama 3.3 - Flagship)", provider: 'groq' },
-    { id: "llama-3.1-8b-instant", name: "Groq (Llama 3.1 - Fast)", provider: 'groq' },
-    { id: "copilot-gpt-4o", name: "GitHub Copilot (GPT-4o)", provider: 'copilot' },
-    { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)", provider: 'gemini' },
-    { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: 'gemini' },
-    { id: "deepseek/deepseek-chat", name: "OpenRouter (DeepSeek V3 - High Perf)", provider: 'openrouter' },
-    { id: "deepseek/deepseek-r1:free", name: "OpenRouter (DeepSeek R1 - Free)", provider: 'openrouter' },
-    { id: "anthropic/claude-3.5-sonnet", name: "OpenRouter (Claude 3.5 Sonnet - Paid)", provider: 'openrouter' },
-    { id: "xiaomi/mimo-v2-flash:free", name: "OpenRouter (Mimo V2 Flash - Free)", provider: 'openrouter' },
-    { id: "mistralai/devstral-2512:free", name: "OpenRouter (Devstral - Free)", provider: 'openrouter' },
-    { id: "z-ai/glm-4.5-air:free", name: "OpenRouter (GLM 4.5 Air - Free)", provider: 'openrouter' },
-    { id: "qwen/qwen3-4b:free", name: "OpenRouter (Qwen 3 - 4B - Free)", provider: 'openrouter' },
-    { id: "arcee-ai/trinity-mini:free", name: "OpenRouter (Trinity Mini - Free)", provider: 'openrouter' },
-    { id: "nvidia/nemotron-3-nano-30b-a3b:free", name: "OpenRouter (Nemotron 3 Nano - Free)", provider: 'openrouter' },
+    { id: "llama-3.3-70b-versatile", name: "Llama (Thinking)", provider: 'groq' },
+    { id: "llama-3.1-8b-instant", name: "Llama (Fast)", provider: 'groq' },
+    { id: "copilot-gpt-4o", name: "GPT-4o (Thinking)", provider: 'copilot' },
+    { id: "gemini-3-flash-preview", name: "Gemini (Thinking)", provider: 'gemini' },
+    { id: "gemini-2.5-flash", name: "Gemini (Fast)", provider: 'gemini' },
+    { id: "deepseek/deepseek-chat", name: "DeepSeek (Thinking)", provider: 'openrouter' },
+    { id: "deepseek/deepseek-r1:free", name: "DeepSeek (Reasoning)", provider: 'openrouter' },
+    { id: "anthropic/claude-3.5-sonnet", name: "Claude (Thinking)", provider: 'openrouter' },
+    { id: "xiaomi/mimo-v2-flash:free", name: "Mimo (Fast)", provider: 'openrouter' },
+    { id: "mistralai/devstral-2512:free", name: "Devstral (Thinking)", provider: 'openrouter' },
+    { id: "z-ai/glm-4.5-air:free", name: "GLM (Fast)", provider: 'openrouter' },
+    { id: "qwen/qwen3-4b:free", name: "Qwen (Fast)", provider: 'openrouter' },
+    { id: "arcee-ai/trinity-mini:free", name: "Trinity (Fast)", provider: 'openrouter' },
+    { id: "nvidia/nemotron-3-nano-30b-a3b:free", name: "Nemotron (Reasoning)", provider: 'openrouter' },
 ];
 
 interface Message {
