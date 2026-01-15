@@ -8,25 +8,29 @@ const groq = new Groq({
 
 export async function POST(req: Request) {
     try {
-        const { messages, provider = 'groq', model } = await req.json();
+        const { messages, provider = 'groq', model, mode = 'tutor' } = await req.json();
 
         if (!messages || !Array.isArray(messages)) {
             return NextResponse.json({ error: 'Invalid messages format' }, { status: 400 });
         }
 
-        // Add a system prompt to guide the AI's behavior
+        // --- SYSTEM PROMPTS ---
+        const TUTOR_PROMPT = `You are an expert AI Tutor for a Business Analytics MBA program. 
+        Your role is to help students understand complex concepts in Operations Management, Digital Transformation, Business Law, Data Visualization, and Research Methodology.
+        Current Context: The user is a student in the "CurricuLab" platform.`;
+
+        const PROMPT_ENGINEER_PROMPT = `You are a Universal Prompt Engineer.
+        Your goal is to optimize the user's input into a high-quality, structured prompt.
+        
+        Guidelines:
+        1. **Context-First**: Use the user's entered draft as the primary context. Do not force an MBA/Tutor persona if the topic is unrelated.
+        2. **Topic Agnostic**: Adapt your instructions and tone to the specific subject matter provided (coding, cooking, business, etc.).
+        3. **Enhancement**: Take the draft and add professional structure: persona, clear task, constraints, and output format.
+        4. **Variables**: Preserve placeholders like [TOPIC], [KEY_TERMS] if present.`;
+
         const systemPrompt = {
             role: 'system',
-            content: `You are an expert AI Tutor for a Business Analytics MBA program. 
-            Your role is to help students understand complex concepts in Operations Management, Digital Transformation, Business Law, Data Visualization, and Research Methodology.
-            
-            Guidelines:
-            - Be encouraging, professional, and concise.
-            - Use markdown for formatting (bold key terms, lists for steps).
-            - If a student asks about a specific topic (e.g., "Six Sigma"), explain it simply first, then provide a business context example.
-            - If you don't know the answer, admit it and suggest where they might find the info in their syllabus.
-            
-            Current Context: The user is a student in the "CurricuLab" platform.`
+            content: mode === 'prompt_engineer' ? PROMPT_ENGINEER_PROMPT : TUTOR_PROMPT
         };
 
         let reply = "";
