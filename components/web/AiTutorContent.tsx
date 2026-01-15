@@ -137,7 +137,7 @@ export function AiTutorContent() {
             }
         } catch (error) {
             console.error('Upload Error:', error);
-            alert('Failed to upload file. Ensure the local RAG server is running on port 4000.');
+            alert(`Failed to upload file. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
