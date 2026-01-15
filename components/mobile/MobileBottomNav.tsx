@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils';
 const mobileNavItems = [
     { label: 'Home', href: '/mobile', icon: Icons.Home },
     { label: 'Subjects', href: '/mobile/subjects', icon: Icons.Subjects },
-    { label: 'Quick Add', href: '/mobile/add', icon: Icons.Plus, isCenter: true },
-    { label: 'Search', href: '/mobile/search', icon: Icons.Search },
+    { label: 'Tools', href: '/mobile/tools', icon: Icons.Lightbulb, isCenter: true },
+    { label: 'Vault', href: '/mobile/vault', icon: Icons.Notes },
     { label: 'Profile', href: '/mobile/profile', icon: Icons.Profile },
 ];
 

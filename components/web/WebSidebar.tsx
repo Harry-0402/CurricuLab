@@ -16,7 +16,10 @@ const navItems = [
 ];
 
 const tools = [
-    { label: 'LearnPilot', href: '/ai-tutor', icon: Icons.Bot },
+    { label: 'LearnPilot AI', href: '/ai-tutor', icon: Icons.Bot },
+    { label: 'Revision Notes', href: '/tools/revision', icon: Icons.FileText },
+    { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
+    { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb },
 ];
 
 export function WebSidebar() {
