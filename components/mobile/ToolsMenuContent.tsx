@@ -6,9 +6,9 @@ import { MobileAppShell } from '@/components/mobile/MobileAppShell';
 import { Icons } from '@/components/shared/Icons';
 
 const tools = [
-    { label: 'Revision Notes', href: '/mobile/tools/revision', icon: Icons.FileText, color: 'bg-blue-50 text-blue-600', description: 'Quick summaries for last-minute study' },
-    { label: 'Digital Library', href: '/mobile/tools/resources', icon: Icons.Database, color: 'bg-emerald-50 text-emerald-600', description: 'External links and PDF resources' },
-    { label: 'Prompt Lab', href: '/mobile/tools/prompts', icon: Icons.Lightbulb, color: 'bg-amber-50 text-amber-600', description: 'Optimized AI prompts for studying' },
+    { label: 'Revision Notes', href: '/tools/revision', icon: Icons.FileText, color: 'bg-blue-50 text-blue-600', description: 'Quick summaries for last-minute study' },
+    { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database, color: 'bg-emerald-50 text-emerald-600', description: 'External links and PDF resources' },
+    { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb, color: 'bg-amber-50 text-amber-600', description: 'Optimized AI prompts for studying' },
 ];
 
 export function MobileToolsMenu() {
