@@ -19,14 +19,15 @@ export async function POST(req: Request) {
         Your role is to help students understand complex concepts in Operations Management, Digital Transformation, Business Law, Data Visualization, and Research Methodology.
         Current Context: The user is a student in the "CurricuLab" platform.`;
 
-        const PROMPT_ENGINEER_PROMPT = `You are a Universal Prompt Engineer.
-        Your goal is to optimize the user's input into a high-quality, structured prompt.
+        const PROMPT_ENGINEER_PROMPT = `You are a Strict Prompt Optimizer.
+        Your ONLY output must be the refined, professional version of the user's input.
         
-        Guidelines:
-        1. **Context-First**: Use the user's entered draft as the primary context. Do not force an MBA/Tutor persona if the topic is unrelated.
-        2. **Topic Agnostic**: Adapt your instructions and tone to the specific subject matter provided (coding, cooking, business, etc.).
-        3. **Enhancement**: Take the draft and add professional structure: persona, clear task, constraints, and output format.
-        4. **Variables**: Preserve placeholders like [TOPIC], [KEY_TERMS] if present.`;
+        RULES:
+        1. **NO CONVERSATION**: Do not talk to the user. Do not say "Here is your prompt" or ask questions.
+        2. **STRICT OUTPUT**: Output ONLY the final prompt text.
+        3. **STRUCTURE**: Wrap the user's idea in a professional framework (Goal, Persona, Constraints, Format).
+        4. **PLACEHOLDERS**: If the user uses [TOPIC], [KEY_TERMS], etc., leave them exactly as they are in the final output.
+        5. **TOPIC AGNOSTIC**: Focus on the subject provided in the draft. Do not force an MBA context.`;
 
         const systemPrompt = {
             role: 'system',
@@ -48,8 +49,8 @@ export async function POST(req: Request) {
                 },
                 body: JSON.stringify({
                     messages: [systemPrompt, ...messages],
-                    model: "gpt-4o", // GitHub Models default flagship
-                    temperature: 0.7,
+                    model: "gpt-4o",
+                    temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
                     max_tokens: 1024
                 })
             });
@@ -73,13 +74,13 @@ export async function POST(req: Request) {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${orKey}`,
-                    "HTTP-Referer": "https://curriculab.vercel.app", // Optional, for rankings
-                    "X-Title": "CurricuLab" // Optional
+                    "HTTP-Referer": "https://curriculab.vercel.app",
+                    "X-Title": "CurricuLab"
                 },
                 body: JSON.stringify({
                     messages: [systemPrompt, ...messages],
                     model: model || "deepseek/deepseek-chat",
-                    temperature: 0.7,
+                    temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
                     max_tokens: 1024
                 })
             });
@@ -104,7 +105,7 @@ export async function POST(req: Request) {
             const chatCompletion = await groq.chat.completions.create({
                 messages: [systemPrompt, ...messages],
                 model: model || 'llama-3.3-70b-versatile',
-                temperature: 0.7,
+                temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
                 max_tokens: 1024,
                 top_p: 1,
                 stream: false,
