@@ -1,28 +1,6 @@
-"use client"
-
-import { useEffect, useState } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
-import { MobileToolsMenu } from '@/components/mobile/ToolsMenuContent';
-import { WebSidebar } from '@/components/web/WebSidebar'; // Implicitly handled by Shell
 
 export default function ToolsRootPage() {
-    const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-    useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
-
-    if (isMobile === null) return null;
-
-    if (isMobile) {
-        return <MobileToolsMenu />;
-    }
-
     return (
         <WebAppShell>
             <div className="space-y-12">
