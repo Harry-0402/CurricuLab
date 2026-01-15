@@ -12,6 +12,7 @@ export function PromptLabMobile() {
     const [builderText, setBuilderText] = useState('');
     const [copied, setCopied] = useState(false);
     const [activeTab, setActiveTab] = useState<'builder' | 'library'>('builder');
+    const [isAILoading, setIsAILoading] = useState(false);
 
     useEffect(() => {
         setPrompts(LOCAL_PROMPTS);
@@ -21,6 +22,30 @@ export function PromptLabMobile() {
         navigator.clipboard.writeText(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleAIAction = async () => {
+        if (!builderText.trim()) return;
+        setIsAILoading(true);
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: [{ role: 'user', content: builderText }],
+                    mode: 'prompt_engineer',
+                    provider: 'groq',
+                    model: 'llama-3.3-70b-versatile'
+                })
+            });
+            if (!response.ok) throw new Error('AI Refinement failed');
+            const data = await response.json();
+            setBuilderText(data.message);
+        } catch (error) {
+            console.error('AI refinement Error:', error);
+        } finally {
+            setIsAILoading(false);
+        }
     };
 
     const insertVariable = (variable: string) => {
@@ -65,16 +90,28 @@ export function PromptLabMobile() {
                 {activeTab === 'builder' ? (
                     <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
                         <div className="space-y-4">
-                            <div className="flex flex-wrap gap-2">
-                                {['[TOPIC]', '[KEY_TERMS]', '[SUMMARY]'].map(v => (
-                                    <button
-                                        key={v}
-                                        onClick={() => insertVariable(v)}
-                                        className="px-4 py-3 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-blue-100"
-                                    >
-                                        + {v}
-                                    </button>
-                                ))}
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                <div className="flex flex-wrap gap-2">
+                                    {['[TOPIC]', '[KEY_TERMS]', '[SUMMARY]'].map(v => (
+                                        <button
+                                            key={v}
+                                            onClick={() => insertVariable(v)}
+                                            className="px-4 py-3 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-blue-100"
+                                        >
+                                            + {v}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={handleAIAction}
+                                    disabled={!builderText || isAILoading}
+                                    className={cn(
+                                        "p-3 rounded-2xl flex items-center justify-center border-2 transition-all active:scale-95 disabled:opacity-30",
+                                        isAILoading ? "bg-gray-50 border-gray-100 text-gray-400" : "bg-white border-blue-600 text-blue-600 shadow-sm"
+                                    )}
+                                >
+                                    {isAILoading ? <Icons.Loader2 size={20} className="animate-spin" /> : <Icons.Sparkles size={20} />}
+                                </button>
                             </div>
 
                             <textarea

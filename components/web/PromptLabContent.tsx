@@ -12,6 +12,9 @@ export function PromptLabContent() {
     const [builderText, setBuilderText] = useState('');
     const [copied, setCopied] = useState(false);
     const [isLibraryExpanded, setIsLibraryExpanded] = useState(true);
+    const [isAILoading, setIsAILoading] = useState(false);
+    const [showGoalModal, setShowGoalModal] = useState(false);
+    const [goalInput, setGoalInput] = useState('');
 
     useEffect(() => {
         setPrompts(LOCAL_PROMPTS);
@@ -21,6 +24,41 @@ export function PromptLabContent() {
         navigator.clipboard.writeText(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleAIAction = async (action: 'refine' | 'generate') => {
+        if (action === 'refine' && !builderText.trim()) return;
+        if (action === 'generate' && !goalInput.trim()) return;
+
+        setIsAILoading(true);
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: [{
+                        role: 'user',
+                        content: action === 'refine' ? builderText : goalInput
+                    }],
+                    mode: 'prompt_engineer',
+                    provider: 'groq',
+                    model: 'llama-3.3-70b-versatile'
+                })
+            });
+
+            if (!response.ok) throw new Error('AI Action failed');
+            const data = await response.json();
+
+            setBuilderText(data.message);
+            if (action === 'generate') {
+                setShowGoalModal(false);
+                setGoalInput('');
+            }
+        } catch (error) {
+            console.error('AI Action Error:', error);
+        } finally {
+            setIsAILoading(false);
+        }
     };
 
     const insertVariable = (variable: string) => {
@@ -41,6 +79,13 @@ export function PromptLabContent() {
                         <p className="text-5xl font-black text-gray-900 tracking-tight">Prompt Lab</p>
                     </div>
                     <div className="flex gap-4">
+                        <button
+                            onClick={() => setShowGoalModal(true)}
+                            className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-[24px] font-black uppercase tracking-widest text-xs shadow-lg shadow-orange-100 hover:scale-[1.02] transition-all"
+                        >
+                            <Icons.Wand2 size={18} />
+                            Generate from Goal
+                        </button>
                         <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
                             <Icons.Lightbulb size={24} />
                         </div>
@@ -55,7 +100,18 @@ export function PromptLabContent() {
                                 <h2 className="text-xl font-black text-gray-900">Prompt Builder</h2>
                                 <p className="text-xs text-gray-400 font-medium">Draft and customize your AI instructions</p>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => handleAIAction('refine')}
+                                    disabled={!builderText || isAILoading}
+                                    className={cn(
+                                        "flex items-center gap-2 px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all border-2 disabled:opacity-30",
+                                        isAILoading ? "bg-gray-50 border-gray-100 text-gray-400" : "bg-white border-blue-600 text-blue-600 hover:bg-blue-50"
+                                    )}
+                                >
+                                    {isAILoading ? <Icons.Loader2 size={16} className="animate-spin" /> : <Icons.Sparkles size={16} />}
+                                    {isAILoading ? "Enhancing..." : "Enhance with AI"}
+                                </button>
                                 <button
                                     onClick={() => handleCopy(builderText)}
                                     disabled={!builderText}
@@ -171,6 +227,43 @@ export function PromptLabContent() {
                     </div>
                 </div>
             </div>
+            {/* Goal Modal */}
+            {showGoalModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white w-full max-w-lg rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="p-10 space-y-8">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-black text-gray-900">Generate from Goal</h2>
+                                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">AI Prompt Engineering</p>
+                                </div>
+                                <button onClick={() => setShowGoalModal(false)} className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400">
+                                    <Icons.X size={24} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">What is your study goal?</label>
+                                <textarea
+                                    value={goalInput}
+                                    onChange={(e) => setGoalInput(e.target.value)}
+                                    placeholder="e.g., I want to practice case studies for Business Law using specific scenarios..."
+                                    className="w-full h-40 p-6 bg-gray-50 rounded-[32px] border-none focus:ring-2 focus:ring-amber-400/20 outline-none text-sm leading-relaxed"
+                                />
+                            </div>
+
+                            <button
+                                onClick={() => handleAIAction('generate')}
+                                disabled={!goalInput || isAILoading}
+                                className="w-full py-5 bg-gray-900 text-white rounded-[24px] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 disabled:opacity-30"
+                            >
+                                {isAILoading ? <Icons.Loader2 size={18} className="animate-spin" /> : <Icons.Sparkles size={18} />}
+                                {isAILoading ? "Engineering..." : "Generate Master Prompt"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </WebAppShell>
     );
 }
