@@ -52,43 +52,62 @@ export async function POST(req: Request) {
         let reply = "";
         let errorDetails = "";
 
-        // --- SMART ROUTER (OPENROUTER FALLBACK) ---
+        // --- SMART ROUTER (OPENROUTER COMPETITIVE RACING) ---
         if (provider === 'openrouter' || mode === 'prompt_engineer') {
             const orKey = process.env.OPENROUTER_API_KEY;
             if (!orKey) return NextResponse.json({ message: "OpenRouter API Key is missing." });
 
             const modelList = mode === 'prompt_engineer' ? PROMPT_ENGINEER_MODELS : TUTOR_MODELS;
 
-            for (const modelId of modelList) {
-                try {
-                    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${orKey}`,
-                            "HTTP-Referer": "https://curriculab.vercel.app",
-                            "X-Title": "CurricuLab"
-                        },
-                        body: JSON.stringify({
-                            messages: [systemPrompt, ...messages],
-                            model: modelId,
-                            temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
-                            max_tokens: 1024
-                        })
-                    });
+            // Define the call function for racing
+            const callModel = async (modelId: string) => {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${orKey}`,
+                        "HTTP-Referer": "https://curriculab.vercel.app",
+                        "X-Title": "CurricuLab"
+                    },
+                    body: JSON.stringify({
+                        messages: [systemPrompt, ...messages],
+                        model: modelId,
+                        temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
+                        max_tokens: 1024
+                    })
+                });
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        reply = data.choices[0]?.message?.content || "";
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`Model ${modelId} failed: ${errText}`);
+                }
+
+                const data = await response.json();
+                const content = data.choices[0]?.message?.content;
+                if (!content) throw new Error(`Model ${modelId} returned no content`);
+                return content;
+            };
+
+            // Race the top 3 models for maximum speed
+            const topCandidates = modelList.slice(0, 3);
+            const remainingCandidates = modelList.slice(3);
+
+            try {
+                // Return the first one that successfully completes
+                reply = await Promise.any(topCandidates.map(model => callModel(model)));
+            } catch (error: any) {
+                console.warn("Primary model race failed, falling back to sequential:", error);
+                errorDetails = "Race failed. | ";
+
+                // Fallback to sequential for remaining models if race completely fails
+                for (const modelId of remainingCandidates) {
+                    try {
+                        reply = await callModel(modelId);
                         if (reply) break;
-                    } else {
-                        const errText = await response.text();
-                        console.warn(`Model ${modelId} failed:`, errText);
-                        errorDetails += `${modelId}: ${response.status} | `;
+                    } catch (e: any) {
+                        console.error(`Sequential fallback failed for ${modelId}:`, e);
+                        errorDetails += `${modelId}: error | `;
                     }
-                } catch (e: any) {
-                    console.error(`Error calling ${modelId}:`, e);
-                    errorDetails += `${modelId}: ${e.message} | `;
                 }
             }
         }
