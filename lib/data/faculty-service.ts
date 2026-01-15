@@ -110,10 +110,16 @@ export const INITIAL_DATA: Omit<Person, 'id'>[] = [
     { name: "Prof. Filius Flitwick", status: "Assistant Teacher", category: "faculty", email: "filius@curriculab.edu", subject: "Charms", gender: 'male', contactNo: "+1 (555) 010-1004" },
     { name: "Prof. Pomona Sprout", status: "Senior Teacher", category: "faculty", email: "pomona@curriculab.edu", subject: "Herbology", gender: 'female', contactNo: "+1 (555) 010-1005" },
     { name: "Rubeus Hagrid", status: "Lab Instructor", category: "faculty", email: "hagrid@curriculab.edu", subject: "Zoology", gender: 'male', contactNo: "+1 (555) 010-1006" },
-    { name: "Harry Potter", status: "Senior Scholar", category: "fellows", email: "harry.p@student.curriculab.edu", subject: "Defense Against Dark Arts", gender: 'male', contactNo: "+1 (555) 020-2001" },
-    { name: "Hermione Granger", status: "Research Fellow", category: "fellows", email: "hermione.g@student.curriculab.edu", subject: "Arithmancy", gender: 'female', contactNo: "+1 (555) 020-2002" },
-    { name: "Ron Weasley", status: "Junior Scholar", category: "fellows", email: "ron.w@student.curriculab.edu", subject: "Strategic Chess", gender: 'male', contactNo: "+1 (555) 020-2003" },
-    { name: "Draco Malfoy", status: "Junior Scholar", category: "fellows", email: "draco.m@student.curriculab.edu", subject: "Potions", gender: 'male', contactNo: "+1 (555) 020-2004" },
-    { name: "Luna Lovegood", status: "Research Fellow", category: "fellows", email: "luna.l@student.curriculab.edu", subject: "Cryptozoology", gender: 'female', contactNo: "+1 (555) 020-2005" },
-    { name: "Cedric Diggory", status: "Senior Scholar", category: "fellows", email: "cedric.d@student.curriculab.edu", subject: "Sports Science", gender: 'male', contactNo: "+1 (555) 020-2006" }
+
+    // MBA(BA) Students
+    { name: "Georgetta Diodae Wilson", status: "MBA Student", category: "fellows", email: "georgettawilson44@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7775066089", whatsappNo: "7775066089" },
+    { name: "Akash Jayaprakash Mangalamthodi", status: "MBA Student", category: "fellows", email: "akashmangalam73857@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "9420475026", whatsappNo: "7709777025" },
+    { name: "Tanu Chaudhary", status: "MBA Student", category: "fellows", email: "ctanu608@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "8931075330", whatsappNo: "7905077690" },
+    { name: "Kaustubh Khushal Nandurkar", status: "MBA Student", category: "fellows", email: "kaustubh21112002@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "8080001550", whatsappNo: "7397836550" },
+    { name: "Veeramalla Mani Shankar", status: "MBA Student", category: "fellows", email: "veeramallamani7@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "8688426036", whatsappNo: "9441327721" },
+    { name: "Shah Kaif Javed", status: "MBA Student", category: "fellows", email: "kaifjshah@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "7666150737", whatsappNo: "9822080013" },
+    { name: "Chavan Harish Ravindra", status: "MBA Student", category: "fellows", email: "hrchavan0402@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "7030430756", whatsappNo: "7796123947" },
+    { name: "Anukriti Srivastava", status: "MBA Student", category: "fellows", email: "anukritisrivastava04@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7007334139", whatsappNo: "9151317648" },
+    { name: "Divya Shahi", status: "MBA Student", category: "fellows", email: "shahidivya38@gamil.com", subject: "Business Administration", gender: 'female', contactNo: "9214867985", whatsappNo: "8429085044" },
+    { name: "Tejas Sanjay Patil", status: "MBA Student", category: "fellows", email: "tejaspatil78787@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "9673662750", whatsappNo: "9529883139" }
 ];
