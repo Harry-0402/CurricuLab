@@ -24,7 +24,7 @@ COPY rag-system/node-backend/package.json ./rag-system/node-backend/
 RUN npm ci
 
 # Install Node Backend Dependencies
-cd rag-system/node-backend && npm install && cd ../..
+RUN cd rag-system/node-backend && npm install && cd ../..
 
 # Copy Full Source Code
 COPY . .
