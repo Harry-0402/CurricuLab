@@ -168,7 +168,7 @@ export function PromptLabContent() {
                 <div className="flex gap-6 h-full min-h-0 overflow-hidden">
                     {/* Left: Prompt Builder */}
                     <div className="flex-1 min-w-0 bg-white rounded-[40px] border border-gray-100 shadow-sm flex flex-col overflow-hidden">
-                        <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
+                        <div className="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
                             <div>
                                 <h2 className="text-xl font-black text-gray-900">Prompt Builder</h2>
                                 <p className="text-xs text-gray-400 font-medium">Draft and customize your AI instructions</p>
@@ -199,12 +199,12 @@ export function PromptLabContent() {
                             </div>
                         </div>
 
-                        <div className="p-2 flex-1 flex flex-col gap-2 overflow-hidden">
+                        <div className="p-0 flex-1 flex flex-col gap-0 overflow-hidden">
                             <textarea
                                 value={builderText}
                                 onChange={(e) => setBuilderText(e.target.value)}
                                 placeholder="Type your prompt here or select a template from the library..."
-                                className="flex-1 w-full p-8 bg-gray-50 rounded-[40px] border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-mono text-sm resize-none leading-relaxed text-gray-700 shadow-inner"
+                                className="flex-1 w-full p-6 bg-gray-50 rounded-none border-none focus:ring-0 outline-none font-mono text-sm resize-none leading-relaxed text-gray-700 shadow-inner"
                             />
 
                             <div className="flex items-center gap-3 p-3 bg-blue-50/30 rounded-[20px] border border-blue-100/30">
