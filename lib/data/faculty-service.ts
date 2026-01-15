@@ -113,13 +113,13 @@ export const INITIAL_DATA: Omit<Person, 'id'>[] = [
 
     // MBA(BA) Students
     { name: "Georgetta Diodae Wilson", status: "MBA Student", category: "fellows", email: "georgettawilson44@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7775066089", whatsappNo: "7775066089" },
-    { name: "Akash Jayaprakash Mangalamthodi", status: "MBA Student", category: "fellows", email: "akashmangalam73857@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "9420475026", whatsappNo: "7709777025" },
-    { name: "Tanu Chaudhary", status: "MBA Student", category: "fellows", email: "ctanu608@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "8931075330", whatsappNo: "7905077690" },
-    { name: "Kaustubh Khushal Nandurkar", status: "MBA Student", category: "fellows", email: "kaustubh21112002@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "8080001550", whatsappNo: "7397836550" },
-    { name: "Veeramalla Mani Shankar", status: "MBA Student", category: "fellows", email: "veeramallamani7@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "8688426036", whatsappNo: "9441327721" },
-    { name: "Shah Kaif Javed", status: "MBA Student", category: "fellows", email: "kaifjshah@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "7666150737", whatsappNo: "9822080013" },
-    { name: "Chavan Harish Ravindra", status: "MBA Student", category: "fellows", email: "hrchavan0402@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "7030430756", whatsappNo: "7796123947" },
-    { name: "Anukriti Srivastava", status: "MBA Student", category: "fellows", email: "anukritisrivastava04@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7007334139", whatsappNo: "9151317648" },
-    { name: "Divya Shahi", status: "MBA Student", category: "fellows", email: "shahidivya38@gamil.com", subject: "Business Administration", gender: 'female', contactNo: "9214867985", whatsappNo: "8429085044" },
-    { name: "Tejas Sanjay Patil", status: "MBA Student", category: "fellows", email: "tejaspatil78787@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "9673662750", whatsappNo: "9529883139" }
+    { name: "Akash Jayaprakash Mangalamthodi", status: "MBA Student", category: "fellows", email: "akashmangalam73857@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "9420475026", whatsappNo: "9420475026" },
+    { name: "Tanu Chaudhary", status: "MBA Student", category: "fellows", email: "ctanu608@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "8931075330", whatsappNo: "8931075330" },
+    { name: "Kaustubh Khushal Nandurkar", status: "MBA Student", category: "fellows", email: "kaustubh21112002@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "8080001550", whatsappNo: "8080001550" },
+    { name: "Veeramalla Mani Shankar", status: "MBA Student", category: "fellows", email: "veeramallamani7@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "8688426036", whatsappNo: "8688426036" },
+    { name: "Shah Kaif Javed", status: "MBA Student", category: "fellows", email: "kaifjshah@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "7666150737", whatsappNo: "7666150737" },
+    { name: "Chavan Harish Ravindra", status: "MBA Student", category: "fellows", email: "hrchavan0402@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "7030430756", whatsappNo: "7030430756" },
+    { name: "Anukriti Srivastava", status: "MBA Student", category: "fellows", email: "anukritisrivastava04@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7007334139", whatsappNo: "7007334139" },
+    { name: "Divya Shahi", status: "MBA Student", category: "fellows", email: "shahidivya38@gamil.com", subject: "Business Administration", gender: 'female', contactNo: "9214867985", whatsappNo: "9214867985" },
+    { name: "Tejas Sanjay Patil", status: "MBA Student", category: "fellows", email: "tejaspatil78787@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "9673662750", whatsappNo: "9673662750" }
 ];
