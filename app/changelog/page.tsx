@@ -14,12 +14,12 @@ export default function ChangelogPage() {
         loadLogs();
     }, []);
 
-    const loadLogs = async () => {
+    async function loadLogs() {
         setLoading(true);
         const data = await ChangelogService.getRecentChanges(50);
         setLogs(data);
         setLoading(false);
-    };
+    }
 
     const getActionIcon = (action: string) => {
         switch (action) {

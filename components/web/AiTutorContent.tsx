@@ -10,6 +10,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // --- CONFIG ---
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+const RAG_API_URL = process.env.NEXT_PUBLIC_RAG_API_URL || 'http://localhost:4000';
 const MODELS = [
     { id: "llama-3.3-70b-versatile", name: "Llama (Thinking)", provider: 'groq' },
     { id: "llama-3.1-8b-instant", name: "Llama (Fast)", provider: 'groq' },
@@ -40,7 +41,7 @@ const getCodeString = (children: any): string => {
     return String(children || '');
 };
 
-const ChatCodeBlock = ({ children }: { children?: any }) => {
+const ChatCodeBlock = ({ children }: { children?: React.ReactNode }) => {
     const [copied, setCopied] = useState(false);
     const codeString = getCodeString(children);
 
@@ -85,7 +86,10 @@ export function AiTutorContent() {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [selectedModelId, setSelectedModelId] = useState(MODELS[0].id);
+    const [activeFileId, setActiveFileId] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Initialize Gemini Client
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -100,7 +104,92 @@ export function AiTutorContent() {
         scrollToBottom();
     }, [messages, isLoading]);
 
+    const [sessionId, setSessionId] = useState('');
+
+    useEffect(() => {
+        // Generate unique session ID on mount (refresh)
+        setSessionId(`session-${Math.random().toString(36).substring(7)}`);
+    }, []);
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || !sessionId) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('userId', sessionId); // Use transient session ID
+
+        try {
+            const response = await fetch(`${RAG_API_URL}/upload`, {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                setActiveFileId(data.fileId);
+                setMessages(prev => [...prev, {
+                    role: 'assistant',
+                    content: `✅ **File Uploaded**: *${file.name}* has been indexed. I will now answer questions based ONLY on this document.`
+                }]);
+            } else {
+                alert('Upload failed: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Upload Error:', error);
+            alert('Failed to upload file. Ensure the local RAG server is running on port 4000.');
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
+
+    const handleClearSession = () => {
+        setSessionId(`session-${Math.random().toString(36).substring(7)}`);
+        setActiveFileId(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        setMessages(prev => [...prev, {
+            role: 'assistant',
+            content: "🔄 **Context Cleared**: I've disconnected from the document. Switching back to **General Chat**."
+        }]);
+    };
+
     const generateResponse = async (modelId: string, currentMessages: Message[], userPrompt: string): Promise<string> => {
+        // RAG Mode Request
+        if (activeFileId) {
+            // 1. Fetch Context from Local RAG
+            const response = await fetch(`${RAG_API_URL}/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: sessionId, // Use transient session ID
+                    message: userPrompt
+                })
+            });
+            const data = await response.json();
+
+            // 2. Handle No Context
+            if (!data.raw_context || data.raw_context.length === 0) {
+                return "I couldn't find this in your uploaded material. Please upload relevant notes.";
+            }
+
+            // 3. Construct Augmented Prompt
+            const contextText = data.raw_context.join('\n\n');
+            const augmentedPrompt = `You are a helpful AI tutor. Use the following pieces of retrieved context to answer the user's question.
+If the answer is not in the context, say "I couldn't find this in your uploaded material."
+
+Context:
+${contextText}
+
+Question: ${userPrompt}
+
+Answer:`;
+
+            // 4. Pass to Selected LLM (Fallthrough to existing logic)
+            userPrompt = augmentedPrompt;
+            // We modify userPrompt here so it falls through to the existing API/Gemini calls below
+        }
+
         const selectedModel = MODELS.find(m => m.id === modelId) || MODELS[0];
 
         // Handles Groq, Copilot, and OpenRouter via server-side route
@@ -323,12 +412,49 @@ export function AiTutorContent() {
                     <div className="p-4 bg-white/80 backdrop-blur-md border-t border-gray-50 z-10 w-full shrink-0">
                         <div className="w-full max-w-4xl mx-auto relative">
                             <form onSubmit={handleSubmit} className="relative bg-white rounded-[28px] border-2 border-gray-100 hover:border-gray-200 focus-within:border-blue-100 focus-within:ring-4 focus-within:ring-blue-50 transition-all shadow-sm">
+                                <div className="absolute left-2 top-2 flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={isLoading || isUploading}
+                                        className={cn(
+                                            "p-3 rounded-full transition-colors",
+                                            activeFileId ? "bg-blue-100 text-blue-600" : "text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                                        )}
+                                        title="Upload Document for Context"
+                                    >
+                                        {isUploading ? <Icons.Loader2 size={20} className="animate-spin" /> : <Icons.Paperclip size={20} />}
+                                    </button>
+
+                                    {activeFileId && (
+                                        <button
+                                            type="button"
+                                            onClick={handleClearSession}
+                                            disabled={isLoading}
+                                            className="p-3 rounded-full text-red-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                                            title="Clear Document & Context"
+                                        >
+                                            <Icons.X size={20} />
+                                        </button>
+                                    )}
+                                </div>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    onChange={handleFileUpload}
+                                    accept=".pdf,.docx,.pptx,.txt,.csv,.xlsx,.xls,.png,.jpg,.jpeg"
+                                />
+
                                 <input
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder={messages.length === 0 ? "Ask anything..." : "Message LearnPilot..."}
-                                    className="w-full h-[60px] bg-transparent text-gray-900 placeholder-gray-400 border-none focus:ring-0 px-6 pr-14 text-base font-medium rounded-[28px]"
+                                    placeholder={activeFileId ? "Ask a question about your document..." : (messages.length === 0 ? "Ask anything..." : "Message LearnPilot...")}
+                                    className={cn(
+                                        "w-full h-[60px] bg-transparent text-gray-900 placeholder-gray-400 border-none focus:ring-0 pr-14 text-base font-medium rounded-[28px]",
+                                        activeFileId ? "pl-28" : "pl-14"
+                                    )}
                                 />
                                 <button
                                     type="submit"

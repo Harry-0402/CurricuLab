@@ -1,6 +1,7 @@
 services:
+  # 1. Frontend (Next.js)
   - type: web
-    name: curriculab
+    name: curriculab-frontend
     env: node
     region: singapore
     plan: free
@@ -9,3 +10,37 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NEXT_PUBLIC_RAG_API_URL
+        fromService:
+            type: web
+            name: curriculab-node-backend
+            property: url
+
+  # 2. Node.js Backend (Uploads & Proxy)
+  - type: web
+    name: curriculab-node-backend
+    env: node
+    region: singapore
+    plan: free
+    rootDir: rag-system/node-backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: PYTHON_SERVICE_URL
+        fromService:
+            type: web
+            name: curriculab-python-rag
+            property: url
+
+  # 3. Python RAG Service (Docker for OCR/Chroma)
+  - type: web
+    name: curriculab-python-rag
+    env: docker
+    region: singapore
+    plan: free # Note: Free tier might struggle with RAM for OCR models
+    rootDir: rag-system/python-service
+    envVars:
+      - key: PORT
+        value: 8000
