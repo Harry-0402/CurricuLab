@@ -225,7 +225,7 @@ export function PromptLabContent() {
                     <div
                         className={cn(
                             "bg-white rounded-[40px] border border-gray-100 shadow-sm flex flex-col overflow-hidden transition-all duration-500 ease-in-out",
-                            isLibraryExpanded ? "w-[450px]" : "w-20"
+                            isLibraryExpanded ? "w-[340px]" : "w-20"
                         )}
                     >
                         <div className={cn(
