@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
-import { MobileAppShell } from '@/components/mobile/MobileAppShell';
+
 import { searchAll } from '@/lib/services/app.service';
 import { Icons } from '@/components/shared/Icons';
 

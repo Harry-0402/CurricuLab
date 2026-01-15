@@ -1,3 +1,5 @@
+"use client"
+
 import { DigitalLibraryContent } from '@/components/web/DigitalLibraryContent';
 
 export default function ResourcesPage() {

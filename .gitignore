@@ -44,4 +44,3 @@ next-env.d.ts
 *_content/
 *.zip
 *.txt
-!requirements.txt

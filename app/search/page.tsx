@@ -1,3 +1,5 @@
+"use client"
+
 import { SearchContent } from '@/components/shared/SearchContent';
 import { WebAppShell } from '@/components/web/WebAppShell';
 

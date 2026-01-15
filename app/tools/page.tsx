@@ -1,3 +1,5 @@
+"use client"
+
 import { WebAppShell } from '@/components/web/WebAppShell';
 
 export default function ToolsRootPage() {
