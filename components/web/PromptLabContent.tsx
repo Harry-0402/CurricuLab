@@ -199,7 +199,7 @@ export function PromptLabContent() {
                             </div>
                         </div>
 
-                        <div className="p-8 flex-1 flex flex-col gap-6 overflow-hidden">
+                        <div className="p-2 flex-1 flex flex-col gap-2 overflow-hidden">
                             <textarea
                                 value={builderText}
                                 onChange={(e) => setBuilderText(e.target.value)}
