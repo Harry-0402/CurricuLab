@@ -34,85 +34,110 @@ export async function POST(req: Request) {
             content: mode === 'prompt_engineer' ? PROMPT_ENGINEER_PROMPT : TUTOR_PROMPT
         };
 
+        const PROMPT_ENGINEER_MODELS = [
+            'google/gemini-2.0-flash-exp:free',
+            'deepseek/deepseek-r1-distill-llama-70b:free',
+            'xiaomi/mimo-v2-flash:free',
+            'google/gemma-3-27b:free',
+            'openai/gpt-oss-20b:free'
+        ];
+
+        const TUTOR_MODELS = [
+            'google/gemini-2.0-flash-exp:free',
+            'google/gemma-3-27b:free',
+            'deepseek/deepseek-r1-distill-llama-70b:free',
+            'openai/gpt-oss-20b:free'
+        ];
+
         let reply = "";
+        let errorDetails = "";
 
-        // --- COPILOT (GITHUB MODELS) HANDLER ---
-        if (provider === 'copilot') {
-            const copilotKey = process.env.COPILOT_API_KEY;
-            if (!copilotKey) return NextResponse.json({ message: "Copilot API Key is missing. Please configure COPILOT_API_KEY." });
-
-            const response = await fetch("https://models.inference.ai.azure.com/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${copilotKey}`
-                },
-                body: JSON.stringify({
-                    messages: [systemPrompt, ...messages],
-                    model: "gpt-4o",
-                    temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
-                    max_tokens: 1024
-                })
-            });
-
-            if (!response.ok) {
-                const err = await response.text();
-                console.error("Copilot API Error:", err);
-                throw new Error(`Copilot API Error: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            reply = data.choices[0]?.message?.content || "No response from Copilot.";
-        }
-        // --- OPENROUTER HANDLER ---
-        else if (provider === 'openrouter') {
+        // --- SMART ROUTER (OPENROUTER FALLBACK) ---
+        if (provider === 'openrouter' || mode === 'prompt_engineer') {
             const orKey = process.env.OPENROUTER_API_KEY;
-            if (!orKey) return NextResponse.json({ message: "OpenRouter API Key is missing. Please configure OPENROUTER_API_KEY." });
+            if (!orKey) return NextResponse.json({ message: "OpenRouter API Key is missing." });
 
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${orKey}`,
-                    "HTTP-Referer": "https://curriculab.vercel.app",
-                    "X-Title": "CurricuLab"
-                },
-                body: JSON.stringify({
-                    messages: [systemPrompt, ...messages],
-                    model: model || "deepseek/deepseek-chat",
-                    temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
-                    max_tokens: 1024
-                })
-            });
+            const modelList = mode === 'prompt_engineer' ? PROMPT_ENGINEER_MODELS : TUTOR_MODELS;
 
-            if (!response.ok) {
-                const err = await response.text();
-                console.error("OpenRouter API Error:", err);
-                throw new Error(`OpenRouter API Error: ${response.statusText}`);
+            for (const modelId of modelList) {
+                try {
+                    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${orKey}`,
+                            "HTTP-Referer": "https://curriculab.vercel.app",
+                            "X-Title": "CurricuLab"
+                        },
+                        body: JSON.stringify({
+                            messages: [systemPrompt, ...messages],
+                            model: modelId,
+                            temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
+                            max_tokens: 1024
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        reply = data.choices[0]?.message?.content || "";
+                        if (reply) break;
+                    } else {
+                        const errText = await response.text();
+                        console.warn(`Model ${modelId} failed:`, errText);
+                        errorDetails += `${modelId}: ${response.status} | `;
+                    }
+                } catch (e: any) {
+                    console.error(`Error calling ${modelId}:`, e);
+                    errorDetails += `${modelId}: ${e.message} | `;
+                }
             }
-
-            const data = await response.json();
-            reply = data.choices[0]?.message?.content || "No response from OpenRouter.";
         }
-        // --- GROQ HANDLER (Default) ---
-        else {
-            if (!process.env.GROQ_API_KEY) {
-                return NextResponse.json({
-                    message: "I am currently running in **Demo Mode**. Please configure `GROQ_API_KEY`."
-                });
+
+        // --- GROQ FALLBACK (If OpenRouter fails or provider is Groq) ---
+        if (!reply && (provider === 'groq' || provider === 'openrouter')) {
+            if (process.env.GROQ_API_KEY) {
+                try {
+                    const chatCompletion = await groq.chat.completions.create({
+                        messages: [systemPrompt, ...messages],
+                        model: 'llama-3.3-70b-versatile',
+                        temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
+                        max_tokens: 1024,
+                    });
+                    reply = chatCompletion.choices[0]?.message?.content || "";
+                } catch (e: any) {
+                    console.error('Groq fallback failed:', e);
+                }
             }
+        }
 
-            const chatCompletion = await groq.chat.completions.create({
-                messages: [systemPrompt, ...messages],
-                model: model || 'llama-3.3-70b-versatile',
-                temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
-                max_tokens: 1024,
-                top_p: 1,
-                stream: false,
-                stop: null
+        // --- COPILOT FALLBACK ---
+        if (!reply && provider === 'copilot') {
+            const copilotKey = process.env.COPILOT_API_KEY;
+            if (copilotKey) {
+                const response = await fetch("https://models.inference.ai.azure.com/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${copilotKey}`
+                    },
+                    body: JSON.stringify({
+                        messages: [systemPrompt, ...messages],
+                        model: "gpt-4o",
+                        temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
+                    })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    reply = data.choices[0]?.message?.content || "";
+                }
+            }
+        }
+
+        if (!reply) {
+            return NextResponse.json({
+                message: "I'm having trouble connecting to my AI models right now. Please try again in a moment.",
+                error: errorDetails
             });
-
-            reply = chatCompletion.choices[0]?.message?.content || "I apologize, I couldn't generate a response.";
         }
 
         return NextResponse.json({ message: reply });
