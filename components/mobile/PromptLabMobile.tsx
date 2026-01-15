@@ -3,12 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { MobileAppShell } from '@/components/mobile/MobileAppShell';
 import { Icons } from '@/components/shared/Icons';
+import { cn } from '@/lib/utils';
 import { LOCAL_PROMPTS, Prompt } from '@/lib/data/course-data';
 
 export function PromptLabMobile() {
     const [prompts, setPrompts] = useState<Prompt[]>([]);
     const [activePrompt, setActivePrompt] = useState<Prompt | null>(null);
+    const [builderText, setBuilderText] = useState('');
     const [copied, setCopied] = useState(false);
+    const [activeTab, setActiveTab] = useState<'builder' | 'library'>('builder');
 
     useEffect(() => {
         setPrompts(LOCAL_PROMPTS);
@@ -20,6 +23,16 @@ export function PromptLabMobile() {
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const insertVariable = (variable: string) => {
+        setBuilderText(prev => prev + (prev.endsWith(' ') || !prev ? '' : ' ') + variable);
+    };
+
+    const applyTemplate = (prompt: Prompt) => {
+        setBuilderText(prompt.prompt);
+        setActivePrompt(prompt);
+        setActiveTab('builder');
+    };
+
     return (
         <MobileAppShell>
             <div className="p-6 space-y-8 pb-32">
@@ -28,48 +41,77 @@ export function PromptLabMobile() {
                     <p className="text-4xl font-black text-gray-900 tracking-tight">Prompt Lab</p>
                 </div>
 
-                {activePrompt ? (
-                    <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                        <button
-                            onClick={() => setActivePrompt(null)}
-                            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-600"
-                        >
-                            <Icons.ChevronLeft size={16} /> Back to Library
-                        </button>
+                <div className="flex bg-gray-100 p-1.5 rounded-[24px]">
+                    <button
+                        onClick={() => setActiveTab('builder')}
+                        className={cn(
+                            "flex-1 py-3 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all",
+                            activeTab === 'builder' ? "bg-white text-blue-600 shadow-sm" : "text-gray-400"
+                        )}
+                    >
+                        Prompt Builder
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('library')}
+                        className={cn(
+                            "flex-1 py-3 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all",
+                            activeTab === 'library' ? "bg-white text-blue-600 shadow-sm" : "text-gray-400"
+                        )}
+                    >
+                        Template Library
+                    </button>
+                </div>
 
-                        <div className="bg-white p-6 rounded-[32px] border border-gray-100 space-y-6 shadow-sm">
-                            <div>
-                                <h3 className="text-xl font-black text-gray-900">{activePrompt.title}</h3>
-                                <p className="text-xs text-gray-400 mt-1">{activePrompt.description}</p>
+                {activeTab === 'builder' ? (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
+                        <div className="space-y-4">
+                            <div className="flex flex-wrap gap-2">
+                                {['[TOPIC]', '[KEY_TERMS]', '[SUMMARY]'].map(v => (
+                                    <button
+                                        key={v}
+                                        onClick={() => insertVariable(v)}
+                                        className="px-4 py-3 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-blue-100"
+                                    >
+                                        + {v}
+                                    </button>
+                                ))}
                             </div>
 
-                            <div className="bg-gray-50 rounded-2xl p-5 font-mono text-xs text-gray-700 leading-relaxed whitespace-pre-wrap border border-gray-100 max-h-60 overflow-y-auto">
-                                {activePrompt.prompt}
-                            </div>
+                            <textarea
+                                value={builderText}
+                                onChange={(e) => setBuilderText(e.target.value)}
+                                placeholder="Draft your AI prompt here..."
+                                className="w-full h-80 p-6 bg-white border border-gray-100 rounded-[32px] font-mono text-sm text-gray-700 outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
+                            />
 
                             <button
-                                onClick={() => handleCopy(activePrompt.prompt)}
-                                className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg ${copied ? "bg-emerald-500 text-white" : "bg-gray-900 text-white"
-                                    }`}
+                                onClick={() => handleCopy(builderText)}
+                                disabled={!builderText}
+                                className={cn(
+                                    "w-full py-5 rounded-[24px] font-black uppercase tracking-widest text-xs transition-all shadow-xl shadow-blue-50",
+                                    copied ? "bg-emerald-500 text-white" : "bg-gray-900 text-white disabled:opacity-20"
+                                )}
                             >
                                 {copied ? "Prompt Copied!" : "Copy to Clipboard"}
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-4 overflow-y-auto">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Select a Template</p>
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                         {prompts.length > 0 ? prompts.map(p => (
                             <button
                                 key={p.id}
-                                onClick={() => setActivePrompt(p)}
-                                className="bg-white p-5 rounded-[32px] border border-gray-100 flex items-center justify-between active:scale-[0.98] transition-all"
+                                onClick={() => applyTemplate(p)}
+                                className="w-full bg-white p-6 rounded-[32px] border border-gray-100 flex flex-col items-start gap-4 active:scale-[0.98] transition-all shadow-sm"
                             >
-                                <div className="text-left">
-                                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">{p.category}</p>
-                                    <h4 className="font-black text-gray-900">{p.title}</h4>
+                                <div className="flex items-center justify-between w-full">
+                                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{p.category}</p>
+                                    <Icons.ChevronRight size={18} className="text-gray-300" />
                                 </div>
-                                <Icons.ChevronRight size={20} className="text-gray-300" />
+                                <div className="text-left">
+                                    <h4 className="font-black text-gray-900 text-lg">{p.title}</h4>
+                                    <p className="text-xs text-gray-400 mt-2 font-medium leading-relaxed">{p.description}</p>
+                                </div>
                             </button>
                         )) : (
                             <div className="py-20 text-center space-y-4">
@@ -77,7 +119,7 @@ export function PromptLabMobile() {
                                     <Icons.Lightbulb size={32} />
                                 </div>
                                 <p className="font-bold uppercase tracking-widest text-[10px] text-gray-400">
-                                    No prompts found
+                                    Library is empty
                                 </p>
                             </div>
                         )}
