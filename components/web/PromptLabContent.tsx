@@ -71,7 +71,6 @@ export function PromptLabContent() {
             <div className="max-w-[1600px] mx-auto flex flex-col h-[calc(100vh-160px)]">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
                         <p className="text-5xl font-black text-gray-900 tracking-tight">Prompt Lab</p>
                     </div>
                     <div className="flex items-center gap-6">
