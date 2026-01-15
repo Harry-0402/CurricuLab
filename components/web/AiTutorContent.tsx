@@ -137,7 +137,7 @@ export function AiTutorContent() {
             }
         } catch (error) {
             console.error('Upload Error:', error);
-            alert(`Failed to upload file. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            alert(`Failed to upload to ${RAG_API_URL}. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
