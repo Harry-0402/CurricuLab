@@ -75,14 +75,14 @@ export function PromptLabContent() {
                         <p className="text-5xl font-black text-gray-900 tracking-tight">Prompt Lab</p>
                     </div>
                     <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-3 bg-white/80 backdrop-blur-md p-2 rounded-[24px] border border-gray-100 shadow-sm">
+                        <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-gray-100 shadow-sm">
                             {[
                                 {
                                     name: 'ChatGPT',
                                     url: 'https://chat.openai.com',
                                     color: 'hover:bg-[#10a37f] hover:text-white',
                                     icon: (
-                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                                             <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.0462 6.0462 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.5364-1.8405l-1.324-2.3679 6.641-.3016 1.8489-3.7297 1.487 1.1165a4.4755 4.4755 0 0 1 1.7196 2.3726l.0048.0572-.0048.0573v.062a4.5041 4.5041 0 0 1-7.836 4.5741zm6.9858-6.1866a4.4708 4.4708 0 0 1-1.7483 2.6247l-.062.0336-.0525.0335-.062.0335h-.062a4.5041 4.5041 0 0 1-5.0601-1.2415l-.8931-1.6128 3.9931-5.3259h2.3256l1.6272 5.3268v.1281zm-1.8722-8.3562a4.4708 4.4708 0 0 1 2.639 1.7052l.024.0621.0239.062.0239.0573v.062a4.5041 4.5041 0 0 1-2.9736 5.5645l-1.8155.5118-2.6143-6.195 1.5435-1.7895 3.0189.0238h.1292zm-8.8788.5873a4.4708 4.4708 0 0 1 2.5028-1.874l.0573-.0096.062-.0095h.0621a4.5041 4.5041 0 0 1 5.313 3.6385l.2339 1.8539-6.3862 2.0534-2.0867-1.1213.2386-4.5244.005-.007zm-5.466 5.5931a4.4708 4.4708 0 0 1 .845-3.0829l.043-.0525.0429-.0525.0478-.0526.0429-.0477a4.5041 4.5041 0 0 1 6.2762.6586l1.2095 1.3976-1.782 6.4776-2.3584.062-4.1307-5.184-.0931-.1236zm3.1958 8.046a4.4708 4.4708 0 0 1-2.6247-1.7435l-.0335-.062-.0335-.0525-.0336-.0621v-.062a4.5041 4.5041 0 0 1 1.251-5.1077l1.5937-.8787 5.3402 3.9882v2.368l-5.3644 1.5644-.0954.048z" />
                                         </svg>
                                     )
@@ -92,7 +92,7 @@ export function PromptLabContent() {
                                     url: 'https://www.perplexity.ai',
                                     color: 'hover:bg-[#20b2aa] hover:text-white',
                                     icon: (
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                                             <path d="M12 2 L12 22 M2 12 L22 12 M4.9 4.9 L19.1 19.1 M4.9 19.1 L19.1 4.9" />
                                         </svg>
                                     )
@@ -102,7 +102,7 @@ export function PromptLabContent() {
                                     url: 'https://gemini.google.com',
                                     color: 'hover:bg-[#4285f4] hover:text-white',
                                     icon: (
-                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                                             <path d="M12 2l2.5 8.5L23 13l-8.5 2.5L12 24l-2.5-8.5L1 13l8.5-2.5z" />
                                         </svg>
                                     )
@@ -112,7 +112,7 @@ export function PromptLabContent() {
                                     url: 'https://claude.ai',
                                     color: 'hover:bg-[#d97757] hover:text-white',
                                     icon: (
-                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
                                             <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" opacity=".5" />
                                         </svg>
@@ -123,18 +123,18 @@ export function PromptLabContent() {
                                     url: 'https://gpai.app/solver',
                                     color: 'hover:bg-[#f97316] hover:text-white',
                                     icon: (
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                                             <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z" />
                                             <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z" />
                                         </svg>
                                     )
                                 }, // Brain (Orange)
                                 {
-                                    name: 'Google',
+                                    name: 'Google AI Mode',
                                     url: 'https://www.google.com/search?sourceid=chrome&udm=50&aep=42',
                                     color: 'hover:bg-[#4285f4] hover:text-white',
                                     icon: (
-                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                                             <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .533 5.333.533 12S5.867 24 12.48 24c3.6 0 6.627-1.187 8.96-3.08 2.507-2.36 3.013-6.147 2.547-9.84H12.48z" />
                                         </svg>
                                     )
@@ -146,7 +146,7 @@ export function PromptLabContent() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className={cn(
-                                        "w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 bg-gray-50 transition-all duration-300 hover:scale-110 hover:shadow-lg",
+                                        "w-8 h-8 rounded-[12px] flex items-center justify-center text-gray-400 bg-gray-50/50 transition-all duration-200",
                                         ai.color
                                     )}
                                     title={ai.name}
