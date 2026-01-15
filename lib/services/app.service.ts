@@ -1,51 +1,8 @@
 import { supabase } from "@/utils/supabase/client";
-import { Subject, Unit, Note, Question, CaseStudy, Project, KPIStats, TimetableEntry, Announcement, Assignment } from "@/types";
+import { Subject, Unit, Note, Question, KPIStats, TimetableEntry, Announcement, Assignment } from "@/types";
+import { LOCAL_SUBJECTS, LOCAL_UNITS, LOCAL_NOTES, LOCAL_QUESTIONS } from "@/lib/data/course-data";
 
-// Helper to map DB snake_case to App camelCase
-const mapSubject = (s: any): Subject => ({
-    id: s.id,
-    code: s.code,
-    title: s.title,
-    icon: s.icon,
-    color: s.color,
-    description: s.description,
-    progress: s.progress,
-    unitCount: s.unit_count,
-    lastStudied: s.last_studied,
-    syllabusPdfUrl: s.syllabus_pdf_url
-});
-
-const mapUnit = (u: any): Unit => ({
-    id: u.id,
-    subjectId: u.subject_id,
-    title: u.title,
-    description: u.description,
-    order: u.order,
-    isCompleted: u.is_completed,
-    topics: u.topics || []
-});
-
-const mapNote = (n: any): Note => ({
-    id: n.id,
-    unitId: n.unit_id,
-    title: n.title,
-    content: n.content,
-    isBookmarked: n.is_bookmarked,
-    lastModified: n.last_modified
-});
-
-const mapQuestion = (q: any): Question => ({
-    id: q.id,
-    unitId: q.unit_id,
-    subjectId: q.subject_id,
-    question: q.question,
-    answer: q.answer,
-    marksType: q.marks_type,
-    tags: q.tags || [],
-    isBookmarked: q.is_bookmarked,
-    difficulty: q.difficulty
-});
-
+// Helper to map DB snake_case to App camelCase (Still used for Supabase tables)
 const mapAssignment = (a: any): Assignment => ({
     id: a.id,
     subjectId: a.subject_id,
@@ -74,231 +31,127 @@ const mapAnnouncement = (a: any): Announcement => ({
     type: a.type
 });
 
-// --- Subjects ---
+// --- Subjects (Local Static Data) ---
 
 export const getSubjects = async (): Promise<Subject[]> => {
-    const { data, error } = await supabase.from('subjects').select('*').order('code', { ascending: true });
-    if (error || !data) return [];
-    return data.map(mapSubject);
+    return LOCAL_SUBJECTS;
 };
 
 export const getSubjectById = async (id: string): Promise<Subject | undefined> => {
-    const { data, error } = await supabase.from('subjects').select('*').eq('id', id).single();
-    if (error || !data) return undefined;
-    return mapSubject(data);
+    return LOCAL_SUBJECTS.find(s => s.id === id);
 };
 
 export const createSubject = async (subject: Subject): Promise<Subject> => {
-    const payload = {
-        id: subject.id,
-        code: subject.code,
-        title: subject.title,
-        icon: subject.icon,
-        color: subject.color,
-        description: subject.description,
-        progress: subject.progress,
-        unit_count: subject.unitCount,
-        last_studied: subject.lastStudied,
-        syllabus_pdf_url: subject.syllabusPdfUrl
-    };
-    const { data, error } = await supabase.from('subjects').insert(payload).select().single();
-    if (error) throw error;
-    return mapSubject(data);
+    console.warn("createSubject is disabled in local mode");
+    return subject;
 };
 
 export const updateSubject = async (subject: Subject): Promise<Subject> => {
-    const payload = {
-        code: subject.code,
-        title: subject.title,
-        icon: subject.icon,
-        color: subject.color,
-        description: subject.description,
-        progress: subject.progress,
-        unit_count: subject.unitCount,
-        last_studied: subject.lastStudied,
-        syllabus_pdf_url: subject.syllabusPdfUrl
-    };
-    const { data, error } = await supabase.from('subjects').update(payload).eq('id', subject.id).select().single();
-    if (error) throw error;
-    return mapSubject(data);
+    console.warn("updateSubject is disabled in local mode");
+    return subject;
 };
 
 export const deleteSubject = async (id: string): Promise<void> => {
-    const { error } = await supabase.from('subjects').delete().eq('id', id);
-    if (error) throw error;
+    console.warn("deleteSubject is disabled in local mode");
 };
 
 
-// --- Units ---
+// --- Units (Local Static Data) ---
 
 export const getUnits = async (subjectId: string): Promise<Unit[]> => {
-    const { data, error } = await supabase.from('units').select('*').eq('subject_id', subjectId).order('order', { ascending: true });
-    if (error || !data) return [];
-    return data.map(mapUnit);
+    return LOCAL_UNITS.filter(u => u.subjectId === subjectId).sort((a, b) => a.order - b.order);
 };
 
 export const getUnitById = async (id: string): Promise<Unit | undefined> => {
-    const { data, error } = await supabase.from('units').select('*').eq('id', id).single();
-    if (error || !data) return undefined;
-    return mapUnit(data);
+    return LOCAL_UNITS.find(u => u.id === id);
 };
 
 export const createUnit = async (unit: Unit): Promise<Unit> => {
-    const payload = {
-        id: unit.id,
-        subject_id: unit.subjectId,
-        title: unit.title,
-        description: unit.description,
-        order: unit.order,
-        is_completed: unit.isCompleted,
-        topics: unit.topics
-    };
-    const { data, error } = await supabase.from('units').insert(payload).select().single();
-    if (error) throw error;
-    return mapUnit(data);
+    console.warn("createUnit is disabled in local mode");
+    return unit;
 };
 
 export const updateUnit = async (unit: Unit): Promise<Unit> => {
-    const payload = {
-        subject_id: unit.subjectId,
-        title: unit.title,
-        description: unit.description,
-        order: unit.order,
-        is_completed: unit.isCompleted,
-        topics: unit.topics
-    };
-    const { data, error } = await supabase.from('units').update(payload).eq('id', unit.id).select().single();
-    if (error) throw error;
-    return mapUnit(data);
+    console.warn("updateUnit is disabled in local mode");
+    return unit;
 };
 
 export const deleteUnit = async (id: string): Promise<void> => {
-    const { error } = await supabase.from('units').delete().eq('id', id);
-    if (error) throw error;
+    console.warn("deleteUnit is disabled in local mode");
 };
 
 
-// --- Notes ---
+// --- Notes (Local Static Data) ---
 
 export const getNotesByUnit = async (unitId: string): Promise<Note[]> => {
-    const { data, error } = await supabase.from('notes').select('*').eq('unit_id', unitId);
-    if (error || !data) return [];
-    return data.map(mapNote);
+    return LOCAL_NOTES.filter(n => n.unitId === unitId);
 };
 
 export const getNoteById = async (id: string): Promise<Note | undefined> => {
-    const { data, error } = await supabase.from('notes').select('*').eq('id', id).single();
-    if (error || !data) return undefined;
-    return mapNote(data);
+    return LOCAL_NOTES.find(n => n.id === id);
 };
 
 export const createNote = async (note: Note): Promise<Note> => {
-    const payload = {
-        id: note.id,
-        unit_id: note.unitId,
-        title: note.title,
-        content: note.content,
-        is_bookmarked: note.isBookmarked,
-        last_modified: note.lastModified
-    };
-    const { data, error } = await supabase.from('notes').insert(payload).select().single();
-    if (error) throw error;
-    return mapNote(data);
+    console.warn("createNote is disabled in local mode");
+    return note;
 };
 
 export const updateNote = async (note: Note): Promise<Note> => {
-    const payload = {
-        unit_id: note.unitId,
-        title: note.title,
-        content: note.content,
-        is_bookmarked: note.isBookmarked,
-        last_modified: note.lastModified
-    };
-    const { data, error } = await supabase.from('notes').update(payload).eq('id', note.id).select().single();
-    if (error) throw error;
-    return mapNote(data);
+    console.warn("updateNote is disabled in local mode");
+    return note;
 };
 
 export const deleteNote = async (id: string): Promise<void> => {
-    const { error } = await supabase.from('notes').delete().eq('id', id);
-    if (error) throw error;
+    console.warn("deleteNote is disabled in local mode");
 };
 
 
-// --- Questions ---
+// --- Questions (Local Static Data) ---
 
 export const getQuestions = async (filters: { subjectId?: string; unitId?: string; marksType?: number }): Promise<Question[]> => {
-    let query = supabase.from('questions').select('*');
-    if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
-    if (filters.unitId) query = query.eq('unit_id', filters.unitId);
-    if (filters.marksType) query = query.eq('marks_type', filters.marksType);
-
-    const { data, error } = await query;
-    if (error || !data) return [];
-    return data.map(mapQuestion);
+    let filtered = [...LOCAL_QUESTIONS];
+    if (filters.subjectId) filtered = filtered.filter(q => q.subjectId === filters.subjectId);
+    if (filters.unitId) filtered = filtered.filter(q => q.unitId === filters.unitId);
+    if (filters.marksType) filtered = filtered.filter(q => q.marksType === filters.marksType);
+    return filtered;
 };
 
 export const createQuestion = async (question: Question): Promise<Question> => {
-    const payload = {
-        id: question.id,
-        unit_id: question.unitId,
-        subject_id: question.subjectId,
-        question: question.question,
-        answer: question.answer,
-        marks_type: question.marksType,
-        tags: question.tags,
-        is_bookmarked: question.isBookmarked,
-        difficulty: question.difficulty
-    };
-    const { data, error } = await supabase.from('questions').insert(payload).select().single();
-    if (error) throw error;
-    return mapQuestion(data);
+    console.warn("createQuestion is disabled in local mode");
+    return question;
 };
 
 export const updateQuestion = async (question: Question): Promise<Question> => {
-    const payload = {
-        unit_id: question.unitId,
-        subject_id: question.subjectId,
-        question: question.question,
-        answer: question.answer,
-        marks_type: question.marksType,
-        tags: question.tags,
-        is_bookmarked: question.isBookmarked,
-        difficulty: question.difficulty
-    };
-    const { data, error } = await supabase.from('questions').update(payload).eq('id', question.id).select().single();
-    if (error) throw error;
-    return mapQuestion(data);
+    console.warn("updateQuestion is disabled in local mode");
+    return question;
 };
 
 export const deleteQuestion = async (id: string): Promise<void> => {
-    const { error } = await supabase.from('questions').delete().eq('id', id);
-    if (error) throw error;
+    console.warn("deleteQuestion is disabled in local mode");
 };
 
 
-// --- Others ---
+// --- Others (Still Supabase or Mock) ---
 
-export const getCaseStudiesByUnit = async (unitId: string): Promise<CaseStudy[]> => {
+export const getCaseStudiesByUnit = async (unitId: string): Promise<any[]> => {
     return [];
 };
 
-export const getProjectsByUnit = async (unitId: string): Promise<Project[]> => {
+export const getProjectsByUnit = async (unitId: string): Promise<any[]> => {
     return [];
 };
 
 export const searchAll = async (query: string) => {
-    // Basic Supabase search not implemented in this snippet, returning empty.
-    // Real implementation would use RPC or multiple queries.
+    const q = query.toLowerCase();
     return {
-        notes: [],
-        questions: [],
-        subjects: [],
+        notes: LOCAL_NOTES.filter(n => n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q)),
+        questions: LOCAL_QUESTIONS.filter(q_obj => q_obj.question.toLowerCase().includes(q)),
+        subjects: LOCAL_SUBJECTS.filter(s => s.title.toLowerCase().includes(q) || s.code.toLowerCase().includes(q)),
     };
 };
 
 
-// --- Timetable ---
+// --- Timetable (Supabase) ---
 
 export const getTimetable = async (): Promise<TimetableEntry[]> => {
     const { data, error } = await supabase.from('timetable').select('*');
@@ -323,7 +176,7 @@ export const updateTimetableEntry = async (entry: TimetableEntry): Promise<Timet
 };
 
 
-// --- Announcements ---
+// --- Announcements (Supabase) ---
 
 export const getAnnouncements = async (): Promise<Announcement[]> => {
     const { data, error } = await supabase.from('announcements').select('*');
@@ -350,7 +203,7 @@ export const deleteAnnouncement = async (id: string): Promise<void> => {
 };
 
 
-// --- Assignments ---
+// --- Assignments (Supabase) ---
 
 export const getAssignments = async (subjectId?: string): Promise<Assignment[]> => {
     let query = supabase.from('assignments').select('*');
@@ -399,7 +252,7 @@ export const getKPIStats = async (): Promise<KPIStats> => {
         studyStreakDays: 0,
         weeklyGoalHours: 20,
         unitsCompleted: 0,
-        totalUnits: 0,
+        totalUnits: LOCAL_UNITS.length,
         pendingTopicsCount: 0,
         totalQuestionsPracticed: 0,
         accuracyPercent: 0,
