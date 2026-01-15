@@ -131,7 +131,7 @@ export function PromptLabContent() {
                                 }, // Brain (Orange)
                                 {
                                     name: 'Google',
-                                    url: 'https://google.com',
+                                    url: 'https://www.google.com/search?sourceid=chrome&udm=50&aep=42',
                                     color: 'hover:bg-[#4285f4] hover:text-white',
                                     icon: (
                                         <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
