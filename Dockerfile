@@ -15,13 +15,9 @@ WORKDIR /app
 COPY rag-system/python-service/requirements.txt ./rag-system/python-service/
 RUN pip install --no-cache-dir -r rag-system/python-service/requirements.txt
 
-# === Stage 3: Node Backend & Frontend Setup ===
-# Copy all package.json files first for caching
+# === Stage 3: Node Backend Setup ===
 COPY package.json package-lock.json ./
 COPY rag-system/node-backend/package.json ./rag-system/node-backend/
-
-# Install Root Dependencies (Frontend)
-RUN npm ci
 
 # Install Node Backend Dependencies
 RUN cd rag-system/node-backend && npm install && cd ../..
@@ -29,21 +25,18 @@ RUN cd rag-system/node-backend && npm install && cd ../..
 # Copy Full Source Code
 COPY . .
 
-# Build Next.js Frontend
-RUN npm run build
-
 # Make startup script executable
 RUN chmod +x start.sh
 
-# Expose Main Port (Render usually matches the frontend port)
-EXPOSE 3000
+# Expose Node Backend Port (Main Entry)
 EXPOSE 4000
+# Expose Python Port (Internal)
 EXPOSE 8000
 
 # Environment config
-ENV NEXT_PUBLIC_RAG_API_URL=http://localhost:4000
-ENV PYTHON_SERVICE_URL=http://localhost:8000
-ENV PORT=3000
+ENV PORT=4000
+# Python is local to this container
+ENV PYTHON_SERVICE_URL=http://localhost:8000 
 
-# Start All Services
+# Start Backends Only
 CMD ["./start.sh"]
