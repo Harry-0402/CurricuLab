@@ -207,15 +207,13 @@ export function PromptLabContent() {
                                 className="flex-1 w-full p-8 bg-gray-50 rounded-[40px] border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-mono text-sm resize-none leading-relaxed text-gray-700 shadow-inner"
                             />
 
-                            <div className="flex items-center gap-4 p-5 bg-blue-50/50 rounded-[24px] border border-blue-100/30">
-                                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-100">
-                                    <Icons.Sparkles size={18} />
+                            <div className="flex items-center gap-3 p-3 bg-blue-50/30 rounded-[20px] border border-blue-100/30">
+                                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white shrink-0">
+                                    <Icons.Sparkles size={12} />
                                 </div>
-                                <div>
-                                    <p className="text-[10px] text-blue-900 font-black uppercase tracking-[0.1em]">Pro Strategy</p>
-                                    <p className="text-[11px] text-blue-700 font-medium">
-                                        Use specific headers like [Goal], [Context], and [Output Format] for superior AI quality.
-                                    </p>
+                                <div className="flex items-baseline gap-2 overflow-hidden">
+                                    <span className="text-[9px] text-blue-900 font-black uppercase tracking-wider shrink-0">Pro Strategy</span>
+                                    <span className="text-[10px] text-blue-700/80 truncate">Use specific headers like [Goal] and [Context] for superior quality.</span>
                                 </div>
                             </div>
                         </div>
