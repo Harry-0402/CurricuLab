@@ -42,7 +42,7 @@ export const useAppStore = create<AppState>()(
             unitProgress: {},
             timetable: [],
             announcements: [],
-            isRightPanelMinimized: false,
+            isRightPanelMinimized: true,
 
             addBookmark: (itemId, type) => set((state) => ({
                 bookmarks: [...state.bookmarks, { id: Math.random().toString(36).substr(2, 9), itemId, type, addedAt: new Date().toISOString() }]
