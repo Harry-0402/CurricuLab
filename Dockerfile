@@ -1,8 +1,8 @@
 # === Stage 1: Base Image (Python + Node) ===
 FROM python:3.11-slim as base
 
-# Install Node.js
-RUN apt-get update && apt-get install -y curl build-essential libgl1-mesa-glx
+# Install Node.js & System Deps
+RUN apt-get update && apt-get install -y curl build-essential libgl1 libglib2.0-0
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 RUN apt-get install -y nodejs
 
