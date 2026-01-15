@@ -13,14 +13,17 @@ WORKDIR /app
 
 # === Stage 2: Python Backend Setup ===
 COPY rag-system/python-service/requirements.txt ./rag-system/python-service/
-RUN pip install --no-cache-dir -r rag-system/python-service/requirements.txt
+# Use Cache Mount to speed up pip installs
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r rag-system/python-service/requirements.txt
 
 # === Stage 3: Node Backend Setup ===
 COPY package.json package-lock.json ./
 COPY rag-system/node-backend/package.json ./rag-system/node-backend/
 
-# Install Node Backend Dependencies
-RUN cd rag-system/node-backend && npm install && cd ../..
+# Install Node Backend Dependencies with Cache Mount
+RUN --mount=type=cache,target=/root/.npm \
+    cd rag-system/node-backend && npm ci && cd ../..
 
 # Copy Full Source Code
 COPY . .
