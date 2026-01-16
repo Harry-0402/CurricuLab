@@ -135,19 +135,20 @@ export const getQuestions = async (filters: { subjectId?: string; unitId?: strin
 
 export const createQuestion = async (question: Omit<Question, 'id'>): Promise<Question | null> => {
     const { data, error } = await supabase.from('questions').insert([{
-        unit_id: question.unitId,
+        id: crypto.randomUUID(),
+        unit_id: question.unitId || null,
         subject_id: question.subjectId,
         question: question.question,
-        answer: question.answer,
+        answer: question.answer || '',
         marks_type: question.marksType,
-        tags: question.tags,
-        difficulty: question.difficulty,
-        year: question.year,
-        is_bookmarked: question.isBookmarked
+        tags: question.tags || [],
+        difficulty: question.difficulty || 'Medium',
+        year: question.year || null,
+        is_bookmarked: question.isBookmarked || false
     }]).select().single();
 
     if (error) {
-        console.error("Failed to create question:", error);
+        console.error("Failed to create question:", error.message, error.details, error.hint);
         return null;
     }
 
