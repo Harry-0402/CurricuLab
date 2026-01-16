@@ -102,5 +102,53 @@ export const AiService = {
         }
 
         throw new Error(`All AI models failed. Last error: ${lastError?.message || "Unknown error"}`);
+    },
+
+    async generateContent(prompt: string): Promise<string> {
+        let lastError: any = null;
+
+        for (const modelConfig of FALLBACK_CHAIN) {
+            try {
+                console.log(`Attempting generation with ${modelConfig.name}...`);
+
+                let content: string = "";
+
+                if (modelConfig.provider === 'gemini') {
+                    if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
+                    const model = genAI.getGenerativeModel({ model: modelConfig.id });
+                    const result = await model.generateContent(prompt);
+                    const response = await result.response;
+                    content = response.text();
+                } else {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            messages: [{ role: 'user', content: prompt }],
+                            provider: modelConfig.provider,
+                            model: modelConfig.id,
+                            mode: 'tutor'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.text();
+                        throw new Error(`API Error ${response.status}: ${err}`);
+                    }
+
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error);
+                    content = data.message;
+                }
+
+                if (content) return content;
+
+            } catch (error: any) {
+                console.warn(`Failed with ${modelConfig.name}:`, error.message || error);
+                lastError = error;
+            }
+        }
+
+        throw new Error(`All AI models failed. Last error: ${lastError?.message || "Unknown error"}`);
     }
 };
