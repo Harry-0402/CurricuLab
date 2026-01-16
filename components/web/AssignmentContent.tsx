@@ -311,8 +311,24 @@ Provide a comprehensive, well-structured answer suitable for a university-level 
                                 </div>
 
                                 {aiAnswer ? (
-                                    <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 max-h-[45vh] overflow-y-auto no-scrollbar">
-                                        <div className="prose prose-sm max-w-none prose-headings:font-bold prose-headings:text-gray-800 prose-headings:mt-4 prose-headings:mb-2 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-800">
+                                    <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 max-h-[50vh] overflow-y-auto no-scrollbar">
+                                        <div className="prose prose-sm max-w-none 
+                                            prose-headings:font-bold prose-headings:text-gray-800 
+                                            prose-h1:text-xl prose-h1:mt-6 prose-h1:mb-3 prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2
+                                            prose-h2:text-lg prose-h2:mt-5 prose-h2:mb-2 
+                                            prose-h3:text-base prose-h3:mt-4 prose-h3:mb-2
+                                            prose-p:text-gray-600 prose-p:leading-relaxed prose-p:my-2
+                                            prose-li:text-gray-600 prose-li:my-1
+                                            prose-ul:my-2 prose-ol:my-2
+                                            prose-strong:text-gray-800 prose-strong:font-bold
+                                            prose-table:w-full prose-table:my-4 prose-table:border-collapse prose-table:text-sm
+                                            prose-th:bg-gray-100 prose-th:border prose-th:border-gray-200 prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-bold prose-th:text-gray-700
+                                            prose-td:border prose-td:border-gray-200 prose-td:px-3 prose-td:py-2 prose-td:text-gray-600
+                                            prose-tr:even:bg-gray-50
+                                            prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-purple-700
+                                            prose-pre:bg-gray-800 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-xl prose-pre:overflow-x-auto
+                                            prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50 prose-blockquote:pl-4 prose-blockquote:py-2 prose-blockquote:italic prose-blockquote:text-gray-600
+                                            prose-hr:my-6 prose-hr:border-gray-200">
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                 {aiAnswer}
                                             </ReactMarkdown>
