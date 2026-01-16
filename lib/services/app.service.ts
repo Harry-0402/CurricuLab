@@ -1,39 +1,13 @@
 import { supabase } from "@/utils/supabase/client";
-import { Subject, Unit, Note, Question, KPIStats, TimetableEntry, Announcement, Assignment } from "@/types";
+import { Subject, Unit, Question, KPIStats, TimetableEntry, Announcement, Assignment } from "@/types";
 import { LOCAL_SUBJECTS, LOCAL_UNITS, LOCAL_NOTES, LOCAL_QUESTIONS } from "@/lib/data/course-data";
-
-// Helper to map DB snake_case to App camelCase (Still used for Supabase tables)
-const mapAssignment = (a: any): Assignment => ({
-    id: a.id,
-    subjectId: a.subject_id,
-    unitId: a.unit_id,
-    title: a.title,
-    description: a.description,
-    dueDate: a.due_date,
-    platform: a.platform
-});
-
-const mapTimetable = (t: any): TimetableEntry => ({
-    id: t.id,
-    day: t.day,
-    subjectTitle: t.subject_title,
-    subjectCode: t.subject_code,
-    location: t.location,
-    startTime: t.start_time,
-    endTime: t.end_time,
-    teacher: t.teacher,
-    progress: t.progress
-});
-
-const mapAnnouncement = (a: any): Announcement => ({
-    id: a.id,
-    title: a.title,
-    content: a.content,
-    date: a.date,
-    type: a.type
-});
-
 import { SubjectService } from '@/lib/data/subject-service';
+
+// Re-export services
+export * from './assignment-service';
+export * from './timetable-service';
+export * from './announcement-service';
+export * from './note-service';
 
 // --- Subjects (Supabase) ---
 
@@ -47,7 +21,7 @@ export const getSubjectById = async (id: string): Promise<Subject | undefined> =
 };
 
 export const createSubject = async (subject: Subject): Promise<Subject> => {
-    const updated = await SubjectService.update(subject); // Using update as strict create might not be in service yet
+    const updated = await SubjectService.update(subject);
     return updated || subject;
 };
 
@@ -121,94 +95,6 @@ export const deleteUnit = async (id: string): Promise<void> => {
 };
 
 
-// --- Notes (Supabase) ---
-
-export const getNotesByUnit = async (unitId: string): Promise<Note[]> => {
-    const { data, error } = await supabase
-        .from('notes')
-        .select('*')
-        .eq('unit_id', unitId)
-        .order('created_at', { ascending: true });
-
-    if (error || !data) {
-        console.warn('Error fetching notes:', error);
-        return LOCAL_NOTES.filter(n => n.unitId === unitId);
-    }
-
-    return data.map((n: any) => ({
-        id: n.id,
-        unitId: n.unit_id,
-        title: n.title,
-        content: n.content,
-        isBookmarked: n.is_bookmarked,
-        lastRead: n.last_read,
-        lastModified: n.last_modified
-    }));
-};
-
-export const getNoteById = async (id: string): Promise<Note | undefined> => {
-    const { data, error } = await supabase
-        .from('notes')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-    if (error || !data) return LOCAL_NOTES.find(n => n.id === id);
-
-    return {
-        id: data.id,
-        unitId: data.unit_id,
-        title: data.title,
-        content: data.content,
-        isBookmarked: data.is_bookmarked,
-        lastRead: data.last_read,
-        lastModified: data.last_modified
-    };
-};
-
-export const createNote = async (note: Note): Promise<Note> => {
-    const payload = {
-        id: note.id,
-        title: note.title,
-        content: note.content,
-        unit_id: note.unitId,
-        is_bookmarked: note.isBookmarked
-    };
-    const { data, error } = await supabase.from('notes').insert(payload).select().single();
-    if (error) {
-        console.error("Error creating note:", error);
-        throw error;
-    }
-
-    return {
-        id: data.id,
-        unitId: data.unit_id,
-        title: data.title,
-        content: data.content,
-        isBookmarked: data.is_bookmarked,
-        lastRead: data.last_read,
-        lastModified: data.last_modified
-    };
-};
-
-export const updateNote = async (note: Note): Promise<Note> => {
-    const payload = {
-        title: note.title,
-        content: note.content,
-        is_bookmarked: note.isBookmarked,
-        last_modified: new Date().toISOString()
-    };
-    const { data, error } = await supabase.from('notes').update(payload).eq('id', note.id).select().single();
-    if (error) console.error(error);
-    return note;
-};
-
-export const deleteNote = async (id: string): Promise<void> => {
-    const { error } = await supabase.from('notes').delete().eq('id', id);
-    if (error) console.error(error);
-};
-
-
 // --- Questions (Local Static Data) ---
 
 export const getQuestions = async (filters: { subjectId?: string; unitId?: string; marksType?: number }): Promise<Question[]> => {
@@ -251,125 +137,6 @@ export const searchAll = async (query: string) => {
         questions: LOCAL_QUESTIONS.filter(q_obj => q_obj.question.toLowerCase().includes(q)),
         subjects: LOCAL_SUBJECTS.filter(s => s.title.toLowerCase().includes(q) || s.code.toLowerCase().includes(q)),
     };
-};
-
-
-// --- Timetable (Supabase) ---
-
-export const getTimetable = async (): Promise<TimetableEntry[]> => {
-    const { data, error } = await supabase.from('timetable').select('*');
-    if (error || !data) return [];
-    return data.map(mapTimetable);
-};
-
-export const updateTimetableEntry = async (entry: TimetableEntry): Promise<TimetableEntry> => {
-    const payload = {
-        day: entry.day,
-        subject_title: entry.subjectTitle,
-        subject_code: entry.subjectCode,
-        location: entry.location,
-        start_time: entry.startTime,
-        end_time: entry.endTime,
-        teacher: entry.teacher,
-        progress: entry.progress
-    };
-    const { data, error } = await supabase.from('timetable').update(payload).eq('id', entry.id).select().single();
-    if (error) throw error;
-    return mapTimetable(data);
-};
-
-
-// --- Announcements (Supabase) ---
-
-export const getAnnouncements = async (): Promise<Announcement[]> => {
-    const { data, error } = await supabase.from('announcements').select('*');
-    if (error || !data) return [];
-    return data.map(mapAnnouncement);
-};
-
-export const createAnnouncement = async (announcement: Announcement): Promise<Announcement> => {
-    const payload = {
-        id: announcement.id,
-        title: announcement.title,
-        content: announcement.content,
-        date: announcement.date,
-        type: announcement.type
-    };
-    const { data, error } = await supabase.from('announcements').insert(payload).select().single();
-    if (error) throw error;
-    return mapAnnouncement(data);
-};
-
-export const deleteAnnouncement = async (id: string): Promise<void> => {
-    const { error } = await supabase.from('announcements').delete().eq('id', id);
-    if (error) throw error;
-};
-
-
-// --- Assignments (Supabase) ---
-
-export const getAssignments = async (subjectId?: string): Promise<Assignment[]> => {
-    let query = supabase.from('assignments').select('*');
-    if (subjectId) query = query.eq('subject_id', subjectId);
-
-    const { data, error } = await query;
-    if (error || !data) return [];
-    return data.map(mapAssignment);
-};
-
-export const getUpcomingAssignments = async (days: number): Promise<Assignment[]> => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString();
-
-    const futureDate = new Date(today);
-    futureDate.setDate(today.getDate() + days);
-    // Set to end of day to be inclusive
-    futureDate.setHours(23, 59, 59, 999);
-    const futureDateStr = futureDate.toISOString();
-
-    const { data, error } = await supabase
-        .from('assignments')
-        .select('*')
-        .gte('due_date', todayStr)
-        .lte('due_date', futureDateStr);
-
-    if (error || !data) return [];
-    return data.map(mapAssignment);
-};
-
-export const createAssignment = async (assignment: Assignment): Promise<Assignment> => {
-    const payload = {
-        id: assignment.id,
-        subject_id: assignment.subjectId,
-        unit_id: assignment.unitId,
-        title: assignment.title,
-        description: assignment.description,
-        due_date: assignment.dueDate,
-        platform: assignment.platform
-    };
-    const { data, error } = await supabase.from('assignments').insert(payload).select().single();
-    if (error) throw error;
-    return mapAssignment(data);
-};
-
-export const updateAssignment = async (assignment: Assignment): Promise<Assignment> => {
-    const payload = {
-        subject_id: assignment.subjectId,
-        unit_id: assignment.unitId,
-        title: assignment.title,
-        description: assignment.description,
-        due_date: assignment.dueDate,
-        platform: assignment.platform
-    };
-    const { data, error } = await supabase.from('assignments').update(payload).eq('id', assignment.id).select().single();
-    if (error) throw error;
-    return mapAssignment(data);
-};
-
-export const deleteAssignment = async (id: string): Promise<void> => {
-    const { error } = await supabase.from('assignments').delete().eq('id', id);
-    if (error) throw error;
 };
 
 export const getKPIStats = async (): Promise<KPIStats> => {
