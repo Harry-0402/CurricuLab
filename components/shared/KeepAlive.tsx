@@ -17,13 +17,16 @@ export function KeepAlive() {
             return;
         }
 
-        // Set interval for 14 minutes (840,000 milliseconds)
-        const FOURTEEN_MINUTES = 14 * 60 * 1000;
+        // Set interval for 10 minutes (600,000 milliseconds)
+        const TEN_MINUTES = 10 * 60 * 1000;
 
         const interval = setInterval(() => {
-            console.log('[KeepAlive] Reloading to prevent server spin-down...');
-            window.location.reload();
-        }, FOURTEEN_MINUTES);
+            fetch('/api/health')
+                .then(res => {
+                    if (res.ok) console.log('[KeepAlive] Server ping successful');
+                })
+                .catch(err => console.error('[KeepAlive] Ping failed:', err));
+        }, TEN_MINUTES);
 
         // Cleanup interval on unmount
         return () => clearInterval(interval);
