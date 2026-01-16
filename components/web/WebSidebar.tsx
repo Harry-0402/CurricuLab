@@ -6,7 +6,14 @@ import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 
-const navItems = [
+interface NavItem {
+    label: string;
+    href: string;
+    icon: any;
+    badge?: string;
+}
+
+const navItems: NavItem[] = [
     { label: 'Dashboard', href: '/', icon: Icons.Home },
     { label: 'My Courses', href: '/subjects', icon: Icons.Subjects },
     { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
@@ -15,7 +22,7 @@ const navItems = [
     { label: 'Team', href: '/team', icon: Icons.Profile },
 ];
 
-const tools = [
+const tools: NavItem[] = [
     { label: 'LearnPilot AI', href: '/ai-tutor', icon: Icons.Bot },
     { label: 'Revision Notes', href: '/tools/revision', icon: Icons.FileText },
     { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
