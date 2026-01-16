@@ -120,13 +120,28 @@ export function AssignmentContent() {
         setAiAnswer('');
         try {
             const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
-            const prompt = `Answer the following assignment question in detail with proper structure and examples where applicable.
+            const unit = selectedAssignment.unitId ? units.find(u => u.id === selectedAssignment.unitId) : null;
+            const topicsContext = unit?.topics?.length ? `\nRelevant Topics: ${unit.topics.join(', ')}` : '';
 
-Subject: ${subject?.title || 'Unknown'}
-Question: ${selectedAssignment.title}
-Description: ${selectedAssignment.description || 'No additional context'}
+            const prompt = `You are a university professor providing a comprehensive answer to a student's assignment.
 
-Provide a comprehensive, well-structured answer suitable for a university-level assignment.`;
+Subject: ${subject?.title || 'Business Administration'}
+${unit ? `Unit: ${unit.title}` : ''}
+${topicsContext}
+
+Assignment Question: ${selectedAssignment.title}
+${selectedAssignment.description ? `Additional Context: ${selectedAssignment.description}` : ''}
+
+Provide a detailed, well-structured answer that:
+1. Starts with a clear introduction explaining the key concepts
+2. Uses proper headings (##, ###) to organize the content
+3. Includes relevant examples and practical applications
+4. Uses **bold** for key terms and definitions
+5. Adds a comparison table if comparing concepts (use markdown tables)
+6. Ends with a brief conclusion or summary
+7. Keep paragraphs concise and scannable
+
+Format the response in clean, readable markdown.`;
 
             const answer = await AiService.generateContent(prompt);
             setAiAnswer(answer);
@@ -263,7 +278,7 @@ Provide a comprehensive, well-structured answer suitable for a university-level 
 
             {/* Detail Modal with AI Answer */}
             <Dialog open={!!selectedAssignment} onOpenChange={(open) => !open && setSelectedAssignment(null)}>
-                <DialogContent className="sm:max-w-2xl max-w-[95vw] max-h-[85vh] overflow-y-auto no-scrollbar border-0 bg-white shadow-2xl rounded-3xl">
+                <DialogContent className="sm:max-w-4xl max-w-[95vw] max-h-[85vh] overflow-y-auto no-scrollbar border-0 bg-white shadow-2xl rounded-3xl">
                     {selectedAssignment && (
                         <div className="space-y-6 py-2">
                             <DialogHeader>
