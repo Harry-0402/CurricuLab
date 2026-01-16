@@ -88,7 +88,7 @@ export function RevisionGeneratorContent() {
                 const savedNote = await createNote(tempNote);
 
                 // Progressive Update: Add to list immediately
-                setNotes(prev => [savedNote, ...prev]);
+                setNotes(prev => [...prev, savedNote]);
 
                 completed++;
                 setGenerationProgress(Math.round((completed / unit.topics.length) * 100));

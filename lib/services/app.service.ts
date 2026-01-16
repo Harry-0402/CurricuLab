@@ -126,7 +126,7 @@ export const getNotesByUnit = async (unitId: string): Promise<Note[]> => {
         .from('notes')
         .select('*')
         .eq('unit_id', unitId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true });
 
     if (error || !data) {
         console.warn('Error fetching notes:', error);
