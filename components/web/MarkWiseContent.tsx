@@ -70,41 +70,52 @@ export function MarkWiseContent() {
         loadQuestions();
     }, [selectedSubject, selectedUnit, selectedMarks]);
 
-    // Format user's answer using AI for better presentation
-    const handleFormatAnswer = async () => {
-        if (!activeQuestion?.answer) return;
+    // Auto-format answer when question is selected
+    useEffect(() => {
+        const formatAnswer = async () => {
+            if (!activeQuestion?.answer) {
+                setFormattedAnswer('');
+                return;
+            }
 
-        // Check if we already have a cached formatted answer
-        if (activeQuestion.formattedAnswer) {
-            setFormattedAnswer(activeQuestion.formattedAnswer);
-            return;
-        }
+            // Use cached formatted answer if available
+            if (activeQuestion.formattedAnswer) {
+                setFormattedAnswer(activeQuestion.formattedAnswer);
+                return;
+            }
 
-        setIsFormatting(true);
-        setFormattedAnswer('');
+            // Format with AI
+            setIsFormatting(true);
+            setFormattedAnswer('');
 
-        try {
-            // Use AI to format the user's answer with proper structure
-            const formatted = await AiService.formatUserAnswer(
-                activeQuestion.question,
-                activeQuestion.answer,
-                activeQuestion.marksType
-            );
-            setFormattedAnswer(formatted);
+            try {
+                const formatted = await AiService.formatUserAnswer(
+                    activeQuestion.question,
+                    activeQuestion.answer,
+                    activeQuestion.marksType
+                );
+                setFormattedAnswer(formatted);
 
-            // Cache the formatted answer in the database
-            await updateMarkWiseQuestion({
-                ...activeQuestion,
-                formattedAnswer: formatted
-            });
-        } catch (error) {
-            console.error("Failed to format answer:", error);
-            // Fallback: just show the raw answer
-            setFormattedAnswer(activeQuestion.answer);
-        } finally {
-            setIsFormatting(false);
-        }
-    };
+                // Cache the formatted answer in the database
+                const updated = await updateMarkWiseQuestion({
+                    ...activeQuestion,
+                    formattedAnswer: formatted
+                });
+
+                // Update the active question with cached format
+                if (updated) {
+                    setActiveQuestion(updated);
+                }
+            } catch (error) {
+                console.error("Failed to format answer:", error);
+                setFormattedAnswer(activeQuestion.answer);
+            } finally {
+                setIsFormatting(false);
+            }
+        };
+
+        formatAnswer();
+    }, [activeQuestion?.id, activeQuestion?.answer]);
 
     const handleSaveQuestion = async () => {
         if (!newQuestion.subjectId || !newQuestion.question) return;
@@ -336,15 +347,16 @@ export function MarkWiseContent() {
                                         {activeQuestion.question}
                                     </h2>
                                     <div className="flex items-center gap-4">
+                                        <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold">
+                                            {activeQuestion.marksType} Marks
+                                        </span>
                                         {activeQuestion.answer ? (
-                                            <button
-                                                onClick={handleFormatAnswer}
-                                                disabled={isFormatting}
-                                                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
-                                            >
-                                                {isFormatting ? <Icons.Loader2 className="animate-spin" size={16} /> : <Icons.Wand2 size={16} />}
-                                                {isFormatting ? 'Formatting...' : 'Format Answer'}
-                                            </button>
+                                            isFormatting && (
+                                                <span className="flex items-center gap-2 text-sm text-gray-400">
+                                                    <Icons.Loader2 className="animate-spin" size={16} />
+                                                    Formatting...
+                                                </span>
+                                            )
                                         ) : (
                                             <span className="text-sm text-gray-400 italic">No answer saved yet. Edit to add an answer.</span>
                                         )}
@@ -373,13 +385,17 @@ export function MarkWiseContent() {
                                                 {formattedAnswer}
                                             </ReactMarkdown>
                                         </div>
+                                    ) : isFormatting ? (
+                                        <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
+                                            <Icons.Loader2 className="animate-spin text-blue-500" size={48} />
+                                            <p className="font-bold text-xs uppercase tracking-widest">Formatting your answer...</p>
+                                        </div>
                                     ) : activeQuestion.answer ? (
                                         <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
                                             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
                                                 <Icons.FileText size={32} />
                                             </div>
-                                            <p className="font-bold text-xs uppercase tracking-widest">Click "Format Answer" to view beautifully</p>
-                                            <p className="text-gray-400 text-sm max-w-md text-center">{activeQuestion.answer.slice(0, 150)}...</p>
+                                            <p className="font-bold text-xs uppercase tracking-widest">Processing...</p>
                                         </div>
                                     ) : (
                                         <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
