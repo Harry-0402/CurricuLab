@@ -106,9 +106,14 @@ export function RevisionGeneratorContent() {
         }
     };
 
+    // Derived state for display
+    const currentSubject = subjects.find(s => s.id === selectedSubject);
+    const currentUnit = units.find(u => u.id === selectedUnit);
+
     return (
         <WebAppShell>
             <div className="max-w-4xl mx-auto space-y-8">
+                {/* ... (keep existing top header) ... */}
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
@@ -120,6 +125,7 @@ export function RevisionGeneratorContent() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-6 p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    {/* ... (keep existing selectors) ... */}
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Select Subject</label>
                         <select
@@ -181,8 +187,8 @@ export function RevisionGeneratorContent() {
                                     <Icons.GraduationCap size={24} />
                                 </div>
                                 <div>
-                                    <p className="text-xl font-black text-gray-900">Review Cheat Sheet</p>
-                                    <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Condensed Summary</p>
+                                    <p className="text-xl font-black text-gray-900">{currentUnit?.title}</p>
+                                    <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">{currentSubject?.code} - {currentSubject?.title}</p>
                                 </div>
                             </div>
                             <div className="flex gap-2">
