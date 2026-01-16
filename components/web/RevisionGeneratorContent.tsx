@@ -216,7 +216,7 @@ export function RevisionGeneratorContent() {
                                                 h1: ({ node, ...props }) => <h1 className="text-2xl font-black text-gray-900 mb-4 pb-2 border-b border-gray-100" {...props} />,
                                                 h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-gray-800 mt-6 mb-3 flex items-center gap-2" {...props} />,
                                                 h3: ({ node, ...props }) => <h3 className="text-md font-bold text-blue-600 mt-4 mb-2 uppercase tracking-wide text-xs" {...props} />,
-                                                strong: ({ node, ...props }) => <strong className="font-extrabold text-blue-700 bg-blue-50 px-1 rounded" {...props} />,
+                                                strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
                                                 ul: ({ node, ...props }) => <ul className="list-disc pl-5 space-y-2 text-gray-700 mb-4" {...props} />,
                                                 li: ({ node, ...props }) => <li className="pl-1" {...props} />,
                                                 p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-gray-600" {...props} />,
