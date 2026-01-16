@@ -8,6 +8,8 @@ import { getSubjects, getUnits, getNotesByUnit, createNote, getSubjectById, getU
 import { AiService } from '@/lib/services/ai-service';
 import { Subject, Unit, Note } from '@/types';
 import { cn } from '@/lib/utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export function RevisionGeneratorContent() {
     const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -44,6 +46,10 @@ export function RevisionGeneratorContent() {
             fetchNotes(selectedUnit);
         }
     }, [selectedUnit]);
+
+    const handlePrint = () => {
+        window.print();
+    };
 
     const handleGenerateAiNotes = async () => {
         if (!selectedUnit || !selectedSubject) return;
@@ -180,27 +186,61 @@ export function RevisionGeneratorContent() {
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 p-3 rounded-xl transition-all">
+                                <button
+                                    onClick={handlePrint}
+                                    className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 p-3 rounded-xl transition-all print:hidden"
+                                >
                                     <Icons.Download size={20} className="text-gray-900" />
                                     <span className="text-xs font-bold text-gray-900 uppercase">Save PDF</span>
                                 </button>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-10">
+                        <div className="grid grid-cols-1 gap-10 print:gap-6">
                             {notes.map(note => (
-                                <div key={note.id} className="space-y-4">
+                                <div key={note.id} className="space-y-4 print:break-inside-avoid">
                                     <h3 className="text-lg font-black text-gray-900 flex items-center gap-3">
-                                        <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
+                                        <div className="w-1.5 h-6 bg-blue-600 rounded-full print:bg-black" />
                                         {note.title}
                                     </h3>
-                                    <div className="text-gray-600 leading-relaxed text-sm bg-gray-50/50 p-6 rounded-3xl border border-gray-100/50 prose prose-blue max-w-none">
-                                        {/* Simple formatting for now, could use ReactMarkdown if needed */}
-                                        <div className="whitespace-pre-wrap font-medium">{note.content}</div>
+                                    <div className="text-gray-600 leading-relaxed text-sm bg-gray-50/50 p-6 rounded-3xl border border-gray-100/50 prose prose-blue max-w-none print:bg-transparent print:border-none print:p-0 print:text-black">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {note.content}
+                                        </ReactMarkdown>
                                     </div>
                                 </div>
                             ))}
                         </div>
+
+                        <style jsx global>{`
+                            @media print {
+                                @page { margin: 2cm; }
+                                body * {
+                                    visibility: hidden;
+                                }
+                                .animate-in {
+                                    animation: none !important;
+                                }
+                                /* Only show the content container and its children */
+                                .bg-white.p-10, .bg-white.p-10 * {
+                                    visibility: visible;
+                                }
+                                .bg-white.p-10 {
+                                    position: absolute;
+                                    left: 0;
+                                    top: 0;
+                                    width: 100%;
+                                    padding: 0 !important;
+                                    margin: 0 !important;
+                                    border: none !important;
+                                    box-shadow: none !important;
+                                }
+                                /* Hide buttons inside the container */
+                                button {
+                                    display: none !important;
+                                }
+                            }
+                        `}</style>
                     </div>
                 ) : selectedUnit ? (
                     <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[40px] border border-dashed border-gray-200 text-gray-400 gap-6">
