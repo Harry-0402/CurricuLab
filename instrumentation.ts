@@ -1,7 +1,7 @@
 export function register() {
     // Only run in Node.js runtime (server-side)
     if (process.env.NEXT_RUNTIME === 'nodejs') {
-        const TARGET_URL = 'https://curriculab-tyi9.onrender.com/api/health';
+        const TARGET_URL = 'https://curriculab-tyi9.onrender.com/';
         const PING_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
         // Use a global variable to prevent multiple intervals during hot-reloads in development
