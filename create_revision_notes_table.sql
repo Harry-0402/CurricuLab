@@ -27,5 +27,5 @@ SELECT id, unit_id, title, content, created_at
 FROM public.notes
 ON CONFLICT (id) DO NOTHING;
 
--- Verify data has been migrated before uncommenting the line below:
--- DELETE FROM public.notes;
+-- Verify data has been migrated, then delete old notes:
+DELETE FROM public.notes;
