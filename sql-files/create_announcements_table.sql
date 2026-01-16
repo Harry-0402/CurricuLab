@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS announcements (
     type TEXT NOT NULL DEFAULT 'info' CHECK (type IN ('info', 'warning', 'success', 'error')),
     headline TEXT NOT NULL,
     message TEXT NOT NULL,
+    resource_link TEXT,  -- Optional link to a resource
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS announcements (
 
 -- Add missing columns if table already exists
 ALTER TABLE announcements ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS resource_link TEXT;
 ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
 -- Enable Row Level Security
