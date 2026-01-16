@@ -458,53 +458,7 @@ export function AiTutorContent() {
             </div>
 
 
-            <style jsx global>{`
-                @media print {
-                    @page { margin: 1cm; }
-                    body * {
-                        visibility: hidden;
-                    }
-                    /* Only show the chat container and its children */
-                    #learnpilot-chat-container, #learnpilot-chat-container * {
-                        visibility: visible;
-                    }
-                    /* Position it to fill the page, removing UI frames */
-                    #learnpilot-chat-container {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                        height: 100%; /* Auto height usually better for scrolling content but if we want to capture all, auto is good. */
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        border: none !important;
-                        border-radius: 0 !important;
-                        box-shadow: none !important;
-                        background: white !important;
-                        overflow: visible !important; /* Allow content to flow to next pages */
-                        display: block !important; /* Override flex if needed for flow */
-                    }
-                    /* Ensure scrollable area expands to fit content */
-                    #learnpilot-chat-container > div {
-                        overflow: visible !important;
-                        height: auto !important;
-                        max-height: none !important;
-                    }
-                    
-                    /* Hide the Input Area explicitly if it was inside the container, but it's outside. 
-                       However, if I messed up the DOM tree understanding, I'll hide it just in case. */
-                    form, input, button {
-                        display: none !important;
-                    }
-                    /* Explicitly hide the input area wrapper if matched by * selector but outside container? 
-                       Body * visibility hidden handles outside. */
 
-                    /* Hide scrollbars */
-                    ::-webkit-scrollbar {
-                        display: none;
-                    }
-                }
-            `}</style>
         </WebAppShell >
     );
 }
