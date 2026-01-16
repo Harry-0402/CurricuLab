@@ -379,7 +379,13 @@ export function MarkWiseContent() {
                                                     li: ({ node, ...props }) => <li className="pl-2" {...props} />,
                                                     strong: ({ node, ...props }) => <span className="font-bold text-gray-900" {...props} />,
                                                     blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-500 my-4" {...props} />,
-                                                    code: ({ node, ...props }) => <code className="bg-gray-100 text-blue-600 px-1 py-0.5 rounded text-sm font-mono" {...props} />
+                                                    code: ({ node, ...props }) => <code className="bg-gray-100 text-blue-600 px-1 py-0.5 rounded text-sm font-mono" {...props} />,
+                                                    table: ({ node, ...props }) => <table className="w-full border-collapse border border-gray-200 my-4 rounded-lg overflow-hidden" {...props} />,
+                                                    thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
+                                                    tbody: ({ node, ...props }) => <tbody {...props} />,
+                                                    tr: ({ node, ...props }) => <tr className="border-b border-gray-200" {...props} />,
+                                                    th: ({ node, ...props }) => <th className="px-4 py-2 text-left text-sm font-bold text-gray-700 border border-gray-200" {...props} />,
+                                                    td: ({ node, ...props }) => <td className="px-4 py-2 text-sm text-gray-600 border border-gray-200" {...props} />
                                                 }}
                                             >
                                                 {formattedAnswer}

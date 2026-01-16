@@ -253,6 +253,7 @@ ${userAnswer}
 3. Bold key terms and important concepts
 4. Proper paragraph structure
 5. Add emphasis where needed
+6. Use markdown tables when comparing items or presenting structured data
 
 **Important Rules:**
 - DO NOT change the content or meaning of the answer
