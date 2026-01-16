@@ -135,12 +135,12 @@ Assignment Question: ${selectedAssignment.title}
 ${selectedAssignment.description ? `Additional Context: ${selectedAssignment.description}` : ''}
 
 Provide a detailed, well-structured answer that:
-1. Starts with a clear introduction explaining the key concepts
-2. Uses proper headings (##, ###) to organize the content
+1. MUST use a main Heading 1 (#) for the Title of the Answer
+2. MUST use Heading 2 (##) for major sections (Introduction, Key Concepts, etc.) and Heading 3 (###) for subsections
 3. Includes relevant examples and practical applications
 4. Uses **bold** for key terms and definitions
 5. Adds a comparison table if comparing concepts (use markdown tables)
-6. Ends with a brief conclusion or summary
+6. Ends with a brief conclusion or summary (under a ## Conclusion heading)
 7. Keep paragraphs concise and scannable
 
 Format the response in clean, readable markdown.`;
@@ -410,10 +410,10 @@ Format the response in clean, readable markdown.`;
                                     <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 max-h-[50vh] overflow-y-auto no-scrollbar">
                                         <div className="prose prose-sm max-w-none 
                                             prose-headings:font-bold prose-headings:text-gray-800 
-                                            prose-h1:text-xl prose-h1:mt-8 prose-h1:mb-4 prose-h1:border-b-2 prose-h1:border-gray-200 prose-h1:pb-3
-                                            prose-h2:text-lg prose-h2:mt-8 prose-h2:mb-3 prose-h2:text-gray-800
-                                            prose-h3:text-base prose-h3:mt-6 prose-h3:mb-3 prose-h3:text-gray-700
-                                            prose-h4:text-sm prose-h4:mt-5 prose-h4:mb-2 prose-h4:font-bold prose-h4:text-gray-600
+                                            prose-h1:text-2xl prose-h1:mt-8 prose-h1:mb-4 prose-h1:border-b-2 prose-h1:border-gray-200 prose-h1:pb-3
+                                            prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:text-gray-900 prose-h2:font-extrabold
+                                            prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3 prose-h3:text-gray-800 prose-h3:font-bold
+                                            prose-h4:text-base prose-h4:mt-5 prose-h4:mb-2 prose-h4:font-bold prose-h4:text-gray-700
                                             prose-p:text-gray-600 prose-p:leading-relaxed prose-p:my-4
                                             prose-li:text-gray-600 prose-li:my-2
                                             prose-ul:my-4 prose-ul:pl-6 prose-ol:my-4 prose-ol:pl-6
