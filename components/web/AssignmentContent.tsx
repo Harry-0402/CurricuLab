@@ -55,19 +55,10 @@ export function AssignmentContent() {
                     return dObj >= today && dObj <= twoDaysFromNow;
                 });
 
-                // Check if recently dismissed (within last 5 mins)
-                const lastDismissed = localStorage.getItem('curriculab_due_alert_dismissed');
-                if (lastDismissed && (Date.now() - parseInt(lastDismissed) < 5 * 60 * 1000)) {
-                    return;
-                }
-
                 if (due.length > 0) {
                     setDueAlerts(due);
                     setShowDueAlert(true);
-                    const timer = setTimeout(() => {
-                        setShowDueAlert(false);
-                        localStorage.setItem('curriculab_due_alert_dismissed', Date.now().toString());
-                    }, 20000); // 20 seconds
+                    const timer = setTimeout(() => setShowDueAlert(false), 20000); // 20 seconds
                     return () => clearTimeout(timer);
                 }
             } catch (error) {
@@ -86,7 +77,10 @@ export function AssignmentContent() {
             const fetchedSubjects = await getSubjects();
             setSubjects(fetchedSubjects);
             if (fetchedSubjects.length > 0) {
-                setActiveSubjectId(fetchedSubjects[0].id);
+                // Restore active subject from storage or default to first
+                const storedSubjectId = localStorage.getItem('activeSubjectId');
+                const validSubject = fetchedSubjects.find(s => s.id === storedSubjectId);
+                setActiveSubjectId(validSubject ? validSubject.id : fetchedSubjects[0].id);
             }
             setLoading(false);
         };
@@ -97,12 +91,26 @@ export function AssignmentContent() {
         const loadAssignments = async () => {
             if (activeSubjectId) {
                 setLoading(true);
+                localStorage.setItem('activeSubjectId', activeSubjectId); // Persist subject selection logic
+
                 const [fetched, fetchedUnits] = await Promise.all([
                     getAssignments(activeSubjectId),
                     getUnits(activeSubjectId)
                 ]);
                 setAssignments(fetched);
                 setUnits(fetchedUnits);
+
+                // Restore Modal State if applicable
+                const storedAssignmentId = localStorage.getItem('openAssignmentId');
+                if (storedAssignmentId && !selectedAssignment) {
+                    const restoredAssignment = fetched.find(a => a.id === storedAssignmentId);
+                    if (restoredAssignment) {
+                        setSelectedAssignment(restoredAssignment);
+                        const cachedAnswer = localStorage.getItem('aiAnswerCache');
+                        if (cachedAnswer) setAiAnswer(cachedAnswer);
+                    }
+                }
+
                 setLoading(false);
             }
         };
@@ -162,6 +170,8 @@ export function AssignmentContent() {
     const openDetailModal = (assignment: Assignment) => {
         setSelectedAssignment(assignment);
         setAiAnswer('');
+        localStorage.setItem('openAssignmentId', assignment.id); // Persist open state
+        localStorage.removeItem('aiAnswerCache'); // Clear old answer cache
     };
 
     const handleGenerateAnswer = async () => {
@@ -196,6 +206,7 @@ Format the response in clean, readable markdown.`;
 
             const answer = await AiService.generateContent(prompt);
             setAiAnswer(answer);
+            localStorage.setItem('aiAnswerCache', answer); // Persist answer
         } catch (error: any) {
             console.error('Failed to generate answer:', error);
             setAiAnswer(`Error: ${error.message || 'Failed to generate answer. Please try again.'}`);
@@ -362,7 +373,17 @@ Format the response in clean, readable markdown.`;
             />
 
             {/* Detail Modal with AI Answer */}
-            <Dialog open={!!selectedAssignment} onOpenChange={(open) => !open && setSelectedAssignment(null)}>
+            <Dialog
+                open={!!selectedAssignment}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setSelectedAssignment(null);
+                        // Clear storage on close
+                        localStorage.removeItem('openAssignmentId');
+                        localStorage.removeItem('aiAnswerCache');
+                    }
+                }}
+            >
                 <DialogContent className="sm:max-w-5xl max-w-[95vw] h-[85vh] flex flex-col overflow-hidden border-0 bg-white shadow-2xl rounded-3xl p-0 gap-0">
                     {selectedAssignment && (
                         <div className="flex flex-col h-full">
@@ -511,10 +532,7 @@ Format the response in clean, readable markdown.`;
                     <div className="bg-white rounded-2xl shadow-2xl border border-red-100 p-5 max-w-sm w-full relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500" />
                         <button
-                            onClick={() => {
-                                setShowDueAlert(false);
-                                localStorage.setItem('curriculab_due_alert_dismissed', Date.now().toString());
-                            }}
+                            onClick={() => setShowDueAlert(false)}
                             className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
                         >
                             <Icons.X size={16} />
