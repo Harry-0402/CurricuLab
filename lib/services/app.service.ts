@@ -110,12 +110,13 @@ const mapSupabaseQuestion = (data: any): Question => ({
     year: data.year
 });
 
-export const getQuestions = async (filters: { subjectId?: string; unitId?: string; marksType?: number }): Promise<Question[]> => {
+export const getQuestions = async (filters: { subjectId?: string; unitId?: string; marksType?: number; year?: string }): Promise<Question[]> => {
     let query = supabase.from('questions').select('*');
 
     if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
     if (filters.unitId) query = query.eq('unit_id', filters.unitId);
     if (filters.marksType) query = query.eq('marks_type', filters.marksType);
+    if (filters.year) query = query.eq('year', filters.year);
 
     const { data, error } = await query;
 
@@ -125,6 +126,7 @@ export const getQuestions = async (filters: { subjectId?: string; unitId?: strin
         if (filters.subjectId) filtered = filtered.filter(q => q.subjectId === filters.subjectId);
         if (filters.unitId) filtered = filtered.filter(q => q.unitId === filters.unitId);
         if (filters.marksType) filtered = filtered.filter(q => q.marksType === filters.marksType);
+        if (filters.year) filtered = filtered.filter(q => q.year === filters.year);
         return filtered;
     }
 

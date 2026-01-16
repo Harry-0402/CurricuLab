@@ -21,7 +21,9 @@ export function PaperTrailContent() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [aiAnswer, setAiAnswer] = useState<string>('');
+
     const [isGenerating, setIsGenerating] = useState(false);
+    const [selectedYear, setSelectedYear] = useState<string>('');
 
     // Add Question Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -58,14 +60,15 @@ export function PaperTrailContent() {
                 setIsLoading(true);
                 const data = await getQuestions({
                     subjectId: selectedSubject,
-                    unitId: selectedUnit || undefined
+                    unitId: selectedUnit || undefined,
+                    year: selectedYear || undefined
                 });
                 setQuestions(data);
                 setIsLoading(false);
             }
         };
         loadQuestions();
-    }, [selectedSubject, selectedUnit]);
+    }, [selectedSubject, selectedUnit, selectedYear]);
 
     // Generate AI Answer
     const handleGenerateAnswer = async () => {
@@ -193,32 +196,30 @@ export function PaperTrailContent() {
                 <div className="flex items-center justify-between shrink-0">
                     <div>
                         <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
-                        <div className="flex items-center gap-4">
-                            <p className="text-4xl font-black text-gray-900 tracking-tight">PaperTrail</p>
-                            <button
-                                onClick={() => {
-                                    setEditingId(null);
-                                    setNewQuestion({
-                                        subjectId: selectedSubject || '',
-                                        unitId: selectedUnit || '',
-                                        year: '',
-                                        marksType: 10,
-                                        question: '',
-                                        difficulty: 'Medium'
-                                    });
-                                    setIsAddModalOpen(true);
-                                }}
-                                className="bg-blue-600 text-white p-2 rounded-full shadow-lg hover:shadow-blue-200 transition-all hover:scale-110 active:scale-95"
-                                title="Add New Question"
-                            >
-                                <Icons.Plus size={20} />
-                            </button>
-                        </div>
+                        <p className="text-4xl font-black text-gray-900 tracking-tight">PaperTrail</p>
                     </div>
+                    <button
+                        onClick={() => {
+                            setEditingId(null);
+                            setNewQuestion({
+                                subjectId: selectedSubject || '',
+                                unitId: selectedUnit || '',
+                                year: '',
+                                marksType: 10,
+                                question: '',
+                                difficulty: 'Medium'
+                            });
+                            setIsAddModalOpen(true);
+                        }}
+                        className="bg-blue-600 text-white p-2 rounded-full shadow-lg hover:shadow-blue-200 transition-all hover:scale-110 active:scale-95"
+                        title="Add New Question"
+                    >
+                        <Icons.Plus size={20} />
+                    </button>
                 </div>
 
                 {/* Filters */}
-                <div className="grid grid-cols-2 gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm shrink-0">
+                <div className="grid grid-cols-3 gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm shrink-0">
                     <div className="relative">
                         <select
                             value={selectedSubject}
@@ -240,6 +241,20 @@ export function PaperTrailContent() {
                         >
                             <option value="">All Units</option>
                             {units.map(u => <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="relative">
+                        <select
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(e.target.value)}
+                            disabled={!selectedSubject}
+                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 appearance-none pr-10"
+                        >
+                            <option value="">All Years</option>
+                            {Array.from({ length: 12 }, (_, i) => 2024 - i).map(year => (
+                                <option key={year} value={year.toString()}>{year}</option>
+                            ))}
                         </select>
                         <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                     </div>
