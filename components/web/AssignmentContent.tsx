@@ -315,7 +315,7 @@ Format the response in clean, readable markdown.`;
 
             {/* Detail Modal with AI Answer */}
             <Dialog open={!!selectedAssignment} onOpenChange={(open) => !open && setSelectedAssignment(null)}>
-                <DialogContent className="sm:max-w-4xl max-w-[95vw] max-h-[85vh] overflow-y-auto no-scrollbar border-0 bg-white shadow-2xl rounded-3xl">
+                <DialogContent className="sm:max-w-5xl max-w-[95vw] max-h-[90vh] overflow-y-auto no-scrollbar border-0 bg-white shadow-2xl rounded-3xl">
                     {selectedAssignment && (
                         <div className="space-y-6 py-2">
                             <DialogHeader>
@@ -408,29 +408,29 @@ Format the response in clean, readable markdown.`;
                                 </div>
 
                                 {aiAnswer ? (
-                                    <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 max-h-[50vh] overflow-y-auto no-scrollbar">
-                                        <div className="prose prose-sm max-w-none 
-                                            prose-headings:font-bold prose-headings:text-gray-800 
-                                            prose-h1:text-2xl prose-h1:mt-8 prose-h1:mb-4 prose-h1:border-b-2 prose-h1:border-gray-200 prose-h1:pb-3
-                                            prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:text-gray-900 prose-h2:font-extrabold
-                                            prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3 prose-h3:text-gray-800 prose-h3:font-bold
-                                            prose-h4:text-base prose-h4:mt-5 prose-h4:mb-2 prose-h4:font-bold prose-h4:text-gray-700
-                                            prose-p:text-gray-600 prose-p:leading-relaxed prose-p:my-4
-                                            prose-li:text-gray-600 prose-li:my-2
-                                            prose-ul:my-4 prose-ul:pl-6 prose-ul:list-disc prose-ol:my-4 prose-ol:pl-6 prose-ol:list-decimal
-                                            prose-strong:text-gray-800 prose-strong:font-bold
-                                            [&_table]:w-full [&_table]:my-6 [&_table]:border-collapse [&_table]:text-sm [&_table]:border-2 [&_table]:border-gray-300 [&_table]:rounded-lg [&_table]:overflow-hidden
-                                            [&_thead]:bg-gray-100
-                                            [&_th]:border-2 [&_th]:border-gray-300 [&_th]:px-4 [&_th]:py-3 [&_th]:text-left [&_th]:font-bold [&_th]:text-gray-700 [&_th]:bg-gray-100
-                                            [&_td]:border-2 [&_td]:border-gray-200 [&_td]:px-4 [&_td]:py-3 [&_td]:text-gray-600
-                                            [&_tr:nth-child(even)]:bg-gray-50
-                                            [&_tbody_tr:hover]:bg-blue-50
-                                            prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-purple-700
-                                            prose-pre:bg-gray-800 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-xl prose-pre:overflow-x-auto prose-pre:my-6
-                                            prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50 prose-blockquote:pl-4 prose-blockquote:py-3 prose-blockquote:my-6 prose-blockquote:italic prose-blockquote:text-gray-600
-                                            prose-hr:my-8 prose-hr:border-gray-200
-                                            [&>*:first-child]:mt-0">
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 max-h-[60vh] overflow-y-auto no-scrollbar">
+                                        <div className="text-gray-900">
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkGfm]}
+                                                components={{
+                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-black text-gray-900 mt-6 mb-4 pb-2 border-b-2 border-gray-200" {...props} />,
+                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-extrabold text-gray-900 mt-6 mb-3" {...props} />,
+                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-bold text-gray-800 mt-5 mb-2" {...props} />,
+                                                    h4: ({ node, ...props }) => <h4 className="text-base font-bold text-gray-700 mt-4 mb-2" {...props} />,
+                                                    p: ({ node, ...props }) => <p className="text-gray-700 leading-relaxed mb-4 text-sm" {...props} />,
+                                                    ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
+                                                    ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
+                                                    li: ({ node, ...props }) => <li className="text-gray-700 text-sm" {...props} />,
+                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-400 bg-blue-50 pl-4 py-2 italic text-gray-600 mb-4 rounded-r" {...props} />,
+                                                    table: ({ node, ...props }) => <div className="overflow-x-auto mb-6 rounded-lg border border-gray-200"><table className="w-full text-sm text-left border-collapse" {...props} /></div>,
+                                                    thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
+                                                    th: ({ node, ...props }) => <th className="px-4 py-3 font-bold text-gray-700 border-b border-gray-200" {...props} />,
+                                                    td: ({ node, ...props }) => <td className="px-4 py-3 border-b border-gray-100" {...props} />,
+                                                    tr: ({ node, ...props }) => <tr className="even:bg-gray-50 hover:bg-gray-50/50" {...props} />,
+                                                    strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
+                                                    code: ({ node, ...props }) => <code className="bg-gray-100 text-purple-700 px-1 py-0.5 rounded font-mono text-xs" {...props} />
+                                                }}
+                                            >
                                                 {aiAnswer}
                                             </ReactMarkdown>
                                         </div>
