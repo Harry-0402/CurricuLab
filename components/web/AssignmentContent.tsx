@@ -58,7 +58,7 @@ export function AssignmentContent() {
                 if (due.length > 0) {
                     setDueAlerts(due);
                     setShowDueAlert(true);
-                    const timer = setTimeout(() => setShowDueAlert(false), 5000);
+                    const timer = setTimeout(() => setShowDueAlert(false), 20000); // 20 seconds
                     return () => clearTimeout(timer);
                 }
             } catch (error) {
