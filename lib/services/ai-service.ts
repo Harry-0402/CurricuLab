@@ -32,7 +32,7 @@ export const AiService = {
 
         Please provide a structured, visually appealing revision note using proper Markdown formatting:
         
-        # ${topic} (Use H1 for the main title)
+        IMPORTANT: Do NOT include the main topic title (I will display it separately). Start directly with the content.
         
         ## Overview (Use H2 for main sections)
         Provide a clear, concise explanation of the concept.
