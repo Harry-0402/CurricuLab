@@ -33,6 +33,9 @@ export function AssignmentContent() {
     const [isGeneratingAnswer, setIsGeneratingAnswer] = useState(false);
     const [showExportMenu, setShowExportMenu] = useState(false);
 
+    // Delete Confirmation State
+    const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
 
 
 
@@ -305,7 +308,7 @@ Format the response in clean, readable markdown.`;
                                         <Icons.Edit size={16} />
                                     </button>
                                     <button
-                                        onClick={(e) => { e.stopPropagation(); handleDeleteAssignment(assignment.id); }}
+                                        onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(assignment.id); }}
                                         className="p-3 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
                                     >
                                         <Icons.Delete size={16} />
@@ -494,6 +497,42 @@ Format the response in clean, readable markdown.`;
             </Dialog>
 
             {/* Due Date Alert Popup */}
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+                <DialogContent className="sm:max-w-md bg-white rounded-3xl border border-gray-100 shadow-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-black text-gray-900 flex items-center gap-3">
+                            <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center text-red-600">
+                                <Icons.Delete size={24} />
+                            </div>
+                            Delete Assignment
+                        </DialogTitle>
+                        <DialogDescription className="text-gray-500 font-medium pt-2">
+                            Are you sure you want to delete &quot;{assignments.find(a => a.id === deleteConfirmId)?.title}&quot;? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex justify-end gap-3 pt-4">
+                        <button
+                            onClick={() => setDeleteConfirmId(null)}
+                            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-2xl text-sm font-bold hover:bg-gray-200 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (deleteConfirmId) {
+                                    handleDeleteAssignment(deleteConfirmId);
+                                    setDeleteConfirmId(null);
+                                }
+                            }}
+                            className="px-6 py-3 bg-red-600 text-white rounded-2xl text-sm font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-200"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
         </div>
     );
