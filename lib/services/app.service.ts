@@ -166,6 +166,7 @@ export const getNoteById = async (id: string): Promise<Note | undefined> => {
 
 export const createNote = async (note: Note): Promise<Note> => {
     const payload = {
+        id: note.id,
         title: note.title,
         content: note.content,
         unit_id: note.unitId,
