@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { Subject, Assignment } from '@/types';
-import { getSubjects, getAssignments } from '@/lib/services/app.service';
+import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment } from '@/lib/services/app.service';
 import { AssignmentModal } from './AssignmentModal';
 
 export function AssignmentContent() {
@@ -41,26 +41,47 @@ export function AssignmentContent() {
 
     const activeSubject = subjects.find(s => s.id === activeSubjectId);
 
-    const handleSaveAssignment = (data: Partial<Assignment>) => {
-        if (editingAssignment) {
-            // Update
-            setAssignments(prev => prev.map(a => a.id === editingAssignment.id ? { ...a, ...data } as Assignment : a));
-        } else {
-            // Create
-            const newAssignment: Assignment = {
-                id: `as-${Date.now()}`,
-                title: data.title || 'Untitled',
-                description: data.description || '',
-                subjectId: activeSubjectId!,
-                dueDate: data.dueDate || new Date().toISOString().split('T')[0],
-            };
-            setAssignments(prev => [...prev, newAssignment]);
+    const handleSaveAssignment = async (data: Partial<Assignment>) => {
+        try {
+            if (editingAssignment) {
+                // Update
+                const updated = await updateAssignment({ ...editingAssignment, ...data } as Assignment);
+                if (updated.subjectId === activeSubjectId) {
+                    setAssignments(prev => prev.map(a => a.id === updated.id ? updated : a));
+                } else {
+                    // Moved to another subject, remove from current view
+                    setAssignments(prev => prev.filter(a => a.id !== updated.id));
+                }
+            } else {
+                // Create
+                const newAssignment = await createAssignment({
+                    id: crypto.randomUUID(), // Temp ID, or let DB handle it? Supabase usually wants ID if providing, or we omit. Service mapAssignment expects ID. Service createAssignment inserts payload. Let's look at service. Service maps input ID.
+                    title: data.title || 'Untitled',
+                    description: data.description || '',
+                    subjectId: data.subjectId || activeSubjectId!, // Use selected subject!
+                    dueDate: data.dueDate || new Date().toISOString().split('T')[0],
+                    unitId: data.unitId,
+                    platform: data.platform
+                } as Assignment);
+
+                if (newAssignment.subjectId === activeSubjectId) {
+                    setAssignments(prev => [...prev, newAssignment]);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to save assignment:", error);
+            // Optionally add toast notification here
         }
         setEditingAssignment(null);
     };
 
-    const handleDeleteAssignment = (id: string) => {
-        setAssignments(prev => prev.filter(a => a.id !== id));
+    const handleDeleteAssignment = async (id: string) => {
+        try {
+            await deleteAssignment(id);
+            setAssignments(prev => prev.filter(a => a.id !== id));
+        } catch (error) {
+            console.error("Failed to delete assignment:", error);
+        }
     };
 
     const openEditModal = (assignment: Assignment) => {
