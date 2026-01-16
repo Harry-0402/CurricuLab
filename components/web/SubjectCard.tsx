@@ -20,15 +20,17 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
     // Map common "dirty" data keys to Emojis (User Preference)
     const lowerIcon = subject.icon.toLowerCase();
 
-    if (lowerIcon.includes('graph') || lowerIcon.includes('chart') || lowerIcon.includes('analy')) { displayIcon = '📊'; IconComponent = null; }
-    else if (lowerIcon.includes('robot') || lowerIcon.includes('bot')) { displayIcon = '🤖'; IconComponent = null; }
-    else if (lowerIcon.includes('truck') || lowerIcon.includes('product')) { displayIcon = '🏭'; IconComponent = null; }
-    else if (lowerIcon.includes('law') || lowerIcon.includes('scale')) { displayIcon = '⚖️'; IconComponent = null; }
+    // Primary mappings
+    if (lowerIcon.includes('rocket') || lowerIcon.includes('digital') || lowerIcon.includes('transform')) { displayIcon = '🚀'; IconComponent = null; }
+    else if (lowerIcon.includes('factory') || lowerIcon.includes('truck') || lowerIcon.includes('product') || lowerIcon.includes('operations')) { displayIcon = '🏭'; IconComponent = null; }
+    else if (lowerIcon.includes('scale') || lowerIcon.includes('law') || lowerIcon.includes('legal') || lowerIcon.includes('balance')) { displayIcon = '⚖️'; IconComponent = null; }
+    else if (lowerIcon.includes('graph') || lowerIcon.includes('chart') || lowerIcon.includes('visual') || lowerIcon.includes('story')) { displayIcon = '📊'; IconComponent = null; }
+    else if (lowerIcon.includes('search') || lowerIcon.includes('research') || lowerIcon.includes('magnif')) { displayIcon = '🔍'; IconComponent = null; }
+    else if (lowerIcon.includes('python') || lowerIcon.includes('snake') || lowerIcon.includes('data analysis')) { displayIcon = '🐍'; IconComponent = null; }
+    else if (lowerIcon.includes('power') || lowerIcon.includes('bi') || lowerIcon.includes('business intelligence')) { displayIcon = '📈'; IconComponent = null; }
+    else if (lowerIcon.includes('chat') || lowerIcon.includes('communication') || lowerIcon.includes('talk')) { displayIcon = '💬'; IconComponent = null; }
+    else if (lowerIcon.includes('robot') || lowerIcon.includes('bot') || lowerIcon.includes('ai')) { displayIcon = '🤖'; IconComponent = null; }
     else if (lowerIcon.includes('shop') || lowerIcon.includes('store') || lowerIcon.includes('market')) { displayIcon = '🛍️'; IconComponent = null; }
-    else if (lowerIcon.includes('communication') || lowerIcon.includes('chat')) { displayIcon = '💬'; IconComponent = null; }
-    else if (lowerIcon.includes('research') || lowerIcon.includes('search')) { displayIcon = '🔍'; IconComponent = null; }
-    else if (lowerIcon.includes('python')) { displayIcon = '🐍'; IconComponent = null; }
-    else if (lowerIcon.includes('bi')) { displayIcon = '📈'; IconComponent = null; }
 
     // Fallback if no icon and no emoji mapping found
     if (!IconComponent && displayIcon.length > 4 && displayIcon === subject.icon) {
