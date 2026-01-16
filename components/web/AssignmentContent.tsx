@@ -300,7 +300,7 @@ Format the response in clean, readable markdown.`;
                                     <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Due Date</span>
                                     <span className="text-sm font-black text-gray-900">{assignment.dueDate}</span>
                                 </div>
-                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex items-center gap-2">
                                     <button
                                         onClick={(e) => { e.stopPropagation(); openEditModal(assignment); }}
                                         className="p-3 bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
