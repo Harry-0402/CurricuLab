@@ -172,8 +172,20 @@ export const createNote = async (note: Note): Promise<Note> => {
         is_bookmarked: note.isBookmarked
     };
     const { data, error } = await supabase.from('notes').insert(payload).select().single();
-    if (error) console.error(error);
-    return note;
+    if (error) {
+        console.error("Error creating note:", error);
+        throw error;
+    }
+
+    return {
+        id: data.id,
+        unitId: data.unit_id,
+        title: data.title,
+        content: data.content,
+        isBookmarked: data.is_bookmarked,
+        lastRead: data.last_read,
+        lastModified: data.last_modified
+    };
 };
 
 export const updateNote = async (note: Note): Promise<Note> => {
