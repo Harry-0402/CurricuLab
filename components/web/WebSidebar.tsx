@@ -19,6 +19,7 @@ const navItems: NavItem[] = [
     { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
     { label: 'Assignments', href: '/assignments', icon: Icons.Questions },
     { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.Users },
+    { label: 'MarkWise', href: '/tools/markwise', icon: Icons.CheckSquare },
     { label: 'Team', href: '/team', icon: Icons.Profile },
 ];
 
