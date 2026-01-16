@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { Subject, Assignment, Unit } from '@/types';
-import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
+import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits, getUpcomingAssignments } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { PlatformExportService } from '@/lib/services/export-service';
 import { AssignmentModal } from './AssignmentModal';
@@ -40,20 +40,8 @@ export function AssignmentContent() {
     useEffect(() => {
         const checkDueAssignments = async () => {
             try {
-                const allAssignments = await getAssignments(); // Fetch all subjects' assignments
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const twoDaysFromNow = new Date(today);
-                twoDaysFromNow.setDate(today.getDate() + 2);
-
-                const due = allAssignments.filter(a => {
-                    const d = new Date(a.dueDate);
-                    // Fix potential timezone offset by treating date string as local midnight
-                    // Simple hack: append T00:00 to ensure valid ISO if missing, or just parse
-                    const datePart = a.dueDate.split('T')[0];
-                    const dObj = new Date(datePart + 'T00:00:00');
-                    return dObj >= today && dObj <= twoDaysFromNow;
-                });
+                // Fetch filtered data directly from DB
+                const due = await getUpcomingAssignments(2); // Next 2 days
 
                 if (due.length > 0) {
                     setDueAlerts(due);

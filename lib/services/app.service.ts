@@ -317,6 +317,27 @@ export const getAssignments = async (subjectId?: string): Promise<Assignment[]> 
     return data.map(mapAssignment);
 };
 
+export const getUpcomingAssignments = async (days: number): Promise<Assignment[]> => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString();
+
+    const futureDate = new Date(today);
+    futureDate.setDate(today.getDate() + days);
+    // Set to end of day to be inclusive
+    futureDate.setHours(23, 59, 59, 999);
+    const futureDateStr = futureDate.toISOString();
+
+    const { data, error } = await supabase
+        .from('assignments')
+        .select('*')
+        .gte('due_date', todayStr)
+        .lte('due_date', futureDateStr);
+
+    if (error || !data) return [];
+    return data.map(mapAssignment);
+};
+
 export const createAssignment = async (assignment: Assignment): Promise<Assignment> => {
     const payload = {
         id: assignment.id,
