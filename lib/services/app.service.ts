@@ -230,3 +230,106 @@ export const getKPIStats = async (): Promise<KPIStats> => {
         lastStudiedSubjectId: "",
     };
 };
+
+
+// --- MarkWise Questions (Separate Table) ---
+
+export interface MarkWiseQuestion {
+    id: string;
+    subjectId: string;
+    unitId: string;
+    question: string;
+    answer: string;
+    formattedAnswer: string;
+    marksType: number;
+    tags: string[];
+    isBookmarked: boolean;
+}
+
+const mapMarkWiseQuestion = (data: any): MarkWiseQuestion => ({
+    id: data.id,
+    subjectId: data.subject_id,
+    unitId: data.unit_id || '',
+    question: data.question,
+    answer: data.answer || '',
+    formattedAnswer: data.formatted_answer || '',
+    marksType: data.marks_type,
+    tags: data.tags || [],
+    isBookmarked: data.is_bookmarked || false
+});
+
+export const getMarkWiseQuestions = async (filters: { subjectId?: string; unitId?: string; marksType?: number }): Promise<MarkWiseQuestion[]> => {
+    let query = supabase.from('markwise_questions').select('*');
+
+    if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
+    if (filters.unitId) query = query.eq('unit_id', filters.unitId);
+    if (filters.marksType) query = query.eq('marks_type', filters.marksType);
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Failed to fetch MarkWise questions:", error);
+        return [];
+    }
+
+    return data.map(mapMarkWiseQuestion);
+};
+
+export const createMarkWiseQuestion = async (question: Omit<MarkWiseQuestion, 'id'>): Promise<MarkWiseQuestion | null> => {
+    const { data, error } = await supabase.from('markwise_questions').insert([{
+        id: crypto.randomUUID(),
+        subject_id: question.subjectId,
+        unit_id: question.unitId || null,
+        question: question.question,
+        answer: question.answer || '',
+        formatted_answer: question.formattedAnswer || '',
+        marks_type: question.marksType,
+        tags: question.tags || [],
+        is_bookmarked: question.isBookmarked || false
+    }]).select().single();
+
+    if (error) {
+        console.error("Failed to create MarkWise question:", error.message);
+        return null;
+    }
+
+    return mapMarkWiseQuestion(data);
+};
+
+export const updateMarkWiseQuestion = async (question: MarkWiseQuestion): Promise<MarkWiseQuestion | null> => {
+    const { data, error } = await supabase
+        .from('markwise_questions')
+        .update({
+            subject_id: question.subjectId,
+            unit_id: question.unitId || null,
+            question: question.question,
+            answer: question.answer,
+            formatted_answer: question.formattedAnswer,
+            marks_type: question.marksType,
+            tags: question.tags,
+            is_bookmarked: question.isBookmarked
+        })
+        .eq('id', question.id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Failed to update MarkWise question:", error.message);
+        return null;
+    }
+
+    return mapMarkWiseQuestion(data);
+};
+
+export const deleteMarkWiseQuestion = async (id: string): Promise<boolean> => {
+    const { error } = await supabase
+        .from('markwise_questions')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error("Failed to delete MarkWise question:", error);
+        return false;
+    }
+    return true;
+};

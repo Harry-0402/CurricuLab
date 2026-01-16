@@ -4,9 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-import { getSubjects, getUnits, getQuestions, createQuestion, updateQuestion, deleteQuestion } from '@/lib/services/app.service';
+import { getSubjects, getUnits, getMarkWiseQuestions, createMarkWiseQuestion, updateMarkWiseQuestion, deleteMarkWiseQuestion, MarkWiseQuestion } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
-import { Subject, Unit, Question, MarksType } from '@/types';
+import { Subject, Unit, MarksType } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useToast } from '@/components/shared/Toast';
@@ -15,12 +15,12 @@ export function MarkWiseContent() {
     const { showToast } = useToast();
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [units, setUnits] = useState<Unit[]>([]);
-    const [questions, setQuestions] = useState<Question[]>([]);
+    const [questions, setQuestions] = useState<MarkWiseQuestion[]>([]);
 
     const [selectedSubject, setSelectedSubject] = useState<string>('');
     const [selectedUnit, setSelectedUnit] = useState<string>('');
     const [selectedMarks, setSelectedMarks] = useState<string>('');
-    const [activeQuestion, setActiveQuestion] = useState<Question | null>(null);
+    const [activeQuestion, setActiveQuestion] = useState<MarkWiseQuestion | null>(null);
 
     const [isLoading, setIsLoading] = useState(false);
     const [formattedAnswer, setFormattedAnswer] = useState<string>('');
@@ -58,14 +58,11 @@ export function MarkWiseContent() {
         const loadQuestions = async () => {
             if (selectedSubject) {
                 setIsLoading(true);
-                let data = await getQuestions({
+                const data = await getMarkWiseQuestions({
                     subjectId: selectedSubject,
-                    unitId: selectedUnit || undefined
+                    unitId: selectedUnit || undefined,
+                    marksType: selectedMarks ? Number(selectedMarks) : undefined
                 });
-                // Filter by marks type if selected
-                if (selectedMarks) {
-                    data = data.filter(q => q.marksType === Number(selectedMarks));
-                }
                 setQuestions(data);
                 setIsLoading(false);
             }
@@ -76,6 +73,12 @@ export function MarkWiseContent() {
     // Format user's answer using AI for better presentation
     const handleFormatAnswer = async () => {
         if (!activeQuestion?.answer) return;
+
+        // Check if we already have a cached formatted answer
+        if (activeQuestion.formattedAnswer) {
+            setFormattedAnswer(activeQuestion.formattedAnswer);
+            return;
+        }
 
         setIsFormatting(true);
         setFormattedAnswer('');
@@ -88,6 +91,12 @@ export function MarkWiseContent() {
                 activeQuestion.marksType
             );
             setFormattedAnswer(formatted);
+
+            // Cache the formatted answer in the database
+            await updateMarkWiseQuestion({
+                ...activeQuestion,
+                formattedAnswer: formatted
+            });
         } catch (error) {
             console.error("Failed to format answer:", error);
             // Fallback: just show the raw answer
@@ -101,31 +110,29 @@ export function MarkWiseContent() {
         if (!newQuestion.subjectId || !newQuestion.question) return;
 
         setIsSaving(true);
-        let saved: Question | null = null;
+        let saved: MarkWiseQuestion | null = null;
 
         if (editingId) {
-            saved = await updateQuestion({
+            saved = await updateMarkWiseQuestion({
                 id: editingId,
                 unitId: newQuestion.unitId,
                 subjectId: newQuestion.subjectId,
                 question: newQuestion.question,
                 answer: newQuestion.answer,
+                formattedAnswer: '', // Clear cached format when answer changes
                 marksType: newQuestion.marksType,
                 tags: activeQuestion?.tags || [],
-                difficulty: 'Medium',
-                year: '',
                 isBookmarked: activeQuestion?.isBookmarked || false,
             });
         } else {
-            saved = await createQuestion({
+            saved = await createMarkWiseQuestion({
                 subjectId: newQuestion.subjectId,
                 unitId: newQuestion.unitId,
                 question: newQuestion.question,
                 answer: newQuestion.answer,
+                formattedAnswer: '',
                 marksType: newQuestion.marksType,
                 tags: [],
-                difficulty: 'Medium',
-                year: '',
                 isBookmarked: false,
             });
         }
@@ -148,13 +155,11 @@ export function MarkWiseContent() {
             setEditingId(null);
 
             if (saved.subjectId === selectedSubject) {
-                let data = await getQuestions({
+                const data = await getMarkWiseQuestions({
                     subjectId: selectedSubject,
-                    unitId: selectedUnit || undefined
+                    unitId: selectedUnit || undefined,
+                    marksType: selectedMarks ? Number(selectedMarks) : undefined
                 });
-                if (selectedMarks) {
-                    data = data.filter(q => q.marksType === Number(selectedMarks));
-                }
                 setQuestions(data);
                 if (editingId && activeQuestion?.id === editingId) {
                     setActiveQuestion(saved);
@@ -164,13 +169,13 @@ export function MarkWiseContent() {
         setIsSaving(false);
     };
 
-    const handleEditClick = (e: React.MouseEvent, q: Question) => {
+    const handleEditClick = (e: React.MouseEvent, q: MarkWiseQuestion) => {
         e.stopPropagation();
         setEditingId(q.id);
         setNewQuestion({
             subjectId: q.subjectId,
             unitId: q.unitId,
-            marksType: q.marksType,
+            marksType: q.marksType as MarksType,
             question: q.question,
             answer: q.answer || ''
         });
@@ -180,7 +185,7 @@ export function MarkWiseContent() {
     const handleDeleteClick = async (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
         if (confirm('Are you sure you want to delete this question?')) {
-            const success = await deleteQuestion(id);
+            const success = await deleteMarkWiseQuestion(id);
             if (success) {
                 setQuestions(prev => prev.filter(q => q.id !== id));
                 if (activeQuestion?.id === id) {
