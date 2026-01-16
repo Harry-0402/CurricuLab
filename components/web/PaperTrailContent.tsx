@@ -133,10 +133,15 @@ export function PaperTrailContent() {
         }
 
         if (saved) {
-            setIsAddModalOpen(false);
+            // For new questions, keep modal open but clear form
+            // For edits, close the modal
+            if (editingId) {
+                setIsAddModalOpen(false);
+            }
+
             setNewQuestion({
-                subjectId: '',
-                unitId: '',
+                subjectId: newQuestion.subjectId, // Keep subject selected
+                unitId: newQuestion.unitId, // Keep unit selected
                 year: '',
                 marksType: 10,
                 question: '',
