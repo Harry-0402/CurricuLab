@@ -24,7 +24,8 @@ const navItems: NavItem[] = [
 
 const tools: NavItem[] = [
     { label: 'LearnPilot AI', href: '/ai-tutor', icon: Icons.Bot },
-    { label: 'Revision Notes', href: '/tools/revision', icon: Icons.FileText },
+    { label: 'PaperTrail PYQs', href: '/tools/papertrail', icon: Icons.FileText },
+    { label: 'Revision Notes', href: '/tools/revision', icon: Icons.Notes },
     { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
     { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb },
 ];
