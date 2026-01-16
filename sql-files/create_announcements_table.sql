@@ -22,6 +22,10 @@ ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIM
 -- Enable Row Level Security
 ALTER TABLE announcements ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Anyone can read active announcements" ON announcements;
+DROP POLICY IF EXISTS "Authenticated users can manage announcements" ON announcements;
+
 -- Policy: All authenticated users can read active announcements
 CREATE POLICY "Anyone can read active announcements"
 ON announcements FOR SELECT
