@@ -33,8 +33,7 @@ export function MarkWiseContent() {
         unitId: '',
         marksType: 10 as MarksType,
         question: '',
-        answer: '',
-        difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard'
+        answer: ''
     });
     const [isSaving, setIsSaving] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -113,7 +112,7 @@ export function MarkWiseContent() {
                 answer: newQuestion.answer,
                 marksType: newQuestion.marksType,
                 tags: activeQuestion?.tags || [],
-                difficulty: newQuestion.difficulty,
+                difficulty: 'Medium',
                 year: '',
                 isBookmarked: activeQuestion?.isBookmarked || false,
             });
@@ -125,7 +124,7 @@ export function MarkWiseContent() {
                 answer: newQuestion.answer,
                 marksType: newQuestion.marksType,
                 tags: [],
-                difficulty: newQuestion.difficulty,
+                difficulty: 'Medium',
                 year: '',
                 isBookmarked: false,
             });
@@ -144,8 +143,7 @@ export function MarkWiseContent() {
                 unitId: newQuestion.unitId,
                 marksType: 10,
                 question: '',
-                answer: '',
-                difficulty: 'Medium'
+                answer: ''
             });
             setEditingId(null);
 
@@ -174,8 +172,7 @@ export function MarkWiseContent() {
             unitId: q.unitId,
             marksType: q.marksType,
             question: q.question,
-            answer: q.answer || '',
-            difficulty: q.difficulty
+            answer: q.answer || ''
         });
         setIsAddModalOpen(true);
     };
@@ -292,15 +289,9 @@ export function MarkWiseContent() {
                                         )}
                                     >
                                         <div className="flex justify-between items-start mb-2">
-                                            <span className={cn(
-                                                "px-2 py-1 rounded-md text-[10px] font-bold uppercase",
-                                                q.difficulty === 'Easy' ? "bg-green-100 text-green-700" :
-                                                    q.difficulty === 'Medium' ? "bg-yellow-100 text-yellow-700" :
-                                                        "bg-red-100 text-red-700"
-                                            )}>
-                                                {q.difficulty}
+                                            <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-blue-100 text-blue-700">
+                                                {q.marksType} Marks
                                             </span>
-                                            <span className="text-[10px] font-bold text-gray-400">{q.marksType} Marks</span>
                                         </div>
                                         <p className="text-sm font-semibold text-gray-800 line-clamp-3 mb-2">{q.question}</p>
                                         {q.answer && (
@@ -465,22 +456,6 @@ export function MarkWiseContent() {
                                             </select>
                                             <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Difficulty</label>
-                                    <div className="relative">
-                                        <select
-                                            value={newQuestion.difficulty}
-                                            onChange={(e) => setNewQuestion({ ...newQuestion, difficulty: e.target.value as any })}
-                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
-                                        >
-                                            <option value="Easy">Easy</option>
-                                            <option value="Medium">Medium</option>
-                                            <option value="Hard">Hard</option>
-                                        </select>
-                                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                     </div>
                                 </div>
 
