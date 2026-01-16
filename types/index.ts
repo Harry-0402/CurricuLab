@@ -58,6 +58,7 @@ export interface Question {
   tags: string[];
   isBookmarked: boolean;
   difficulty: 'Easy' | 'Medium' | 'Hard';
+  year?: string;
 }
 
 export interface CaseStudy {

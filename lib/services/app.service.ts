@@ -95,28 +95,100 @@ export const deleteUnit = async (id: string): Promise<void> => {
 };
 
 
-// --- Questions (Local Static Data) ---
+// --- Questions (Supabase with Fallback) ---
+
+const mapSupabaseQuestion = (data: any): Question => ({
+    id: data.id,
+    unitId: data.unit_id,
+    subjectId: data.subject_id,
+    question: data.question,
+    answer: data.answer,
+    marksType: data.marks_type,
+    tags: data.tags || [],
+    isBookmarked: data.is_bookmarked || false,
+    difficulty: data.difficulty,
+    year: data.year
+});
 
 export const getQuestions = async (filters: { subjectId?: string; unitId?: string; marksType?: number }): Promise<Question[]> => {
-    let filtered = [...LOCAL_QUESTIONS];
-    if (filters.subjectId) filtered = filtered.filter(q => q.subjectId === filters.subjectId);
-    if (filters.unitId) filtered = filtered.filter(q => q.unitId === filters.unitId);
-    if (filters.marksType) filtered = filtered.filter(q => q.marksType === filters.marksType);
-    return filtered;
+    let query = supabase.from('questions').select('*');
+
+    if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
+    if (filters.unitId) query = query.eq('unit_id', filters.unitId);
+    if (filters.marksType) query = query.eq('marks_type', filters.marksType);
+
+    const { data, error } = await query;
+
+    if (error || !data) {
+        console.warn('Error fetching questions from Supabase, using local fallback:', error);
+        let filtered = [...LOCAL_QUESTIONS];
+        if (filters.subjectId) filtered = filtered.filter(q => q.subjectId === filters.subjectId);
+        if (filters.unitId) filtered = filtered.filter(q => q.unitId === filters.unitId);
+        if (filters.marksType) filtered = filtered.filter(q => q.marksType === filters.marksType);
+        return filtered;
+    }
+
+    return data.map(mapSupabaseQuestion);
 };
 
-export const createQuestion = async (question: Question): Promise<Question> => {
-    console.warn("createQuestion is disabled in local mode");
-    return question;
+export const createQuestion = async (question: Omit<Question, 'id'>): Promise<Question | null> => {
+    const { data, error } = await supabase.from('questions').insert([{
+        unit_id: question.unitId,
+        subject_id: question.subjectId,
+        question: question.question,
+        answer: question.answer,
+        marks_type: question.marksType,
+        tags: question.tags,
+        difficulty: question.difficulty,
+        year: question.year,
+        is_bookmarked: question.isBookmarked
+    }]).select().single();
+
+    if (error) {
+        console.error("Failed to create question:", error);
+        return null;
+    }
+
+    return mapSupabaseQuestion(data);
 };
 
-export const updateQuestion = async (question: Question): Promise<Question> => {
-    console.warn("updateQuestion is disabled in local mode");
-    return question;
+export const updateQuestion = async (question: Question): Promise<Question | null> => {
+    const { data, error } = await supabase
+        .from('questions')
+        .update({
+            unit_id: question.unitId,
+            subject_id: question.subjectId,
+            question: question.question,
+            answer: question.answer,
+            marks_type: question.marksType,
+            tags: question.tags,
+            difficulty: question.difficulty,
+            year: question.year,
+            is_bookmarked: question.isBookmarked
+        })
+        .eq('id', question.id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Failed to update question:", error);
+        return null;
+    }
+
+    return mapSupabaseQuestion(data);
 };
 
-export const deleteQuestion = async (id: string): Promise<void> => {
-    console.warn("deleteQuestion is disabled in local mode");
+export const deleteQuestion = async (id: string): Promise<boolean> => {
+    const { error } = await supabase
+        .from('questions')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error("Failed to delete question:", error);
+        return false;
+    }
+    return true;
 };
 
 

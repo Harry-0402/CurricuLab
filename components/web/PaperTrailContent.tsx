@@ -4,9 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-import { getSubjects, getUnits, getQuestions } from '@/lib/services/app.service';
+import { getSubjects, getUnits, getQuestions, createQuestion, updateQuestion, deleteQuestion } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
-import { Subject, Unit, Question } from '@/types';
+import { Subject, Unit, Question, MarksType } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -22,6 +22,19 @@ export function PaperTrailContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [aiAnswer, setAiAnswer] = useState<string>('');
     const [isGenerating, setIsGenerating] = useState(false);
+
+    // Add Question Modal State
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [newQuestion, setNewQuestion] = useState({
+        subjectId: '',
+        unitId: '',
+        year: '',
+        marksType: 10 as MarksType,
+        question: '',
+        difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard'
+    });
+    const [isSaving, setIsSaving] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     // Initial Load
     useEffect(() => {
@@ -65,31 +78,110 @@ export function PaperTrailContent() {
             const subject = subjects.find(s => s.id === selectedSubject);
             const unit = units.find(u => u.id === activeQuestion.unitId);
 
-            const prompt = `You are an expert university professor.
-
-Subject: ${subject?.title}
-${unit ? `Unit: ${unit.title}` : ''}
-Question: "${activeQuestion.question}"
-Marks: ${activeQuestion.marksType}
-
-Provide a comprehensive, exam-grade answer to this question.
-Structure your answer with:
-1. **Introduction**: Brief context.
-2. **Key Concepts**: Core theory/definitions.
-3. **Detailed Explanation**: Points, steps, or analysis.
-4. **Examples**: Real-world application.
-5. **Conclusion**: Summary.
-
-Format using clean Markdown (H2 for sections, bold for keywords, bullet points).`;
-
-            const answer = await AiService.generateContent(prompt);
+            const answer = await AiService.generateAnswer(
+                subject?.title || '',
+                unit?.title || '',
+                unit?.topics || [],
+                activeQuestion.question,
+                activeQuestion.marksType,
+                activeQuestion.difficulty || 'Medium'
+            );
             setAiAnswer(answer);
 
         } catch (error) {
-            console.error("Failed to generate answer", error);
-            setAiAnswer("Error generating answer. Please try again.");
+            console.error("Failed to generate answer:", error);
+            setAiAnswer("Sorry, I couldn't generate an answer at this time. Please check your connection or API key.");
         } finally {
             setIsGenerating(false);
+        }
+    };
+
+    const handleSaveQuestion = async () => {
+        if (!newQuestion.subjectId || !newQuestion.question) return;
+
+        setIsSaving(true);
+        let saved: Question | null = null;
+
+        if (editingId) {
+            saved = await updateQuestion({
+                id: editingId,
+                unitId: newQuestion.unitId,
+                subjectId: newQuestion.subjectId,
+                question: newQuestion.question,
+                answer: activeQuestion?.answer || '',
+                marksType: newQuestion.marksType,
+                tags: activeQuestion?.tags || [],
+                difficulty: newQuestion.difficulty,
+                year: newQuestion.year,
+                isBookmarked: activeQuestion?.isBookmarked || false,
+            });
+        } else {
+            saved = await createQuestion({
+                subjectId: newQuestion.subjectId,
+                unitId: newQuestion.unitId,
+                question: newQuestion.question,
+                answer: '',
+                marksType: newQuestion.marksType,
+                tags: [],
+                difficulty: newQuestion.difficulty,
+                year: newQuestion.year,
+                isBookmarked: false,
+            });
+        }
+
+        if (saved) {
+            setIsAddModalOpen(false);
+            setNewQuestion({
+                subjectId: '',
+                unitId: '',
+                year: '',
+                marksType: 10,
+                question: '',
+                difficulty: 'Medium'
+            });
+            setEditingId(null);
+
+            // Refresh list if added to currently viewed context
+            if (saved.subjectId === selectedSubject) {
+                // Trigger refresh by reloading questions
+                const data = await getQuestions({
+                    subjectId: selectedSubject,
+                    unitId: selectedUnit || undefined
+                });
+                setQuestions(data);
+                // Also update active question if we just edited it
+                if (editingId && activeQuestion?.id === editingId) {
+                    setActiveQuestion(saved);
+                }
+            }
+        }
+        setIsSaving(false);
+    };
+
+    const handleEditClick = (e: React.MouseEvent, q: Question) => {
+        e.stopPropagation();
+        setEditingId(q.id);
+        setNewQuestion({
+            subjectId: q.subjectId,
+            unitId: q.unitId,
+            year: q.year || '',
+            marksType: q.marksType,
+            question: q.question,
+            difficulty: q.difficulty
+        });
+        setIsAddModalOpen(true);
+    };
+
+    const handleDeleteClick = async (e: React.MouseEvent, id: string) => {
+        e.stopPropagation();
+        if (confirm('Are you sure you want to delete this question?')) {
+            const success = await deleteQuestion(id);
+            if (success) {
+                setQuestions(prev => prev.filter(q => q.id !== id));
+                if (activeQuestion?.id === id) {
+                    setActiveQuestion(null);
+                }
+            }
         }
     };
 
@@ -101,7 +193,27 @@ Format using clean Markdown (H2 for sections, bold for keywords, bullet points).
                 <div className="flex items-center justify-between shrink-0">
                     <div>
                         <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
-                        <p className="text-4xl font-black text-gray-900 tracking-tight">PaperTrail</p>
+                        <div className="flex items-center gap-4">
+                            <p className="text-4xl font-black text-gray-900 tracking-tight">PaperTrail</p>
+                            <button
+                                onClick={() => {
+                                    setEditingId(null);
+                                    setNewQuestion({
+                                        subjectId: selectedSubject || '',
+                                        unitId: selectedUnit || '',
+                                        year: '',
+                                        marksType: 10,
+                                        question: '',
+                                        difficulty: 'Medium'
+                                    });
+                                    setIsAddModalOpen(true);
+                                }}
+                                className="bg-blue-600 text-white p-2 rounded-full shadow-lg hover:shadow-blue-200 transition-all hover:scale-110 active:scale-95"
+                                title="Add New Question"
+                            >
+                                <Icons.Plus size={20} />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -154,7 +266,7 @@ Format using clean Markdown (H2 for sections, bold for keywords, bullet points).
                                         key={q.id}
                                         onClick={() => { setActiveQuestion(q); setAiAnswer(''); }}
                                         className={cn(
-                                            "p-4 rounded-2xl border cursor-pointer transition-all hover:shadow-md",
+                                            "p-4 rounded-2xl border cursor-pointer transition-all hover:shadow-md group relative",
                                             activeQuestion?.id === q.id
                                                 ? "bg-blue-50 border-blue-200 shadow-sm"
                                                 : "bg-white border-gray-100 hover:border-blue-100"
@@ -171,7 +283,23 @@ Format using clean Markdown (H2 for sections, bold for keywords, bullet points).
                                             </span>
                                             <span className="text-[10px] font-bold text-gray-400">{q.marksType} Marks</span>
                                         </div>
-                                        <p className="text-sm font-semibold text-gray-800 line-clamp-3">{q.question}</p>
+                                        <p className="text-sm font-semibold text-gray-800 line-clamp-3 mb-2">{q.question}</p>
+                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={(e) => handleEditClick(e, q)}
+                                                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
+                                                title="Edit"
+                                            >
+                                                <Icons.Edit size={14} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => handleDeleteClick(e, q.id)}
+                                                className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
+                                                title="Delete"
+                                            >
+                                                <Icons.Trash2 size={14} />
+                                            </button>
+                                        </div>
                                     </div>
                                 ))
                             )}
@@ -226,6 +354,119 @@ Format using clean Markdown (H2 for sections, bold for keywords, bullet points).
                     </div>
 
                 </div>
+
+                {/* Add Question Modal */}
+                {isAddModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 animate-in zoom-in-95 duration-200 border border-gray-100">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-black text-gray-900">{editingId ? 'Edit Question' : 'Add New Question'}</h2>
+                                <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                    <Icons.X size={24} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subject</label>
+                                    <div className="relative">
+                                        <select
+                                            value={newQuestion.subjectId}
+                                            onChange={(e) => {
+                                                setNewQuestion({ ...newQuestion, subjectId: e.target.value, unitId: '' });
+                                                getUnits(e.target.value).then(setUnits);
+                                            }}
+                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                                        >
+                                            <option value="">Select Subject...</option>
+                                            {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
+                                        </select>
+                                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Unit</label>
+                                        <div className="relative">
+                                            <select
+                                                value={newQuestion.unitId}
+                                                onChange={(e) => setNewQuestion({ ...newQuestion, unitId: e.target.value })}
+                                                disabled={!newQuestion.subjectId}
+                                                className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none disabled:opacity-50"
+                                            >
+                                                <option value="">Select Unit...</option>
+                                                {(newQuestion.subjectId ? units : []).map(u => <option key={u.id} value={u.id}>Unit {u.order}</option>)}
+                                            </select>
+                                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Year</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. 2023"
+                                            value={newQuestion.year}
+                                            onChange={(e) => setNewQuestion({ ...newQuestion, year: e.target.value })}
+                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Marks</label>
+                                        <div className="relative">
+                                            <select
+                                                value={newQuestion.marksType}
+                                                onChange={(e) => setNewQuestion({ ...newQuestion, marksType: Number(e.target.value) as MarksType })}
+                                                className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                                            >
+                                                {[2, 7, 8, 10, 15].map(m => <option key={m} value={m}>{m} Marks</option>)}
+                                            </select>
+                                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Difficulty</label>
+                                        <div className="relative">
+                                            <select
+                                                value={newQuestion.difficulty}
+                                                onChange={(e) => setNewQuestion({ ...newQuestion, difficulty: e.target.value as any })}
+                                                className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                                            >
+                                                <option value="Easy">Easy</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="Hard">Hard</option>
+                                            </select>
+                                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Question</label>
+                                    <textarea
+                                        rows={4}
+                                        value={newQuestion.question}
+                                        onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
+                                        placeholder="Enter the full question text..."
+                                        className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium resize-none"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleSaveQuestion}
+                                    disabled={isSaving || !newQuestion.question || !newQuestion.subjectId}
+                                    className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                                >
+                                    {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Edit size={16} /> : <Icons.PlusCircle size={16} />)}
+                                    {isSaving ? (editingId ? 'Updating...' : 'Saving...') : (editingId ? 'Update Question' : 'Add Question')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </WebAppShell>
     );

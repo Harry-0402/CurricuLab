@@ -57,7 +57,7 @@ export const AiService = {
 
         for (const modelConfig of FALLBACK_CHAIN) {
             try {
-                console.log(`Attempting generation with ${modelConfig.name}...`);
+                console.log(`[Note] Attempting generation with ${modelConfig.name}...`);
 
                 let content: string = "";
 
@@ -70,7 +70,6 @@ export const AiService = {
                     content = response.text();
                 } else {
                     // Server-side Route (Groq, OpenRouter, Copilot)
-                    // Note: We're reusing the chat API which expects a 'messages' array
                     const response = await fetch('/api/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -95,9 +94,94 @@ export const AiService = {
                 if (content) return content;
 
             } catch (error: any) {
-                console.warn(`Failed with ${modelConfig.name}:`, error.message || error);
+                console.warn(`[Note] Failed with ${modelConfig.name}:`, error.message || error);
                 lastError = error;
                 // Continue to next model
+            }
+        }
+
+        throw new Error(`All AI models failed. Last error: ${lastError?.message || "Unknown error"}`);
+    },
+
+    async generateAnswer(
+        subject: string,
+        unit: string,
+        subtopics: string[],
+        question: string,
+        marks: number,
+        difficulty: string
+    ): Promise<string> {
+        const prompt = `
+        Act as an expert university professor. Write a precise exam answer for the following question.
+
+        **Context:**
+        - **Subject:** ${subject}
+        - **Unit:** ${unit}
+        - **Relevant Topics in Unit:** ${subtopics.length > 0 ? subtopics.join(', ') : 'General Unit Context'}
+        - **Target Marks:** ${marks} Marks (Adjust length and depth accordingly)
+        - **Difficulty:** ${difficulty}
+
+        **Question:**
+        "${question}"
+
+        **Guidelines:**
+        1. **Structure:** Start with a specific, direct answer using keywords. Then explain.
+        2. **Format:** 
+           - Use **Markdown Tables** for comparisons, differences, or structured lists (e.g., Pros/Cons).
+           - Use **Bullet Points** for list items.
+           - Use **Bold Keywords** for emphasis.
+           - Use **Clear Titles (H2/H3)** for all sections.
+        3. **Strict Length & Style Rules:**
+           - **2 Marks:** Short theory. **4-9 lines.**
+           - **7 Marks:** Medium analytical. **14-19 lines.**
+           - **8 Marks:** Medium analytical. **16-21 lines.**
+           - **10 Marks:** Long integrative. **20-25 lines.**
+           - **15 Marks:** Long analytical. **30-35 lines.**
+        4. **Tone:** Academic, clear, and authoritative. Do not preface with "Here is the answer".
+        
+        **Answer:**
+        `;
+
+        let lastError: any = null;
+
+        for (const modelConfig of FALLBACK_CHAIN) {
+            try {
+                console.log(`[Answer] Attempting generation with ${modelConfig.name}...`);
+
+                let content: string = "";
+
+                if (modelConfig.provider === 'gemini') {
+                    if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
+                    const model = genAI.getGenerativeModel({ model: modelConfig.id });
+                    const result = await model.generateContent(prompt);
+                    const response = await result.response;
+                    content = response.text();
+                } else {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            messages: [{ role: 'user', content: prompt }],
+                            provider: modelConfig.provider,
+                            model: modelConfig.id,
+                            mode: 'tutor'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.text();
+                        throw new Error(`API Error ${response.status}: ${err}`);
+                    }
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error);
+                    content = data.message;
+                }
+
+                if (content) return content;
+
+            } catch (error: any) {
+                console.warn(`[Answer] Failed with ${modelConfig.name}:`, error.message || error);
+                lastError = error;
             }
         }
 
@@ -109,7 +193,7 @@ export const AiService = {
 
         for (const modelConfig of FALLBACK_CHAIN) {
             try {
-                console.log(`Attempting generation with ${modelConfig.name}...`);
+                console.log(`[Content] Attempting generation with ${modelConfig.name}...`);
 
                 let content: string = "";
 
@@ -144,7 +228,7 @@ export const AiService = {
                 if (content) return content;
 
             } catch (error: any) {
-                console.warn(`Failed with ${modelConfig.name}:`, error.message || error);
+                console.warn(`[Content] Failed with ${modelConfig.name}:`, error.message || error);
                 lastError = error;
             }
         }
