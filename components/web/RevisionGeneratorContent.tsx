@@ -125,7 +125,7 @@ export function RevisionGeneratorContent() {
 
     return (
         <WebAppShell>
-            <div className="max-w-4xl mx-auto space-y-8">
+            <div className="max-w-[1600px] mx-auto space-y-8">
                 {/* ... (keep existing top header) ... */}
                 <div className="flex items-center justify-between">
                     <div>
