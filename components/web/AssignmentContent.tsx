@@ -315,47 +315,53 @@ Format the response in clean, readable markdown.`;
 
             {/* Detail Modal with AI Answer */}
             <Dialog open={!!selectedAssignment} onOpenChange={(open) => !open && setSelectedAssignment(null)}>
-                <DialogContent className="sm:max-w-5xl max-w-[95vw] max-h-[90vh] overflow-y-auto no-scrollbar border-0 bg-white shadow-2xl rounded-3xl">
+                <DialogContent className="sm:max-w-5xl max-w-[95vw] h-[85vh] flex flex-col overflow-hidden border-0 bg-white shadow-2xl rounded-3xl p-0 gap-0">
                     {selectedAssignment && (
-                        <div className="space-y-6 py-2">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-black text-gray-900 pr-8">
-                                    {selectedAssignment.title}
-                                </DialogTitle>
-                                <DialogDescription asChild>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-                                            <Icons.Calendar size={14} />
-                                            <span>Due: {selectedAssignment.dueDate}</span>
-                                            {selectedAssignment.unitId && (() => {
-                                                const unitIndex = units.findIndex(u => u.id === selectedAssignment.unitId);
-                                                return (
-                                                    <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
-                                                        Unit {unitIndex + 1}
+                        <div className="flex flex-col h-full">
+                            {/* Header Section */}
+                            <div className="p-8 pb-4 shrink-0">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black text-gray-900 pr-8">
+                                        {selectedAssignment.title}
+                                    </DialogTitle>
+                                    <DialogDescription asChild>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
+                                                <Icons.Calendar size={14} />
+                                                <span>Due: {selectedAssignment.dueDate}</span>
+                                                {selectedAssignment.unitId && (() => {
+                                                    const unitIndex = units.findIndex(u => u.id === selectedAssignment.unitId);
+                                                    return (
+                                                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
+                                                            Unit {unitIndex + 1}
+                                                        </span>
+                                                    );
+                                                })()}
+                                                {selectedAssignment.platform && (
+                                                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
+                                                        {selectedAssignment.platform}
                                                     </span>
-                                                );
-                                            })()}
-                                            {selectedAssignment.platform && (
-                                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
-                                                    {selectedAssignment.platform}
-                                                </span>
-                                            )}
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                </DialogDescription>
-                            </DialogHeader>
+                                    </DialogDescription>
+                                </DialogHeader>
+
+                            </div>
 
                             {/* Question/Description */}
-                            <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100">
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Question / Description</h4>
-                                <p className="text-gray-700 font-medium leading-relaxed text-sm">
-                                    {selectedAssignment.description || 'No description provided.'}
-                                </p>
+                            <div className="px-8 pb-4 shrink-0">
+                                <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Question / Description</h4>
+                                    <p className="text-gray-700 font-medium leading-relaxed text-sm line-clamp-3">
+                                        {selectedAssignment.description || 'No description provided.'}
+                                    </p>
+                                </div>
                             </div>
 
                             {/* AI Answer Section */}
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between gap-4 flex-wrap">
+                            <div className="flex-1 flex flex-col min-h-0 px-8 pb-8">
+                                <div className="flex items-center justify-between gap-4 flex-wrap mb-4 shrink-0">
                                     <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">AI Generated Answer</h4>
                                     <div className="flex items-center gap-2">
                                         {/* Export Button */}
@@ -408,36 +414,38 @@ Format the response in clean, readable markdown.`;
                                 </div>
 
                                 {aiAnswer ? (
-                                    <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 max-h-[60vh] overflow-y-auto no-scrollbar">
-                                        <div className="text-gray-900">
-                                            <ReactMarkdown
-                                                remarkPlugins={[remarkGfm]}
-                                                components={{
-                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-black text-gray-900 mt-6 mb-4 pb-2 border-b-2 border-gray-200" {...props} />,
-                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-extrabold text-gray-900 mt-6 mb-3" {...props} />,
-                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-bold text-gray-800 mt-5 mb-2" {...props} />,
-                                                    h4: ({ node, ...props }) => <h4 className="text-base font-bold text-gray-700 mt-4 mb-2" {...props} />,
-                                                    p: ({ node, ...props }) => <p className="text-gray-700 leading-relaxed mb-4 text-sm" {...props} />,
-                                                    ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
-                                                    ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
-                                                    li: ({ node, ...props }) => <li className="text-gray-700 text-sm" {...props} />,
-                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-400 bg-blue-50 pl-4 py-2 italic text-gray-600 mb-4 rounded-r" {...props} />,
-                                                    table: ({ node, ...props }) => <div className="overflow-x-auto mb-6 rounded-lg border border-gray-200"><table className="w-full text-sm text-left border-collapse" {...props} /></div>,
-                                                    thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
-                                                    th: ({ node, ...props }) => <th className="px-4 py-3 font-bold text-gray-700 border-b border-gray-200" {...props} />,
-                                                    td: ({ node, ...props }) => <td className="px-4 py-3 border-b border-gray-100" {...props} />,
-                                                    tr: ({ node, ...props }) => <tr className="even:bg-gray-50 hover:bg-gray-50/50" {...props} />,
-                                                    strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
-                                                    code: ({ node, ...props }) => <code className="bg-gray-100 text-purple-700 px-1 py-0.5 rounded font-mono text-xs" {...props} />
-                                                }}
-                                            >
-                                                {aiAnswer}
-                                            </ReactMarkdown>
+                                    <div className="flex-1 rounded-2xl border border-gray-100 bg-gray-50 overflow-hidden relative">
+                                        <div className="absolute inset-0 overflow-y-auto no-scrollbar p-8">
+                                            <div className="text-gray-900 pb-8">
+                                                <ReactMarkdown
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        h1: ({ node, ...props }) => <h1 className="text-2xl font-black text-gray-900 mt-6 mb-4 pb-2 border-b-2 border-gray-200" {...props} />,
+                                                        h2: ({ node, ...props }) => <h2 className="text-xl font-extrabold text-gray-900 mt-6 mb-3" {...props} />,
+                                                        h3: ({ node, ...props }) => <h3 className="text-lg font-bold text-gray-800 mt-5 mb-2" {...props} />,
+                                                        h4: ({ node, ...props }) => <h4 className="text-base font-bold text-gray-700 mt-4 mb-2" {...props} />,
+                                                        p: ({ node, ...props }) => <p className="text-gray-700 leading-relaxed mb-4 text-sm" {...props} />,
+                                                        ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
+                                                        ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
+                                                        li: ({ node, ...props }) => <li className="text-gray-700 text-sm" {...props} />,
+                                                        blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-400 bg-blue-50 pl-4 py-2 italic text-gray-600 mb-4 rounded-r" {...props} />,
+                                                        table: ({ node, ...props }) => <div className="overflow-x-auto mb-6 rounded-lg border border-gray-200"><table className="w-full text-sm text-left border-collapse" {...props} /></div>,
+                                                        thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
+                                                        th: ({ node, ...props }) => <th className="px-4 py-3 font-bold text-gray-700 border-b border-gray-200" {...props} />,
+                                                        td: ({ node, ...props }) => <td className="px-4 py-3 border-b border-gray-100" {...props} />,
+                                                        tr: ({ node, ...props }) => <tr className="even:bg-gray-50 hover:bg-gray-50/50" {...props} />,
+                                                        strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
+                                                        code: ({ node, ...props }) => <code className="bg-gray-100 text-purple-700 px-1 py-0.5 rounded font-mono text-xs" {...props} />
+                                                    }}
+                                                >
+                                                    {aiAnswer}
+                                                </ReactMarkdown>
+                                            </div>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="p-10 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100 text-center">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                    <div className="flex-1 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
+                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-300">
                                             <Icons.Sparkles size={28} />
                                         </div>
                                         <p className="text-sm font-bold text-gray-400">Click "Generate Answer" to get AI assistance</p>
