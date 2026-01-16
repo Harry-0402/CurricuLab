@@ -68,7 +68,7 @@ export function PromptLabContent() {
 
     return (
         <WebAppShell>
-            <div className="max-w-[1600px] mx-auto flex flex-col h-[calc(100vh-220px)]">
+            <div className="max-w-[1600px] mx-auto flex flex-col h-[calc(100vh-280px)] overflow-hidden">
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <p className="text-5xl font-black text-gray-900 tracking-tight">Prompt Lab</p>
