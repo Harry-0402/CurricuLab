@@ -64,6 +64,14 @@ create table if not exists public.units (
   topics text[]
 );
 
+-- Safely add topics column if it doesn't exist (migration for existing tables)
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'units' and column_name = 'topics') then
+    alter table public.units add column topics text[];
+  end if;
+end $$;
+
 alter table public.units enable row level security;
 
 drop policy if exists "Allow public read access units" on public.units;
@@ -215,7 +223,7 @@ create policy "Allow public write access teams" on public.teams for all to anon 
 -- 10. Team Members
 -- ==========================================
 -- TEAM MEMBERS
-create table public.team_members (
+create table if not exists public.team_members (
   id uuid not null default gen_random_uuid (),
   team_id bigint not null references public.teams (id) on delete cascade,
   name text not null,
@@ -226,7 +234,11 @@ create table public.team_members (
   constraint team_members_pkey primary key (id)
 );
 alter table public.team_members enable row level security;
+
+drop policy if exists "Enable read access for all users" on public.team_members;
 create policy "Enable read access for all users" on public.team_members for select using (true);
+
+drop policy if exists "Enable write access for authenticated users only" on public.team_members;
 create policy "Enable write access for authenticated users only" on public.team_members for all to authenticated using (true) with check (true);
 
 
@@ -234,7 +246,7 @@ create policy "Enable write access for authenticated users only" on public.team_
 -- 11. Workflow Steps
 -- ==========================================
 -- WORKFLOW STEPS
-create table public.workflow_steps (
+create table if not exists public.workflow_steps (
   id uuid not null default gen_random_uuid (),
   title text not null,
   description text not null,
@@ -244,12 +256,16 @@ create table public.workflow_steps (
   constraint workflow_steps_pkey primary key (id)
 );
 alter table public.workflow_steps enable row level security;
+
+drop policy if exists "Enable read access for all users" on public.workflow_steps;
 create policy "Enable read access for all users" on public.workflow_steps for select using (true);
+
+drop policy if exists "Enable write access for authenticated users only" on public.workflow_steps;
 create policy "Enable write access for authenticated users only" on public.workflow_steps for all to authenticated using (true) with check (true);
 
 
 -- CHANGELOGS
-create table public.change_logs (
+create table if not exists public.change_logs (
   id uuid not null default gen_random_uuid (),
   entity_type text not null,
   entity_id text not null,
@@ -260,5 +276,9 @@ create table public.change_logs (
   constraint change_logs_pkey primary key (id)
 );
 alter table public.change_logs enable row level security;
+
+drop policy if exists "Enable read access for all users" on public.change_logs;
 create policy "Enable read access for all users" on public.change_logs for select using (true);
+
+drop policy if exists "Enable insert for authenticated users only" on public.change_logs;
 create policy "Enable insert for authenticated users only" on public.change_logs for insert to authenticated with check (true);

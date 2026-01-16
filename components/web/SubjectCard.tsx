@@ -9,10 +9,11 @@ import { cn } from '@/lib/utils';
 
 interface SubjectCardProps {
     subject: Subject;
+    onEdit?: (subject: Subject) => void;
 }
 
-export function SubjectCard({ subject }: SubjectCardProps) {
-    // Robust Icon Lookup & Emoji Mapping
+export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
+    // ... (keep robust icon lookup) ...
     let IconComponent = (Icons as any)[subject.icon];
     let displayIcon = subject.icon;
 
@@ -51,9 +52,14 @@ export function SubjectCard({ subject }: SubjectCardProps) {
         e.preventDefault();
         e.stopPropagation();
         setIsMenuOpen(false);
-        // Placeholder for actual implementation
-        console.log(`${action} subject ${subject.id}`);
-        alert(`${action} feature coming soon for ${subject.title}!`);
+
+        if (action === 'Edit' && onEdit) {
+            onEdit(subject);
+        } else {
+            // Placeholder for other actions
+            console.log(`${action} subject ${subject.id}`);
+            alert(`${action} feature coming soon for ${subject.title}!`);
+        }
     };
 
     return (

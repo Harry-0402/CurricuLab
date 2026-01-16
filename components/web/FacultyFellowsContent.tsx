@@ -317,10 +317,17 @@ export function FacultyFellowsContent() {
 
                                 <DialogHeader className="mb-8 w-full">
                                     <DialogTitle className="text-center text-2xl mb-1">{selectedPerson.name}</DialogTitle>
-                                    <DialogDescription className="text-center text-blue-600 font-bold">
-                                        {selectedPerson.status && <span>{selectedPerson.status}</span>}
-                                        {selectedPerson.status && selectedPerson.subject && <span> • </span>}
-                                        {selectedPerson.subject && <span>{selectedPerson.subject}</span>}
+                                    <DialogDescription className="text-center space-y-1">
+                                        <div className="text-blue-600 font-bold">
+                                            {selectedPerson.status && <span>{selectedPerson.status}</span>}
+                                            {selectedPerson.status && selectedPerson.subject && <span> • </span>}
+                                            {selectedPerson.subject && <span>{selectedPerson.subject}</span>}
+                                        </div>
+                                        {selectedPerson.prn && (
+                                            <div className="text-xs font-mono font-bold text-gray-600 uppercase tracking-widest bg-gray-100 py-1.5 px-4 rounded-lg inline-block border border-gray-200">
+                                                PRN: {selectedPerson.prn}
+                                            </div>
+                                        )}
                                     </DialogDescription>
                                 </DialogHeader>
 
@@ -332,7 +339,7 @@ export function FacultyFellowsContent() {
                                                 <Icons.Profile size={20} />
                                             </div>
                                             <div className="text-left">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-blue-400 transition-colors">Contact</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-blue-500 transition-colors">Contact</p>
                                                 <p className="text-sm font-bold text-gray-900">{selectedPerson.contactNo}</p>
                                             </div>
                                         </div>
@@ -353,7 +360,7 @@ export function FacultyFellowsContent() {
                                                     <Icons.CheckSquare size={20} />
                                                 </div>
                                                 <div className="text-left">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-green-400 transition-colors">WhatsApp</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-green-500 transition-colors">WhatsApp</p>
                                                     <p className="text-sm font-bold text-gray-900">{selectedPerson.whatsappNo}</p>
                                                 </div>
                                             </div>
@@ -374,7 +381,7 @@ export function FacultyFellowsContent() {
                                                 <Icons.Notes size={20} />
                                             </div>
                                             <div className="text-left">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-indigo-400 transition-colors">Email</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-indigo-500 transition-colors">Email</p>
                                                 <p className="text-sm font-bold text-gray-900">{selectedPerson.email}</p>
                                             </div>
                                         </div>
@@ -432,6 +439,17 @@ export function FacultyFellowsContent() {
                                     placeholder="e.g. Harry Potter"
                                     value={formData.name || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                />
+                            </div>
+
+                            {/* PRN Field */}
+                            <div className="grid gap-2">
+                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">PRN / ID No.</label>
+                                <input
+                                    className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                                    placeholder="e.g. 25010..."
+                                    value={formData.prn || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, prn: e.target.value }))}
                                 />
                             </div>
                             <div className="grid gap-2">
