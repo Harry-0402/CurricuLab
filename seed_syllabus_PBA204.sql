@@ -16,6 +16,9 @@ BEGIN
     END IF;
 
     -- 2. Clear existing units for this subject to avoid duplicates (Optional - be careful!)
+    -- First delete dependent records from unit_details
+    DELETE FROM public.unit_details WHERE unit_id IN (SELECT id FROM public.units WHERE subject_id = subject_uuid);
+    -- Then delete the units
     DELETE FROM public.units WHERE subject_id = subject_uuid;
 
     -- 3. Insert Unit I
