@@ -9,8 +9,10 @@ import { AiService } from '@/lib/services/ai-service';
 import { Subject, Unit, Question, MarksType } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useToast } from '@/components/shared/Toast';
 
 export function PaperTrailContent() {
+    const { showToast } = useToast();
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [units, setUnits] = useState<Unit[]>([]);
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -137,6 +139,9 @@ export function PaperTrailContent() {
             // For edits, close the modal
             if (editingId) {
                 setIsAddModalOpen(false);
+                showToast('Question updated successfully!', 'success');
+            } else {
+                showToast('Question added successfully!', 'success');
             }
 
             setNewQuestion({
