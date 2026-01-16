@@ -218,7 +218,7 @@ export function AiTutorContent() {
 
     return (
         <WebAppShell>
-            <div className="flex flex-col h-[calc(100vh-220px)] space-y-6">
+            <div className="flex flex-col h-[calc(100vh-220px)] md:h-[calc(100vh-140px)] space-y-6">
 
                 {/* Header & Model Selector */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
