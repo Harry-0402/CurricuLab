@@ -345,8 +345,22 @@ export function PaperTrailContent() {
                                 {/* Answer Area */}
                                 <div className="flex-1 overflow-y-auto p-8 bg-white no-scrollbar">
                                     {aiAnswer ? (
-                                        <div className="prose prose-blue max-w-none prose-headings:font-black prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600">
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        <div className="w-full">
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkGfm]}
+                                                components={{
+                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold text-gray-900 mt-6 mb-4" {...props} />,
+                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold text-gray-800 mt-5 mb-3" {...props} />,
+                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2" {...props} />,
+                                                    p: ({ node, ...props }) => <p className="text-gray-600 leading-relaxed mb-4" {...props} />,
+                                                    ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-2 mb-4 text-gray-600" {...props} />,
+                                                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-2 mb-4 text-gray-600" {...props} />,
+                                                    li: ({ node, ...props }) => <li className="pl-2" {...props} />,
+                                                    strong: ({ node, ...props }) => <span className="font-bold text-gray-900" {...props} />,
+                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-500 my-4" {...props} />,
+                                                    code: ({ node, ...props }) => <code className="bg-gray-100 text-blue-600 px-1 py-0.5 rounded text-sm font-mono" {...props} />
+                                                }}
+                                            >
                                                 {aiAnswer}
                                             </ReactMarkdown>
                                         </div>
