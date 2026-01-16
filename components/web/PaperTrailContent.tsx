@@ -107,24 +107,30 @@ Format using clean Markdown (H2 for sections, bold for keywords, bullet points).
 
                 {/* Filters */}
                 <div className="grid grid-cols-2 gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm shrink-0">
-                    <select
-                        value={selectedSubject}
-                        onChange={(e) => setSelectedSubject(e.target.value)}
-                        className="p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                    >
-                        <option value="">Select Subject...</option>
-                        {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
-                    </select>
+                    <div className="relative">
+                        <select
+                            value={selectedSubject}
+                            onChange={(e) => setSelectedSubject(e.target.value)}
+                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
+                        >
+                            <option value="">Select Subject...</option>
+                            {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
+                        </select>
+                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    </div>
 
-                    <select
-                        value={selectedUnit}
-                        onChange={(e) => setSelectedUnit(e.target.value)}
-                        disabled={!selectedSubject}
-                        className="p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50"
-                    >
-                        <option value="">All Units</option>
-                        {units.map(u => <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>)}
-                    </select>
+                    <div className="relative">
+                        <select
+                            value={selectedUnit}
+                            onChange={(e) => setSelectedUnit(e.target.value)}
+                            disabled={!selectedSubject}
+                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 appearance-none pr-10"
+                        >
+                            <option value="">All Units</option>
+                            {units.map(u => <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>)}
+                        </select>
+                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    </div>
                 </div>
 
                 {/* Main Content - Split Pane */}
