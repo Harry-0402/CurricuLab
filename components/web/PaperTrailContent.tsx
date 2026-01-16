@@ -211,10 +211,10 @@ export function PaperTrailContent() {
                             });
                             setIsAddModalOpen(true);
                         }}
-                        className="bg-blue-600 text-white p-2 rounded-full shadow-lg hover:shadow-blue-200 transition-all hover:scale-110 active:scale-95"
-                        title="Add New Question"
+                        className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
                     >
-                        <Icons.Plus size={20} />
+                        <Icons.Plus size={18} />
+                        <span>New Question</span>
                     </button>
                 </div>
 
