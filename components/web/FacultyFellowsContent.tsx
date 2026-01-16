@@ -317,17 +317,19 @@ export function FacultyFellowsContent() {
 
                                 <DialogHeader className="mb-8 w-full">
                                     <DialogTitle className="text-center text-2xl mb-1">{selectedPerson.name}</DialogTitle>
-                                    <DialogDescription className="text-center space-y-1">
-                                        <div className="text-blue-600 font-bold">
-                                            {selectedPerson.status && <span>{selectedPerson.status}</span>}
-                                            {selectedPerson.status && selectedPerson.subject && <span> • </span>}
-                                            {selectedPerson.subject && <span>{selectedPerson.subject}</span>}
-                                        </div>
-                                        {selectedPerson.prn && (
-                                            <div className="text-xs font-mono font-bold text-gray-600 uppercase tracking-widest bg-gray-100 py-1.5 px-4 rounded-lg inline-block border border-gray-200">
-                                                PRN: {selectedPerson.prn}
+                                    <DialogDescription asChild>
+                                        <div className="text-center space-y-1">
+                                            <div className="text-blue-600 font-bold">
+                                                {selectedPerson.status && <span>{selectedPerson.status}</span>}
+                                                {selectedPerson.status && selectedPerson.subject && <span> • </span>}
+                                                {selectedPerson.subject && <span>{selectedPerson.subject}</span>}
                                             </div>
-                                        )}
+                                            {selectedPerson.prn && (
+                                                <div className="text-xs font-mono font-bold text-gray-600 uppercase tracking-widest bg-gray-100 py-1.5 px-4 rounded-lg inline-block border border-gray-200">
+                                                    PRN: {selectedPerson.prn}
+                                                </div>
+                                            )}
+                                        </div>
                                     </DialogDescription>
                                 </DialogHeader>
 
