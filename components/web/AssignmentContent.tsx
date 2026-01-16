@@ -241,6 +241,22 @@ Format the response in clean, readable markdown.`;
                             </div>
 
                             <div className="space-y-2">
+                                {/* Badges */}
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    {assignment.unitId && (() => {
+                                        const unitIndex = units.findIndex(u => u.id === assignment.unitId);
+                                        return (
+                                            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-bold">
+                                                Unit {unitIndex + 1}
+                                            </span>
+                                        );
+                                    })()}
+                                    {assignment.platform && (
+                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold">
+                                            {assignment.platform}
+                                        </span>
+                                    )}
+                                </div>
                                 <h3 className="text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors">
                                     {assignment.title}
                                 </h3>
@@ -310,11 +326,14 @@ Format the response in clean, readable markdown.`;
                                         <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
                                             <Icons.Calendar size={14} />
                                             <span>Due: {selectedAssignment.dueDate}</span>
-                                            {selectedAssignment.unitId && (
-                                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
-                                                    {units.find(u => u.id === selectedAssignment.unitId)?.title || 'Unit'}
-                                                </span>
-                                            )}
+                                            {selectedAssignment.unitId && (() => {
+                                                const unitIndex = units.findIndex(u => u.id === selectedAssignment.unitId);
+                                                return (
+                                                    <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
+                                                        Unit {unitIndex + 1}
+                                                    </span>
+                                                );
+                                            })()}
                                             {selectedAssignment.platform && (
                                                 <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
                                                     {selectedAssignment.platform}
