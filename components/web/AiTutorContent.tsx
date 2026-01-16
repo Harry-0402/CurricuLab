@@ -228,6 +228,17 @@ export function AiTutorContent() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        {/* Clear Chat Button */}
+                        <button
+                            onClick={handleClearChat}
+                            disabled={messages.length === 0}
+                            className="flex items-center gap-2 bg-white hover:bg-red-50 text-gray-700 hover:text-red-600 border border-gray-200 px-4 py-2.5 rounded-xl transition-all shadow-sm font-bold text-sm disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-gray-700"
+                            title="Clear Chat History"
+                        >
+                            <Icons.Trash2 size={18} />
+                            <span className="hidden sm:inline">Clear</span>
+                        </button>
+
                         {/* Export Button */}
                         <div className="relative print:hidden">
                             <button
@@ -265,19 +276,6 @@ export function AiTutorContent() {
                                         <div>
                                             <p className="text-sm font-bold text-gray-900">Print / PDF</p>
                                             <p className="text-[10px] font-medium text-gray-500">Save as PDF</p>
-                                        </div>
-                                    </button>
-                                    <div className="h-px bg-gray-100 my-2" />
-                                    <button
-                                        onClick={handleClearChat}
-                                        className="w-full flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl transition-colors text-left group"
-                                    >
-                                        <div className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors">
-                                            <Icons.Trash2 size={16} />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-red-600">Clear History</p>
-                                            <p className="text-[10px] font-medium text-red-400">Reset conversation</p>
                                         </div>
                                     </button>
                                 </div>
