@@ -14,10 +14,14 @@ export function ProgressBar({ value, className, color = "#3b82f6", showLabel = f
                 {showLabel && <span>Progress</span>}
                 {showLabel && <span>{Math.round(value)}%</span>}
             </div>
-            <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden shadow-inner">
                 <div
-                    className="h-full transition-all duration-300 ease-in-out"
-                    style={{ width: `${value}%`, backgroundColor: color }}
+                    className="h-full transition-all duration-500 ease-out rounded-full"
+                    style={{
+                        width: `${value}%`,
+                        background: `linear-gradient(90deg, ${color}dd, ${color})`,
+                        boxShadow: `0 0 8px ${color}40`
+                    }}
                 />
             </div>
         </div>

@@ -143,8 +143,9 @@ export const SubjectService = {
             description: subject.description,
             progress: subject.progress,
             unit_count: subject.unitCount
-            // We ignore units content as per request
         };
+
+        console.log('Updating subject:', subject.id, 'with payload:', payload);
 
         const { data, error } = await supabase
             .from('subjects')
@@ -154,8 +155,19 @@ export const SubjectService = {
             .single();
 
         if (error) {
-            console.error('Error updating subject:', error);
-            throw error;
+            console.error('Error updating subject:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+                error: error
+            });
+            throw new Error(`Failed to update subject: ${error.message || JSON.stringify(error)}`);
+        }
+
+        if (!data) {
+            console.error('No data returned after update for subject:', subject.id);
+            throw new Error('Update succeeded but no data was returned');
         }
 
         return {
@@ -198,5 +210,85 @@ export const SubjectService = {
             lastStudied: data.last_studied,
             syllabusPdfUrl: staticMatch?.syllabusPdfUrl
         } as Subject;
+    },
+
+    /**
+     * Subscribe to real-time changes on the subjects table
+     * @param onInsert - Callback when a new subject is inserted
+     * @param onUpdate - Callback when a subject is updated
+     * @param onDelete - Callback when a subject is deleted
+     * @returns Subscription object that can be used to unsubscribe
+     */
+    subscribeToChanges(
+        onInsert?: (subject: Subject) => void,
+        onUpdate?: (subject: Subject) => void,
+        onDelete?: (id: string) => void
+    ) {
+        const channel = supabase
+            .channel('subjects-changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'subjects'
+                },
+                (payload) => {
+                    if (onInsert && payload.new) {
+                        const newSubject = this.mapDbRecordToSubject(payload.new);
+                        onInsert(newSubject);
+                    }
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'subjects'
+                },
+                (payload) => {
+                    if (onUpdate && payload.new) {
+                        const updatedSubject = this.mapDbRecordToSubject(payload.new);
+                        onUpdate(updatedSubject);
+                    }
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'DELETE',
+                    schema: 'public',
+                    table: 'subjects'
+                },
+                (payload) => {
+                    if (onDelete && payload.old) {
+                        onDelete((payload.old as any).id);
+                    }
+                }
+            )
+            .subscribe();
+
+        return channel;
+    },
+
+    /**
+     * Helper method to map database record to Subject type with static syllabus URL
+     */
+    mapDbRecordToSubject(record: any): Subject {
+        const staticMatch = INITIAL_SUBJECTS.find(s => s.code === record.code || s.id === record.id);
+
+        return {
+            id: record.id,
+            code: record.code,
+            title: record.title,
+            icon: record.icon,
+            color: record.color,
+            description: record.description,
+            progress: record.progress,
+            unitCount: record.unit_count,
+            lastStudied: record.last_studied,
+            syllabusPdfUrl: staticMatch?.syllabusPdfUrl
+        };
     }
 };

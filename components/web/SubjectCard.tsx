@@ -75,7 +75,7 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
                     <div
                         className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300 overflow-hidden shrink-0"
                         style={{
-                            backgroundColor: `${subject.color}15`,
+                            backgroundColor: `${subject.color}25`,
                             color: subject.color
                         }}
                     >

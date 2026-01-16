@@ -34,6 +34,33 @@ export default function WebSubjectsContent() {
 
     React.useEffect(() => {
         fetchSubjects();
+
+        // Set up real-time subscription
+        const subscription = SubjectService.subscribeToChanges(
+            // onInsert: Add new subject to the list
+            (newSubject) => {
+                setSubjects(prev => {
+                    // Avoid duplicates
+                    if (prev.some(s => s.id === newSubject.id)) return prev;
+                    return [...prev, newSubject];
+                });
+            },
+            // onUpdate: Merge updated subject data
+            (updatedSubject) => {
+                setSubjects(prev =>
+                    prev.map(s => s.id === updatedSubject.id ? updatedSubject : s)
+                );
+            },
+            // onDelete: Remove subject from the list
+            (deletedId) => {
+                setSubjects(prev => prev.filter(s => s.id !== deletedId));
+            }
+        );
+
+        // Cleanup subscription on unmount
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
     const [editingSubject, setEditingSubject] = React.useState<Subject | null>(null);
