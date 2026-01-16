@@ -258,11 +258,11 @@ Provide a comprehensive, well-structured answer suitable for a university-level 
 
             {/* Detail Modal with AI Answer */}
             <Dialog open={!!selectedAssignment} onOpenChange={(open) => !open && setSelectedAssignment(null)}>
-                <DialogContent className="sm:max-w-2xl max-w-[95vw] max-h-[90vh] overflow-y-auto border-0 bg-white shadow-2xl">
+                <DialogContent className="sm:max-w-2xl max-w-[95vw] max-h-[85vh] overflow-y-auto no-scrollbar border-0 bg-white shadow-2xl rounded-3xl">
                     {selectedAssignment && (
-                        <div className="space-y-6">
+                        <div className="space-y-6 py-2">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-black text-gray-900">
+                                <DialogTitle className="text-2xl font-black text-gray-900 pr-8">
                                     {selectedAssignment.title}
                                 </DialogTitle>
                                 <DialogDescription asChild>
@@ -281,22 +281,22 @@ Provide a comprehensive, well-structured answer suitable for a university-level 
                             </DialogHeader>
 
                             {/* Question/Description */}
-                            <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                                <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">Question / Description</h4>
-                                <p className="text-gray-700 font-medium leading-relaxed">
+                            <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Question / Description</h4>
+                                <p className="text-gray-700 font-medium leading-relaxed text-sm">
                                     {selectedAssignment.description || 'No description provided.'}
                                 </p>
                             </div>
 
                             {/* AI Answer Section */}
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-gray-400">AI Generated Answer</h4>
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between gap-4 flex-wrap">
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">AI Generated Answer</h4>
                                     <button
                                         onClick={handleGenerateAnswer}
                                         disabled={isGeneratingAnswer}
                                         className={cn(
-                                            "flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-sm",
+                                            "flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0",
                                             isGeneratingAnswer
                                                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                                 : "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-lg hover:scale-[1.02]"
@@ -311,8 +311,8 @@ Provide a comprehensive, well-structured answer suitable for a university-level 
                                 </div>
 
                                 {aiAnswer ? (
-                                    <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                                        <div className="prose prose-sm max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600">
+                                    <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 max-h-[45vh] overflow-y-auto no-scrollbar">
+                                        <div className="prose prose-sm max-w-none prose-headings:font-bold prose-headings:text-gray-800 prose-headings:mt-4 prose-headings:mb-2 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-800">
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                 {aiAnswer}
                                             </ReactMarkdown>
