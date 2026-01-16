@@ -209,8 +209,7 @@ export function MarkWiseContent() {
                                 unitId: selectedUnit || '',
                                 marksType: 10,
                                 question: '',
-                                answer: '',
-                                difficulty: 'Medium'
+                                answer: ''
                             });
                             setIsAddModalOpen(true);
                         }}
