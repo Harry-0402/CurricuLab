@@ -308,7 +308,7 @@ export function FacultyFellowsContent() {
 
                 {/* Detail Modal */}
                 <Dialog open={!!selectedPerson} onOpenChange={(open) => !open && setSelectedPerson(null)}>
-                    <DialogContent className="sm:max-w-md max-w-[90vw] max-h-[85vh] overflow-y-auto border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
+                    <DialogContent className="sm:max-w-lg max-w-[95vw] max-h-[85vh] overflow-y-auto border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
                         {selectedPerson && (
                             <div className="flex flex-col items-center pt-4">
                                 <div className="w-32 h-32 rounded-[3rem] bg-gray-50 border-4 border-white shadow-2xl shadow-blue-100 p-1.5 mb-6 overflow-hidden shrink-0">
