@@ -13,6 +13,10 @@ CREATE TABLE IF NOT EXISTS announcements (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Add missing columns if table already exists
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
 -- Enable Row Level Security
 ALTER TABLE announcements ENABLE ROW LEVEL SECURITY;
 
