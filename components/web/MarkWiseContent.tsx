@@ -303,10 +303,26 @@ export function MarkWiseContent() {
                                                 : "bg-white border-gray-100 hover:border-blue-100"
                                         )}
                                     >
-                                        <div className="flex justify-between items-start mb-2">
+                                        <div className="flex justify-between items-center mb-2">
                                             <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-blue-100 text-blue-700">
                                                 {q.marksType} Marks
                                             </span>
+                                            <div className="flex gap-1">
+                                                <button
+                                                    onClick={(e) => handleEditClick(e, q)}
+                                                    className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
+                                                    title="Edit"
+                                                >
+                                                    <Icons.Edit size={14} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDeleteClick(e, q.id)}
+                                                    className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
+                                                    title="Delete"
+                                                >
+                                                    <Icons.Trash2 size={14} />
+                                                </button>
+                                            </div>
                                         </div>
                                         <p className="text-sm font-semibold text-gray-800 line-clamp-3 mb-2">{q.question}</p>
                                         {q.answer && (
@@ -315,22 +331,6 @@ export function MarkWiseContent() {
                                                 Answer saved
                                             </div>
                                         )}
-                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-2">
-                                            <button
-                                                onClick={(e) => handleEditClick(e, q)}
-                                                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
-                                                title="Edit"
-                                            >
-                                                <Icons.Edit size={14} />
-                                            </button>
-                                            <button
-                                                onClick={(e) => handleDeleteClick(e, q.id)}
-                                                className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Icons.Trash2 size={14} />
-                                            </button>
-                                        </div>
                                     </div>
                                 ))
                             )}
