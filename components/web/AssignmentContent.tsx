@@ -139,9 +139,10 @@ Provide a detailed, well-structured answer that:
 2. MUST use Heading 2 (##) for major sections (Introduction, Key Concepts, etc.) and Heading 3 (###) for subsections
 3. Includes relevant examples and practical applications
 4. Uses **bold** for key terms and definitions
-5. Adds a comparison table if comparing concepts (use markdown tables)
-6. Ends with a brief conclusion or summary (under a ## Conclusion heading)
-7. Keep paragraphs concise and scannable
+5. Uses bullet points (-) for listing features, characteristics, or steps
+6. Adds a comparison table if comparing concepts (use markdown tables)
+7. Ends with a brief conclusion or summary (under a ## Conclusion heading)
+8. Keep paragraphs concise and scannable
 
 Format the response in clean, readable markdown.`;
 
@@ -416,7 +417,7 @@ Format the response in clean, readable markdown.`;
                                             prose-h4:text-base prose-h4:mt-5 prose-h4:mb-2 prose-h4:font-bold prose-h4:text-gray-700
                                             prose-p:text-gray-600 prose-p:leading-relaxed prose-p:my-4
                                             prose-li:text-gray-600 prose-li:my-2
-                                            prose-ul:my-4 prose-ul:pl-6 prose-ol:my-4 prose-ol:pl-6
+                                            prose-ul:my-4 prose-ul:pl-6 prose-ul:list-disc prose-ol:my-4 prose-ol:pl-6 prose-ol:list-decimal
                                             prose-strong:text-gray-800 prose-strong:font-bold
                                             [&_table]:w-full [&_table]:my-6 [&_table]:border-collapse [&_table]:text-sm [&_table]:border-2 [&_table]:border-gray-300 [&_table]:rounded-lg [&_table]:overflow-hidden
                                             [&_thead]:bg-gray-100
