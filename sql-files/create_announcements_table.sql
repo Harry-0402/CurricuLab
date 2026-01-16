@@ -38,8 +38,14 @@ ON announcements FOR ALL
 USING (true)
 WITH CHECK (true);
 
--- Enable real-time for this table
-ALTER PUBLICATION supabase_realtime ADD TABLE announcements;
+-- Enable real-time for this table (skip if already added)
+DO $$
+BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE announcements;
+EXCEPTION
+    WHEN duplicate_object THEN
+        NULL; -- Already added, ignore
+END $$;
 
 -- Trigger to auto-update 'updated_at' on modification
 CREATE OR REPLACE FUNCTION update_updated_at_column()
