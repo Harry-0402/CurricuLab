@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Subject, Assignment, Unit } from '@/types';
 import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
+import { PlatformExportService } from '@/lib/services/export-service';
 import { AssignmentModal } from './AssignmentModal';
 import {
     Dialog,
@@ -30,6 +31,7 @@ export function AssignmentContent() {
     const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
     const [aiAnswer, setAiAnswer] = useState<string>('');
     const [isGeneratingAnswer, setIsGeneratingAnswer] = useState(false);
+    const [showExportMenu, setShowExportMenu] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -151,6 +153,24 @@ Format the response in clean, readable markdown.`;
         } finally {
             setIsGeneratingAnswer(false);
         }
+    };
+
+    const handleExportWord = async () => {
+        if (!selectedAssignment || !aiAnswer) return;
+        const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
+        const unit = selectedAssignment.unitId ? units.find(u => u.id === selectedAssignment.unitId) : null;
+
+        await PlatformExportService.generateWordDocument(
+            subject?.title || 'Assignment',
+            unit?.title || selectedAssignment.title,
+            [{ id: selectedAssignment.id, title: selectedAssignment.title, content: aiAnswer }]
+        );
+        setShowExportMenu(false);
+    };
+
+    const handlePrint = () => {
+        window.print();
+        setShowExportMenu(false);
     };
 
     if (loading && subjects.length === 0) {
@@ -317,22 +337,54 @@ Format the response in clean, readable markdown.`;
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between gap-4 flex-wrap">
                                     <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">AI Generated Answer</h4>
-                                    <button
-                                        onClick={handleGenerateAnswer}
-                                        disabled={isGeneratingAnswer}
-                                        className={cn(
-                                            "flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0",
-                                            isGeneratingAnswer
-                                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                                : "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-lg hover:scale-[1.02]"
+                                    <div className="flex items-center gap-2">
+                                        {/* Export Button */}
+                                        {aiAnswer && (
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setShowExportMenu(!showExportMenu)}
+                                                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
+                                                >
+                                                    <Icons.Download size={14} />
+                                                    Export
+                                                </button>
+                                                {showExportMenu && (
+                                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
+                                                        <button
+                                                            onClick={handleExportWord}
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                                                        >
+                                                            <Icons.FileText size={16} />
+                                                            Export as Word
+                                                        </button>
+                                                        <button
+                                                            onClick={handlePrint}
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                                                        >
+                                                            <Icons.Printer size={16} />
+                                                            Print / PDF
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         )}
-                                    >
-                                        {isGeneratingAnswer ? (
-                                            <><Icons.Loader2 size={14} className="animate-spin" /> Generating...</>
-                                        ) : (
-                                            <><Icons.Sparkles size={14} /> Generate Answer</>
-                                        )}
-                                    </button>
+                                        <button
+                                            onClick={handleGenerateAnswer}
+                                            disabled={isGeneratingAnswer}
+                                            className={cn(
+                                                "flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0",
+                                                isGeneratingAnswer
+                                                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                    : "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-lg hover:scale-[1.02]"
+                                            )}
+                                        >
+                                            {isGeneratingAnswer ? (
+                                                <><Icons.Loader2 size={14} className="animate-spin" /> Generating...</>
+                                            ) : (
+                                                <><Icons.Sparkles size={14} /> Generate Answer</>
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {aiAnswer ? (
