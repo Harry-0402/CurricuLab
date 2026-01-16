@@ -6,6 +6,7 @@ import { Icons } from '@/components/shared/Icons';
 // ... imports
 import { getSubjects, getUnits, getNotesByUnit, createNote, getSubjectById, getUnitById } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
+import { PlatformExportService } from '@/lib/services/export-service';
 import { Subject, Unit, Note } from '@/types';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
@@ -20,6 +21,7 @@ export function RevisionGeneratorContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [generationProgress, setGenerationProgress] = useState(0);
+    const [showExportMenu, setShowExportMenu] = useState(false);
 
     useEffect(() => {
         getSubjects().then(setSubjects);
@@ -49,6 +51,18 @@ export function RevisionGeneratorContent() {
 
     const handlePrint = () => {
         window.print();
+        setShowExportMenu(false);
+    };
+
+    const handleExportWord = async () => {
+        if (!selectedSubject || !selectedUnit) return;
+        const subject = subjects.find(s => s.id === selectedSubject);
+        const unit = units.find(u => u.id === selectedUnit);
+
+        if (subject && unit) {
+            await PlatformExportService.generateWordDocument(subject.title, unit.title, notes);
+            setShowExportMenu(false);
+        }
     };
 
     const handleGenerateAiNotes = async () => {
@@ -145,7 +159,7 @@ export function RevisionGeneratorContent() {
                             value={selectedUnit}
                             onChange={(e) => setSelectedUnit(e.target.value)}
                             disabled={!selectedSubject}
-                            className="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50"
+                            className="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus-ring-blue-500 outline-none disabled:opacity-50"
                         >
                             <option value="">Choose a unit...</option>
                             {units.map(u => (
@@ -191,14 +205,44 @@ export function RevisionGeneratorContent() {
                                     <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">{currentSubject?.code} - {currentSubject?.title}</p>
                                 </div>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="relative print:hidden">
                                 <button
-                                    onClick={handlePrint}
-                                    className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 p-3 rounded-xl transition-all print:hidden"
+                                    onClick={() => setShowExportMenu(!showExportMenu)}
+                                    className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white p-3 rounded-xl transition-all shadow-lg shadow-gray-200"
                                 >
-                                    <Icons.Download size={20} className="text-gray-900" />
-                                    <span className="text-xs font-bold text-gray-900 uppercase">Save PDF</span>
+                                    <Icons.Download size={20} />
+                                    <span className="text-xs font-bold uppercase tracking-wide">Export</span>
+                                    <Icons.ChevronDown size={16} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
                                 </button>
+
+                                {showExportMenu && (
+                                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                        <button
+                                            onClick={handleExportWord}
+                                            className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                <Icons.FileText size={16} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-gray-900">Word Document</p>
+                                                <p className="text-[10px] font-medium text-gray-500">Editable .docx file</p>
+                                            </div>
+                                        </button>
+                                        <button
+                                            onClick={handlePrint}
+                                            className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left group"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
+                                                <Icons.Printer size={16} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-gray-900">Print / PDF</p>
+                                                <p className="text-[10px] font-medium text-gray-500">Save as PDF</p>
+                                            </div>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
