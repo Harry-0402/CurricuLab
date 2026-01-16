@@ -80,15 +80,42 @@ const ChatCodeBlock = ({ children }: { children?: any }) => {
     );
 };
 
+import { PlatformExportService } from '@/lib/services/export-service';
+
 export function AiTutorContent() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [selectedModelId, setSelectedModelId] = useState(MODELS[0].id);
+    const [showExportMenu, setShowExportMenu] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const hasLoaded = useRef(false);
 
     // Initialize Gemini Client
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+    // Load form Local Storage on Mount
+    useEffect(() => {
+        if (typeof window !== 'undefined' && !hasLoaded.current) {
+            const stored = localStorage.getItem('curriculab_learnpilot_chat');
+            if (stored) {
+                try {
+                    setMessages(JSON.parse(stored));
+                } catch (e) {
+                    console.error("Failed to parse chat history");
+                }
+            }
+            hasLoaded.current = true;
+        }
+    }, []);
+
+    // Save to Local Storage on Update
+    useEffect(() => {
+        if (hasLoaded.current) { // Prevent overwriting with empty array on initial render
+            localStorage.setItem('curriculab_learnpilot_chat', JSON.stringify(messages));
+        }
+    }, [messages]);
+
 
     const scrollToBottom = () => {
         if (scrollRef.current) {
@@ -99,6 +126,25 @@ export function AiTutorContent() {
     useEffect(() => {
         scrollToBottom();
     }, [messages, isLoading]);
+
+    const handleClearChat = () => {
+        if (confirm("Are you sure you want to clear the chat history?")) {
+            setMessages([]);
+            localStorage.removeItem('curriculab_learnpilot_chat');
+            setShowExportMenu(false);
+        }
+    };
+
+    const handleExportWord = async () => {
+        if (messages.length === 0) return;
+        await PlatformExportService.generateChatExport(messages);
+        setShowExportMenu(false);
+    };
+
+    const handlePrint = () => {
+        window.print();
+        setShowExportMenu(false);
+    };
 
     const generateResponse = async (modelId: string, currentMessages: Message[], userPrompt: string): Promise<string> => {
         const selectedModel = MODELS.find(m => m.id === modelId) || MODELS[0];
@@ -181,18 +227,76 @@ export function AiTutorContent() {
                         <p className="text-sm font-medium text-gray-500">AI Study Companion</p>
                     </div>
 
-                    {/* Model Select Dropdown */}
-                    <div className="relative group">
-                        <select
-                            value={selectedModelId}
-                            onChange={(e) => setSelectedModelId(e.target.value)}
-                            className="appearance-none bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl px-4 py-2.5 pr-10 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
-                        >
-                            {MODELS.map(m => (
-                                <option key={m.id} value={m.id}>{m.name}</option>
-                            ))}
-                        </select>
-                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    <div className="flex items-center gap-3">
+                        {/* Export Button */}
+                        <div className="relative print:hidden">
+                            <button
+                                onClick={() => setShowExportMenu(!showExportMenu)}
+                                className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-4 py-2.5 rounded-xl transition-all shadow-sm font-bold text-sm"
+                            >
+                                <Icons.Download size={18} />
+                                <span className="hidden sm:inline">Export</span>
+                                <Icons.ChevronDown size={16} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {showExportMenu && (
+                                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                    <button
+                                        onClick={handleExportWord}
+                                        disabled={messages.length === 0}
+                                        className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group disabled:opacity-50"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                            <Icons.FileText size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">Word Document</p>
+                                            <p className="text-[10px] font-medium text-gray-500">Save chat as .docx</p>
+                                        </div>
+                                    </button>
+                                    <button
+                                        onClick={handlePrint}
+                                        disabled={messages.length === 0}
+                                        className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left group disabled:opacity-50"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
+                                            <Icons.Printer size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">Print / PDF</p>
+                                            <p className="text-[10px] font-medium text-gray-500">Save as PDF</p>
+                                        </div>
+                                    </button>
+                                    <div className="h-px bg-gray-100 my-2" />
+                                    <button
+                                        onClick={handleClearChat}
+                                        className="w-full flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl transition-colors text-left group"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors">
+                                            <Icons.Trash2 size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-red-600">Clear History</p>
+                                            <p className="text-[10px] font-medium text-red-400">Reset conversation</p>
+                                        </div>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Model Select Dropdown */}
+                        <div className="relative group">
+                            <select
+                                value={selectedModelId}
+                                onChange={(e) => setSelectedModelId(e.target.value)}
+                                className="appearance-none bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl px-4 py-2.5 pr-10 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
+                            >
+                                {MODELS.map(m => (
+                                    <option key={m.id} value={m.id}>{m.name}</option>
+                                ))}
+                            </select>
+                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                        </div>
                     </div>
                 </div>
 
