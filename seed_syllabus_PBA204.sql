@@ -16,7 +16,7 @@ BEGIN
     END IF;
 
     -- 2. Clear existing units for this subject to avoid duplicates (Optional - be careful!)
-    -- DELETE FROM public.units WHERE subject_id = subject_uuid;
+    DELETE FROM public.units WHERE subject_id = subject_uuid;
 
     -- 3. Insert Unit I
     INSERT INTO public.units (id, subject_id, unit_code, title, "order", is_completed, topics)
