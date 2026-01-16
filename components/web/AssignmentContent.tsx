@@ -388,24 +388,28 @@ Format the response in clean, readable markdown.`;
                                 </div>
 
                                 {aiAnswer ? (
-                                    <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 max-h-[50vh] overflow-y-auto no-scrollbar">
+                                    <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 max-h-[50vh] overflow-y-auto no-scrollbar">
                                         <div className="prose prose-sm max-w-none 
                                             prose-headings:font-bold prose-headings:text-gray-800 
-                                            prose-h1:text-xl prose-h1:mt-6 prose-h1:mb-3 prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2
-                                            prose-h2:text-lg prose-h2:mt-5 prose-h2:mb-2 
-                                            prose-h3:text-base prose-h3:mt-4 prose-h3:mb-2
-                                            prose-p:text-gray-600 prose-p:leading-relaxed prose-p:my-2
-                                            prose-li:text-gray-600 prose-li:my-1
-                                            prose-ul:my-2 prose-ol:my-2
+                                            prose-h1:text-xl prose-h1:mt-8 prose-h1:mb-4 prose-h1:border-b-2 prose-h1:border-gray-200 prose-h1:pb-3
+                                            prose-h2:text-lg prose-h2:mt-8 prose-h2:mb-3 prose-h2:text-gray-800
+                                            prose-h3:text-base prose-h3:mt-6 prose-h3:mb-3 prose-h3:text-gray-700
+                                            prose-h4:text-sm prose-h4:mt-5 prose-h4:mb-2 prose-h4:font-bold prose-h4:text-gray-600
+                                            prose-p:text-gray-600 prose-p:leading-relaxed prose-p:my-4
+                                            prose-li:text-gray-600 prose-li:my-2
+                                            prose-ul:my-4 prose-ul:pl-6 prose-ol:my-4 prose-ol:pl-6
                                             prose-strong:text-gray-800 prose-strong:font-bold
-                                            prose-table:w-full prose-table:my-4 prose-table:border-collapse prose-table:text-sm
-                                            prose-th:bg-gray-100 prose-th:border prose-th:border-gray-200 prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-bold prose-th:text-gray-700
-                                            prose-td:border prose-td:border-gray-200 prose-td:px-3 prose-td:py-2 prose-td:text-gray-600
-                                            prose-tr:even:bg-gray-50
+                                            [&_table]:w-full [&_table]:my-6 [&_table]:border-collapse [&_table]:text-sm [&_table]:border-2 [&_table]:border-gray-300 [&_table]:rounded-lg [&_table]:overflow-hidden
+                                            [&_thead]:bg-gray-100
+                                            [&_th]:border-2 [&_th]:border-gray-300 [&_th]:px-4 [&_th]:py-3 [&_th]:text-left [&_th]:font-bold [&_th]:text-gray-700 [&_th]:bg-gray-100
+                                            [&_td]:border-2 [&_td]:border-gray-200 [&_td]:px-4 [&_td]:py-3 [&_td]:text-gray-600
+                                            [&_tr:nth-child(even)]:bg-gray-50
+                                            [&_tbody_tr:hover]:bg-blue-50
                                             prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-purple-700
-                                            prose-pre:bg-gray-800 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-xl prose-pre:overflow-x-auto
-                                            prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50 prose-blockquote:pl-4 prose-blockquote:py-2 prose-blockquote:italic prose-blockquote:text-gray-600
-                                            prose-hr:my-6 prose-hr:border-gray-200">
+                                            prose-pre:bg-gray-800 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-xl prose-pre:overflow-x-auto prose-pre:my-6
+                                            prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50 prose-blockquote:pl-4 prose-blockquote:py-3 prose-blockquote:my-6 prose-blockquote:italic prose-blockquote:text-gray-600
+                                            prose-hr:my-8 prose-hr:border-gray-200
+                                            [&>*:first-child]:mt-0">
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                 {aiAnswer}
                                             </ReactMarkdown>
