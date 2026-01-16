@@ -107,4 +107,21 @@
     ::-webkit-scrollbar {
         display: none;
     }
+
+    /* --- Revision Notes Print Styles --- */
+    #revision-notes-container,
+    #revision-notes-container * {
+        visibility: visible;
+    }
+
+    #revision-notes-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
 }

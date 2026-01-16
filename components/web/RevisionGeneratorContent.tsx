@@ -193,7 +193,7 @@ export function RevisionGeneratorContent() {
                         )}
                     </div>
                 ) : selectedUnit && notes.length > 0 ? (
-                    <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div id="revision-notes-container" className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                         <div className="flex items-center justify-between border-b border-gray-100 pb-8">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-gray-900 rounded-2xl flex items-center justify-center text-white">
@@ -272,35 +272,7 @@ export function RevisionGeneratorContent() {
                             ))}
                         </div>
 
-                        <style jsx global>{`
-                            @media print {
-                                @page { margin: 2cm; }
-                                body * {
-                                    visibility: hidden;
-                                }
-                                .animate-in {
-                                    animation: none !important;
-                                }
-                                /* Only show the content container and its children */
-                                .bg-white.p-10, .bg-white.p-10 * {
-                                    visibility: visible;
-                                }
-                                .bg-white.p-10 {
-                                    position: absolute;
-                                    left: 0;
-                                    top: 0;
-                                    width: 100%;
-                                    padding: 0 !important;
-                                    margin: 0 !important;
-                                    border: none !important;
-                                    box-shadow: none !important;
-                                }
-                                /* Hide buttons inside the container */
-                                button {
-                                    display: none !important;
-                                }
-                            }
-                        `}</style>
+
                     </div>
                 ) : selectedUnit ? (
                     <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[40px] border border-dashed border-gray-200 text-gray-400 gap-6">
