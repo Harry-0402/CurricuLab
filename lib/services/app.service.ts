@@ -31,39 +31,77 @@ const mapAnnouncement = (a: any): Announcement => ({
     type: a.type
 });
 
-// --- Subjects (Local Static Data) ---
+import { SubjectService } from '@/lib/data/subject-service';
+
+// --- Subjects (Supabase) ---
 
 export const getSubjects = async (): Promise<Subject[]> => {
-    return LOCAL_SUBJECTS;
+    return await SubjectService.getAll();
 };
 
 export const getSubjectById = async (id: string): Promise<Subject | undefined> => {
-    return LOCAL_SUBJECTS.find(s => s.id === id);
+    const subject = await SubjectService.getById(id);
+    return subject || undefined;
 };
 
 export const createSubject = async (subject: Subject): Promise<Subject> => {
-    console.warn("createSubject is disabled in local mode");
-    return subject;
+    const updated = await SubjectService.update(subject); // Using update as strict create might not be in service yet
+    return updated || subject;
 };
 
 export const updateSubject = async (subject: Subject): Promise<Subject> => {
-    console.warn("updateSubject is disabled in local mode");
-    return subject;
+    const updated = await SubjectService.update(subject);
+    return updated || subject;
 };
 
 export const deleteSubject = async (id: string): Promise<void> => {
-    console.warn("deleteSubject is disabled in local mode");
+    console.warn("deleteSubject is not fully implemented in service yet");
 };
 
 
-// --- Units (Local Static Data) ---
+// --- Units (Supabase) ---
 
 export const getUnits = async (subjectId: string): Promise<Unit[]> => {
-    return LOCAL_UNITS.filter(u => u.subjectId === subjectId).sort((a, b) => a.order - b.order);
+    const { data, error } = await supabase
+        .from('units')
+        .select('*')
+        .eq('subject_id', subjectId)
+        .order('order', { ascending: true });
+
+    if (error || !data) {
+        console.warn('Error fetching units:', error);
+        return LOCAL_UNITS.filter(u => u.subjectId === subjectId).sort((a, b) => a.order - b.order);
+    }
+
+    return data.map((u: any) => ({
+        id: u.id,
+        subjectId: u.subject_id,
+        title: u.title,
+        description: u.description || '',
+        order: u.order,
+        isCompleted: u.is_completed,
+        topics: u.topics
+    }));
 };
 
 export const getUnitById = async (id: string): Promise<Unit | undefined> => {
-    return LOCAL_UNITS.find(u => u.id === id);
+    const { data, error } = await supabase
+        .from('units')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error || !data) return LOCAL_UNITS.find(u => u.id === id);
+
+    return {
+        id: data.id,
+        subjectId: data.subject_id,
+        title: data.title,
+        description: data.description || '',
+        order: data.order,
+        isCompleted: data.is_completed,
+        topics: data.topics
+    };
 };
 
 export const createUnit = async (unit: Unit): Promise<Unit> => {
@@ -81,28 +119,78 @@ export const deleteUnit = async (id: string): Promise<void> => {
 };
 
 
-// --- Notes (Local Static Data) ---
+// --- Notes (Supabase) ---
 
 export const getNotesByUnit = async (unitId: string): Promise<Note[]> => {
-    return LOCAL_NOTES.filter(n => n.unitId === unitId);
+    const { data, error } = await supabase
+        .from('notes')
+        .select('*')
+        .eq('unit_id', unitId)
+        .order('created_at', { ascending: false });
+
+    if (error || !data) {
+        console.warn('Error fetching notes:', error);
+        return LOCAL_NOTES.filter(n => n.unitId === unitId);
+    }
+
+    return data.map((n: any) => ({
+        id: n.id,
+        unitId: n.unit_id,
+        title: n.title,
+        content: n.content,
+        isBookmarked: n.is_bookmarked,
+        lastRead: n.last_read,
+        lastModified: n.last_modified
+    }));
 };
 
 export const getNoteById = async (id: string): Promise<Note | undefined> => {
-    return LOCAL_NOTES.find(n => n.id === id);
+    const { data, error } = await supabase
+        .from('notes')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error || !data) return LOCAL_NOTES.find(n => n.id === id);
+
+    return {
+        id: data.id,
+        unitId: data.unit_id,
+        title: data.title,
+        content: data.content,
+        isBookmarked: data.is_bookmarked,
+        lastRead: data.last_read,
+        lastModified: data.last_modified
+    };
 };
 
 export const createNote = async (note: Note): Promise<Note> => {
-    console.warn("createNote is disabled in local mode");
+    const payload = {
+        title: note.title,
+        content: note.content,
+        unit_id: note.unitId,
+        is_bookmarked: note.isBookmarked
+    };
+    const { data, error } = await supabase.from('notes').insert(payload).select().single();
+    if (error) console.error(error);
     return note;
 };
 
 export const updateNote = async (note: Note): Promise<Note> => {
-    console.warn("updateNote is disabled in local mode");
+    const payload = {
+        title: note.title,
+        content: note.content,
+        is_bookmarked: note.isBookmarked,
+        last_modified: new Date().toISOString()
+    };
+    const { data, error } = await supabase.from('notes').update(payload).eq('id', note.id).select().single();
+    if (error) console.error(error);
     return note;
 };
 
 export const deleteNote = async (id: string): Promise<void> => {
-    console.warn("deleteNote is disabled in local mode");
+    const { error } = await supabase.from('notes').delete().eq('id', id);
+    if (error) console.error(error);
 };
 
 
