@@ -6,6 +6,7 @@ import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { AnnouncementModal } from './AnnouncementModal';
 import { WidgetSettingsModal } from './WidgetSettingsModal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/shared/Dialog';
 
 interface AnnouncementWidgetProps {
     announcements: Announcement[];
@@ -14,6 +15,7 @@ interface AnnouncementWidgetProps {
 export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | undefined>(undefined);
 
     const handleAdd = () => {
@@ -24,6 +26,11 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
     const handleEdit = (ann: Announcement) => {
         setSelectedAnnouncement(ann);
         setIsModalOpen(true);
+    };
+
+    const handleView = (ann: Announcement) => {
+        setSelectedAnnouncement(ann);
+        setIsDetailOpen(true);
     };
 
     return (
@@ -62,7 +69,7 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                 {announcements.map((ann) => (
                     <div
                         key={ann.id}
-                        onClick={() => handleEdit(ann)}
+                        onClick={() => handleView(ann)}
                         className={cn(
                             "p-8 rounded-[32px] border-2 relative group transition-all hover:scale-[1.02] cursor-pointer shadow-sm hover:shadow-xl flex flex-col h-full",
                             ann.type === 'warning' ? "bg-gradient-to-br from-orange-50 to-white border-orange-100" :
@@ -71,8 +78,11 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                         )}
                     >
                         <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-                            <button className="p-2 bg-white/80 backdrop-blur-md text-gray-400 hover:text-blue-600 rounded-xl shadow-sm border border-gray-100">
-                                <Icons.Settings size={14} />
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handleEdit(ann); }}
+                                className="p-2 bg-white/80 backdrop-blur-md text-gray-400 hover:text-blue-600 rounded-xl shadow-sm border border-gray-100"
+                            >
+                                <Icons.Edit size={14} />
                             </button>
                         </div>
 
@@ -122,6 +132,63 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                 onClose={() => setIsModalOpen(false)}
                 announcement={selectedAnnouncement}
             />
+
+            {/* Detail View Modal */}
+            <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+                <DialogContent className="max-w-lg">
+                    {selectedAnnouncement && (
+                        <>
+                            <DialogHeader>
+                                <div className={cn(
+                                    "w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border shadow-sm",
+                                    selectedAnnouncement.type === 'warning' ? "bg-orange-50 text-orange-600 border-orange-100" :
+                                        selectedAnnouncement.type === 'success' ? "bg-green-50 text-green-600 border-green-100" :
+                                            "bg-blue-50 text-blue-600 border-blue-100"
+                                )}>
+                                    {selectedAnnouncement.type === 'warning' ? <Icons.Trend size={24} /> : <Icons.Subjects size={24} />}
+                                </div>
+                                <DialogTitle className="text-xl font-black text-gray-900">{selectedAnnouncement.title}</DialogTitle>
+                                <DialogDescription className="flex items-center gap-3">
+                                    <span className="text-xs font-bold text-gray-400">{selectedAnnouncement.date}</span>
+                                    <span className={cn(
+                                        "text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full",
+                                        selectedAnnouncement.type === 'warning' ? "text-orange-600 bg-orange-100" :
+                                            selectedAnnouncement.type === 'success' ? "text-green-600 bg-green-100" :
+                                                "text-blue-600 bg-blue-100"
+                                    )}>
+                                        {selectedAnnouncement.type}
+                                    </span>
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="mt-4 space-y-4">
+                                <p className="text-gray-600 leading-relaxed font-medium">{selectedAnnouncement.content}</p>
+
+                                {selectedAnnouncement.resourceLink && (
+                                    <a
+                                        href={selectedAnnouncement.resourceLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm transition-colors hover:underline"
+                                    >
+                                        <Icons.Link size={16} />
+                                        View Resource
+                                    </a>
+                                )}
+                            </div>
+
+                            <div className="flex justify-end gap-3 pt-6">
+                                <button
+                                    onClick={() => setIsDetailOpen(false)}
+                                    className="px-6 py-3 bg-gray-100 text-gray-700 rounded-2xl text-sm font-bold hover:bg-gray-200 transition-colors"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
 
             <WidgetSettingsModal
                 isOpen={isSettingsOpen}
