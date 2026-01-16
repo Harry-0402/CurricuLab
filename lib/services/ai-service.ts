@@ -234,5 +234,35 @@ export const AiService = {
         }
 
         throw new Error(`All AI models failed. Last error: ${lastError?.message || "Unknown error"}`);
+    },
+
+    async formatUserAnswer(question: string, userAnswer: string, marks: number): Promise<string> {
+        const prompt = `You are a formatting assistant. Your job is to take a student's raw answer and format it beautifully with proper markdown structure.
+
+**Question:** ${question}
+**Marks:** ${marks}
+
+**Student's Raw Answer:**
+${userAnswer}
+
+---
+
+**Your Task:** Format the above answer with:
+1. Clear section headings (use ## for main sections)
+2. Bullet points or numbered lists where appropriate
+3. Bold key terms and important concepts
+4. Proper paragraph structure
+5. Add emphasis where needed
+
+**Important Rules:**
+- DO NOT change the content or meaning of the answer
+- DO NOT add new information the student didn't write
+- ONLY format and structure what's already there
+- Keep the academic tone
+- Make it easy to read and scan
+
+Return ONLY the formatted answer in markdown format.`;
+
+        return this.generateContent(prompt);
     }
 };
