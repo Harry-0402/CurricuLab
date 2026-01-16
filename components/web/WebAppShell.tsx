@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useState } from 'react';
 import { WebSidebar } from './WebSidebar';
 import { WebHeader } from './WebHeader';
