@@ -104,6 +104,7 @@ export interface Announcement {
   id: string;
   title: string;
   content: string;
+  resourceLink?: string;
   date: string;
   type: 'info' | 'warning' | 'success';
 }

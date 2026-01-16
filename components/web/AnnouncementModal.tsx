@@ -20,6 +20,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
     const [formData, setFormData] = useState<Partial<Announcement>>({
         title: '',
         content: '',
+        resourceLink: '',
         date: new Date().toISOString().split('T')[0],
         type: 'info'
     });
@@ -31,6 +32,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
             setFormData({
                 title: '',
                 content: '',
+                resourceLink: '',
                 date: new Date().toISOString().split('T')[0],
                 type: 'info'
             });
@@ -110,6 +112,18 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                             value={formData.content}
                             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                             required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="resourceLink">Resource Link (Optional)</Label>
+                        <input
+                            id="resourceLink"
+                            type="url"
+                            placeholder="https://example.com/resource"
+                            className="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none placeholder:text-gray-400/80 transition-all shadow-sm"
+                            value={formData.resourceLink || ''}
+                            onChange={(e) => setFormData({ ...formData, resourceLink: e.target.value })}
                         />
                     </div>
 
