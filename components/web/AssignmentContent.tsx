@@ -296,11 +296,10 @@ Format the response in clean, readable markdown.`;
                     >
 
                         <div className="space-y-4">
-                            <div className="w-12 h-12 bg-gray-50 group-hover:bg-blue-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-blue-600 transition-colors duration-500">
-                                <Icons.Calendar size={22} />
-                            </div>
-
-                            <div className="space-y-2">
+                            <div className="flex justify-between items-start">
+                                <div className="w-12 h-12 bg-gray-50 group-hover:bg-blue-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-blue-600 transition-colors duration-500">
+                                    <Icons.Calendar size={22} />
+                                </div>
                                 {/* Badges */}
                                 <div className="flex items-center gap-2 flex-wrap">
                                     {assignment.unitId && (() => {
@@ -317,6 +316,9 @@ Format the response in clean, readable markdown.`;
                                         </span>
                                     )}
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
                                 <h3 className="text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors">
                                     {assignment.title}
                                 </h3>
