@@ -55,10 +55,19 @@ export function AssignmentContent() {
                     return dObj >= today && dObj <= twoDaysFromNow;
                 });
 
+                // Check if recently dismissed (within last 5 mins)
+                const lastDismissed = localStorage.getItem('curriculab_due_alert_dismissed');
+                if (lastDismissed && (Date.now() - parseInt(lastDismissed) < 5 * 60 * 1000)) {
+                    return;
+                }
+
                 if (due.length > 0) {
                     setDueAlerts(due);
                     setShowDueAlert(true);
-                    const timer = setTimeout(() => setShowDueAlert(false), 20000); // 20 seconds
+                    const timer = setTimeout(() => {
+                        setShowDueAlert(false);
+                        localStorage.setItem('curriculab_due_alert_dismissed', Date.now().toString());
+                    }, 20000); // 20 seconds
                     return () => clearTimeout(timer);
                 }
             } catch (error) {
@@ -502,7 +511,10 @@ Format the response in clean, readable markdown.`;
                     <div className="bg-white rounded-2xl shadow-2xl border border-red-100 p-5 max-w-sm w-full relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500" />
                         <button
-                            onClick={() => setShowDueAlert(false)}
+                            onClick={() => {
+                                setShowDueAlert(false);
+                                localStorage.setItem('curriculab_due_alert_dismissed', Date.now().toString());
+                            }}
                             className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
                         >
                             <Icons.X size={16} />
