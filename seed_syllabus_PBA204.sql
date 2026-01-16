@@ -21,7 +21,7 @@ BEGIN
     -- 3. Insert Unit I
     INSERT INTO public.units (id, subject_id, unit_code, title, "order", is_completed, topics)
     VALUES (
-        gen_random_uuid()::text, topic_uuid,
+        gen_random_uuid()::text,
         subject_uuid,
         'U1',
         'Introduction to Operations Management',
