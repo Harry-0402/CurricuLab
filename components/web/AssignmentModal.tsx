@@ -1,10 +1,9 @@
-"use client"
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/shared/Dialog";
 import { Icons } from "@/components/shared/Icons";
 import { cn } from "@/lib/utils";
-import { Assignment, Subject } from "@/types";
+import { Assignment, Subject, Unit } from "@/types";
+import { getUnits } from '@/lib/services/app.service';
 
 interface AssignmentModalProps {
     isOpen: boolean;
@@ -15,10 +14,13 @@ interface AssignmentModalProps {
 }
 
 export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects }: AssignmentModalProps) {
+    const [units, setUnits] = useState<Unit[]>([]);
     const [formData, setFormData] = useState<Partial<Assignment>>({
         title: '',
         description: '',
         subjectId: subjects[0]?.id || '',
+        unitId: '',
+        platform: 'ERP',
         dueDate: new Date().toISOString().split('T')[0],
     });
 
@@ -30,10 +32,28 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects 
                 title: '',
                 description: '',
                 subjectId: subjects[0]?.id || '',
+                unitId: '',
+                platform: 'ERP',
                 dueDate: new Date().toISOString().split('T')[0],
             });
         }
     }, [assignment, subjects, isOpen]);
+
+    // Fetch units when subject changes
+    useEffect(() => {
+        const fetchMethod = async () => {
+            if (formData.subjectId) {
+                const fetchedUnits = await getUnits(formData.subjectId);
+                setUnits(fetchedUnits);
+
+                // If editing and we have a unitId, it will auto-select.
+                // If creating, defaulting to empty or first unit is handled by user choice.
+            } else {
+                setUnits([]);
+            }
+        };
+        fetchMethod();
+    }, [formData.subjectId]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -75,7 +95,7 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects 
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Subject</label>
                             <select
                                 value={formData.subjectId}
-                                onChange={(e) => setFormData({ ...formData, subjectId: e.target.value })}
+                                onChange={(e) => setFormData({ ...formData, subjectId: e.target.value, unitId: '' })}
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all appearance-none cursor-pointer"
                             >
                                 {subjects.map(s => (
@@ -83,6 +103,22 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects 
                                 ))}
                             </select>
                         </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Unit</label>
+                            <select
+                                value={formData.unitId || ''}
+                                onChange={(e) => setFormData({ ...formData, unitId: e.target.value })}
+                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all appearance-none cursor-pointer"
+                            >
+                                <option value="">Select Unit (Optional)</option>
+                                {units.map(u => (
+                                    <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Due Date</label>
                             <input
@@ -92,6 +128,26 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects 
                                 onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all cursor-pointer"
                             />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Platform</label>
+                            <div className="flex gap-2">
+                                {['ERP', 'GCR', 'Other'].map((p) => (
+                                    <button
+                                        key={p}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, platform: p as any })}
+                                        className={cn(
+                                            "flex-1 py-4 rounded-2xl text-xs font-bold transition-all border",
+                                            formData.platform === p
+                                                ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-100"
+                                                : "bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100"
+                                        )}
+                                    >
+                                        {p}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
 

@@ -6,9 +6,11 @@ import { LOCAL_SUBJECTS, LOCAL_UNITS, LOCAL_NOTES, LOCAL_QUESTIONS } from "@/lib
 const mapAssignment = (a: any): Assignment => ({
     id: a.id,
     subjectId: a.subject_id,
+    unitId: a.unit_id,
     title: a.title,
     description: a.description,
-    dueDate: a.due_date
+    dueDate: a.due_date,
+    platform: a.platform
 });
 
 const mapTimetable = (t: any): TimetableEntry => ({
@@ -319,9 +321,11 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
     const payload = {
         id: assignment.id,
         subject_id: assignment.subjectId,
+        unit_id: assignment.unitId,
         title: assignment.title,
         description: assignment.description,
-        due_date: assignment.dueDate
+        due_date: assignment.dueDate,
+        platform: assignment.platform
     };
     const { data, error } = await supabase.from('assignments').insert(payload).select().single();
     if (error) throw error;
@@ -331,9 +335,11 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
 export const updateAssignment = async (assignment: Assignment): Promise<Assignment> => {
     const payload = {
         subject_id: assignment.subjectId,
+        unit_id: assignment.unitId,
         title: assignment.title,
         description: assignment.description,
-        due_date: assignment.dueDate
+        due_date: assignment.dueDate,
+        platform: assignment.platform
     };
     const { data, error } = await supabase.from('assignments').update(payload).eq('id', assignment.id).select().single();
     if (error) throw error;

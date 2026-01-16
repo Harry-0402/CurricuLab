@@ -128,7 +128,9 @@ export interface TimetableEntry {
 export interface Assignment {
   id: string;
   subjectId: string;
+  unitId?: string;
   title: string;
   description: string;
   dueDate: string;
+  platform?: 'ERP' | 'GCR' | 'Other';
 }
