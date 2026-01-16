@@ -60,7 +60,7 @@ export function AssignmentContent() {
                     description: data.description || '',
                     subjectId: data.subjectId || activeSubjectId!, // Use selected subject!
                     dueDate: data.dueDate || new Date().toISOString().split('T')[0],
-                    unitId: data.unitId,
+                    unitId: data.unitId || undefined,
                     platform: data.platform
                 } as Assignment);
 
