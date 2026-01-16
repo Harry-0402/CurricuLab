@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-import { Subject, Assignment } from '@/types';
-import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment } from '@/lib/services/app.service';
+import { Subject, Assignment, Unit } from '@/types';
+import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { AssignmentModal } from './AssignmentModal';
 import {
@@ -21,6 +21,7 @@ export function AssignmentContent() {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [activeSubjectId, setActiveSubjectId] = useState<string | null>(null);
     const [assignments, setAssignments] = useState<Assignment[]>([]);
+    const [units, setUnits] = useState<Unit[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(null);
@@ -46,8 +47,12 @@ export function AssignmentContent() {
         const loadAssignments = async () => {
             if (activeSubjectId) {
                 setLoading(true);
-                const fetched = await getAssignments(activeSubjectId);
+                const [fetched, fetchedUnits] = await Promise.all([
+                    getAssignments(activeSubjectId),
+                    getUnits(activeSubjectId)
+                ]);
                 setAssignments(fetched);
+                setUnits(fetchedUnits);
                 setLoading(false);
             }
         };
@@ -267,9 +272,14 @@ Provide a comprehensive, well-structured answer suitable for a university-level 
                                 </DialogTitle>
                                 <DialogDescription asChild>
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                                        <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
                                             <Icons.Calendar size={14} />
                                             <span>Due: {selectedAssignment.dueDate}</span>
+                                            {selectedAssignment.unitId && (
+                                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
+                                                    {units.find(u => u.id === selectedAssignment.unitId)?.title || 'Unit'}
+                                                </span>
+                                            )}
                                             {selectedAssignment.platform && (
                                                 <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
                                                     {selectedAssignment.platform}
