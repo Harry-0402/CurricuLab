@@ -24,18 +24,33 @@ const FALLBACK_CHAIN: ModelConfig[] = [
 export const AiService = {
     async generateNoteContent(subject: string, unit: string, topic: string): Promise<string> {
         const prompt = `
-        You are an expert tutor creating a revision note for a student.
+        You are an expert tutor creating a high-quality revision note for a student.
         
         Subject: ${subject}
         Unit: ${unit}
         Topic: ${topic}
 
-        Please provide a concise, easy-to-understand revision note for this topic using Markdown.
-        - Include a brief definition/explanation.
-        - Key points or bullet points.
-        - An example if applicable.
-        - Keep it structured and clearly formatted.
-        - Do not include the title (I will add it separately).
+        Please provide a structured, visually appealing revision note using proper Markdown formatting:
+        
+        # ${topic} (Use H1 for the main title)
+        
+        ## Overview (Use H2 for main sections)
+        Provide a clear, concise explanation of the concept.
+        
+        ### Key Concepts (Use H3 for subsections)
+        - Use **bold text** to highlight important terms and definitions.
+        - Use bullet points for readability.
+        
+        ### Real-World Example
+        Provide a practical example to illustrate the concept.
+
+        ### Quick Summary
+        A one-sentence takeaway.
+
+        **Review:**
+        - Ensure strictly hierarchical headings (#, ##, ###).
+        - Highlight at least 3-5 keywords using **bold**.
+        - Keep it professional yet easy to scan.
         `;
 
         let lastError: any = null;
