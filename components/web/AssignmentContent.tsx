@@ -293,13 +293,13 @@ Format the response in clean, readable markdown.`;
                                     {assignment.unitId && (() => {
                                         const unitIndex = units.findIndex(u => u.id === assignment.unitId);
                                         return (
-                                            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
+                                            <span className="h-12 px-4 bg-purple-100 text-purple-700 rounded-2xl text-xs font-bold flex items-center justify-center">
                                                 Unit {unitIndex + 1}
                                             </span>
                                         );
                                     })()}
                                     {assignment.platform && (
-                                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
+                                        <span className="h-12 px-4 bg-blue-100 text-blue-700 rounded-2xl text-xs font-bold flex items-center justify-center">
                                             {assignment.platform}
                                         </span>
                                     )}
