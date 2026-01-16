@@ -308,10 +308,10 @@ export function FacultyFellowsContent() {
 
                 {/* Detail Modal */}
                 <Dialog open={!!selectedPerson} onOpenChange={(open) => !open && setSelectedPerson(null)}>
-                    <DialogContent className="sm:max-w-md border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
+                    <DialogContent className="sm:max-w-md max-w-[90vw] max-h-[85vh] overflow-y-auto border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
                         {selectedPerson && (
                             <div className="flex flex-col items-center pt-4">
-                                <div className="w-32 h-32 rounded-[3rem] bg-gray-50 border-4 border-white shadow-2xl shadow-blue-100 p-1.5 mb-6 overflow-hidden">
+                                <div className="w-32 h-32 rounded-[3rem] bg-gray-50 border-4 border-white shadow-2xl shadow-blue-100 p-1.5 mb-6 overflow-hidden shrink-0">
                                     <AvatarImage gender={selectedPerson.gender} className="w-full h-full rounded-[2.5rem]" />
                                 </div>
 
@@ -336,18 +336,18 @@ export function FacultyFellowsContent() {
                                 <div className="w-full space-y-3">
                                     {/* Contact Number */}
                                     <div className="p-4 bg-white/60 hover:bg-blue-50 rounded-2xl flex items-center justify-between group transition-colors border border-gray-100 hover:border-blue-100">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shadow-sm group-hover:bg-white group-hover:text-blue-500 transition-colors">
+                                        <div className="flex items-center gap-4 min-w-0 flex-1">
+                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shadow-sm group-hover:bg-white group-hover:text-blue-500 transition-colors shrink-0">
                                                 <Icons.Profile size={20} />
                                             </div>
-                                            <div className="text-left">
+                                            <div className="text-left min-w-0">
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-blue-500 transition-colors">Contact</p>
-                                                <p className="text-sm font-bold text-gray-900">{selectedPerson.contactNo}</p>
+                                                <p className="text-sm font-bold text-gray-900 truncate">{selectedPerson.contactNo}</p>
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => copyToClipboard(selectedPerson.contactNo)}
-                                            className="p-2 text-gray-300 hover:text-blue-600 bg-transparent hover:bg-white rounded-xl transition-all"
+                                            className="p-2 text-gray-300 hover:text-blue-600 bg-transparent hover:bg-white rounded-xl transition-all shrink-0"
                                             title="Copy Contact Number"
                                         >
                                             <Icons.Copy size={16} />
@@ -357,18 +357,18 @@ export function FacultyFellowsContent() {
                                     {/* WhatsApp (Only if different) */}
                                     {selectedPerson.whatsappNo && selectedPerson.whatsappNo !== selectedPerson.contactNo && (
                                         <div className="p-4 bg-white/60 hover:bg-green-50 rounded-2xl flex items-center justify-between group transition-colors border border-gray-100 hover:border-green-100">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shadow-sm group-hover:bg-white group-hover:text-green-500 transition-colors">
+                                            <div className="flex items-center gap-4 min-w-0 flex-1">
+                                                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shadow-sm group-hover:bg-white group-hover:text-green-500 transition-colors shrink-0">
                                                     <Icons.CheckSquare size={20} />
                                                 </div>
-                                                <div className="text-left">
+                                                <div className="text-left min-w-0">
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-green-500 transition-colors">WhatsApp</p>
-                                                    <p className="text-sm font-bold text-gray-900">{selectedPerson.whatsappNo}</p>
+                                                    <p className="text-sm font-bold text-gray-900 truncate">{selectedPerson.whatsappNo}</p>
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={() => copyToClipboard(selectedPerson.whatsappNo!)}
-                                                className="p-2 text-gray-300 hover:text-green-600 bg-transparent hover:bg-white rounded-xl transition-all"
+                                                className="p-2 text-gray-300 hover:text-green-600 bg-transparent hover:bg-white rounded-xl transition-all shrink-0"
                                                 title="Copy WhatsApp Number"
                                             >
                                                 <Icons.Copy size={16} />
@@ -378,13 +378,13 @@ export function FacultyFellowsContent() {
 
                                     {/* Email */}
                                     <div className="p-4 bg-white/60 hover:bg-indigo-50 rounded-2xl flex items-center justify-between group transition-colors border border-gray-100 hover:border-indigo-100">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shadow-sm group-hover:bg-white group-hover:text-indigo-500 transition-colors">
+                                        <div className="flex items-center gap-4 min-w-0 flex-1">
+                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shadow-sm group-hover:bg-white group-hover:text-indigo-500 transition-colors shrink-0">
                                                 <Icons.Notes size={20} />
                                             </div>
-                                            <div className="text-left">
+                                            <div className="text-left min-w-0">
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-indigo-500 transition-colors">Email</p>
-                                                <p className="text-sm font-bold text-gray-900">{selectedPerson.email}</p>
+                                                <p className="text-sm font-bold text-gray-900 truncate">{selectedPerson.email}</p>
                                             </div>
                                         </div>
                                         <button
