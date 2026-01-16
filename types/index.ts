@@ -40,6 +40,14 @@ export interface Note {
   lastModified?: string;
 }
 
+export interface RevisionNote {
+  id: string;
+  unitId: string;
+  title: string;
+  content: string;
+  generatedAt?: string;
+}
+
 export interface Question {
   id: string;
   unitId: string;

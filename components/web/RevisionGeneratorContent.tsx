@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 // ... imports
-import { getSubjects, getUnits, getNotesByUnit, createNote, getSubjectById, getUnitById } from '@/lib/services/app.service';
+import { getSubjects, getUnits, getSubjectById, getUnitById } from '@/lib/services/app.service';
+import { getRevisionNotesByUnit, createRevisionNote } from '@/lib/data/revision-notes-service';
 import { AiService } from '@/lib/services/ai-service';
 import { PlatformExportService } from '@/lib/services/export-service';
-import { Subject, Unit, Note } from '@/types';
+import { Subject, Unit, RevisionNote } from '@/types';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -17,7 +18,7 @@ export function RevisionGeneratorContent() {
     const [units, setUnits] = useState<Unit[]>([]);
     const [selectedSubject, setSelectedSubject] = useState<string>('');
     const [selectedUnit, setSelectedUnit] = useState<string>('');
-    const [notes, setNotes] = useState<Note[]>([]);
+    const [notes, setNotes] = useState<RevisionNote[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [generationProgress, setGenerationProgress] = useState(0);
@@ -35,10 +36,10 @@ export function RevisionGeneratorContent() {
         }
     }, [selectedSubject]);
 
-    // Fetch notes when unit is selected
+    // Fetch revision notes when unit is selected
     const fetchNotes = async (unitId: string) => {
         setIsLoading(true);
-        const data = await getNotesByUnit(unitId);
+        const data = await getRevisionNotesByUnit(unitId);
         setNotes(data);
         setIsLoading(false);
     };
@@ -89,17 +90,15 @@ export function RevisionGeneratorContent() {
                 const content = await AiService.generateNoteContent(subject.title, unit.title, topic);
 
                 // Save to DB
-                // We use a temp ID for the type, but createNote returns the REAL note from DB.
-                const tempNote: Note = {
+                const tempNote: RevisionNote = {
                     id: crypto.randomUUID(),
                     unitId: selectedUnit,
                     title: topic,
                     content: content,
-                    isBookmarked: false,
-                    lastRead: new Date().toISOString()
+                    generatedAt: new Date().toISOString()
                 };
 
-                const savedNote = await createNote(tempNote);
+                const savedNote = await createRevisionNote(tempNote);
 
                 // Progressive Update: Add to list immediately
                 setNotes(prev => [...prev, savedNote]);

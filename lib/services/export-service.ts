@@ -1,12 +1,18 @@
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, SectionType, BorderStyle } from "docx";
 import { saveAs } from "file-saver";
-import { Note } from "@/types";
+
+// Generic type for exportable notes (works with Note and RevisionNote)
+interface ExportableNote {
+    id: string;
+    title: string;
+    content: string;
+}
 
 export class PlatformExportService {
     static async generateWordDocument(
         subjectTitle: string,
         unitTitle: string,
-        notes: Note[]
+        notes: ExportableNote[]
     ): Promise<void> {
 
         const doc = new Document({
@@ -41,7 +47,7 @@ export class PlatformExportService {
         saveAs(blob, `${unitTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_revision.docx`);
     }
 
-    private static parseNoteToDocx(note: Note): Paragraph[] {
+    private static parseNoteToDocx(note: ExportableNote): Paragraph[] {
         const paragraphs: Paragraph[] = [];
 
         // Note Title (H1 equivalent visually)
