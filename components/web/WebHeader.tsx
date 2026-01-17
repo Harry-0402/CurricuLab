@@ -13,7 +13,7 @@ export function WebHeader() {
     const [showSettings, setShowSettings] = React.useState(false);
 
     return (
-        <header className="h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-8 flex items-center justify-between">
+        <header className="h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-8 flex items-center justify-between print:hidden">
             <div>
                 <h1 className="text-sm font-medium text-gray-500 mb-0.5">Hello,</h1>
                 <p className="text-lg font-bold text-gray-900">Miss Hermione Granger</p>

@@ -22,7 +22,7 @@ export function WebRightPanel() {
 
     return (
         <aside className={cn(
-            "h-full border-l border-gray-100 bg-white flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shrink-0 overflow-hidden relative",
+            "h-full border-l border-gray-100 bg-white flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shrink-0 overflow-hidden relative print:hidden",
             isRightPanelMinimized ? "w-0 border-l-0" : "w-[340px]"
         )}>
             {/* Toggle Button Handle */}

@@ -196,8 +196,15 @@ Format the response in clean, readable markdown.`;
         setShowExportMenu(false);
     };
 
-    const handlePrint = () => {
-        window.print();
+    const handleExportHTML = async () => {
+        if (!selectedAssignment || !aiAnswer) return;
+        const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
+
+        await PlatformExportService.generateAssignmentHTMLExport(
+            subject?.title || 'Assignment',
+            selectedAssignment,
+            aiAnswer
+        );
         setShowExportMenu(false);
     };
 
@@ -423,11 +430,11 @@ Format the response in clean, readable markdown.`;
                                                             Export as Word
                                                         </button>
                                                         <button
-                                                            onClick={handlePrint}
+                                                            onClick={handleExportHTML}
                                                             className="w-full px-4 py-2.5 text-left text-sm font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-3"
                                                         >
-                                                            <Icons.Printer size={16} />
-                                                            Print / PDF
+                                                            <Icons.Globe size={16} />
+                                                            Export as Web Page
                                                         </button>
                                                     </div>
                                                 )}

@@ -6,6 +6,7 @@ import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { getSubjects, getUnits, getQuestions, createQuestion, updateQuestion, deleteQuestion } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
+import { PlatformExportService } from '@/lib/services/export-service';
 import { Subject, Unit, Question, MarksType } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -26,6 +27,7 @@ export function PaperTrailContent() {
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [selectedYear, setSelectedYear] = useState<string>('');
+    const [showExportMenu, setShowExportMenu] = useState(false);
 
     // Add Question Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -99,6 +101,36 @@ export function PaperTrailContent() {
         } finally {
             setIsGenerating(false);
         }
+    };
+
+    const handleExportHTML = async () => {
+        if (!activeQuestion || !selectedSubject || !aiAnswer) return;
+        const subject = subjects.find(s => s.id === selectedSubject);
+        await PlatformExportService.generatePaperTrailHTMLExport(
+            subject?.title || 'PaperTrail',
+            activeQuestion,
+            aiAnswer
+        );
+        setShowExportMenu(false);
+    };
+
+    const handleExportWord = async () => {
+        if (!activeQuestion || !selectedSubject || !aiAnswer) return;
+        const subject = subjects.find(s => s.id === selectedSubject);
+
+        // Prepare data for Word export (adapting to available methods)
+        const notes = [{
+            id: activeQuestion.id,
+            title: activeQuestion.question,
+            content: aiAnswer
+        }];
+
+        await PlatformExportService.generateWordDocument(
+            subject?.title || 'PaperTrail',
+            `PYQ Solution (${activeQuestion.marksType} Marks)`,
+            notes
+        );
+        setShowExportMenu(false);
     };
 
     const handleSaveQuestion = async () => {
@@ -298,33 +330,38 @@ export function PaperTrailContent() {
                                         )}
                                     >
                                         <div className="flex justify-between items-start mb-2">
-                                            <span className={cn(
-                                                "px-2 py-1 rounded-md text-[10px] font-bold uppercase",
-                                                q.difficulty === 'Easy' ? "bg-green-100 text-green-700" :
-                                                    q.difficulty === 'Medium' ? "bg-yellow-100 text-yellow-700" :
-                                                        "bg-red-100 text-red-700"
-                                            )}>
-                                                {q.difficulty}
-                                            </span>
-                                            <span className="text-[10px] font-bold text-gray-400">{q.marksType} Marks</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className={cn(
+                                                    "px-2 py-1 rounded-md text-[10px] font-bold uppercase",
+                                                    q.difficulty === 'Easy' ? "bg-green-100 text-green-700" :
+                                                        q.difficulty === 'Medium' ? "bg-yellow-100 text-yellow-700" :
+                                                            "bg-red-100 text-red-700"
+                                                )}>
+                                                    {q.difficulty}
+                                                </span>
+                                                {q.year && <span className="text-[10px] font-black text-gray-300 uppercase tracking-tighter">{q.year}</span>}
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[10px] font-bold text-gray-400 shrink-0">{q.marksType} Marks</span>
+                                                <div className="flex items-center gap-1">
+                                                    <button
+                                                        onClick={(e) => handleEditClick(e, q)}
+                                                        className="p-1.5 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
+                                                        title="Edit"
+                                                    >
+                                                        <Icons.Edit size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => handleDeleteClick(e, q.id)}
+                                                        className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <Icons.Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <p className="text-sm font-semibold text-gray-800 line-clamp-3 mb-2">{q.question}</p>
-                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={(e) => handleEditClick(e, q)}
-                                                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
-                                                title="Edit"
-                                            >
-                                                <Icons.Edit size={14} />
-                                            </button>
-                                            <button
-                                                onClick={(e) => handleDeleteClick(e, q.id)}
-                                                className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Icons.Trash2 size={14} />
-                                            </button>
-                                        </div>
                                     </div>
                                 ))
                             )}
@@ -349,6 +386,48 @@ export function PaperTrailContent() {
                                             {isGenerating ? <Icons.Loader2 className="animate-spin" size={16} /> : <Icons.Sparkles size={16} />}
                                             {isGenerating ? 'Drafting Answer...' : 'Generate Answer'}
                                         </button>
+
+                                        {aiAnswer && (
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setShowExportMenu(!showExportMenu)}
+                                                    className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-gray-200"
+                                                >
+                                                    <Icons.Download size={16} />
+                                                    <span className="text-[10px] font-bold uppercase tracking-wide">Export</span>
+                                                    <Icons.ChevronDown size={14} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+                                                </button>
+
+                                                {showExportMenu && (
+                                                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                                        <button
+                                                            onClick={handleExportWord}
+                                                            className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group"
+                                                        >
+                                                            <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                                <Icons.FileText size={16} />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-sm font-bold text-gray-900">Word Document</p>
+                                                                <p className="text-[10px] font-medium text-gray-500">Editable .docx file</p>
+                                                            </div>
+                                                        </button>
+                                                        <button
+                                                            onClick={handleExportHTML}
+                                                            className="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl transition-colors text-left group"
+                                                        >
+                                                            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                                                <Icons.Globe size={16} />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-sm font-bold text-gray-900">Web Page</p>
+                                                                <p className="text-[10px] font-medium text-gray-500">Standalone .html file</p>
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

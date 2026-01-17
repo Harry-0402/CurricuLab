@@ -7,6 +7,7 @@ import { Subject, VaultResource, VaultResourceType } from '@/types';
 import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { useToast } from '@/components/shared/Toast';
+import { PlatformExportService } from '@/lib/services/export-service';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -45,6 +46,7 @@ export function VaultContent() {
     // AI formatting state
     const [formattedContent, setFormattedContent] = useState<string>('');
     const [isFormatting, setIsFormatting] = useState(false);
+    const [showExportMenu, setShowExportMenu] = useState(false);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -216,6 +218,27 @@ export function VaultContent() {
         setDeleteConfirmId(null);
     };
 
+
+    const handleExportWord = async () => {
+        if (!activeSubjectId) return;
+        const sub = subjects.find(s => s.id === activeSubjectId);
+        await PlatformExportService.generateVaultExport(
+            sub?.title || "Knowledge Vault",
+            resources
+        );
+        setShowExportMenu(false);
+    };
+
+    const handleExportHTML = async () => {
+        if (!activeSubjectId) return;
+        const sub = subjects.find(s => s.id === activeSubjectId);
+        await PlatformExportService.generateVaultHTMLExport(
+            sub?.title || "Knowledge Vault",
+            resources
+        );
+        setShowExportMenu(false);
+    };
+
     const filteredResources = resources;
 
     return (
@@ -227,17 +250,59 @@ export function VaultContent() {
                     <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Library</h1>
                     <p className="text-4xl font-black text-gray-900 tracking-tight">Knowledge Vault</p>
                 </div>
-                <button
-                    onClick={handleOpenAddModal}
-                    className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
-                >
-                    <Icons.Plus size={18} />
-                    <span>Add Resource</span>
-                </button>
+                <div className="flex items-center gap-3">
+                    <div className="relative print:hidden">
+                        <button
+                            onClick={() => setShowExportMenu(!showExportMenu)}
+                            className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-900 px-6 py-4 rounded-[22px] transition-all border border-gray-100 shadow-sm"
+                        >
+                            <Icons.Download size={18} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Export</span>
+                            <Icons.ChevronDown size={14} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {showExportMenu && (
+                            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-[60] animate-in fade-in zoom-in-95 duration-200">
+                                <button
+                                    onClick={handleExportWord}
+                                    className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group"
+                                >
+                                    <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                        <Icons.FileText size={16} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-gray-900">Word Document</p>
+                                        <p className="text-[10px] font-medium text-gray-500">Editable .docx file</p>
+                                    </div>
+                                </button>
+                                <button
+                                    onClick={handleExportHTML}
+                                    className="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl transition-colors text-left group"
+                                >
+                                    <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                        <Icons.Globe size={16} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-gray-900">Web Page</p>
+                                        <p className="text-[10px] font-medium text-gray-500">Standalone .html file</p>
+                                    </div>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    <button
+                        onClick={handleOpenAddModal}
+                        className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
+                    >
+                        <Icons.Plus size={18} />
+                        <span>Add Resource</span>
+                    </button>
+                </div>
             </div>
 
             {/* Subject Switcher */}
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0 print:hidden">
                 {subjects.map((subject) => {
                     const isActive = activeSubjectId === subject.id;
                     return (
@@ -264,7 +329,7 @@ export function VaultContent() {
             </div>
 
             {/* Filter Row */}
-            <div className="flex items-center justify-between gap-4 shrink-0">
+            <div className="flex items-center justify-between gap-4 shrink-0 print:hidden">
                 {/* Type Filter Badges */}
                 <div className="flex items-center gap-2">
                     <button
@@ -312,7 +377,7 @@ export function VaultContent() {
             </div>
 
             {/* Main Content - Split Pane */}
-            <div className="flex-1 flex gap-6 min-h-0">
+            <div className="flex-1 flex gap-6 min-h-0 print:hidden">
 
                 {/* Left Panel: Resource List */}
                 <div className="w-5/12 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">

@@ -5,7 +5,7 @@ import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 // ... imports
 import { getSubjects, getUnits, getSubjectById, getUnitById } from '@/lib/services/app.service';
-import { getRevisionNotesByUnit, createRevisionNote } from '@/lib/data/revision-notes-service';
+import { getRevisionNotesByUnit, createRevisionNote, deleteRevisionNotesByUnit } from '@/lib/data/revision-notes-service';
 import { AiService } from '@/lib/services/ai-service';
 import { PlatformExportService } from '@/lib/services/export-service';
 import { Subject, Unit, RevisionNote } from '@/types';
@@ -50,9 +50,15 @@ export function RevisionGeneratorContent() {
         }
     }, [selectedUnit]);
 
-    const handlePrint = () => {
-        window.print();
-        setShowExportMenu(false);
+    const handleExportHTML = async () => {
+        if (!selectedSubject || !selectedUnit) return;
+        const subject = subjects.find(s => s.id === selectedSubject);
+        const unit = units.find(u => u.id === selectedUnit);
+
+        if (subject && unit) {
+            await PlatformExportService.generateNotesHTMLExport(subject.title, unit.title, notes);
+            setShowExportMenu(false);
+        }
     };
 
     const handleExportWord = async () => {
@@ -63,6 +69,26 @@ export function RevisionGeneratorContent() {
         if (subject && unit) {
             await PlatformExportService.generateWordDocument(subject.title, unit.title, notes);
             setShowExportMenu(false);
+        }
+    };
+
+    const handleRegenerate = async () => {
+        if (!selectedUnit || !selectedSubject) return;
+
+        if (!confirm("Are you sure you want to delete all existing notes for this unit and generate a fresh set? This cannot be undone.")) {
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            await deleteRevisionNotesByUnit(selectedUnit);
+            setNotes([]); // Clear local state
+            await handleGenerateAiNotes(); // Trigger fresh generation
+        } catch (error) {
+            console.error("Failed to regenerate notes:", error);
+            alert("Failed to clear existing notes. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -204,44 +230,54 @@ export function RevisionGeneratorContent() {
                                     <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">{currentSubject?.code} - {currentSubject?.title}</p>
                                 </div>
                             </div>
-                            <div className="relative print:hidden">
+                            <div className="flex items-center gap-3 print:hidden">
                                 <button
-                                    onClick={() => setShowExportMenu(!showExportMenu)}
-                                    className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white p-3 rounded-xl transition-all shadow-lg shadow-gray-200"
+                                    onClick={handleRegenerate}
+                                    className="flex items-center gap-2 bg-white hover:bg-red-50 text-red-600 border border-red-100 p-3 rounded-xl transition-all shadow-sm group"
                                 >
-                                    <Icons.Download size={20} />
-                                    <span className="text-xs font-bold uppercase tracking-wide">Export</span>
-                                    <Icons.ChevronDown size={16} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+                                    <Icons.RefreshCw size={18} className="group-hover:rotate-180 transition-transform duration-500" />
+                                    <span className="text-xs font-bold uppercase tracking-wide">Regenerate</span>
                                 </button>
 
-                                {showExportMenu && (
-                                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
-                                        <button
-                                            onClick={handleExportWord}
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group"
-                                        >
-                                            <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                                <Icons.FileText size={16} />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-gray-900">Word Document</p>
-                                                <p className="text-[10px] font-medium text-gray-500">Editable .docx file</p>
-                                            </div>
-                                        </button>
-                                        <button
-                                            onClick={handlePrint}
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left group"
-                                        >
-                                            <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
-                                                <Icons.Printer size={16} />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-gray-900">Print / PDF</p>
-                                                <p className="text-[10px] font-medium text-gray-500">Save as PDF</p>
-                                            </div>
-                                        </button>
-                                    </div>
-                                )}
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setShowExportMenu(!showExportMenu)}
+                                        className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white p-3 rounded-xl transition-all shadow-lg shadow-gray-200"
+                                    >
+                                        <Icons.Download size={20} />
+                                        <span className="text-xs font-bold uppercase tracking-wide">Export</span>
+                                        <Icons.ChevronDown size={16} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+                                    </button>
+
+                                    {showExportMenu && (
+                                        <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                            <button
+                                                onClick={handleExportWord}
+                                                className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group"
+                                            >
+                                                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                    <Icons.FileText size={16} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-gray-900">Word Document</p>
+                                                    <p className="text-[10px] font-medium text-gray-500">Editable .docx file</p>
+                                                </div>
+                                            </button>
+                                            <button
+                                                onClick={handleExportHTML}
+                                                className="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl transition-colors text-left group"
+                                            >
+                                                <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                                    <Icons.Globe size={16} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-gray-900">Web Page</p>
+                                                    <p className="text-[10px] font-medium text-gray-500">Standalone .html file</p>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 

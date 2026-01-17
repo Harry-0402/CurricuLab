@@ -141,8 +141,9 @@ export function AiTutorContent() {
         setShowExportMenu(false);
     };
 
-    const handlePrint = () => {
-        window.print();
+    const handleExportHTML = async () => {
+        if (messages.length === 0) return;
+        await PlatformExportService.generateChatHTMLExport(messages);
         setShowExportMenu(false);
     };
 
@@ -266,16 +267,16 @@ export function AiTutorContent() {
                                         </div>
                                     </button>
                                     <button
-                                        onClick={handlePrint}
+                                        onClick={handleExportHTML}
                                         disabled={messages.length === 0}
-                                        className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left group disabled:opacity-50"
+                                        className="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl transition-colors text-left group disabled:opacity-50"
                                     >
-                                        <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
-                                            <Icons.Printer size={16} />
+                                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                            <Icons.Globe size={16} />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-gray-900">Print / PDF</p>
-                                            <p className="text-[10px] font-medium text-gray-500">Save as PDF</p>
+                                            <p className="text-sm font-bold text-gray-900">Web Page</p>
+                                            <p className="text-[10px] font-medium text-gray-500">Save as .html</p>
                                         </div>
                                     </button>
                                 </div>

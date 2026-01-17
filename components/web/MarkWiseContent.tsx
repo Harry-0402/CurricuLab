@@ -6,6 +6,7 @@ import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { getSubjects, getUnits, getMarkWiseQuestions, createMarkWiseQuestion, updateMarkWiseQuestion, deleteMarkWiseQuestion, MarkWiseQuestion } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
+import { PlatformExportService } from '@/lib/services/export-service';
 import { Subject, Unit, MarksType } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -25,6 +26,7 @@ export function MarkWiseContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [formattedAnswer, setFormattedAnswer] = useState<string>('');
     const [isFormatting, setIsFormatting] = useState(false);
+    const [showExportMenu, setShowExportMenu] = useState(false);
 
     // Add Question Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -207,37 +209,103 @@ export function MarkWiseContent() {
         }
     };
 
+
+    const handleExportWord = async () => {
+        if (!selectedSubject) return;
+        const sub = subjects.find(s => s.id === selectedSubject);
+        const uni = units.find(u => u.id === selectedUnit);
+        await PlatformExportService.generateQuestionBankExport(
+            sub?.title || "All Subjects",
+            uni?.title || "All Units",
+            questions
+        );
+        setShowExportMenu(false);
+    };
+
+    const handleExportHTML = async () => {
+        if (!selectedSubject) return;
+        const sub = subjects.find(s => s.id === selectedSubject);
+        const uni = units.find(u => u.id === selectedUnit);
+        await PlatformExportService.generateQuestionBankHTMLExport(
+            sub?.title || "All Subjects",
+            uni?.title || "All Units",
+            questions
+        );
+        setShowExportMenu(false);
+    };
+
     return (
         <WebAppShell>
-            <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto">
-
+            <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center justify-between shrink-0">
                     <div>
                         <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
                         <p className="text-4xl font-black text-gray-900 tracking-tight">MarkWise</p>
                     </div>
-                    <button
-                        onClick={() => {
-                            setEditingId(null);
-                            setNewQuestion({
-                                subjectId: selectedSubject || '',
-                                unitId: selectedUnit || '',
-                                marksType: 10,
-                                question: '',
-                                answer: ''
-                            });
-                            setIsAddModalOpen(true);
-                        }}
-                        className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
-                    >
-                        <Icons.Plus size={18} />
-                        <span>New Question</span>
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <div className="relative print:hidden">
+                            <button
+                                onClick={() => setShowExportMenu(!showExportMenu)}
+                                className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-900 px-6 py-4 rounded-[22px] transition-all border border-gray-100 shadow-sm"
+                            >
+                                <Icons.Download size={18} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Export</span>
+                                <Icons.ChevronDown size={14} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {showExportMenu && (
+                                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-[60] animate-in fade-in zoom-in-95 duration-200">
+                                    <button
+                                        onClick={handleExportWord}
+                                        className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                            <Icons.FileText size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">Word Document</p>
+                                            <p className="text-[10px] font-medium text-gray-500">Editable .docx file</p>
+                                        </div>
+                                    </button>
+                                    <button
+                                        onClick={handleExportHTML}
+                                        className="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl transition-colors text-left group"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                            <Icons.Globe size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">Web Page</p>
+                                            <p className="text-[10px] font-medium text-gray-500">Standalone .html file</p>
+                                        </div>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={() => {
+                                setEditingId(null);
+                                setNewQuestion({
+                                    subjectId: selectedSubject || '',
+                                    unitId: selectedUnit || '',
+                                    marksType: 10,
+                                    question: '',
+                                    answer: ''
+                                });
+                                setIsAddModalOpen(true);
+                            }}
+                            className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
+                        >
+                            <Icons.Plus size={18} />
+                            <span>New Question</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Filters */}
-                <div className="grid grid-cols-3 gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm shrink-0">
+                <div className="grid grid-cols-3 gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm shrink-0 print:hidden">
                     <div className="relative">
                         <select
                             value={selectedSubject}
@@ -260,6 +328,7 @@ export function MarkWiseContent() {
                             <option value="">All Units</option>
                             {units.map(u => <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>)}
                         </select>
+                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                     </div>
 
                     <div className="relative">
@@ -277,8 +346,7 @@ export function MarkWiseContent() {
                 </div>
 
                 {/* Main Content - Split Pane */}
-                <div className="flex-1 flex gap-6 min-h-0">
-
+                <div className="flex-1 flex gap-6 min-h-0 print:hidden">
                     {/* Left Panel: Question List */}
                     <div className="w-5/12 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">
                         <div className="p-4 border-b border-gray-100 bg-gray-50/50">
@@ -370,22 +438,22 @@ export function MarkWiseContent() {
                                             <ReactMarkdown
                                                 remarkPlugins={[remarkGfm]}
                                                 components={{
-                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold text-gray-900 mt-6 mb-4" {...props} />,
-                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold text-gray-800 mt-5 mb-3" {...props} />,
-                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2" {...props} />,
-                                                    p: ({ node, ...props }) => <p className="text-gray-600 leading-relaxed mb-4" {...props} />,
-                                                    ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-2 mb-4 text-gray-600" {...props} />,
-                                                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-2 mb-4 text-gray-600" {...props} />,
-                                                    li: ({ node, ...props }) => <li className="pl-2" {...props} />,
-                                                    strong: ({ node, ...props }) => <span className="font-bold text-gray-900" {...props} />,
-                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-500 my-4" {...props} />,
-                                                    code: ({ node, ...props }) => <code className="bg-gray-100 text-blue-600 px-1 py-0.5 rounded text-sm font-mono" {...props} />,
-                                                    table: ({ node, ...props }) => <table className="w-full border-collapse border border-gray-200 my-4 rounded-lg overflow-hidden" {...props} />,
-                                                    thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
-                                                    tbody: ({ node, ...props }) => <tbody {...props} />,
-                                                    tr: ({ node, ...props }) => <tr className="border-b border-gray-200" {...props} />,
-                                                    th: ({ node, ...props }) => <th className="px-4 py-2 text-left text-sm font-bold text-gray-700 border border-gray-200" {...props} />,
-                                                    td: ({ node, ...props }) => <td className="px-4 py-2 text-sm text-gray-600 border border-gray-200" {...props} />
+                                                    h1: ({ ...props }) => <h1 className="text-2xl font-bold text-gray-900 mt-6 mb-4" {...props} />,
+                                                    h2: ({ ...props }) => <h2 className="text-xl font-bold text-gray-800 mt-5 mb-3" {...props} />,
+                                                    h3: ({ ...props }) => <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2" {...props} />,
+                                                    p: ({ ...props }) => <p className="text-gray-600 leading-relaxed mb-4" {...props} />,
+                                                    ul: ({ ...props }) => <ul className="list-disc list-inside space-y-2 mb-4 text-gray-600" {...props} />,
+                                                    ol: ({ ...props }) => <ol className="list-decimal list-inside space-y-2 mb-4 text-gray-600" {...props} />,
+                                                    li: ({ ...props }) => <li className="pl-2" {...props} />,
+                                                    strong: ({ ...props }) => <span className="font-bold text-gray-900" {...props} />,
+                                                    blockquote: ({ ...props }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-500 my-4" {...props} />,
+                                                    code: ({ ...props }) => <code className="bg-gray-100 text-blue-600 px-1 py-0.5 rounded text-sm font-mono" {...props} />,
+                                                    table: ({ ...props }) => <table className="w-full border-collapse border border-gray-200 my-4 rounded-lg overflow-hidden" {...props} />,
+                                                    thead: ({ ...props }) => <thead className="bg-gray-100" {...props} />,
+                                                    tbody: ({ ...props }) => <tbody {...props} />,
+                                                    tr: ({ ...props }) => <tr className="border-b border-gray-200" {...props} />,
+                                                    th: ({ ...props }) => <th className="px-4 py-2 text-left text-sm font-bold text-gray-700 border border-gray-200" {...props} />,
+                                                    td: ({ ...props }) => <td className="px-4 py-2 text-sm text-gray-600 border border-gray-200" {...props} />
                                                 }}
                                             >
                                                 {formattedAnswer}
@@ -401,125 +469,126 @@ export function MarkWiseContent() {
                                             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
                                                 <Icons.FileText size={32} />
                                             </div>
-                                            <p className="font-bold text-xs uppercase tracking-widest">Processing...</p>
+                                            <p className="font-bold text-xs uppercase tracking-widest">Answer not formatted yet.</p>
                                         </div>
                                     ) : (
                                         <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
                                             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
-                                                <Icons.Edit size={32} />
+                                                <Icons.FileText size={32} />
                                             </div>
-                                            <p className="font-bold text-xs uppercase tracking-widest">No answer yet</p>
-                                            <p className="text-gray-400 text-sm">Edit this question to add your answer</p>
+                                            <p className="font-bold text-xs uppercase tracking-widest">No answer selected.</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         ) : (
                             <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
-                                <Icons.ArrowLeft size={32} />
-                                <p className="font-bold text-xs uppercase tracking-widest">Select a question to view details</p>
+                                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center">
+                                    <Icons.FileText size={40} />
+                                </div>
+                                <p className="font-bold text-sm uppercase tracking-widest">No Question Selected</p>
+                                <p className="text-sm text-gray-400">Select a question from the left panel to view its details.</p>
                             </div>
                         )}
                     </div>
-
                 </div>
+            </div>
 
-                {/* Add Question Modal */}
-                {isAddModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-black text-gray-900">{editingId ? 'Edit Question' : 'Add New Question'}</h2>
-                                <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                                    <Icons.X size={24} />
-                                </button>
+            {/* Add Question Modal */}
+            {isAddModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-black text-gray-900 font-bold">{editingId ? 'Edit Question' : 'Add New Question'}</h2>
+                            <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                <Icons.X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subject</label>
+                                <div className="relative">
+                                    <select
+                                        value={newQuestion.subjectId}
+                                        onChange={(e) => {
+                                            setNewQuestion({ ...newQuestion, subjectId: e.target.value, unitId: '' });
+                                            getUnits(e.target.value).then(setUnits);
+                                        }}
+                                        className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                                    >
+                                        <option value="">Select Subject...</option>
+                                        {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
+                                    </select>
+                                    <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                </div>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subject</label>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Unit</label>
                                     <div className="relative">
                                         <select
-                                            value={newQuestion.subjectId}
-                                            onChange={(e) => {
-                                                setNewQuestion({ ...newQuestion, subjectId: e.target.value, unitId: '' });
-                                                getUnits(e.target.value).then(setUnits);
-                                            }}
-                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                                            value={newQuestion.unitId}
+                                            onChange={(e) => setNewQuestion({ ...newQuestion, unitId: e.target.value })}
+                                            disabled={!newQuestion.subjectId}
+                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none disabled:opacity-50"
                                         >
-                                            <option value="">Select Subject...</option>
-                                            {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
+                                            <option value="">Select Unit...</option>
+                                            {(newQuestion.subjectId ? units : []).map(u => <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>)}
                                         </select>
                                         <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                     </div>
                                 </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Unit</label>
-                                        <div className="relative">
-                                            <select
-                                                value={newQuestion.unitId}
-                                                onChange={(e) => setNewQuestion({ ...newQuestion, unitId: e.target.value })}
-                                                disabled={!newQuestion.subjectId}
-                                                className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none disabled:opacity-50"
-                                            >
-                                                <option value="">Select Unit...</option>
-                                                {(newQuestion.subjectId ? units : []).map(u => <option key={u.id} value={u.id}>Unit {u.order}</option>)}
-                                            </select>
-                                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Marks</label>
-                                        <div className="relative">
-                                            <select
-                                                value={newQuestion.marksType}
-                                                onChange={(e) => setNewQuestion({ ...newQuestion, marksType: Number(e.target.value) as MarksType })}
-                                                className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
-                                            >
-                                                {[2, 7, 8, 10, 15].map(m => <option key={m} value={m}>{m} Marks</option>)}
-                                            </select>
-                                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                                        </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Marks</label>
+                                    <div className="relative">
+                                        <select
+                                            value={newQuestion.marksType}
+                                            onChange={(e) => setNewQuestion({ ...newQuestion, marksType: Number(e.target.value) as MarksType })}
+                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                                        >
+                                            {[2, 7, 8, 10, 15].map(m => <option key={m} value={m}>{m} Marks</option>)}
+                                        </select>
+                                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                     </div>
                                 </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Question</label>
-                                    <textarea
-                                        rows={3}
-                                        value={newQuestion.question}
-                                        onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
-                                        placeholder="Enter the full question text..."
-                                        className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium resize-none"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Answer</label>
-                                    <textarea
-                                        rows={5}
-                                        value={newQuestion.answer}
-                                        onChange={(e) => setNewQuestion({ ...newQuestion, answer: e.target.value })}
-                                        placeholder="Enter your answer here..."
-                                        className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium resize-none"
-                                    />
-                                </div>
-
-                                <button
-                                    onClick={handleSaveQuestion}
-                                    disabled={isSaving || !newQuestion.question || !newQuestion.subjectId}
-                                    className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
-                                >
-                                    {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Edit size={16} /> : <Icons.PlusCircle size={16} />)}
-                                    {isSaving ? (editingId ? 'Updating...' : 'Saving...') : (editingId ? 'Update Question' : 'Add Question')}
-                                </button>
                             </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Question</label>
+                                <textarea
+                                    rows={3}
+                                    value={newQuestion.question}
+                                    onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
+                                    placeholder="Enter the full question text..."
+                                    className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium resize-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Answer</label>
+                                <textarea
+                                    rows={5}
+                                    value={newQuestion.answer}
+                                    onChange={(e) => setNewQuestion({ ...newQuestion, answer: e.target.value })}
+                                    placeholder="Enter your answer here..."
+                                    className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium resize-none"
+                                />
+                            </div>
+
+                            <button
+                                onClick={handleSaveQuestion}
+                                disabled={isSaving || !newQuestion.question || !newQuestion.subjectId}
+                                className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                            >
+                                {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Edit size={16} /> : <Icons.PlusCircle size={16} />)}
+                                {isSaving ? (editingId ? 'Updating...' : 'Saving...') : (editingId ? 'Update Question' : 'Add Question')}
+                            </button>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </WebAppShell>
     );
 }
