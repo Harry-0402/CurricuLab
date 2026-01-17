@@ -35,7 +35,7 @@ export function WebSidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="w-64 h-screen border-r border-gray-100 bg-white flex flex-col sticky top-0">
+        <aside className="w-64 h-full border-r border-gray-100 bg-white flex flex-col sticky top-0">
             <div className="p-6 flex items-center gap-3">
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
                     <Icons.Home size={20} />

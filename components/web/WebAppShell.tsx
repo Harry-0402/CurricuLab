@@ -49,7 +49,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
     }, []);
 
     return (
-        <div className="flex h-screen w-full bg-[#fafbfc] overflow-hidden">
+        <div className="flex h-full w-full bg-[#fafbfc] overflow-hidden pb-[env(safe-area-inset-bottom)]">
             <WebSidebar />
             <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
                 <WebHeader />

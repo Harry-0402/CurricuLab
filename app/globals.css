@@ -8,16 +8,34 @@
 
 @layer base {
 
-    html,
-    body {
+    html {
         height: 100%;
-        overflow: hidden;
+        height: 100dvh;
     }
 
     body {
+        height: 100%;
+        height: 100dvh;
+        /* Account for iOS safe area at the bottom (home indicator) */
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        overflow: hidden;
         background-color: #fafbfc;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Mobile viewport fix - ensures full height on mobile browsers */
+    @supports (height: 100dvh) {
+        html {
+            min-height: 100dvh;
+            max-height: 100dvh;
+        }
+
+        body {
+            min-height: 100dvh;
+            /* Subtract safe area from the height to prevent bottom trimming */
+            height: calc(100dvh - env(safe-area-inset-bottom, 0px));
+        }
     }
 }
 
