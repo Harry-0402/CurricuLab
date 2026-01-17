@@ -1002,28 +1002,41 @@ export class PlatformExportService {
     }
 
     private static markdownToHtml(md: string): string {
-        const processedMd = md
-            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        let processedMd = md
+            // Headers (must be at start of line)
             .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-            .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
-            .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-            .replace(/\*(.*)\*/gim, '<em>$1</em>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            // Blockquotes
+            .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
+            // Bold (non-greedy, handles multiple on same line)
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            // Italic (non-greedy, after bold to avoid conflicts)
+            .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+            // Numbered lists
+            .replace(/^\d+\. (.*$)/gim, '<ol><li>$1</li></ol>')
+            .replace(/<\/ol>\s*<ol>/gim, '')
+            // Bullet lists
             .replace(/^- (.*$)/gim, '<ul><li>$1</li></ul>')
-            .replace(/<\/ul>\s?<ul>/gim, '') // Clean up consecutive lists
-            .replace(/\n$/gim, '<br />')
+            .replace(/<\/ul>\s*<ul>/gim, '')
+            // Tables
             .replace(/\|(.+)\|/gim, (match) => {
-                // Basic table row detection
                 const cells = match.split('|').filter(c => {
                     const trimmed = c.trim();
                     return trimmed.length > 0 && !trimmed.includes('---');
                 });
-                if (match.includes('---')) return ''; // Skip separator row
+                if (match.includes('---')) return '';
                 return `<tr>${cells.map(c => `<td>${c.trim()}</td>`).join('')}</tr>`;
             });
 
-        // Wrap table rows in table tags
-        let html = processedMd.split('\n').map(line => line.trim().startsWith('<') ? line : `<p>${line}</p>`).join('');
+        // Wrap lines that don't start with HTML tags in <p> tags
+        let html = processedMd.split('\n').map(line => {
+            const trimmed = line.trim();
+            if (trimmed === '' || trimmed.startsWith('<')) return trimmed;
+            return `<p>${trimmed}</p>`;
+        }).join('');
+
+        // Wrap consecutive table rows in table tags
         html = html.replace(/(<tr>.*?<\/tr>)+/gim, '<table>$&</table>');
 
         return html;
