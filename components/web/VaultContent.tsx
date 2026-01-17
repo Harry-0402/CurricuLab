@@ -44,42 +44,6 @@ export function VaultContent() {
     const [formattedContent, setFormattedContent] = useState<string>('');
     const [isFormatting, setIsFormatting] = useState(false);
 
-    // Re-format handler
-    const handleReformat = async () => {
-        if (!selectedResource?.content || isFormatting) return;
-
-        setIsFormatting(true);
-        setFormattedContent('');
-
-        try {
-            const formatted = await AiService.formatVaultContent(
-                selectedResource.title,
-                selectedResource.content,
-                selectedResource.type
-            );
-            setFormattedContent(formatted);
-
-            // Cache the formatted content in the database
-            const updated = await updateVaultResource({
-                ...selectedResource,
-                formattedContent: formatted
-            });
-
-            if (updated) {
-                setSelectedResource(updated);
-                // Update in the resources list too
-                setResources(prev => prev.map(r => r.id === updated.id ? updated : r));
-            }
-            showToast('Content re-formatted successfully!', 'success');
-        } catch (error) {
-            console.error("Failed to format content:", error);
-            setFormattedContent(selectedResource.content);
-            showToast('Formatting failed, showing raw content', 'error');
-        } finally {
-            setIsFormatting(false);
-        }
-    };
-
     useEffect(() => {
         const loadInitialData = async () => {
             const fetchedSubjects = await getSubjects();
@@ -403,40 +367,23 @@ export function VaultContent() {
                         <div className="flex flex-col h-full">
                             {/* Resource Header */}
                             <div className="p-6 border-b border-gray-100 bg-gray-50/30 shrink-0">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-3">
-                                        {(() => {
-                                            const config = TYPE_CONFIG[selectedResource.type];
-                                            return (
-                                                <span className={cn(
-                                                    "px-3 py-1.5 rounded-lg text-xs font-bold border",
-                                                    config.bgColor, config.color
-                                                )}>
-                                                    {config.label}
-                                                </span>
-                                            );
-                                        })()}
-                                        {selectedResource.unitId && (
-                                            <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-100 text-gray-500 border border-gray-200">
-                                                {selectedResource.unitId.replace('unit-', 'Unit ')}
+                                <div className="flex items-center gap-3 mb-3">
+                                    {(() => {
+                                        const config = TYPE_CONFIG[selectedResource.type];
+                                        return (
+                                            <span className={cn(
+                                                "px-3 py-1.5 rounded-lg text-xs font-bold border",
+                                                config.bgColor, config.color
+                                            )}>
+                                                {config.label}
                                             </span>
-                                        )}
-                                        {isFormatting && (
-                                            <span className="flex items-center gap-2 text-sm text-gray-400">
-                                                <Icons.Loader2 className="animate-spin" size={16} />
-                                                Formatting...
-                                            </span>
-                                        )}
-                                    </div>
-                                    {selectedResource.content && !isFormatting && (
-                                        <button
-                                            onClick={handleReformat}
-                                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                                            title="Re-format with AI"
-                                        >
-                                            <Icons.RefreshCw size={14} />
-                                            Re-format
-                                        </button>
+                                        );
+                                    })()}
+                                    {isFormatting && (
+                                        <span className="flex items-center gap-2 text-sm text-gray-400">
+                                            <Icons.Loader2 className="animate-spin" size={16} />
+                                            Formatting...
+                                        </span>
                                     )}
                                 </div>
                                 <h2 className="text-lg font-black text-gray-900 leading-tight">

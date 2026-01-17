@@ -237,6 +237,41 @@ export const AiService = {
     },
 
     async formatUserAnswer(question: string, userAnswer: string, marks: number): Promise<string> {
+        const CHUNK_SIZE = 2500;
+        const MAX_DIRECT_FORMAT = 3000;
+
+        // If answer is short enough, format directly
+        if (userAnswer.length <= MAX_DIRECT_FORMAT) {
+            return this._formatAnswerChunk(question, userAnswer, marks, false);
+        }
+
+        // Smart chunking for large answers
+        console.log(`[SmartChunk] Answer is ${userAnswer.length} chars, splitting into chunks...`);
+
+        const chunks = this._splitIntoChunks(userAnswer, CHUNK_SIZE);
+        console.log(`[SmartChunk] Split into ${chunks.length} chunks`);
+
+        const formattedChunks: string[] = [];
+
+        for (let i = 0; i < chunks.length; i++) {
+            try {
+                console.log(`[SmartChunk] Formatting answer chunk ${i + 1}/${chunks.length}...`);
+                const formatted = await this._formatAnswerChunk(question, chunks[i], marks, i > 0);
+                formattedChunks.push(formatted);
+            } catch (error) {
+                console.warn(`[SmartChunk] Chunk ${i + 1} failed, using raw content`);
+                formattedChunks.push(chunks[i]);
+            }
+        }
+
+        return formattedChunks.join('\n\n---\n\n');
+    },
+
+    async _formatAnswerChunk(question: string, userAnswer: string, marks: number, isContinuation: boolean): Promise<string> {
+        const continuationNote = isContinuation
+            ? `\n\n**Note:** This is a continuation. Do NOT add introduction - just continue formatting.`
+            : '';
+
         const prompt = `You are a formatting assistant. Your job is to take a student's raw answer and format it beautifully with proper markdown structure.
 
 **Question:** ${question}
@@ -253,7 +288,7 @@ ${userAnswer}
 3. Bold key terms and important concepts
 4. Proper paragraph structure
 5. Add emphasis where needed
-6. Use markdown tables when comparing items or presenting structured data
+6. Use markdown tables when comparing items or presenting structured data${continuationNote}
 
 **Important Rules:**
 - DO NOT change the content or meaning of the answer
@@ -268,6 +303,70 @@ Return ONLY the formatted answer in markdown format.`;
     },
 
     async formatVaultContent(title: string, content: string, type: 'study_note' | 'case_study' | 'project'): Promise<string> {
+        const CHUNK_SIZE = 2500; // Characters per chunk
+        const MAX_DIRECT_FORMAT = 3000; // Content under this is formatted directly
+
+        // If content is short enough, format directly
+        if (content.length <= MAX_DIRECT_FORMAT) {
+            return this._formatVaultChunk(title, content, type, false);
+        }
+
+        // Smart chunking for large content
+        console.log(`[SmartChunk] Content is ${content.length} chars, splitting into chunks...`);
+
+        const chunks = this._splitIntoChunks(content, CHUNK_SIZE);
+        console.log(`[SmartChunk] Split into ${chunks.length} chunks`);
+
+        const formattedChunks: string[] = [];
+
+        for (let i = 0; i < chunks.length; i++) {
+            const isFirst = i === 0;
+            const chunkTitle = isFirst ? title : `${title} (Part ${i + 1})`;
+
+            try {
+                console.log(`[SmartChunk] Formatting chunk ${i + 1}/${chunks.length}...`);
+                const formatted = await this._formatVaultChunk(chunkTitle, chunks[i], type, !isFirst);
+                formattedChunks.push(formatted);
+            } catch (error) {
+                console.warn(`[SmartChunk] Chunk ${i + 1} failed, using raw content`);
+                formattedChunks.push(chunks[i]);
+            }
+        }
+
+        // Combine all formatted chunks
+        return formattedChunks.join('\n\n---\n\n');
+    },
+
+    _splitIntoChunks(content: string, chunkSize: number): string[] {
+        const chunks: string[] = [];
+        const paragraphs = content.split(/\n\n+/);
+
+        let currentChunk = '';
+
+        for (const para of paragraphs) {
+            if (currentChunk.length + para.length > chunkSize && currentChunk.length > 0) {
+                chunks.push(currentChunk.trim());
+                currentChunk = para;
+            } else {
+                currentChunk += (currentChunk ? '\n\n' : '') + para;
+            }
+        }
+
+        if (currentChunk.trim()) {
+            chunks.push(currentChunk.trim());
+        }
+
+        // If no paragraphs found (single block), split by character count
+        if (chunks.length === 0 && content.length > 0) {
+            for (let i = 0; i < content.length; i += chunkSize) {
+                chunks.push(content.slice(i, i + chunkSize));
+            }
+        }
+
+        return chunks;
+    },
+
+    async _formatVaultChunk(title: string, content: string, type: 'study_note' | 'case_study' | 'project', isContinuation: boolean): Promise<string> {
         const typeGuidelines = {
             study_note: `Format as a well-structured study note with:
 - Clear overview section
@@ -288,6 +387,10 @@ Return ONLY the formatted answer in markdown format.`;
 - Results or outcomes`
         };
 
+        const continuationNote = isContinuation
+            ? `\n\n**Note:** This is a continuation of a longer document. Do NOT add introduction or overview sections - just format the content as-is.`
+            : '';
+
         const prompt = `You are a formatting assistant. Your job is to take raw content and format it beautifully with proper markdown structure.
 
 **Title:** ${title}
@@ -298,7 +401,7 @@ ${content}
 
 ---
 
-**Your Task:** ${typeGuidelines[type]}
+**Your Task:** ${typeGuidelines[type]}${continuationNote}
 
 **General Formatting Rules:**
 1. Use ## for main section headings
@@ -308,16 +411,14 @@ ${content}
 5. Use markdown tables when comparing items
 6. Keep proper paragraph structure
 
-**CRITICAL RULES - MUST FOLLOW:**
-- DO NOT truncate, shorten, or summarize ANY content
-- DO NOT remove ANY information from the original content
-- PRESERVE 100% of the original content - every single word and detail
+**Important Rules:**
+- DO NOT change the content or meaning
 - DO NOT add new information that wasn't provided
-- ONLY add formatting (headings, bold, lists, etc.) to what's already there
-- The formatted output should contain ALL the same information as the input
+- ONLY format and structure what's already there
+- Make it easy to read and scan
 - Keep a professional academic tone
 
-Return ONLY the formatted content in markdown format. Include ALL content from the original.`;
+Return ONLY the formatted content in markdown format.`;
 
         return this.generateContent(prompt);
     }
