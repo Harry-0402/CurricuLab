@@ -15,10 +15,18 @@ export function PromptLabContent() {
     const [isAILoading, setIsAILoading] = useState(false);
     const [showGoalModal, setShowGoalModal] = useState(false);
     const [goalInput, setGoalInput] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         setPrompts(LOCAL_PROMPTS);
     }, []);
+
+    const filteredPrompts = prompts.filter(p =>
+        !searchQuery ||
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -226,18 +234,36 @@ export function PromptLabContent() {
                         )}
                     >
                         <div className={cn(
-                            "p-6 border-b border-gray-50 flex items-center bg-gray-50/30 transition-all",
-                            isLibraryExpanded ? "justify-between" : "justify-center"
+                            "flex flex-col border-b border-gray-50 bg-gray-50/30 transition-all",
+                            isLibraryExpanded ? "p-6 gap-4" : "p-2 items-center"
                         )}>
+                            <div className={cn("flex items-center", isLibraryExpanded ? "justify-between" : "justify-center")}>
+                                {isLibraryExpanded && (
+                                    <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Template Library</h2>
+                                )}
+                                <button
+                                    onClick={() => setIsLibraryExpanded(!isLibraryExpanded)}
+                                    className="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-all shrink-0"
+                                >
+                                    <Icons.Layout size={20} />
+                                </button>
+                            </div>
+
+                            {/* Search Input - Only when expanded */}
                             {isLibraryExpanded && (
-                                <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Template Library</h2>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <Icons.Search size={14} />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Search templates..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    />
+                                </div>
                             )}
-                            <button
-                                onClick={() => setIsLibraryExpanded(!isLibraryExpanded)}
-                                className="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-all"
-                            >
-                                <Icons.Layout size={20} />
-                            </button>
                         </div>
 
                         <div className={cn(
@@ -245,33 +271,37 @@ export function PromptLabContent() {
                             isLibraryExpanded ? "p-6 space-y-3" : "p-2 flex flex-col items-center gap-3 pt-6"
                         )}>
                             {isLibraryExpanded ? (
-                                prompts.map(p => (
-                                    <button
-                                        key={p.id}
-                                        onClick={() => applyTemplate(p)}
-                                        className={cn(
-                                            "w-full text-left p-5 rounded-[24px] border transition-all hover:translate-x-1",
-                                            activePrompt?.id === p.id
-                                                ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-100"
-                                                : "bg-white border-gray-100 hover:border-blue-100 group"
-                                        )}
-                                    >
-                                        <p className={cn(
-                                            "text-[9px] font-black uppercase tracking-widest mb-1",
-                                            activePrompt?.id === p.id ? "text-blue-100" : "text-blue-600"
-                                        )}>{p.category}</p>
-                                        <h4 className={cn(
-                                            "font-black text-sm",
-                                            activePrompt?.id === p.id ? "text-white" : "text-gray-900"
-                                        )}>{p.title}</h4>
-                                        <p className={cn(
-                                            "text-[10px] mt-2 line-clamp-2 leading-relaxed",
-                                            activePrompt?.id === p.id ? "text-blue-50/80" : "text-gray-400"
-                                        )}>{p.description}</p>
-                                    </button>
-                                ))
+                                filteredPrompts.length === 0 ? (
+                                    <p className="text-center text-xs text-gray-400 py-4">No matching templates.</p>
+                                ) : (
+                                    filteredPrompts.map(p => (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => applyTemplate(p)}
+                                            className={cn(
+                                                "w-full text-left p-5 rounded-[24px] border transition-all hover:translate-x-1",
+                                                activePrompt?.id === p.id
+                                                    ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-100"
+                                                    : "bg-white border-gray-100 hover:border-blue-100 group"
+                                            )}
+                                        >
+                                            <p className={cn(
+                                                "text-[9px] font-black uppercase tracking-widest mb-1",
+                                                activePrompt?.id === p.id ? "text-blue-100" : "text-blue-600"
+                                            )}>{p.category}</p>
+                                            <h4 className={cn(
+                                                "font-black text-sm",
+                                                activePrompt?.id === p.id ? "text-white" : "text-gray-900"
+                                            )}>{p.title}</h4>
+                                            <p className={cn(
+                                                "text-[10px] mt-2 line-clamp-2 leading-relaxed",
+                                                activePrompt?.id === p.id ? "text-blue-50/80" : "text-gray-400"
+                                            )}>{p.description}</p>
+                                        </button>
+                                    ))
+                                )
                             ) : (
-                                prompts.map(p => (
+                                filteredPrompts.map(p => (
                                     <button
                                         key={p.id}
                                         onClick={() => applyTemplate(p)}

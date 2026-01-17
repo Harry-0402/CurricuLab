@@ -10,6 +10,7 @@ import { VIDEO_LIBRARY } from './video-library';
 import { SYLLABUS_RESOURCES } from './syllabus-links';
 import { ARTICLE_RESOURCES } from './article-links';
 import { INTERVIEW_RESOURCES } from './interview-resources';
+import { GPT_RESOURCES } from './gpt-resources';
 
 export interface Resource {
     id: string;
@@ -39,6 +40,7 @@ export const LOCAL_RESOURCES: Resource[] = [
     ...SYLLABUS_RESOURCES,
     ...ARTICLE_RESOURCES,
     ...INTERVIEW_RESOURCES,
+    ...GPT_RESOURCES,
     // --- Part I: Core Technical Competencies ---
     {
         id: 'tech-1',
