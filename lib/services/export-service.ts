@@ -771,21 +771,37 @@ export class PlatformExportService {
                     `).join('')}
                 </div>
 
-                ${resume.certifications && resume.certifications.length > 0 ? `
+                ${resume.certifications && resume.certifications.length > 0 && resume.certifications.some(c => c.trim()) ? `
                 <div class="section-header"><span>Certifications</span></div>
                 <div class="skills-grid" style="font-size: 14px;">
                     <ul class="bullet-list">
-                        ${resume.certifications.map(cert => `<li>${cert}</li>`).join('')}
+                        ${resume.certifications.filter(c => c.trim()).map(cert => `<li>${cert}</li>`).join('')}
                     </ul>
                 </div>
                 ` : ''}
 
-                ${resume.awards && resume.awards.length > 0 ? `
+                ${resume.awards && resume.awards.length > 0 && resume.awards.some(a => a.trim()) ? `
                 <div class="section-header"><span>Awards & Honors</span></div>
                 <div class="skills-grid" style="font-size: 14px;">
                     <ul class="bullet-list">
-                        ${resume.awards.map(award => `<li>${award}</li>`).join('')}
+                        ${resume.awards.filter(a => a.trim()).map(award => `<li>${award}</li>`).join('')}
                     </ul>
+                </div>
+                ` : ''}
+
+                ${resume.activities && resume.activities.length > 0 && resume.activities.some(act => act.trim()) ? `
+                <div class="section-header"><span>Extra-Curricular Activities</span></div>
+                <div class="skills-grid" style="font-size: 14px;">
+                    <ul class="bullet-list">
+                        ${resume.activities.filter(act => act.trim()).map(act => `<li>${act}</li>`).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                ${resume.hobbies && resume.hobbies.length > 0 && resume.hobbies.some(h => h.trim()) ? `
+                <div class="section-header"><span>Hobbies</span></div>
+                <div class="skills-grid" style="font-size: 14px;">
+                    <p style="margin: 0; padding-left: 20px;">${resume.hobbies.filter(h => h.trim()).join(', ')}</p>
                 </div>
                 ` : ''}
             </div>
@@ -932,9 +948,9 @@ export class PlatformExportService {
                     ] : []),
 
                     // Certifications
-                    ...(resume.certifications && resume.certifications.length > 0 ? [
+                    ...(resume.certifications && resume.certifications.length > 0 && resume.certifications.some(c => c.trim()) ? [
                         this.createWordSectionHeader("Certifications"),
-                        ...resume.certifications.map(cert => new Paragraph({
+                        ...resume.certifications.filter(c => c.trim()).map(cert => new Paragraph({
                             text: cert,
                             bullet: { level: 0 }
                         })),
@@ -942,13 +958,32 @@ export class PlatformExportService {
                     ] : []),
 
                     // Awards
-                    ...(resume.awards && resume.awards.length > 0 ? [
+                    ...(resume.awards && resume.awards.length > 0 && resume.awards.some(a => a.trim()) ? [
                         this.createWordSectionHeader("Awards & Honors"),
-                        ...resume.awards.map(award => new Paragraph({
+                        ...resume.awards.filter(a => a.trim()).map(award => new Paragraph({
                             text: award,
                             bullet: { level: 0 }
                         })),
                         new Paragraph({ text: "", spacing: { after: 200 } })
+                    ] : []),
+
+                    // Activities
+                    ...(resume.activities && resume.activities.length > 0 && resume.activities.some(act => act.trim()) ? [
+                        this.createWordSectionHeader("Extra-Curricular Activities"),
+                        ...resume.activities.filter(act => act.trim()).map(act => new Paragraph({
+                            text: act,
+                            bullet: { level: 0 }
+                        })),
+                        new Paragraph({ text: "", spacing: { after: 200 } })
+                    ] : []),
+
+                    // Hobbies
+                    ...(resume.hobbies && resume.hobbies.length > 0 && resume.hobbies.some(h => h.trim()) ? [
+                        this.createWordSectionHeader("Hobbies"),
+                        new Paragraph({
+                            text: resume.hobbies.filter(h => h.trim()).join(", "),
+                            spacing: { after: 200 }
+                        })
                     ] : []),
                 ]
             }]

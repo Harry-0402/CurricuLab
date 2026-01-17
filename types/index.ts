@@ -213,4 +213,6 @@ export interface ResumeData {
   education: ResumeEducation[];
   certifications?: string[];
   awards?: string[];
+  activities?: string[];
+  hobbies?: string[];
 }

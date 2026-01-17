@@ -56,7 +56,9 @@ const INITIAL_DATA: ResumeData = {
         }
     ],
     certifications: [],
-    awards: []
+    awards: [],
+    activities: [],
+    hobbies: []
 };
 
 // Local Input & Textarea to avoid missing components
@@ -493,32 +495,124 @@ export function ResumeBuilderContent() {
                     </Card>
 
                     <Card className="p-6">
-                        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            <Icons.CheckCircle className="text-blue-600" size={18} />
-                            Certifications & Awards (Optional)
-                        </h3>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <Icons.CheckCircle className="text-blue-600" size={18} />
+                                Certifications & Awards (Optional)
+                            </h3>
+                            <div className="flex gap-2">
+                                <Button variant="outline" size="sm" onClick={() => setData({ ...data, certifications: [...(data.certifications || []), ''] })} className="h-7 text-[10px] font-bold border-blue-100 text-blue-600">
+                                    + Cert
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => setData({ ...data, awards: [...(data.awards || []), ''] })} className="h-7 text-[10px] font-bold border-blue-100 text-blue-600">
+                                    + Award
+                                </Button>
+                            </div>
+                        </div>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Certifications (Optional, one per line)</label>
-                                <Textarea
-                                    value={data.certifications?.join('\n') || ''}
-                                    onChange={(e: any) => setData({ ...data, certifications: e.target.value.split('\n').filter((s: string) => s.trim()) })}
-                                    placeholder="AWS Certified..."
-                                    className="min-h-[80px]"
-                                />
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Certifications</label>
+                                <div className="space-y-2">
+                                    {(data.certifications || []).map((cert, idx) => (
+                                        <div key={idx} className="flex gap-2">
+                                            <Input value={cert} onChange={(e: any) => {
+                                                const newCert = [...data.certifications!];
+                                                newCert[idx] = e.target.value;
+                                                setData({ ...data, certifications: newCert });
+                                            }} placeholder="AWS Certified..." className="text-sm h-9" />
+                                            <Button variant="ghost" size="sm" onClick={() => {
+                                                const newCert = data.certifications!.filter((_, i) => i !== idx);
+                                                setData({ ...data, certifications: newCert });
+                                            }} className="h-9 w-9 p-0 text-red-500 hover:bg-red-50">
+                                                <Icons.X size={14} />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Awards & Honors (Optional, one per line)</label>
-                                <Textarea
-                                    value={data.awards?.join('\n') || ''}
-                                    onChange={(e: any) => setData({ ...data, awards: e.target.value.split('\n').filter((s: string) => s.trim()) })}
-                                    placeholder="SFIT Hackathon Winner..."
-                                    className="min-h-[80px]"
-                                />
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Awards & Honors</label>
+                                <div className="space-y-2">
+                                    {(data.awards || []).map((award, idx) => (
+                                        <div key={idx} className="flex gap-2">
+                                            <Input value={award} onChange={(e: any) => {
+                                                const newAward = [...data.awards!];
+                                                newAward[idx] = e.target.value;
+                                                setData({ ...data, awards: newAward });
+                                            }} placeholder="SFIT Hackathon Winner..." className="text-sm h-9" />
+                                            <Button variant="ghost" size="sm" onClick={() => {
+                                                const newAward = data.awards!.filter((_, i) => i !== idx);
+                                                setData({ ...data, awards: newAward });
+                                            }} className="h-9 w-9 p-0 text-red-500 hover:bg-red-50">
+                                                <Icons.X size={14} />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </Card>
-                </div>
+
+                    <Card className="p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <Icons.Heart className="text-blue-600" size={18} />
+                                Extra-Curricular Activities (Optional)
+                            </h3>
+                            <Button variant="outline" size="sm" onClick={() => setData({ ...data, activities: [...(data.activities || []), ''] })} className="h-8 text-xs font-bold border-blue-100 text-blue-600">
+                                <Icons.Plus className="mr-1 h-3 w-3" />
+                                Add Activity
+                            </Button>
+                        </div>
+                        <div className="space-y-2">
+                            {(data.activities || []).map((act, idx) => (
+                                <div key={idx} className="flex gap-2">
+                                    <Input value={act} onChange={(e: any) => {
+                                        const newAct = [...data.activities!];
+                                        newAct[idx] = e.target.value;
+                                        setData({ ...data, activities: newAct });
+                                    }} placeholder="Student Council Member..." className="text-sm h-9" />
+                                    <Button variant="ghost" size="sm" onClick={() => {
+                                        const newAct = data.activities!.filter((_, i) => i !== idx);
+                                        setData({ ...data, activities: newAct });
+                                    }} className="h-9 w-9 p-0 text-red-500 hover:bg-red-50">
+                                        <Icons.X size={14} />
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <Card className="p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <Icons.Music className="text-blue-600" size={18} />
+                                Hobbies (Optional)
+                            </h3>
+                            <Button variant="outline" size="sm" onClick={() => setData({ ...data, hobbies: [...(data.hobbies || []), ''] })} className="h-8 text-xs font-bold border-blue-100 text-blue-600">
+                                <Icons.Plus className="mr-1 h-3 w-3" />
+                                Add Hobby
+                            </Button>
+                        </div>
+                        <div className="space-y-2">
+                            {(data.hobbies || []).map((hobby, idx) => (
+                                <div key={idx} className="flex gap-2">
+                                    <Input value={hobby} onChange={(e: any) => {
+                                        const newHobby = [...data.hobbies!];
+                                        newHobby[idx] = e.target.value;
+                                        setData({ ...data, hobbies: newHobby });
+                                    }} placeholder="Photography, Chess..." className="text-sm h-9" />
+                                    <Button variant="ghost" size="sm" onClick={() => {
+                                        const newHobby = data.hobbies!.filter((_, i) => i !== idx);
+                                        setData({ ...data, hobbies: newHobby });
+                                    }} className="h-9 w-9 p-0 text-red-500 hover:bg-red-50">
+                                        <Icons.X size={14} />
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+                    创新                </div>
 
                 {/* Preview Side */}
                 <div className="p-10 border border-gray-100 bg-white rounded-2xl shadow-sm h-fit sticky top-24 overflow-hidden">
@@ -641,22 +735,42 @@ export function ResumeBuilderContent() {
                         )}
 
                         {((data.certifications && data.certifications.length > 0) || (data.awards && data.awards.length > 0)) && (
-                            <div>
+                            <div className="mb-6">
                                 <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Certifications & Awards</h2>
                                 {data.certifications && data.certifications.length > 0 && (
                                     <ul className="list-disc pl-4 space-y-0.5">
-                                        {data.certifications.map((c, i) => (
+                                        {data.certifications.filter(c => c.trim()).map((c, i) => (
                                             <li key={i} className="text-[10px] text-gray-700">{c}</li>
                                         ))}
                                     </ul>
                                 )}
                                 {data.awards && data.awards.length > 0 && (
                                     <ul className="list-disc pl-4 space-y-0.5 mt-1">
-                                        {data.awards.map((a, i) => (
+                                        {data.awards.filter(a => a.trim()).map((a, i) => (
                                             <li key={i} className="text-[10px] text-gray-700">{a}</li>
                                         ))}
                                     </ul>
                                 )}
+                            </div>
+                        )}
+
+                        {data.activities && data.activities.length > 0 && (
+                            <div className="mb-6">
+                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Extra-Curricular Activities</h2>
+                                <ul className="list-disc pl-4 space-y-0.5">
+                                    {data.activities.filter(act => act.trim()).map((act, i) => (
+                                        <li key={i} className="text-[10px] text-gray-700">{act}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {data.hobbies && data.hobbies.length > 0 && data.hobbies.some(h => h.trim()) && (
+                            <div>
+                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Hobbies</h2>
+                                <p className="text-[10px] text-gray-700 leading-relaxed">
+                                    {data.hobbies.filter(h => h.trim()).join(', ')}
+                                </p>
                             </div>
                         )}
                     </div>
