@@ -12,12 +12,25 @@ export function WebHeader() {
     const { toggleRightPanel, isRightPanelMinimized } = useAppStore();
     const [showAnalytics, setShowAnalytics] = React.useState(false);
     const [showSettings, setShowSettings] = React.useState(false);
+    const [userEmail, setUserEmail] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
+            if (user?.email) {
+                setUserEmail(user.email);
+            }
+        };
+        fetchUser();
+    }, []);
+
+    const displayName = userEmail ? userEmail.split('@')[0] : 'Student';
 
     return (
         <header className="h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-8 flex items-center justify-between print:hidden">
             <div>
                 <h1 className="text-sm font-medium text-gray-500 mb-0.5">Hello,</h1>
-                <p className="text-lg font-bold text-gray-900">Miss Hermione Granger</p>
+                <p className="text-lg font-bold text-gray-900 capitalize">{displayName}</p>
             </div>
 
             <div className="flex items-center gap-6">
