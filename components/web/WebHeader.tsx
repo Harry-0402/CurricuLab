@@ -14,6 +14,15 @@ export function WebHeader() {
     const [showSettings, setShowSettings] = React.useState(false);
     const [userEmail, setUserEmail] = React.useState<string | null>(null);
 
+    const handleLogout = async () => {
+        try {
+            await import('@/lib/services/auth.service').then(mod => mod.AuthService.signOut());
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Logout failed', error);
+        }
+    };
+
     React.useEffect(() => {
         const fetchUser = async () => {
             const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
@@ -55,6 +64,13 @@ export function WebHeader() {
                         className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all"
                     >
                         <Icons.Settings size={20} />
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                        title="Sign Out"
+                    >
+                        <Icons.LogOut size={20} />
                     </button>
                     <button
                         onClick={toggleRightPanel}
