@@ -27,7 +27,7 @@ export default function WebHomePage() {
 
     return (
         <WebAppShell>
-            <div className="max-w-5xl mx-auto space-y-10">
+            <div className="flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <TimetableWidget entries={timetable} />
                 <AnnouncementWidget announcements={announcements} />
             </div>

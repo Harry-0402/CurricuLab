@@ -29,6 +29,7 @@ const tools: NavItem[] = [
     { label: 'Revision Notes', href: '/tools/revision', icon: Icons.Notes },
     { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
     { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb },
+    { label: 'Resume Architect', href: '/tools/resume', icon: Icons.Briefcase },
 ];
 
 export function WebSidebar() {
