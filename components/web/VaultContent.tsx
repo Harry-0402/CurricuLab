@@ -263,38 +263,52 @@ export function VaultContent() {
                 })}
             </div>
 
-            {/* Type Filter Badges */}
-            <div className="flex items-center gap-2 shrink-0">
-                <button
-                    onClick={() => setSelectedType('all')}
-                    className={cn(
-                        "px-4 py-2 rounded-xl text-xs font-bold transition-all border",
-                        selectedType === 'all'
-                            ? "bg-gray-900 text-white border-gray-900"
-                            : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
-                    )}
-                >
-                    All
-                </button>
-                {(['study_note', 'case_study', 'project'] as VaultResourceType[]).map(type => {
-                    const config = TYPE_CONFIG[type];
-                    const isActive = selectedType === type;
-                    return (
-                        <button
-                            key={type}
-                            onClick={() => setSelectedType(type)}
-                            className={cn(
-                                "px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-2",
-                                isActive
-                                    ? `${config.bgColor} ${config.color} border-current`
-                                    : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
-                            )}
-                        >
-                            <config.icon size={14} />
-                            {config.label}s
-                        </button>
-                    );
-                })}
+            {/* Filter Row */}
+            <div className="flex items-center justify-between gap-4 shrink-0">
+                {/* Type Filter Badges */}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setSelectedType('all')}
+                        className={cn(
+                            "px-4 py-2 rounded-xl text-xs font-bold transition-all border",
+                            selectedType === 'all'
+                                ? "bg-gray-900 text-white border-gray-900"
+                                : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
+                        )}
+                    >
+                        All
+                    </button>
+                    {(['study_note', 'case_study', 'project'] as VaultResourceType[]).map(type => {
+                        const config = TYPE_CONFIG[type];
+                        const isActive = selectedType === type;
+                        return (
+                            <button
+                                key={type}
+                                onClick={() => setSelectedType(type)}
+                                className={cn(
+                                    "px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-2",
+                                    isActive
+                                        ? `${config.bgColor} ${config.color} border-current`
+                                        : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
+                                )}
+                            >
+                                <config.icon size={14} />
+                                {config.label}s
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Pro Tip Card */}
+                <div className="flex items-center gap-3 bg-amber-50/50 border border-amber-100/50 px-4 py-2 rounded-2xl animate-in slide-in-from-right duration-500">
+                    <div className="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 shrink-0">
+                        <Icons.Sparkles size={16} />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-amber-700 uppercase tracking-wider leading-none mb-1">Pro Tip: Better Results</p>
+                        <p className="text-xs text-amber-600/80 font-medium">Large content? Divide into <span className="font-bold text-amber-700">Part 1-5</span> for perfect AI formatting! ✨</p>
+                    </div>
+                </div>
             </div>
 
             {/* Main Content - Split Pane */}
