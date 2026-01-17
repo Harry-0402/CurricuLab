@@ -380,12 +380,12 @@ export class PlatformExportService {
     // HTML EXPORT METHODS
     static async generateQuestionBankHTMLExport(subjectTitle: string, unitTitle: string, questions: any[]): Promise<void> {
         const content = `
-    < div class="header" >
-        <h1>Question Bank: ${unitTitle} </h1>
-            < p class="subtitle" > ${subjectTitle} </p>
-                </div>
-                < div class="questions-list" >
-                    ${questions.map((q, idx) => `
+            <div class="header">
+                <h1>Question Bank: ${unitTitle}</h1>
+                <p class="subtitle">${subjectTitle}</p>
+            </div>
+            <div class="questions-list">
+                ${questions.map((q, idx) => `
                     <div class="question-card">
                         <div class="question-header">
                             <span class="number">${idx + 1}</span>
@@ -401,22 +401,21 @@ export class PlatformExportService {
                             </div>
                         </div>
                     </div>
-                `).join('')
-            }
-</div>
-    `;
+                `).join('')}
+            </div>
+        `;
 
-        this.downloadHTML(content, `${unitTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()} _questions.html`);
+        this.downloadHTML(content, `${unitTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_questions.html`);
     }
 
     static async generateVaultHTMLExport(subjectTitle: string, resources: any[]): Promise<void> {
         const content = `
-    < div class="header" >
-        <h1>Knowledge Vault </h1>
-            < p class="subtitle" > ${subjectTitle} </p>
-                </div>
-                < div class="resources-list" >
-                    ${resources.map(r => `
+            <div class="header">
+                <h1>Knowledge Vault</h1>
+                <p class="subtitle">${subjectTitle}</p>
+            </div>
+            <div class="resources-list">
+                ${resources.map(r => `
                     <div class="resource-card">
                         <div class="resource-header">
                             <h2>${r.title}</h2>
@@ -430,21 +429,20 @@ export class PlatformExportService {
                             ${this.markdownToHtml(r.formattedContent || r.content || "*No content provided.*")}
                         </div>
                     </div>
-                `).join('')
-            }
-</div>
-    `;
-        this.downloadHTML(content, `${subjectTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()} _vault.html`);
+                `).join('')}
+            </div>
+        `;
+        this.downloadHTML(content, `${subjectTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_vault.html`);
     }
 
     static async generateNotesHTMLExport(subjectTitle: string, unitTitle: string, notes: any[]): Promise<void> {
         const content = `
-    < div class="header" >
-        <h1>Revision Notes: ${unitTitle} </h1>
-            < p class="subtitle" > ${subjectTitle} </p>
-                </div>
-                < div class="notes-list" >
-                    ${notes.map(note => `
+            <div class="header">
+                <h1>Revision Notes: ${unitTitle}</h1>
+                <p class="subtitle">${subjectTitle}</p>
+            </div>
+            <div class="notes-list">
+                ${notes.map(note => `
                     <div class="resource-card">
                         <div class="resource-header">
                             <h2>${note.title}</h2>
@@ -453,65 +451,64 @@ export class PlatformExportService {
                             ${this.markdownToHtml(note.content)}
                         </div>
                     </div>
-                `).join('')
-            }
-</div>
-    `;
-        this.downloadHTML(content, `${unitTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()} _notes.html`);
+                `).join('')}
+            </div>
+        `;
+        this.downloadHTML(content, `${unitTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_notes.html`);
     }
 
     static async generateAssignmentHTMLExport(subjectTitle: string, assignment: any, aiAnswer: string): Promise<void> {
         const content = `
-    < div class="header" >
-        <h1>Assignment: ${assignment.title} </h1>
-            < p class="subtitle" > ${subjectTitle} </p>
+            <div class="header">
+                <h1>Assignment: ${assignment.title}</h1>
+                <p class="subtitle">${subjectTitle}</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-header">
+                    <h2>Task Description</h2>
                 </div>
-                < div class="resource-card" >
-                    <div class="resource-header" >
-                        <h2>Task Description </h2>
-                            </div>
-                            < div class="resource-content" >
-                                <p>${assignment.description || 'No description provided.'} </p>
-                                    </div>
-                                    </div>
-                                    < div class="resource-card" >
-                                        <div class="resource-header" >
-                                            <h2>AI Solution </h2>
-                                                </div>
-                                                < div class="resource-content" >
-                                                    ${this.markdownToHtml(aiAnswer)}
-</div>
-    </div>
+                <div class="resource-content">
+                    <p>${assignment.description || 'No description provided.'}</p>
+                </div>
+            </div>
+            <div class="resource-card">
+                <div class="resource-header">
+                    <h2>AI Solution</h2>
+                </div>
+                <div class="resource-content">
+                    ${this.markdownToHtml(aiAnswer)}
+                </div>
+            </div>
         `;
-        this.downloadHTML(content, `${assignment.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()} _assignment.html`);
+        this.downloadHTML(content, `${assignment.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_assignment.html`);
     }
 
     static async generatePaperTrailHTMLExport(subjectTitle: string, question: Question, aiAnswer: string): Promise<void> {
         const content = `
-    < div class="header" >
-        <h1>PaperTrail PYQ </h1>
-            < p class="subtitle" > ${subjectTitle} </p>
-                </div>
-                < div class="resource-card" >
-                    <div class="resource-header" >
-                        <div class="badges" >
-                            <span class="badge type" > ${question.marksType} MARKS </span>
-                                < span class="badge part" > ${question.difficulty} </span>
+            <div class="header">
+                <h1>PaperTrail PYQ</h1>
+                <p class="subtitle">${subjectTitle}</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-header">
+                    <div class="badges">
+                        <span class="badge type">${question.marksType} MARKS</span>
+                        <span class="badge part">${question.difficulty}</span>
                         ${question.year ? `<span class="badge unit">${question.year}</span>` : ''}
-</div>
-    </div>
-    < div class="resource-content" >
-        <h2 style="font-size: 20px; margin-bottom: 20px;" > ${question.question} </h2>
+                    </div>
+                </div>
+                <div class="resource-content">
+                    <h2 style="font-size: 20px; margin-bottom: 20px;">${question.question}</h2>
+                </div>
             </div>
+            <div class="resource-card">
+                <div class="resource-header">
+                    <h2>AI Solution</h2>
+                </div>
+                <div class="resource-content">
+                    ${this.markdownToHtml(aiAnswer)}
+                </div>
             </div>
-            < div class="resource-card" >
-                <div class="resource-header" >
-                    <h2>AI Solution </h2>
-                        </div>
-                        < div class="resource-content" >
-                            ${this.markdownToHtml(aiAnswer)}
-</div>
-    </div>
         `;
         this.downloadHTML(content, `papertrail_${question.question.slice(0, 20).replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`);
     }
