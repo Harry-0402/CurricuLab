@@ -308,14 +308,16 @@ ${content}
 5. Use markdown tables when comparing items
 6. Keep proper paragraph structure
 
-**Important Rules:**
-- DO NOT change the content or meaning
+**CRITICAL RULES - MUST FOLLOW:**
+- DO NOT truncate, shorten, or summarize ANY content
+- DO NOT remove ANY information from the original content
+- PRESERVE 100% of the original content - every single word and detail
 - DO NOT add new information that wasn't provided
-- ONLY format and structure what's already there
-- Make it easy to read and scan
+- ONLY add formatting (headings, bold, lists, etc.) to what's already there
+- The formatted output should contain ALL the same information as the input
 - Keep a professional academic tone
 
-Return ONLY the formatted content in markdown format.`;
+Return ONLY the formatted content in markdown format. Include ALL content from the original.`;
 
         return this.generateContent(prompt);
     }
