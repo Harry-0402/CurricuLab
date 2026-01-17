@@ -7,6 +7,7 @@ import { Label } from '@/components/shared/Label';
 import { Announcement } from '@/types';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { Icons } from '@/components/shared/Icons';
+import { createAnnouncement, updateAnnouncement, deleteAnnouncement as apiDeleteAnnouncement, getAnnouncements } from '@/lib/services/announcement-service';
 
 interface AnnouncementModalProps {
     isOpen: boolean;
@@ -15,7 +16,7 @@ interface AnnouncementModalProps {
 }
 
 export function AnnouncementModal({ isOpen, onClose, announcement }: AnnouncementModalProps) {
-    const { addAnnouncement, updateAnnouncement, deleteAnnouncement } = useAppStore();
+    const { addAnnouncement, updateAnnouncement: storeUpdateAnnouncement, deleteAnnouncement: storeDeleteAnnouncement, setAnnouncements } = useAppStore();
 
     const [formData, setFormData] = useState<Partial<Announcement>>({
         title: '',
@@ -39,25 +40,70 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
         }
     }, [announcement, isOpen]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const finalAnn = {
-            ...formData,
-            id: announcement?.id || Math.random().toString(36).substr(2, 9),
-        } as Announcement;
+        try {
+            const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
-        if (announcement) {
-            updateAnnouncement(finalAnn);
-        } else {
-            addAnnouncement(finalAnn);
+            // Only try to update if it's an existing announcement with a valid UUID
+            // Otherwise, it's either a new one or a legacy local one that needs to be published
+            const isExistingDBRecord = announcement && isUUID(announcement.id);
+
+            if (isExistingDBRecord) {
+                const updated = await updateAnnouncement({
+                    ...announcement,
+                    ...formData,
+                } as Announcement);
+                storeUpdateAnnouncement(updated);
+            } else {
+                const created = await createAnnouncement(formData);
+                addAnnouncement(created);
+
+                // If it was a legacy local announcement, remove it now that it's published
+                if (announcement && !isUUID(announcement.id)) {
+                    storeDeleteAnnouncement(announcement.id);
+                }
+            }
+
+            // Refresh all announcements to ensure sync and proper order
+            const all = await getAnnouncements();
+            setAnnouncements(all);
+
+            onClose();
+        } catch (error: any) {
+            console.error('Failed to save announcement:', error);
+
+            // Log full error details for debugging
+            const errorDetails = error.message || error.details || JSON.stringify(error, null, 2);
+            console.error('Detailed error:', errorDetails);
+
+            alert(`Failed to save announcement. ${error.message || 'Please check if the database table exists.'}`);
         }
-        onClose();
     };
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (announcement) {
-            deleteAnnouncement(announcement.id);
-            onClose();
+            try {
+                const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
+                // Only call API if it's an existing DB record
+                if (isUUID(announcement.id)) {
+                    await apiDeleteAnnouncement(announcement.id);
+                }
+
+                storeDeleteAnnouncement(announcement.id);
+
+                // Refresh to ensure sync
+                const all = await getAnnouncements();
+                setAnnouncements(all);
+
+                onClose();
+            } catch (error: any) {
+                console.error('Failed to delete announcement:', error);
+                const errorDetails = error.message || error.details || JSON.stringify(error, null, 2);
+                console.error('Detailed error:', errorDetails);
+                alert(`Failed to delete announcement. ${error.message || ''}`);
+            }
         }
     };
 

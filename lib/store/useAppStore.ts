@@ -29,6 +29,7 @@ interface AppState {
     addAnnouncement: (announcement: Announcement) => void;
     updateAnnouncement: (announcement: Announcement) => void;
     deleteAnnouncement: (id: string) => void;
+    setAnnouncements: (announcements: Announcement[]) => void;
     toggleRightPanel: () => void;
 }
 
@@ -89,6 +90,8 @@ export const useAppStore = create<AppState>()(
             deleteAnnouncement: (id) => set((state) => ({
                 announcements: state.announcements.filter((a) => a.id !== id)
             })),
+
+            setAnnouncements: (announcements) => set({ announcements }),
 
             toggleRightPanel: () => set((state) => ({
                 isRightPanelMinimized: !state.isRightPanelMinimized
