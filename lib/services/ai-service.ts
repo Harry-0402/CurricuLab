@@ -265,5 +265,59 @@ ${userAnswer}
 Return ONLY the formatted answer in markdown format.`;
 
         return this.generateContent(prompt);
+    },
+
+    async formatVaultContent(title: string, content: string, type: 'study_note' | 'case_study' | 'project'): Promise<string> {
+        const typeGuidelines = {
+            study_note: `Format as a well-structured study note with:
+- Clear overview section
+- Key concepts highlighted
+- Important definitions bolded
+- Summary points at the end`,
+            case_study: `Format as a professional case study with:
+- Background/Context section
+- Problem statement
+- Analysis section
+- Key findings or lessons learned
+- Conclusion`,
+            project: `Format as a project documentation with:
+- Project overview
+- Objectives/Goals
+- Implementation details
+- Key features or deliverables
+- Results or outcomes`
+        };
+
+        const prompt = `You are a formatting assistant. Your job is to take raw content and format it beautifully with proper markdown structure.
+
+**Title:** ${title}
+**Type:** ${type.replace('_', ' ')}
+
+**Raw Content:**
+${content}
+
+---
+
+**Your Task:** ${typeGuidelines[type]}
+
+**General Formatting Rules:**
+1. Use ## for main section headings
+2. Use ### for subsections
+3. Use bullet points or numbered lists where appropriate
+4. Bold key terms and important concepts
+5. Use markdown tables when comparing items
+6. Keep proper paragraph structure
+
+**Important Rules:**
+- DO NOT change the content or meaning
+- DO NOT add new information that wasn't provided
+- ONLY format and structure what's already there
+- Make it easy to read and scan
+- Keep a professional academic tone
+
+Return ONLY the formatted content in markdown format.`;
+
+        return this.generateContent(prompt);
     }
 };
+

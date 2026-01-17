@@ -333,3 +333,92 @@ export const deleteMarkWiseQuestion = async (id: string): Promise<boolean> => {
     }
     return true;
 };
+
+
+// --- Vault Resources (Study Notes, Case Studies, Projects) ---
+
+import { VaultResource, VaultResourceType } from '@/types';
+
+const mapVaultResource = (data: any): VaultResource => ({
+    id: data.id,
+    subjectId: data.subject_id,
+    type: data.type,
+    title: data.title,
+    content: data.content || '',
+    formattedContent: data.formatted_content || '',
+    tags: data.tags || [],
+    createdAt: data.created_at,
+    updatedAt: data.updated_at
+});
+
+export const getVaultResources = async (filters: { subjectId?: string; type?: VaultResourceType }): Promise<VaultResource[]> => {
+    let query = supabase.from('vault_resources').select('*');
+
+    if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
+    if (filters.type) query = query.eq('type', filters.type);
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Failed to fetch vault resources:", error);
+        return [];
+    }
+
+    return data.map(mapVaultResource);
+};
+
+export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): Promise<VaultResource | null> => {
+    const { data, error } = await supabase.from('vault_resources').insert([{
+        id: crypto.randomUUID(),
+        subject_id: resource.subjectId,
+        type: resource.type,
+        title: resource.title,
+        content: resource.content || '',
+        formatted_content: resource.formattedContent || '',
+        tags: resource.tags || []
+    }]).select().single();
+
+    if (error) {
+        console.error("Failed to create vault resource:", error.message);
+        return null;
+    }
+
+    return mapVaultResource(data);
+};
+
+export const updateVaultResource = async (resource: VaultResource): Promise<VaultResource | null> => {
+    const { data, error } = await supabase
+        .from('vault_resources')
+        .update({
+            subject_id: resource.subjectId,
+            type: resource.type,
+            title: resource.title,
+            content: resource.content,
+            formatted_content: resource.formattedContent,
+            tags: resource.tags
+        })
+        .eq('id', resource.id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Failed to update vault resource:", error.message);
+        return null;
+    }
+
+    return mapVaultResource(data);
+};
+
+export const deleteVaultResource = async (id: string): Promise<boolean> => {
+    const { error } = await supabase
+        .from('vault_resources')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error("Failed to delete vault resource:", error);
+        return false;
+    }
+    return true;
+};
+

@@ -144,3 +144,18 @@ export interface Assignment {
   dueDate: string;
   platform?: 'ERP' | 'GCR' | 'Other';
 }
+
+export type VaultResourceType = 'study_note' | 'case_study' | 'project';
+
+export interface VaultResource {
+  id: string;
+  subjectId: string;
+  type: VaultResourceType;
+  title: string;
+  content: string;
+  formattedContent: string;
+  tags: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
