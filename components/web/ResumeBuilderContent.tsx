@@ -612,7 +612,7 @@ export function ResumeBuilderContent() {
                             ))}
                         </div>
                     </Card>
-                    创新                </div>
+                </div>
 
                 {/* Preview Side */}
                 <div className="p-10 border border-gray-100 bg-white rounded-2xl shadow-sm h-fit sticky top-24 overflow-hidden">
