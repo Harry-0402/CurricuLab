@@ -25,9 +25,19 @@ export async function GET(request: Request) {
                 },
             }
         )
-
         await supabase.auth.exchangeCodeForSession(code)
     }
 
-    return NextResponse.redirect(new URL(next, requestUrl.origin))
+    // Determine the correct origin
+    // In production (Render), request.url might be internal (e.g. localhost:10000)
+    // We should use the Host header to forward to the correct public domain
+    const host = request.headers.get('host')
+    const protocol = request.headers.get('x-forwarded-proto') ?? 'http'
+
+    // Safety check: if we verify it's localhost, keep http. If production, force https if proto header exists?
+    // Usually 'host' is sufficient for the domain.
+
+    const baseUrl = host ? `${protocol}://${host}` : requestUrl.origin;
+
+    return NextResponse.redirect(new URL(next, baseUrl))
 }
