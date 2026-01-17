@@ -269,35 +269,33 @@ export const AiService = {
 
     async _formatAnswerChunk(question: string, userAnswer: string, marks: number, isContinuation: boolean): Promise<string> {
         const continuationNote = isContinuation
-            ? `\n\n**Note:** This is a continuation. Do NOT add introduction - just continue formatting.`
+            ? `\n\n**IMPORTANT:** This is a CONTINUATION - format directly without introduction.`
             : '';
 
-        const prompt = `You are a formatting assistant. Your job is to take a student's raw answer and format it beautifully with proper markdown structure.
+        const prompt = `You are a formatting assistant. Format this student answer with markdown.
 
 **Question:** ${question}
 **Marks:** ${marks}
 
-**Student's Raw Answer:**
+**Raw Answer to Format:**
 ${userAnswer}
 
 ---
 
-**Your Task:** Format the above answer with:
-1. Clear section headings (use ## for main sections)
-2. Bullet points or numbered lists where appropriate
-3. Bold key terms and important concepts
-4. Proper paragraph structure
-5. Add emphasis where needed
-6. Use markdown tables when comparing items or presenting structured data${continuationNote}
+**CRITICAL RULES - MUST FOLLOW:**
+1. PRESERVE 100% OF THE CONTENT - do NOT skip, summarize, or truncate
+2. Keep ALL numbered points exactly as provided (if input has 1-10, output has 1-10)
+3. Keep ALL sentences - every sentence from input must appear in output
+4. DO NOT add new information
+5. DO NOT remove any content
 
-**Important Rules:**
-- DO NOT change the content or meaning of the answer
-- DO NOT add new information the student didn't write
-- ONLY format and structure what's already there
-- Keep the academic tone
-- Make it easy to read and scan
+**Formatting:**
+- Use ## for main headings
+- Use **bold** for key terms
+- Use bullet points (- ) for lists
+- Use proper markdown tables (| col1 | col2 |) for tabular data${continuationNote}
 
-Return ONLY the formatted answer in markdown format.`;
+Return the COMPLETE formatted answer. Do not truncate.`;
 
         return this.generateContent(prompt);
     },
@@ -367,58 +365,35 @@ Return ONLY the formatted answer in markdown format.`;
     },
 
     async _formatVaultChunk(title: string, content: string, type: 'study_note' | 'case_study' | 'project', isContinuation: boolean): Promise<string> {
-        const typeGuidelines = {
-            study_note: `Format as a well-structured study note with:
-- Clear overview section
-- Key concepts highlighted
-- Important definitions bolded
-- Summary points at the end`,
-            case_study: `Format as a professional case study with:
-- Background/Context section
-- Problem statement
-- Analysis section
-- Key findings or lessons learned
-- Conclusion`,
-            project: `Format as a project documentation with:
-- Project overview
-- Objectives/Goals
-- Implementation details
-- Key features or deliverables
-- Results or outcomes`
-        };
-
         const continuationNote = isContinuation
-            ? `\n\n**Note:** This is a continuation of a longer document. Do NOT add introduction or overview sections - just format the content as-is.`
+            ? `\n\n**IMPORTANT:** This is a CONTINUATION - do NOT add any introduction. Just format this part directly.`
             : '';
 
-        const prompt = `You are a formatting assistant. Your job is to take raw content and format it beautifully with proper markdown structure.
+        const prompt = `You are a formatting assistant. Format the raw content with proper markdown structure.
 
 **Title:** ${title}
 **Type:** ${type.replace('_', ' ')}
 
-**Raw Content:**
+**Raw Content to Format:**
 ${content}
 
 ---
 
-**Your Task:** ${typeGuidelines[type]}${continuationNote}
+**CRITICAL RULES - MUST FOLLOW:**
+1. PRESERVE 100% OF THE CONTENT - do NOT skip, summarize, or truncate anything
+2. Keep ALL numbered points, ALL bullet points, ALL paragraphs exactly as provided
+3. If content has numbers 1-10, your output MUST have numbers 1-10
+4. DO NOT add new content or explanations
+5. DO NOT remove any information
 
-**General Formatting Rules:**
-1. Use ## for main section headings
-2. Use ### for subsections
-3. Use bullet points or numbered lists where appropriate
-4. Bold key terms and important concepts
-5. Use markdown tables when comparing items
-6. Keep proper paragraph structure
+**Formatting Guidelines:**
+- Use ## for main headings, ### for subheadings
+- Use **bold** for key terms
+- Use bullet points (- ) for lists
+- Use proper markdown tables (| header | header |) when data is tabular
+- Keep paragraph breaks${continuationNote}
 
-**Important Rules:**
-- DO NOT change the content or meaning
-- DO NOT add new information that wasn't provided
-- ONLY format and structure what's already there
-- Make it easy to read and scan
-- Keep a professional academic tone
-
-Return ONLY the formatted content in markdown format.`;
+Return the COMPLETE formatted content. Every sentence from the input must appear in the output.`;
 
         return this.generateContent(prompt);
     }
