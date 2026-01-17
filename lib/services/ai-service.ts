@@ -350,6 +350,10 @@ Format this chunk now:`;
         }));
 
         return formattedChunks.join('\n\n');
+    },
+
+    async polishResumeBullet(text: string): Promise<string> {
+        const prompt = "Rewrite this resume bullet point to be more impact-oriented and ATS-friendly. Start with a strong action verb. Raw: " + text;
+        return this.generateContent(prompt);
     }
 };
-

@@ -1,6 +1,7 @@
 "use client"
 
 import React from 'react';
+import Link from 'next/link';
 import { Icons } from '@/components/shared/Icons';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { cn } from '@/lib/utils';
@@ -20,18 +21,11 @@ export function WebHeader() {
             </div>
 
             <div className="flex items-center gap-6">
-                <div className="relative group w-80">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                        <Icons.Search size={18} />
+                <div className="flex items-center gap-3 bg-fill-600 hover:bg-fill-700 text-black px-5 py-3 rounded-2xl shadow-lg shadow-blue-100 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                    <div className="bg-white/20 p-1.5 rounded-lg">
+                        <Icons.Briefcase size={18} className="text-black" />
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Search subjects, notes, or questions..."
-                        className="w-full bg-gray-50 border-none rounded-2xl py-2.5 pl-11 pr-4 text-sm focus:ring-2 focus:ring-blue-100 transition-all outline-none"
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <span className="text-[10px] font-bold text-gray-300 border border-gray-200 px-1.5 py-0.5 rounded-md">/</span>
-                    </div>
+                    <p className="text-sm font-bold">AI Resume Architect</p>
                 </div>
 
                 <div className="flex items-center gap-2">

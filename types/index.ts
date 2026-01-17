@@ -161,3 +161,56 @@ export interface VaultResource {
   updatedAt?: string;
 }
 
+export interface ResumeExperience {
+  id: string;
+  company: string;
+  role: string;
+  location: string;
+  period: string; // e.g., "Feb 2024 - Present"
+  description: string[];
+  link?: string;
+}
+
+export interface ResumeProject {
+  id: string;
+  title: string;
+  description: string[];
+  techStack: string[];
+  link?: string;
+}
+
+export interface ResumeEducation {
+  id: string;
+  degree: string;
+  institution: string;
+  location: string;
+  period: string;
+  score?: string; // GPA or percentage
+  relevantCoursework?: string[];
+}
+
+export interface ResumeSkillCategory {
+  id: string;
+  category: string;
+  skills: string[];
+}
+
+export interface ResumeData {
+  fullName: string;
+  currentRole: string;
+  summary: string;
+  photoUrl?: string;
+  contact: {
+    email: string;
+    phone: string;
+    linkedin?: string;
+    github?: string;
+    location?: string;
+  };
+  skills: ResumeSkillCategory[];
+  experience: ResumeExperience[];
+  projects: ResumeProject[];
+  education: ResumeEducation[];
+  certifications?: string[];
+  awards?: string[];
+}
