@@ -197,6 +197,7 @@ export interface ResumeSkillCategory {
 
 export interface ResumeData {
   fullName: string;
+  targetDomain?: string;
   currentRole: string;
   summary: string;
   photoUrl?: string;

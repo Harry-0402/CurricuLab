@@ -352,8 +352,41 @@ Format this chunk now:`;
         return formattedChunks.join('\n\n');
     },
 
-    async polishResumeBullet(text: string): Promise<string> {
-        const prompt = "Rewrite this resume bullet point to be more impact-oriented and ATS-friendly. Start with a strong action verb. Raw: " + text;
+    async polishResumeBullet(text: string, domain?: string): Promise<string> {
+        const context = domain ? ` for the ${domain} industry` : '';
+        const prompt = `Rewrite this resume bullet point to be more impact-oriented and ATS-friendly${context}. Start with a strong action verb${context ? ` relevant to ${domain}` : ''}. Use metrics if possible. Raw: ${text}`;
         return this.generateContent(prompt);
+    },
+
+    async analyzeResume(data: any, domain: string): Promise<{ keywords: string[], improvements: string[] }> {
+        const prompt = `
+        You are an expert ATS Resume Auditor for the ${domain} industry.
+        Review the following resume data and provide:
+        1. A list of 5-7 critical keywords/skills missing from this resume that are standard for ${domain}.
+        2. 3 specific, high-impact improvements for the content (not generic advice).
+
+        Resume Data:
+        ${JSON.stringify({
+            role: data.currentRole,
+            summary: data.summary,
+            skills: data.skills.map((s: any) => s.skills).flat(),
+            experience: data.experience.map((e: any) => e.role + " at " + e.company + ": " + e.description).flat()
+        })}
+
+        Return ONLY raw JSON (no markdown formatting) with this structure:
+        {
+            "keywords": ["keyword1", "keyword2", ...],
+            "improvements": ["improvement1", "improvement2", ...]
+        }
+        `;
+
+        try {
+            const result = await this.generateContent(prompt);
+            const cleanJson = result.replace(/```json/g, '').replace(/```/g, '').trim();
+            return JSON.parse(cleanJson);
+        } catch (e) {
+            console.error("Failed to parse AI analysis", e);
+            return { keywords: [], improvements: ["Could not generate detailed analysis. Please try again."] };
+        }
     }
 };

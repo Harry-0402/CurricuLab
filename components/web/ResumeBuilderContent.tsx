@@ -12,6 +12,7 @@ const STORAGE_KEY = 'curriculab_resume_draft';
 
 const INITIAL_DATA: ResumeData = {
     fullName: '',
+    targetDomain: '',
     currentRole: '',
     summary: '',
     contact: {
@@ -102,6 +103,36 @@ export function ResumeBuilderContent() {
     };
 
     const [isPolishing, setIsPolishing] = useState<string | null>(null);
+    const [atsScore, setAtsScore] = useState(0);
+    const [atsFeedback, setAtsFeedback] = useState<string[]>([]);
+
+    // New AI Analysis State
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [aiSuggestions, setAiSuggestions] = useState<{ keywords: string[], improvements: string[] } | null>(null);
+
+    useEffect(() => {
+        const { score, feedback } = calculateATSScore(data);
+        setAtsScore(score);
+        setAtsFeedback(feedback);
+        // Clear old suggestions if content changes significantly? Maybe keep them until manual re-run.
+    }, [data]);
+
+    const handleAiAnalysis = async () => {
+        if (!data.targetDomain) {
+            alert("Please select a Target Domain in Personal Information first.");
+            return;
+        }
+        setIsAnalyzing(true);
+        try {
+            const suggestions = await AiService.analyzeResume(data, data.targetDomain);
+            setAiSuggestions(suggestions);
+        } catch (e) {
+            console.error(e);
+            alert("Failed to analyze resume. Please try again.");
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     const handlePolish = async (section: 'experience' | 'projects', itemId: string, bulletIndex: number) => {
         const text = section === 'experience'
@@ -112,7 +143,7 @@ export function ResumeBuilderContent() {
 
         setIsPolishing(`${itemId}-${bulletIndex}`);
         try {
-            const polished = await AiService.polishResumeBullet(text);
+            const polished = await AiService.polishResumeBullet(text, data.targetDomain);
             const newData = { ...data };
             if (section === 'experience') {
                 const exp = newData.experience.find(e => e.id === itemId);
@@ -128,6 +159,107 @@ export function ResumeBuilderContent() {
             setIsPolishing(null);
         }
     };
+
+    const ATS_ACTION_VERBS = [
+        'achieved', 'accelerated', 'awarded', 'boosted', 'built', 'calculated', 'collaborated',
+        'created', 'decreased', 'delivered', 'developed', 'directed', 'earned', 'enhanced',
+        'established', 'evaluated', 'expanded', 'generated', 'guided', 'improved', 'increased',
+        'launched', 'led', 'managed', 'maximized', 'mentored', 'negotiated', 'optimized',
+        'orchestrated', 'organized', 'outperformed', 'planned', 'produced', 'reduced', 'resolved',
+        'saved', 'secured', 'spearheaded', 'streamlined', 'strengthened', 'structured', 'surpassed',
+        'trained', 'transformed', 'upgraded'
+    ];
+
+    const getPlaceholders = (domain?: string) => {
+        switch (domain) {
+            case 'Software Engineering': return { role: 'Full Stack Developer', summary: 'Experienced software engineer specialized in React and Node.js...', exp: 'Developed scalable microservices...', skill: 'React, TypeScript, AWS' };
+            case 'Data Science': return { role: 'Data Scientist', summary: 'Data scientist with expertise in machine learning...', exp: 'Built predictive models for...', skill: 'Python, PyTorch, SQL' };
+            case 'Finance': return { role: 'Financial Analyst', summary: 'Detail-oriented financial analyst...', exp: 'Conducted financial modeling for...', skill: 'Financial Modeling, Excel, Bloomberg' };
+            case 'Marketing': return { role: 'Marketing Manager', summary: 'Creative marketing professional...', exp: 'Led a cross-channel campaign...', skill: 'SEO, SEM, Google Analytics' };
+            case 'Product Management': return { role: 'Product Manager', summary: 'Product leader focused on user-centric design...', exp: 'Launched a new feature specific to...', skill: 'Agile, Jira, User Research' };
+            case 'Consulting': return { role: 'Management Consultant', summary: 'Strategic consultant with experience in...', exp: 'Optimized operational efficiency by...', skill: 'Strategy, Market Analysis, PowerPoint' };
+            case 'Design': return { role: 'Product Designer', summary: 'Passionate designer creating intuitive user experiences...', exp: 'Designed a new design system for...', skill: 'Figma, Adobe XD, Prototyping' };
+            default: return { role: 'Professional Role', summary: 'Briefly describe your career goals and achievements...', exp: 'Key contribution or achievement...', skill: 'Skill 1, Skill 2...' };
+        }
+    };
+
+    function calculateATSScore(data: ResumeData): { score: number, feedback: string[] } {
+        let score = 0;
+        const feedback: string[] = [];
+
+        // 1. Contact Info (15 pts)
+        if (data.fullName.length > 2) score += 5;
+        else feedback.push("Add your full name.");
+
+        if (data.contact.email.includes('@')) score += 5;
+        else feedback.push("Add a valid email address.");
+
+        if (data.contact.phone.length > 5) score += 5;
+        else feedback.push("Add a phone number.");
+
+        // 2. Summary (10 pts)
+        if (data.summary.length > 50) score += 10;
+        else if (data.summary.length > 0) score += 5;
+        else feedback.push("Add a professional summary (50+ chars).");
+
+        // 3. Experience (25 pts)
+        const hasExperience = data.experience.some(e => e.company.length > 1);
+        const hasRole = data.experience.some(e => e.role.length > 1);
+
+        if (hasExperience && hasRole) {
+            score += 10;
+            // Check for bullets
+            const totalBullets = data.experience.reduce((acc, curr) => acc + curr.description.filter(d => d.length > 10).length, 0);
+            if (totalBullets >= 3) score += 15;
+            else if (totalBullets > 0) score += 5;
+            else feedback.push("Add more detailed bullet points to your experience.");
+        } else {
+            feedback.push("Add at least one work experience.");
+        }
+
+        // 4. Skills (10 pts)
+        const hasSkills = data.skills.some(c => c.skills.length > 0);
+        if (hasSkills) score += 10;
+        else feedback.push("Add technical or soft skills.");
+
+        // 5. Education (10 pts)
+        if (data.education.some(e => e.institution.length > 1)) score += 10;
+        else feedback.push("Add education details.");
+
+        // 6. Impact & Action Verbs (20 pts)
+        let actionVerbCount = 0;
+        let numbersCount = 0;
+
+        const allText = [
+            ...data.experience.flatMap(e => e.description),
+            ...data.projects.flatMap(p => p.description)
+        ].join(' ').toLowerCase();
+
+        ATS_ACTION_VERBS.forEach(verb => {
+            if (allText.includes(verb)) actionVerbCount++;
+        });
+
+        // Check for numbers (digits or %)
+        const numberMatches = allText.match(/\d+|%|\$/g);
+        if (numberMatches) numbersCount = numberMatches.length;
+
+        if (actionVerbCount >= 5) score += 10;
+        else if (actionVerbCount > 0) {
+            score += 5;
+            feedback.push(`Use more action verbs (Found: ${actionVerbCount}, Target: 5+).`);
+        } else feedback.push("Use strong action verbs (e.g., 'Led', 'Developed', 'Optimized').");
+
+        if (numbersCount >= 3) score += 10;
+        else if (numbersCount > 0) {
+            score += 5;
+            feedback.push(`Quantify your results more (Found: ${numbersCount} metrics, Target: 3+).`);
+        } else feedback.push("Include numbers/metrics in your descriptions (e.g., 'Increased revenue by 20%').");
+
+        // 7. Projects (10 pts)
+        if (data.projects.some(p => p.title.length > 1)) score += 10;
+
+        return { score: Math.min(100, score), feedback };
+    }
 
     return (
         <div className="flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -165,9 +297,24 @@ export function ResumeBuilderContent() {
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Full Name</label>
                                 <Input value={data.fullName} onChange={(e: any) => setData({ ...data, fullName: e.target.value })} placeholder="Enter your full name" />
                             </div>
+
+                            <div className="col-span-2 space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Target Domain / Industry</label>
+                                <select
+                                    className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={data.targetDomain || ''}
+                                    onChange={(e) => setData({ ...data, targetDomain: e.target.value })}
+                                >
+                                    <option value="">Select a Target Domain (Recommended)</option>
+                                    {['Software Engineering', 'Data Science', 'Product Management', 'Finance', 'Consulting', 'Marketing', 'Design', 'Healthcare', 'Legal', 'Sales', 'General Management', 'Other'].map(d => (
+                                        <option key={d} value={d}>{d}</option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <div className="col-span-2 space-y-2">
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Professional Title (Optional)</label>
-                                <Input value={data.currentRole} onChange={(e: any) => setData({ ...data, currentRole: e.target.value })} placeholder="Enter your professional title" />
+                                <Input value={data.currentRole} onChange={(e: any) => setData({ ...data, currentRole: e.target.value })} placeholder={getPlaceholders(data.targetDomain).role} />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Email</label>
@@ -200,7 +347,7 @@ export function ResumeBuilderContent() {
                         <Textarea
                             value={data.summary}
                             onChange={(e: any) => setData({ ...data, summary: e.target.value })}
-                            placeholder="Briefly describe your career goals and achievements..."
+                            placeholder={getPlaceholders(data.targetDomain).summary}
                             className="min-h-[120px]"
                         />
                     </Card>
@@ -244,7 +391,7 @@ export function ResumeBuilderContent() {
                                             newSkills[idx].skills = e.target.value.split(',').map((s: string) => s.trim());
                                             setData({ ...data, skills: newSkills });
                                         }}
-                                        placeholder="Skill 1, Skill 2, ..."
+                                        placeholder={getPlaceholders(data.targetDomain).skill}
                                         className="text-sm bg-white border-gray-100"
                                     />
                                 </div>
@@ -309,6 +456,7 @@ export function ResumeBuilderContent() {
                                                         newExp[expIdx].description[idx] = e.target.value;
                                                         setData({ ...data, experience: newExp });
                                                     }}
+                                                    placeholder={getPlaceholders(data.targetDomain).exp}
                                                     className="rounded-xl bg-white border-gray-100 text-sm py-2 px-3 resize-none min-h-[40px] pr-10"
                                                 />
                                                 <div className="absolute right-2 top-2 flex gap-1">
@@ -615,164 +763,264 @@ export function ResumeBuilderContent() {
                 </div>
 
                 {/* Preview Side */}
-                <div className="p-10 border border-gray-100 bg-white rounded-2xl shadow-sm h-fit sticky top-24 overflow-hidden">
-                    <div className="relative z-10 max-w-[600px] mx-auto">
-                        <div className="text-center mb-6 border-b-2 border-blue-900 pb-4">
-                            <h1 className="text-2xl font-bold text-[#1e3a8a] uppercase tracking-wide">{data.fullName || 'YOUR NAME'}</h1>
-                            {data.currentRole && <p className="text-sm font-semibold text-gray-600 mt-1">{data.currentRole}</p>}
+                <div className="space-y-6 sticky top-24 h-fit">
+                    {/* ATS Score Card */}
+                    <Card className="p-5 border-l-4 border-l-purple-600 bg-purple-50/50">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                    <Icons.Sparkles className="text-purple-600" size={18} />
+                                    ATS Strength Score
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-1">Optimization for Applicant Tracking Systems</p>
+                            </div>
+                            <div className={cn(
+                                "h-12 w-12 rounded-full flex items-center justify-center font-black text-lg border-4",
+                                atsScore >= 80 ? "border-green-500 text-green-700 bg-green-50" :
+                                    atsScore >= 50 ? "border-yellow-500 text-yellow-700 bg-yellow-50" :
+                                        "border-red-500 text-red-700 bg-red-50"
+                            )}>
+                                {atsScore}
+                            </div>
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] text-gray-700 font-medium mb-8">
-                            {data.contact.phone && <span>{data.contact.phone}</span>}
-                            {data.contact.phone && data.contact.email && <span>|</span>}
-                            {data.contact.email && <span>{data.contact.email}</span>}
-                            {data.contact.location && (
-                                <><span>|</span><span>{data.contact.location}</span></>
-                            )}
-                            {(data.contact.linkedin || data.contact.github) && <br />}
-                            {data.contact.linkedin && (
-                                <span className="text-blue-700">{data.contact.linkedin.replace('https://', '').replace('www.', '')}</span>
-                            )}
-                            {data.contact.linkedin && data.contact.github && <span className="mx-1">|</span>}
-                            {data.contact.github && (
-                                <span className="text-blue-700">{data.contact.github.replace('https://', '').replace('www.', '')}</span>
-                            )}
-                        </div>
-
-                        {data.summary && (
-                            <div className="mb-6">
-                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Professional Summary</h2>
-                                <p className="text-[11px] text-gray-700 leading-relaxed text-justify">
-                                    {data.summary}
-                                </p>
-                            </div>
-                        )}
-
-                        {data.skills && data.skills.some(s => s.skills.length > 0) && (
-                            <div className="mb-6">
-                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Skills</h2>
-                                <div className="space-y-1">
-                                    {data.skills.map(cat => cat.skills.length > 0 && (
-                                        <div key={cat.id} className="text-[11px]">
-                                            <strong className="text-gray-900">{cat.category}: </strong>
-                                            <span className="text-gray-700">{cat.skills.join(' | ')}</span>
-                                        </div>
+                        {atsFeedback.length > 0 ? (
+                            <div className="mt-4 space-y-2">
+                                <p className="text-xs font-bold text-gray-700 uppercase tracking-wide">Improvement Tips:</p>
+                                <ul className="space-y-1">
+                                    {atsFeedback.slice(0, 3).map((tip, i) => (
+                                        <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
+                                            <span className="text-red-500 mt-0.5">•</span>
+                                            {tip}
+                                        </li>
                                     ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {data.experience && data.experience.length > 0 && data.experience.some(e => e.company || e.role) && (
-                            <div className="mb-6">
-                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Experience</h2>
-                                <div className="space-y-4">
-                                    {data.experience.map(exp => (exp.company || exp.role) && (
-                                        <div key={exp.id}>
-                                            <div className="flex justify-between items-baseline mb-0.5">
-                                                <h4 className="text-[12px] font-bold text-gray-900">{exp.company}</h4>
-                                                <span className="text-[10px] text-gray-600 font-bold">{exp.period}</span>
-                                            </div>
-                                            <div className="text-[10px] font-bold text-gray-600 mb-1 italic">{exp.role}</div>
-                                            <ul className="list-disc pl-4 space-y-0.5">
-                                                {exp.description.map((b, i) => b && (
-                                                    <li key={i} className="text-[10px] text-gray-700 leading-tight">{b}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {data.projects && data.projects.length > 0 && data.projects.some(p => p.title) && (
-                            <div className="mb-6">
-                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Projects</h2>
-                                <div className="space-y-4">
-                                    {data.projects.map(proj => proj.title && (
-                                        <div key={proj.id}>
-                                            <div className="flex justify-between items-start mb-1">
-                                                <div>
-                                                    <h4 className="font-bold text-gray-800 text-sm">{proj.title}</h4>
-                                                    <p className="text-[10px] text-gray-500 font-medium italic">{proj.techStack.join(' | ')}</p>
-                                                </div>
-                                                {proj.link && (
-                                                    <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-[10px] text-pink-600 font-bold hover:underline">
-                                                        Project Link
-                                                    </a>
-                                                )}
-                                            </div>
-                                            <ul className="list-disc pl-4 space-y-0.5">
-                                                {proj.description.map((b, i) => b && (
-                                                    <li key={i} className="text-[10px] text-gray-700 leading-tight">{b}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {data.education && data.education.some(e => e.institution) && (
-                            <div className="mb-6">
-                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Education</h2>
-                                <div className="space-y-3">
-                                    {data.education.map(edu => edu.institution && (
-                                        <div key={edu.id}>
-                                            <div className="flex justify-between items-baseline">
-                                                <h4 className="text-[11px] font-bold text-gray-900">{edu.institution}</h4>
-                                                <span className="text-[10px] text-gray-600 font-bold">{edu.period}</span>
-                                            </div>
-                                            <div className="text-[10px] text-gray-700">{edu.degree} {edu.score && `• ${edu.score}`}</div>
-                                            {edu.relevantCoursework && edu.relevantCoursework.length > 0 && edu.relevantCoursework.some(c => c) && (
-                                                <div className="text-[9px] text-gray-500 mt-0.5">
-                                                    <strong>Relevant Coursework:</strong> {edu.relevantCoursework.filter(c => c).join(', ')}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {((data.certifications && data.certifications.length > 0) || (data.awards && data.awards.length > 0)) && (
-                            <div className="mb-6">
-                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Certifications & Awards</h2>
-                                {data.certifications && data.certifications.length > 0 && (
-                                    <ul className="list-disc pl-4 space-y-0.5">
-                                        {data.certifications.filter(c => c.trim()).map((c, i) => (
-                                            <li key={i} className="text-[10px] text-gray-700">{c}</li>
-                                        ))}
-                                    </ul>
-                                )}
-                                {data.awards && data.awards.length > 0 && (
-                                    <ul className="list-disc pl-4 space-y-0.5 mt-1">
-                                        {data.awards.filter(a => a.trim()).map((a, i) => (
-                                            <li key={i} className="text-[10px] text-gray-700">{a}</li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                        )}
-
-                        {data.activities && data.activities.length > 0 && (
-                            <div className="mb-6">
-                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Extra-Curricular Activities</h2>
-                                <ul className="list-disc pl-4 space-y-0.5">
-                                    {data.activities.filter(act => act.trim()).map((act, i) => (
-                                        <li key={i} className="text-[10px] text-gray-700">{act}</li>
-                                    ))}
+                                    {atsFeedback.length > 3 && (
+                                        <li className="text-xs text-purple-600 font-medium italic">
+                                            + {atsFeedback.length - 3} more improvements available...
+                                        </li>
+                                    )}
                                 </ul>
                             </div>
-                        )}
-
-                        {data.hobbies && data.hobbies.length > 0 && data.hobbies.some(h => h.trim()) && (
-                            <div>
-                                <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Hobbies</h2>
-                                <p className="text-[10px] text-gray-700 leading-relaxed">
-                                    {data.hobbies.filter(h => h.trim()).join(', ')}
-                                </p>
+                        ) : (
+                            <div className="mt-4 flex items-center gap-2 text-green-700 text-xs font-bold bg-green-100 p-2 rounded-lg">
+                                <Icons.CheckCircle size={14} />
+                                Excellent! Your resume is ATS optimized.
                             </div>
                         )}
+
+                        <div className="mt-4 pt-4 border-t border-purple-100">
+                            {!aiSuggestions ? (
+                                <Button
+                                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs"
+                                    onClick={handleAiAnalysis}
+                                    disabled={isAnalyzing}
+                                >
+                                    {isAnalyzing ? (
+                                        <><Icons.Loader2 className="mr-2 h-3 w-3 animate-spin" /> Analyzing...</>
+                                    ) : (
+                                        <><Icons.Bot className="mr-2 h-3 w-3" /> Get AI Keywords & Tips</>
+                                    )}
+                                </Button>
+                            ) : (
+                                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                    <div>
+                                        <h4 className="text-xs font-bold text-gray-800 uppercase flex items-center gap-1 mb-2">
+                                            <Icons.Key className="text-purple-600" size={12} /> Missing Keywords
+                                        </h4>
+                                        <div className="flex flex-wrap gap-1">
+                                            {aiSuggestions.keywords.map((kw, i) => (
+                                                <span key={i} className="text-[10px] bg-red-50 text-red-700 px-2 py-0.5 rounded-full border border-red-100 font-medium">
+                                                    {kw}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xs font-bold text-gray-800 uppercase flex items-center gap-1 mb-2">
+                                            <Icons.Lightbulb className="text-yellow-600" size={12} /> Strategic Tips
+                                        </h4>
+                                        <ul className="space-y-1">
+                                            {aiSuggestions.improvements.map((imp, i) => (
+                                                <li key={i} className="text-[10px] text-gray-600 flex items-start gap-1.5">
+                                                    <span className="text-purple-500 mt-0.5">•</span>
+                                                    {imp}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-full text-[10px] h-7 border-purple-100 text-purple-600"
+                                        onClick={handleAiAnalysis}
+                                        disabled={isAnalyzing}
+                                    >
+                                        <Icons.RefreshCw className="mr-1.5 h-3 w-3" /> Re-Analyze
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    </Card>
+
+                    <div className="p-10 border border-gray-100 bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <div className="relative z-10 max-w-[600px] mx-auto">
+                            <div className="text-center mb-6 border-b-2 border-blue-900 pb-4">
+                                <h1 className="text-2xl font-bold text-[#1e3a8a] uppercase tracking-wide">{data.fullName || 'YOUR NAME'}</h1>
+                                {data.currentRole && <p className="text-sm font-semibold text-gray-600 mt-1">{data.currentRole}</p>}
+                            </div>
+
+                            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] text-gray-700 font-medium mb-8">
+                                {data.contact.phone && <span>{data.contact.phone}</span>}
+                                {data.contact.phone && data.contact.email && <span>|</span>}
+                                {data.contact.email && <span>{data.contact.email}</span>}
+                                {data.contact.location && (
+                                    <><span>|</span><span>{data.contact.location}</span></>
+                                )}
+                                {(data.contact.linkedin || data.contact.github) && <br />}
+                                {data.contact.linkedin && (
+                                    <span className="text-blue-700">{data.contact.linkedin.replace('https://', '').replace('www.', '')}</span>
+                                )}
+                                {data.contact.linkedin && data.contact.github && <span className="mx-1">|</span>}
+                                {data.contact.github && (
+                                    <span className="text-blue-700">{data.contact.github.replace('https://', '').replace('www.', '')}</span>
+                                )}
+                            </div>
+
+                            {data.summary && (
+                                <div className="mb-6">
+                                    <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Professional Summary</h2>
+                                    <p className="text-[11px] text-gray-700 leading-relaxed text-justify">
+                                        {data.summary}
+                                    </p>
+                                </div>
+                            )}
+
+                            {data.skills && data.skills.some(s => s.skills.length > 0) && (
+                                <div className="mb-6">
+                                    <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Skills</h2>
+                                    <div className="space-y-1">
+                                        {data.skills.map(cat => cat.skills.length > 0 && (
+                                            <div key={cat.id} className="text-[11px]">
+                                                <strong className="text-gray-900">{cat.category}: </strong>
+                                                <span className="text-gray-700">{cat.skills.join(' | ')}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {data.experience && data.experience.length > 0 && data.experience.some(e => e.company || e.role) && (
+                                <div className="mb-6">
+                                    <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Experience</h2>
+                                    <div className="space-y-4">
+                                        {data.experience.map(exp => (exp.company || exp.role) && (
+                                            <div key={exp.id}>
+                                                <div className="flex justify-between items-baseline mb-0.5">
+                                                    <h4 className="text-[12px] font-bold text-gray-900">{exp.company}</h4>
+                                                    <span className="text-[10px] text-gray-600 font-bold">{exp.period}</span>
+                                                </div>
+                                                <div className="text-[10px] font-bold text-gray-600 mb-1 italic">{exp.role}</div>
+                                                <ul className="list-disc pl-4 space-y-0.5">
+                                                    {exp.description.map((b, i) => b && (
+                                                        <li key={i} className="text-[10px] text-gray-700 leading-tight">{b}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {data.projects && data.projects.length > 0 && data.projects.some(p => p.title) && (
+                                <div className="mb-6">
+                                    <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Projects</h2>
+                                    <div className="space-y-4">
+                                        {data.projects.map(proj => proj.title && (
+                                            <div key={proj.id}>
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <div>
+                                                        <h4 className="font-bold text-gray-800 text-sm">{proj.title}</h4>
+                                                        <p className="text-[10px] text-gray-500 font-medium italic">{proj.techStack.join(' | ')}</p>
+                                                    </div>
+                                                    {proj.link && (
+                                                        <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-[10px] text-pink-600 font-bold hover:underline">
+                                                            Project Link
+                                                        </a>
+                                                    )}
+                                                </div>
+                                                <ul className="list-disc pl-4 space-y-0.5">
+                                                    {proj.description.map((b, i) => b && (
+                                                        <li key={i} className="text-[10px] text-gray-700 leading-tight">{b}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {data.education && data.education.some(e => e.institution) && (
+                                <div className="mb-6">
+                                    <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Education</h2>
+                                    <div className="space-y-3">
+                                        {data.education.map(edu => edu.institution && (
+                                            <div key={edu.id}>
+                                                <div className="flex justify-between items-baseline">
+                                                    <h4 className="text-[11px] font-bold text-gray-900">{edu.institution}</h4>
+                                                    <span className="text-[10px] text-gray-600 font-bold">{edu.period}</span>
+                                                </div>
+                                                <div className="text-[10px] text-gray-700">{edu.degree} {edu.score && `• ${edu.score}`}</div>
+                                                {edu.relevantCoursework && edu.relevantCoursework.length > 0 && edu.relevantCoursework.some(c => c) && (
+                                                    <div className="text-[9px] text-gray-500 mt-0.5">
+                                                        <strong>Relevant Coursework:</strong> {edu.relevantCoursework.filter(c => c).join(', ')}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {((data.certifications && data.certifications.length > 0) || (data.awards && data.awards.length > 0)) && (
+                                <div className="mb-6">
+                                    <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Certifications & Awards</h2>
+                                    {data.certifications && data.certifications.length > 0 && (
+                                        <ul className="list-disc pl-4 space-y-0.5">
+                                            {data.certifications.filter(c => c.trim()).map((c, i) => (
+                                                <li key={i} className="text-[10px] text-gray-700">{c}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {data.awards && data.awards.length > 0 && (
+                                        <ul className="list-disc pl-4 space-y-0.5 mt-1">
+                                            {data.awards.filter(a => a.trim()).map((a, i) => (
+                                                <li key={i} className="text-[10px] text-gray-700">{a}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
+
+                            {data.activities && data.activities.length > 0 && (
+                                <div className="mb-6">
+                                    <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Extra-Curricular Activities</h2>
+                                    <ul className="list-disc pl-4 space-y-0.5">
+                                        {data.activities.filter(act => act.trim()).map((act, i) => (
+                                            <li key={i} className="text-[10px] text-gray-700">{act}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {data.hobbies && data.hobbies.length > 0 && data.hobbies.some(h => h.trim()) && (
+                                <div>
+                                    <h2 className="text-xs font-bold text-[#1e3a8a] uppercase tracking-widest border-b border-blue-900 pb-1 mb-2">Hobbies</h2>
+                                    <p className="text-[10px] text-gray-700 leading-relaxed">
+                                        {data.hobbies.filter(h => h.trim()).join(', ')}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
