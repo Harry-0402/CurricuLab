@@ -288,40 +288,68 @@ Return ONLY the formatted answer in markdown format.`;
 - Results or outcomes`
         };
 
-        const prompt = `You are a formatting assistant. Your job is to take raw content and format it beautifully with proper markdown structure.
+        // Helper to chunk text
+        const chunkText = (text: string, maxLength: number = 3000): string[] => {
+            if (text.length <= maxLength) return [text];
+            const chunks: string[] = [];
+            let currentChunk = '';
+            const paragraphs = text.split('\n');
 
+            for (const para of paragraphs) {
+                // If a single paragraph is massive, we might force split it, but usually not needed for notes
+                if ((currentChunk.length + para.length) > maxLength && currentChunk.length > 0) {
+                    chunks.push(currentChunk);
+                    currentChunk = '';
+                }
+                currentChunk += para + '\n';
+            }
+            if (currentChunk) chunks.push(currentChunk);
+            return chunks;
+        };
+
+        const chunks = chunkText(content);
+        console.log(`[AI Service] Split content into ${chunks.length} chunks for formatting.`);
+
+        // Process chunks in parallel
+        const formattedChunks = await Promise.all(chunks.map(async (chunk, index) => {
+            const prompt = `You are a formatting assistant part of a pipeline. Your job is to format THIS SPECIFIC CHUNK of content.
+            
 **Title:** ${title}
 **Type:** ${type.replace('_', ' ')}
+**Part:** ${index + 1} of ${chunks.length}
 
-**Raw Content:**
-${content}
+**Raw Content Chunk:**
+${chunk}
 
 ---
 
-**Your Task:** ${typeGuidelines[type]}
+**Your Task:** Format this chunk according to these guidelines:
+${typeGuidelines[type]}
+(Note: Since this is just one part, you might not be able to do all structural elements like "Conclusion" if it's the first part. Just format the content provided logically.)
 
-**General Formatting Rules:**
-1. Use ## for main section headings
-2. Use ### for subsections
-3. Use bullet points or numbered lists where appropriate
-4. Bold key terms and important concepts
-5. Use markdown tables when comparing items
-6. Keep proper paragraph structure
+**Formatting Rules:**
+1. Use ## or ### headings where appropriate based on content
+2. Bold key terms
+3. Use bullet points for lists
+4. Preserve ALL information. DO NOT SUMMARIZE.
 
-**CRITICAL RULES - YOU MUST FOLLOW THESE:**
-- DO NOT trim, shorten, or summarize ANY content
-- DO NOT omit ANY points, details, or information from the original
-- KEEP every single piece of information from the raw content
-- DO NOT change the content or meaning
-- DO NOT add new information that wasn't provided
-- ONLY format and structure what's already there - preserve EVERYTHING
-- Include ALL bullet points, ALL examples, ALL explanations
-- The formatted output should contain 100% of the original information
-- If the content is long, the formatted output should also be long
+**CRITICAL:**
+- Return ONLY the formatted markdown for this chunk.
+- DO NOT add "Part X" headers or metadata.
+- DO NOT wrap in markdown code blocks.
+- PRESERVE 100% of the content details.
 
-Return ONLY the formatted content in markdown format. Preserve ALL content.`;
+Format this chunk now:`;
 
-        return this.generateContent(prompt);
+            try {
+                return await this.generateContent(prompt);
+            } catch (err) {
+                console.error(`Failed to format chunk ${index + 1}`, err);
+                return chunk; // Fallback to raw chunk if AI fails
+            }
+        }));
+
+        return formattedChunks.join('\n\n');
     }
 };
 

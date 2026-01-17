@@ -72,9 +72,6 @@ export function VaultContent() {
     }, [activeSubjectId, selectedType]);
 
     // Auto-format content when resource is selected
-    // Skip AI formatting for long content (over 2000 chars) to avoid truncation
-    const CONTENT_LENGTH_LIMIT = 2000;
-
     useEffect(() => {
         const formatContent = async () => {
             if (!selectedResource?.content) {
@@ -88,14 +85,7 @@ export function VaultContent() {
                 return;
             }
 
-            // Skip AI formatting for long content - display raw markdown instead
-            if (selectedResource.content.length > CONTENT_LENGTH_LIMIT) {
-                console.log(`Content too long (${selectedResource.content.length} chars), skipping AI formatting`);
-                setFormattedContent(selectedResource.content);
-                return;
-            }
-
-            // Format with AI (only for shorter content)
+            // Format with AI (AiService now handles chunking for large content)
             setIsFormatting(true);
             setFormattedContent('');
 
