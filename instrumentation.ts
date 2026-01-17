@@ -1,10 +1,11 @@
 export function register() {
-    // Only run in Node.js runtime (server-side)
-    if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Only run in Node.js runtime (server-side) AND in production
+    if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.NODE_ENV === 'production') {
         const TARGET_URL = 'https://curriculab-tyi9.onrender.com/';
         const PING_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
         // Use a global variable to prevent multiple intervals during hot-reloads in development
+        // (Though less relevant in prod, good practice)
         if (!(global as any).__KEEP_ALIVE_ACTIVE__) {
             (global as any).__KEEP_ALIVE_ACTIVE__ = true;
 
@@ -33,6 +34,7 @@ async function pingServer(url: string) {
             console.warn(`[KeepAlive] Failed. Status: ${res.status}`);
         }
     } catch (error) {
-        console.error(`[KeepAlive] Network Error:`, error);
+        // Silently fail or log minimal error to avoid noise
+        console.error(`[KeepAlive] Network Error (check if URL is valid): ${url}`);
     }
 }

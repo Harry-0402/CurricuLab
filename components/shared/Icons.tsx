@@ -1,4 +1,4 @@
-import { FileText, Database, Code2, BookOpen, Settings, Home, Search, Calendar, CheckSquare, BarChart3, Clock, TrendingUp, PlusCircle, User, ChevronRight, ChevronLeft, ChevronDown, Bookmark as BookmarkIcon, Lightbulb, GraduationCap, PanelRight, Download, Check, Copy, Image as ImageIcon, Edit, Trash2, MoreVertical, Upload, Users, Bot, Send, Lock, LogIn, LogOut, Info, Share2, CheckCircle, Sparkles, Wand2, Loader2, X, Printer, AlertTriangle, ArrowLeft, Plus, Link2, Globe, RefreshCw, Briefcase, Heart, Music } from "lucide-react";
+import { FileText, Database, Code2, BookOpen, Settings, Home, Search, Calendar, CheckSquare, BarChart3, Clock, TrendingUp, PlusCircle, User, ChevronRight, ChevronLeft, ChevronDown, Bookmark as BookmarkIcon, Lightbulb, GraduationCap, PanelRight, Download, Check, Copy, Image as ImageIcon, Edit, Trash2, MoreVertical, Upload, Users, Bot, Send, Lock, LogIn, LogOut, Info, Share2, CheckCircle, Sparkles, Wand2, Loader2, X, Printer, AlertTriangle, ArrowLeft, Plus, Link2, Globe, RefreshCw, Briefcase, Heart, Music, Youtube, ArrowUpRight, ExternalLink, ArrowRight } from "lucide-react";
 
 export const Icons = {
     Printer,
@@ -59,5 +59,10 @@ export const Icons = {
     RefreshCw,
     Briefcase,
     Heart,
-    Music
+    Music,
+    Youtube,
+    ArrowUpRight,
+    ExternalLink,
+    ArrowRight,
+    BookOpen
 };

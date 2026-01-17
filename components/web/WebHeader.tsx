@@ -23,12 +23,10 @@ export function WebHeader() {
             <div className="flex items-center gap-6">
                 <Link
                     href="/tools/resume"
-                    className="flex items-center gap-3 bg-fill-600 hover:bg-fill-700 text-black px-5 py-3 rounded-2xl shadow-lg shadow-blue-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white px-4 py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
                 >
-                    <div className="bg-white/20 p-1.5 rounded-lg">
-                        <Icons.Briefcase size={18} className="text-black" />
-                    </div>
-                    <p className="text-sm font-bold">AI Resume Architect</p>
+                    <Icons.Briefcase size={16} />
+                    <span className="text-xs font-bold uppercase tracking-wider">AI Resume Architect</span>
                 </Link>
 
                 <div className="flex items-center gap-2">

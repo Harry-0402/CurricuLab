@@ -10,9 +10,10 @@ export interface Resource {
     id: string;
     title: string;
     description: string;
-    type: 'Video' | 'PDF' | 'Link' | 'Template';
+    type: 'Video' | 'PDF' | 'Link' | 'Template' | 'Article';
     url: string;
     category: string;
+    content?: string;
 }
 
 export interface Prompt {
@@ -28,21 +29,603 @@ export const LOCAL_UNITS: Unit[] = [];
 export const LOCAL_NOTES: Note[] = [];
 export const LOCAL_QUESTIONS: Question[] = [];
 export const LOCAL_RESOURCES: Resource[] = [
+    // --- Part I: Core Technical Competencies ---
     {
-        id: '1',
-        title: 'Mastering Business Analysis',
-        description: 'A comprehensive guide to modern BA techniques and tools.',
-        type: 'PDF',
-        url: '#',
-        category: 'Business Analysis'
+        id: 'tech-1',
+        title: 'Kaggle Learn',
+        description: 'Free micro-courses on Pandas, SQL, and Visualization.',
+        type: 'Link',
+        url: 'https://www.kaggle.com/learn',
+        category: 'Technical Skills'
     },
     {
-        id: '2',
-        title: 'SDLC Life Cycle Explained',
-        description: 'Video tutorial covering all phases of the Software Development Life Cycle.',
+        id: 'tech-2',
+        title: 'Google Analytics Academy',
+        description: 'Web data analysis courses.',
+        type: 'Link',
+        url: 'https://analytics.google.com/analytics/academy/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-3',
+        title: 'LeetCode Database',
+        description: 'Practice SQL queries with real interview questions.',
+        type: 'Link',
+        url: 'https://leetcode.com/problemset/database/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-4',
+        title: 'Stratascratch',
+        description: 'Real interview questions from companies like DoorDash and Uber.',
+        type: 'Link',
+        url: 'https://www.stratascratch.com/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-5',
+        title: 'W3Schools SQL',
+        description: 'Best syntax reference for SQL.',
+        type: 'Link',
+        url: 'https://www.w3schools.com/sql/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-6',
+        title: 'Tableau Public',
+        description: 'Download the free tool and host your portfolio.',
+        type: 'Link',
+        url: 'https://public.tableau.com/s/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-7',
+        title: 'Workout Wednesday',
+        description: 'Weekly challenges for Power BI & Tableau.',
+        type: 'Link',
+        url: 'http://www.workout-wednesday.com/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-8',
+        title: 'MakeoverMonday',
+        description: 'Community project to improve existing charts.',
+        type: 'Link',
+        url: 'https://www.makeovermonday.co.uk/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-9',
+        title: 'Fast.ai',
+        description: 'Practical Deep Learning for Coders.',
+        type: 'Link',
+        url: 'https://www.fast.ai/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-10',
+        title: 'Google ML Crash Course',
+        description: 'Google\'s fast-paced introduction to machine learning.',
+        type: 'Link',
+        url: 'https://developers.google.com/machine-learning/crash-course',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-11',
+        title: 'AWS Educate',
+        description: 'Cloud career pathways for students.',
+        type: 'Link',
+        url: 'https://aws.amazon.com/education/awseducate/',
+        category: 'Technical Skills'
+    },
+    {
+        id: 'tech-12',
+        title: 'Microsoft Learn Azure Data',
+        description: 'Azure Data Fundamentals training path.',
+        type: 'Link',
+        url: 'https://learn.microsoft.com/en-us/training/paths/azure-data-fundamentals-explore-core-data-concepts/',
+        category: 'Technical Skills'
+    },
+
+    // --- Part II: Business Intelligence & Strategy ---
+    {
+        id: 'biz-1',
+        title: 'Investopedia',
+        description: 'Search for terms like "EBITDA", "ROI", "Churn Rate".',
+        type: 'Link',
+        url: 'https://www.investopedia.com/',
+        category: 'Business Strategy'
+    },
+    {
+        id: 'biz-2',
+        title: 'Strategy+Business',
+        description: 'Insights on global business strategy and management.',
+        type: 'Link',
+        url: 'https://www.strategy-business.com/',
+        category: 'Business Strategy'
+    },
+    {
+        id: 'biz-3',
+        title: 'CaseInterview.com',
+        description: 'Victor Cheng\'s free frameworks and case interview prep.',
+        type: 'Link',
+        url: 'https://caseinterview.com/',
+        category: 'Business Strategy'
+    },
+    {
+        id: 'biz-4',
+        title: 'Management Consulted',
+        description: 'Case library and math drills for consulting prep.',
+        type: 'Link',
+        url: 'https://managementconsulted.com/',
+        category: 'Business Strategy'
+    },
+    {
+        id: 'biz-5',
+        title: 'McKinsey Featured Insights',
+        description: 'Research and insights from McKinsey & Company.',
+        type: 'Link',
+        url: 'https://www.mckinsey.com/featured-insights',
+        category: 'Business Strategy'
+    },
+    {
+        id: 'biz-6',
+        title: 'CB Insights',
+        description: 'Tech market intelligence.',
+        type: 'Link',
+        url: 'https://www.cbinsights.com/research/',
+        category: 'Business Strategy'
+    },
+    {
+        id: 'biz-7',
+        title: 'Data & Society',
+        description: 'Research on the social implications of data-centric technologies.',
+        type: 'Link',
+        url: 'https://datasociety.net/',
+        category: 'Business Strategy'
+    },
+    {
+        id: 'biz-8',
+        title: 'EU Ethics Guidelines',
+        description: 'Ethics Guidelines for Trustworthy AI.',
+        type: 'Link',
+        url: 'https://digital-strategy.ec.europa.eu/en/library/ethics-guidelines-trustworthy-ai',
+        category: 'Business Strategy'
+    },
+
+    // --- Part III: Soft Skills & Career Velocity ---
+    {
+        id: 'car-1',
+        title: 'Toastmasters International',
+        description: 'Find a club near you to improve communication skills.',
+        type: 'Link',
+        url: 'https://www.toastmasters.org/find-a-club',
+        category: 'Career & Soft Skills'
+    },
+    {
+        id: 'car-2',
+        title: 'TED Talks',
+        description: 'Ideas worth spreading - great for presentation inspiration.',
+        type: 'Link',
+        url: 'https://www.ted.com/',
+        category: 'Career & Soft Skills'
+    },
+    {
+        id: 'car-3',
+        title: 'Novoresume',
+        description: 'ATS-friendly resume templates.',
+        type: 'Link',
+        url: 'https://novoresume.com/',
+        category: 'Career & Soft Skills'
+    },
+    {
+        id: 'car-4',
+        title: 'Pramp (Exponent)',
+        description: 'Free peer-to-peer mock interviews.',
+        type: 'Link',
+        url: 'https://www.pramp.com/',
+        category: 'Career & Soft Skills'
+    },
+    {
+        id: 'car-5',
+        title: 'Meetup',
+        description: 'Find Data Science meetups in your city.',
+        type: 'Link',
+        url: 'https://www.meetup.com/',
+        category: 'Career & Soft Skills'
+    },
+    {
+        id: 'car-6',
+        title: 'Notion',
+        description: 'Organize your study plan.',
+        type: 'Link',
+        url: 'https://www.notion.so/',
+        category: 'Career & Soft Skills'
+    },
+    {
+        id: 'car-7',
+        title: 'Pomodoro Tracker',
+        description: 'Simple timer for deep work sessions.',
+        type: 'Link',
+        url: 'https://pomofocus.io/',
+        category: 'Career & Soft Skills'
+    },
+    {
+        id: 'car-8',
+        title: '80,000 Hours',
+        description: 'High-impact career guide.',
+        type: 'Link',
+        url: 'https://80000hours.org/',
+        category: 'Career & Soft Skills'
+    },
+
+    // --- Part IV: Continuous Learning & Trends ---
+    {
+        id: 'learn-1',
+        title: 'Google Data Analytics Cert',
+        description: 'Professional certificate on Coursera.',
+        type: 'Link',
+        url: 'https://www.coursera.org/professional-certificates/google-data-analytics',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-2',
+        title: 'edX MicroMasters',
+        description: 'Graduate-level courses from top universities.',
+        type: 'Link',
+        url: 'https://www.edx.org/micromasters',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-3',
+        title: 'Storytelling with Data',
+        description: 'Book recommendation for data visualization.',
+        type: 'Link',
+        url: 'https://www.storytellingwithdata.com/books',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-4',
+        title: 'Naked Statistics',
+        description: 'Book recommendation on statistical concepts.',
+        type: 'Link',
+        url: 'https://wwnorton.com/books/naked-statistics/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-5',
+        title: 'Towards Data Science',
+        description: 'Medium publication for data science articles.',
+        type: 'Link',
+        url: 'https://towardsdatascience.com/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-6',
+        title: 'Data Skeptic Podcast',
+        description: 'Podcast on data science, statistics, machine learning, and AI.',
+        type: 'Link',
+        url: 'https://dataskeptic.com/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-7',
+        title: 'INFORMS',
+        description: 'Institute for Operations Research and the Management Sciences.',
+        type: 'Link',
+        url: 'https://www.informs.org/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-8',
+        title: 'IEEE Computer Society',
+        description: 'Professional association for computer science.',
+        type: 'Link',
+        url: 'https://www.computer.org/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-9',
+        title: 'Glassdoor',
+        description: 'Company reviews and salaries.',
+        type: 'Link',
+        url: 'https://www.glassdoor.com/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-10',
+        title: 'LinkedIn Jobs',
+        description: 'Job search engine.',
+        type: 'Link',
+        url: 'https://www.linkedin.com/jobs/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-11',
+        title: 'GitHub',
+        description: 'Host and review code, manage projects, and build software.',
+        type: 'Link',
+        url: 'https://github.com/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-12',
+        title: 'Papers with Code',
+        description: 'ML papers with code implementations.',
+        type: 'Link',
+        url: 'https://paperswithcode.com/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-13',
+        title: 'Morning Brew',
+        description: 'Daily business news newsletter.',
+        type: 'Link',
+        url: 'https://www.morningbrew.com/',
+        category: 'Learning & Trends'
+    },
+    {
+        id: 'learn-14',
+        title: 'TLDR Newsletter',
+        description: 'Daily tech news newsletter.',
+        type: 'Link',
+        url: 'https://tldr.tech/',
+        category: 'Learning & Trends'
+    },
+
+    // --- Hero Level YouTube ---
+    {
+        id: 'hero-yt-1',
+        title: 'Alex The Analyst',
+        description: 'Guided portfolio projects (SQL -> Excel -> Tableau).',
         type: 'Video',
+        url: 'https://www.youtube.com/c/AlexTheAnalyst',
+        category: 'Hero: YouTube'
+    },
+    {
+        id: 'hero-yt-2',
+        title: 'Guy in a Cube',
+        description: 'Advanced Power BI & DAX. Real-world complex problems.',
+        type: 'Video',
+        url: 'https://www.youtube.com/c/GuyinaCube',
+        category: 'Hero: YouTube'
+    },
+    {
+        id: 'hero-yt-3',
+        title: 'Seattle Data Guy',
+        description: 'Data Engineering & ETL pipelines.',
+        type: 'Video',
+        url: 'https://www.youtube.com/c/SeattleDataGuy',
+        category: 'Hero: YouTube'
+    },
+    {
+        id: 'hero-yt-4',
+        title: 'Sundas Khalid',
+        description: 'FAANG Interview Prep & Behavioral questions.',
+        type: 'Video',
+        url: 'https://www.youtube.com/c/SundasKhalid',
+        category: 'Hero: YouTube'
+    },
+    {
+        id: 'hero-yt-5',
+        title: 'Thu Vu data analytics',
+        description: 'Python automation & unique datasets.',
+        type: 'Video',
+        url: 'https://www.youtube.com/c/ThuVudataanalytics',
+        category: 'Hero: YouTube'
+    },
+    {
+        id: 'hero-yt-6',
+        title: 'StatQuest (Josh Starmer)',
+        description: 'Statistics intuition and Machine Learning concepts.',
+        type: 'Video',
+        url: 'https://www.youtube.com/user/joshstarmer',
+        category: 'Hero: YouTube'
+    },
+    {
+        id: 'hero-yt-7',
+        title: 'Dr. Nancy Li',
+        description: 'Product Sense & Business Analytics.',
+        type: 'Video',
+        url: 'https://www.youtube.com/c/DrNancyLi',
+        category: 'Hero: YouTube'
+    },
+    {
+        id: 'hero-yt-8',
+        title: 'Krish Naik',
+        description: 'End-to-End Data Science & Deployment.',
+        type: 'Video',
+        url: 'https://www.youtube.com/user/krishnaik06',
+        category: 'Hero: YouTube'
+    },
+
+    // --- Special Guides (content-based) ---
+    {
+        id: 'guide-roadmap',
+        title: 'Zero to Hero Roadmap',
+        description: 'A 6-month comprehensive roadmap to becoming a "Hero" Analyst.',
+        type: 'Article',
         url: '#',
-        category: 'Development'
+        category: 'Hero: Roadmap',
+        content: `# The "Zero to Hero" Roadmap
+
+To truly bridge the gap from "Competent" to "Hero," you need to go beyond standard syllabi.
+
+### The 3 Core Pillars
+1. **End-to-End Projects**: Building something from scratch.
+2. **Advanced "Dirty" Work**: Cleaning messy data, not just using clean Kaggle datasets.
+3. **Domain Dominance**: Understanding the business logic, not just the code.
+
+### 6-Month Action Plan
+
+#### Month 1-2: The Foundation
+*Use the Syllabus Resources (Part I list) to pass your exams and understand the vocabulary.*
+
+#### Month 3-4: The Application
+*Use **Alex The Analyst** and **Thu Vu** (from the YouTube list) to build 3 solid projects.*
+* **Project 1**: SQL Data Cleaning.
+* **Project 2**: Power BI Dashboard for Sales.
+* **Project 3**: Python Exploratory Analysis of a unique dataset (e.g., Cricket scores, Stock market).
+* **Action**: Post them on GitHub/LinkedIn.
+
+#### Month 5-6: The Polish
+*Use **Sundas Khalid** and **Stratascratch** to prep for the actual interview environment.*
+
+### Professor's Verdict
+If you consume the syllabus content + the 7 "Hero" channels, and **actually do the work** (not just watch), you will be in the top 1% of freshers. Stop searching for more links now; **start building**.`
+    },
+    {
+        id: 'guide-interview',
+        title: 'Interview Cheat Sheet',
+        description: 'Top 21 high-probability questions for Google, Amazon, Deloitte, TCS/Accenture.',
+        type: 'Article',
+        url: '#',
+        category: 'Hero: Interview',
+        content: `# Comprehensive Interview "Cheat Sheet"
+
+I have curated a list of 21 high-probability questions per company, focusing on the "Zero to Hero" transition.
+
+## 1. Google (Role: Business Analyst / Data Analyst)
+**Focus**: Product Sense and Analytical Thinking.
+
+### Top Questions
+1. **Metric Definition**: How would you measure the success of Google Maps' "Save Route" feature?
+2. **Product Insight**: YouTube watch time is up 10%, but user retention is down 5%. Why?
+3. **Spam Detection**: How would you design a system to detect fake reviews on the Play Store?
+4. **A/B Testing**: We want to test a new search bar design. What metrics would you track?
+...
+*(See full list in your study notes)*
+
+### Solution Spotlight: YouTube Metrics
+* **Hypothesis 1**: Clickbait titles increasing views but causing high bounce rate.
+* **Hypothesis 2**: Technical bugs (buffering).
+* **Hypothesis 3**: New feature cannibalization (e.g., Shorts).
+* **Action**: Segment data by device, region, and video type.
+
+---
+
+## 2. Amazon (Role: BIE / Business Analyst)
+**Focus**: Leadership Principles and SQL efficiency.
+
+### Top Questions
+1. **Leadership**: Tell me about a time you disagreed with your manager. (Have Backbone)
+2. **SQL**: Find the top 3 selling products in each category.
+3. **SQL**: Calculate the month-over-month growth rate of Prime subscriptions.
+4. **Data Modeling**: Design a Star Schema for Amazon's Order Management System.
+...
+
+### Solution Spotlight: Churn SQL
+\`\`\`sql
+SELECT A.customer_id
+FROM Orders A
+LEFT JOIN Orders B ON A.customer_id = B.customer_id 
+AND B.order_date BETWEEN '2025-02-01' AND '2025-02-28'
+WHERE A.order_date BETWEEN '2025-01-01' AND '2025-01-31'
+AND B.customer_id IS NULL;
+\`\`\`
+
+---
+
+## 3. Deloitte (Role: Strategy & Operations Analyst)
+**Focus**: Consulting Fit, Communication, and Case Studies.
+
+### Top Questions
+1. **Guesstimate**: Estimate the number of traffic lights in Mumbai.
+2. **Market Sizing**: What is the market size of nappies in India?
+3. **Profitability Case**: A cement manufacturer's profits are down 15%. Diagnose the problem.
+...
+
+### Solution Spotlight: Profitability Case
+* **Framework**: Profits = Revenue - Cost.
+* **Branch 1 (Revenue)**: Prices down? Volume down?
+* **Branch 2 (Cost)**: Fixed costs (Rent)? Variable costs (Raw materials)?
+
+---
+
+## 4. TCS / Accenture (Role: Business Analyst / Data Analyst)
+**Focus**: Core Basics, SQL, and Process Knowledge (Agile/SDLC).
+
+### Top Questions
+1. **Basics**: Who is a Business Analyst?
+2. **Process**: Explain the SDLC (Software Development Life Cycle).
+3. **SQL**: Difference between DELETE, DROP, and TRUNCATE?
+4. **SQL**: Find the 2nd highest salary from the Employee table.
+...
+
+### Solution Spotlight: 2nd Highest Salary
+\`\`\`sql
+SELECT MAX(Salary)
+FROM Employee
+WHERE Salary < (SELECT MAX(Salary) FROM Employee);
+\`\`\`
+
+### Professor's "Hero" Advice for 2026
+* **Google/Amazon**: Practice Medium-level SQL on LeetCode.
+* **Deloitte**: Polish communication (Point 1, Point 2, Conclusion).
+* **TCS/Accenture**: Know definitions (Agile vs Waterfall).
+`
+    },
+    {
+        id: 'coding-platforms',
+        title: 'Top Coding Platforms',
+        description: 'Curated list of platforms for "Zero to Hero" coding skills.',
+        type: 'Article',
+        url: '#',
+        category: 'Hero: Coding',
+        content: `# Top Websites to Enhance Coding Skills
+
+### 1. The "Gold Standard" for Interviews
+* **LeetCode**: #1 for technical interviews. "SQL 50" Study Plan is essential.
+* **Stratascratch**: Real interview questions from data science companies.
+* **HackerRank**: Used by many MNCs for screening. Good for basic certifications.
+
+### 2. The "Real-World Project" Builders
+* **DataCamp**: Interactive, applied skills (e.g., "Marketing Analytics in Python").
+* **Codecademy**: Good for syntax and first end-to-end projects.
+* **Kaggle**: The home of Data Science. Competitions are highly valued.
+
+### 3. The "Cloud & Big Data" Giants
+* **AWS Educate**: Cloud data basics (AWS Certified Cloud Practitioner).
+* **Microsoft Learn**: Power BI mastery (PL-300).
+* **Google Cloud Skills Boost**: BigQuery and Google Data Analytics Cert.
+
+### Recommendation
+1. **For Resume**: HackerRank SQL (Intermediate) badge.
+2. **For Job Skills**: DataCamp Data Analyst track.
+3. **For Interview Prep**: 1 SQL question on LeetCode every day.
+`
+    },
+    {
+        id: 'coding-leetcode',
+        title: 'LeetCode',
+        description: 'Gold standard for interview prep.',
+        type: 'Link',
+        url: 'https://leetcode.com',
+        category: 'Hero: Coding'
+    },
+    {
+        id: 'coding-stratascratch',
+        title: 'Stratascratch',
+        description: 'Real data science interview questions.',
+        type: 'Link',
+        url: 'https://www.stratascratch.com',
+        category: 'Hero: Coding'
+    },
+    {
+        id: 'coding-hackerrank',
+        title: 'HackerRank',
+        description: 'Skill assessments and certifications.',
+        type: 'Link',
+        url: 'https://www.hackerrank.com',
+        category: 'Hero: Coding'
+    },
+    {
+        id: 'coding-datacamp',
+        title: 'DataCamp',
+        description: 'Interactive learning for data skills.',
+        type: 'Link',
+        url: 'https://www.datacamp.com',
+        category: 'Hero: Coding'
     }
 ];
 
