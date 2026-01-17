@@ -1,0 +1,128 @@
+{
+  "generated_for": "Business Analytics (MBA / BA students)",
+  "categories": [
+    {
+      "category": "Business Analytics Foundations",
+      "items": [
+        {
+          "title": "4 Types of Data Analytics to Improve Decision-Making",
+          "publisher": "Harvard Business School Online",
+          "url": "https://online.hbs.edu/blog/post/types-of-data-analysis",
+          "tags": [
+            "descriptive",
+            "diagnostic",
+            "predictive",
+            "prescriptive"
+          ]
+        },
+        {
+          "title": "Descriptive, Predictive, and Prescriptive Analytics",
+          "publisher": "University of Bath Online",
+          "url": "https://online.bath.ac.uk/content/descriptive-predictive-and-prescriptive-three-types-business-analytics",
+          "tags": [
+            "business analytics basics"
+          ]
+        },
+        {
+          "title": "The 4 Types of Data Analytics Guide",
+          "publisher": "insightsoftware",
+          "url": "https://insightsoftware.com/blog/comparing-descriptive-predictive-prescriptive-and-diagnostic-analytics/",
+          "tags": [
+            "analytics overview"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "SQL for Business Analytics",
+      "items": [
+        {
+          "title": "SQL Tutorial",
+          "publisher": "W3Schools",
+          "url": "https://www.w3schools.com/sql/",
+          "tags": [
+            "sql basics"
+          ]
+        },
+        {
+          "title": "SQL for Data Analysis: Tutorial Introduction",
+          "publisher": "ThoughtSpot",
+          "url": "https://www.thoughtspot.com/sql-tutorial/introduction-to-sql",
+          "tags": [
+            "sql for analysts"
+          ]
+        },
+        {
+          "title": "SQL for Data Analysis Tutorial (Beginners)",
+          "publisher": "Data36",
+          "url": "https://data36.com/sql-for-data-analysis-tutorial-beginners/",
+          "tags": [
+            "hands-on sql"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Statistics & Hypothesis Testing",
+      "items": [
+        {
+          "title": "Comprehensive guidelines for appropriate statistical analysis methods",
+          "publisher": "PubMed Central (J Kim, 2024)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11467495/",
+          "tags": [
+            "choosing tests",
+            "hypothesis testing"
+          ]
+        },
+        {
+          "title": "Understanding Regression Analysis: Hypothesis Testing",
+          "publisher": "SAGE Research Methods",
+          "url": "https://methods.sagepub.com/book/mono/understanding-regression-analysis/chpt/hypothesis-testing",
+          "tags": [
+            "regression",
+            "hypothesis tests"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Data Visualization & Storytelling",
+      "items": [
+        {
+          "title": "Data Visualization Tips and Best Practices",
+          "publisher": "Tableau",
+          "url": "https://www.tableau.com/visualization/data-visualization-best-practices",
+          "tags": [
+            "viz best practices"
+          ]
+        },
+        {
+          "title": "Data Storytelling: How to Tell a Great Story with Data",
+          "publisher": "ThoughtSpot",
+          "url": "https://www.thoughtspot.com/data-trends/best-practices/data-storytelling",
+          "tags": [
+            "storytelling"
+          ]
+        },
+        {
+          "title": "Data Storytelling Best Practices: From Dashboards to Impact",
+          "publisher": "Domo",
+          "url": "https://www.domo.com/blog/data-storytelling-best-practices-from-dashboards-to-impact",
+          "tags": [
+            "dashboards",
+            "storytelling"
+          ]
+        },
+        {
+          "title": "DATA VISUALIZATION, DASHBOARDS & STORYTELLING (PDF)",
+          "publisher": "IE University (PDF)",
+          "url": "https://files.thesaurus.ie.edu/data-visualization-dashboards-storytelling.pdf",
+          "tags": [
+            "pdf notes",
+            "dashboards"
+          ]
+        }
+      ]
+    }
+  ]
+}
