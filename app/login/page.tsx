@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/lib/services/auth.service';
-import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 
 export default function LoginPage() {
@@ -21,7 +20,8 @@ export default function LoginPage() {
         try {
             const { error } = await AuthService.signIn(email, password);
             if (error) throw error;
-            router.push('/'); // Redirect to home or previous page
+            router.push('/');
+            router.refresh(); // Refresh to ensure middleware/client state updates
         } catch (err: any) {
             setError(err.message || "Failed to sign in");
         } finally {
@@ -30,78 +30,95 @@ export default function LoginPage() {
     };
 
     return (
-        <WebAppShell>
-            <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-                <div className="w-full max-w-md bg-white p-8 rounded-[35px] border border-gray-100 shadow-xl">
-                    <div className="text-center mb-8">
-                        <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <Icons.Lock size={32} />
+        <div className="min-h-screen w-full bg-[#fafbfc] flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Decorative Background Elements */}
+            <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-50/50 to-transparent -z-10" />
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-100/40 rounded-full blur-3xl -z-10" />
+            <div className="absolute top-1/2 -left-24 w-72 h-72 bg-purple-100/30 rounded-full blur-3xl -z-10" />
+
+            <div className="w-full max-w-[420px] bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-[40px] border border-white/50 shadow-2xl shadow-blue-500/5">
+                <div className="text-center mb-10">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[28px] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20 transform rotate-3">
+                        <Icons.LayoutGrid size={36} />
+                    </div>
+                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">Welcome Back</h1>
+                    <p className="text-gray-500 font-medium mt-3 text-sm">Enter your credentials to access the workspace</p>
+                </div>
+
+                <form onSubmit={handleLogin} className="space-y-5">
+                    {error && (
+                        <div className="p-4 bg-red-50/50 text-red-600 text-xs font-bold rounded-2xl border border-red-100 flex items-center gap-3 animate-in slide-in-from-top-2">
+                            <Icons.AlertTriangle size={16} className="shrink-0" />
+                            {error}
                         </div>
-                        <h1 className="text-3xl font-black text-gray-900">Team Login</h1>
-                        <p className="text-gray-500 font-bold mt-2">Sign in to manage content</p>
+                    )}
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Email Address</label>
+                        <div className="relative group">
+                            <div className="absolute left-5 top-4 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                <Icons.Mail size={18} />
+                            </div>
+                            <input
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-bold text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-300 placeholder:font-medium"
+                                placeholder="name@curriculab.com"
+                            />
+                        </div>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-4">
-                        {error && (
-                            <div className="p-4 bg-red-50 text-red-600 text-sm font-bold rounded-xl border border-red-100 flex items-center gap-2">
-                                <Icons.Info size={16} />
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-black uppercase tracking-wider text-gray-400 pl-1">Email</label>
-                            <div className="relative">
-                                <Icons.Profile className="absolute left-4 top-3 text-gray-400" size={20} />
-                                <input
-                                    type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-                                    placeholder="name@curriculab.com"
-                                />
-                            </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between pl-4 pr-1">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Password</label>
+                            <a href="/forgot-password" className="text-[10px] font-bold text-blue-500 hover:text-blue-700 transition-colors">
+                                Forgot Password?
+                            </a>
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-black uppercase tracking-wider text-gray-400 pl-1">Password</label>
-                            <div className="relative">
-                                <Icons.Lock className="absolute left-4 top-3 text-gray-400" size={20} />
-                                <input
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-                                    placeholder="••••••••"
-                                />
+                        <div className="relative group">
+                            <div className="absolute left-5 top-4 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                <Icons.Lock size={18} />
                             </div>
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-bold text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-300 placeholder:font-medium"
+                                placeholder="••••••••"
+                            />
                         </div>
+                    </div>
 
+                    <div className="pt-2">
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-4 bg-blue-600 text-white rounded-xl font-black text-lg hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-200 disabled:opacity-50 disabled:pointer-events-none mt-4 flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-gray-900 text-white rounded-[24px] font-black text-sm uppercase tracking-wider hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-gray-200 disabled:opacity-70 disabled:pointer-events-none disabled:scale-100 flex items-center justify-center gap-2 group"
                         >
                             {loading ? (
                                 <>
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    Signing In...
+                                    <Icons.Loader2 size={18} className="animate-spin" />
+                                    <span>Verifying...</span>
                                 </>
                             ) : (
                                 <>
-                                    Sign In <Icons.ChevronRight size={20} />
+                                    <span>Sign In</span>
+                                    <Icons.ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                 </>
                             )}
                         </button>
-                    </form>
+                    </div>
+                </form>
 
-                    <p className="text-center text-xs font-bold text-gray-400 mt-8">
-                        Authorized Personnel Only • CurricuLab
+                <div className="mt-10 pt-8 border-t border-gray-100">
+                    <p className="text-center text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+                        Protected System • CurricuLab IO
                     </p>
                 </div>
             </div>
-        </WebAppShell>
+        </div>
     );
 }

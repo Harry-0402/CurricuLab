@@ -36,5 +36,19 @@ export const AuthService = {
             callback(session?.user ?? null);
         });
         return subscription;
+    },
+
+    async resetPasswordForEmail(email: string) {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/auth/callback?next=/update-password`,
+        });
+        return { data, error };
+    },
+
+    async updateUserPassword(password: string) {
+        const { data, error } = await supabase.auth.updateUser({
+            password: password
+        });
+        return { data, error };
     }
 };
