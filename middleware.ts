@@ -38,7 +38,11 @@ export async function middleware(req: NextRequest) {
 
     // Secure Dashboard Protection
     // If no session and trying to access protected routes
-    if (!session && req.nextUrl.pathname !== '/login' && !req.nextUrl.pathname.startsWith('/auth')) {
+    if (!session &&
+        req.nextUrl.pathname !== '/login' &&
+        req.nextUrl.pathname !== '/forgot-password' &&
+        !req.nextUrl.pathname.startsWith('/auth')
+    ) {
         const redirectUrl = req.nextUrl.clone();
         redirectUrl.pathname = '/login';
         return NextResponse.redirect(redirectUrl);
