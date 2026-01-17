@@ -1,9 +1,28 @@
 "use client"
 
-import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { AuthService } from '@/lib/services/auth.service';
 import { Icons } from '@/components/shared/Icons';
 
 export default function UnauthorizedPage() {
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+
+    const handleLogout = async () => {
+        setLoading(true);
+        try {
+            await AuthService.signOut();
+            router.push('/login');
+        } catch (error) {
+            console.error("Logout failed:", error);
+            // Fallback redirect even if signOut fails
+            router.push('/login');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
             <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl text-center border border-gray-100">
@@ -17,18 +36,18 @@ export default function UnauthorizedPage() {
                 </p>
 
                 <div className="space-y-3">
-                    <Link
-                        href="/login"
-                        onClick={() => {
-                            // Force clear any client side state if needed
-                            // In a real app, we might want to call signOut() here
-                            import('@/lib/services/auth.service').then(m => m.AuthService.signOut())
-                        }}
-                        className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
+                    <button
+                        onClick={handleLogout}
+                        disabled={loading}
+                        className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:pointer-events-none"
                     >
-                        <Icons.LogOut size={18} />
-                        Sign Out & specificy Account
-                    </Link>
+                        {loading ? (
+                            <Icons.Loader2 size={18} className="animate-spin" />
+                        ) : (
+                            <Icons.LogOut size={18} />
+                        )}
+                        {loading ? "Signing Out..." : "Sign Out & Specify Account"}
+                    </button>
                 </div>
             </div>
         </div>
