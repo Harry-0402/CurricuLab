@@ -237,166 +237,85 @@ export const AiService = {
     },
 
     async formatUserAnswer(question: string, userAnswer: string, marks: number): Promise<string> {
-        const CHUNK_SIZE = 2500;
-        const MAX_DIRECT_FORMAT = 3000;
-
-        // If answer is short enough, format directly
-        if (userAnswer.length <= MAX_DIRECT_FORMAT) {
-            return this._formatAnswerChunk(question, userAnswer, marks, false);
-        }
-
-        // Smart chunking for large answers
-        console.log(`[SmartChunk] Answer is ${userAnswer.length} chars, splitting into chunks...`);
-
-        const chunks = this._splitIntoChunks(userAnswer, CHUNK_SIZE);
-        console.log(`[SmartChunk] Split into ${chunks.length} chunks`);
-
-        const formattedChunks: string[] = [];
-
-        for (let i = 0; i < chunks.length; i++) {
-            try {
-                console.log(`[SmartChunk] Formatting answer chunk ${i + 1}/${chunks.length}...`);
-                const formatted = await this._formatAnswerChunk(question, chunks[i], marks, i > 0);
-                formattedChunks.push(formatted);
-            } catch (error) {
-                console.warn(`[SmartChunk] Chunk ${i + 1} failed, using raw content`);
-                formattedChunks.push(chunks[i]);
-            }
-        }
-
-        return formattedChunks.join('\n\n---\n\n');
-    },
-
-    async _formatAnswerChunk(question: string, userAnswer: string, marks: number, isContinuation: boolean): Promise<string> {
-        const continuationNote = isContinuation
-            ? `\n\n**IMPORTANT:** This is a CONTINUATION - format directly without introduction.`
-            : '';
-
-        const prompt = `You are a formatting assistant. Format this student answer with markdown.
+        const prompt = `You are a formatting assistant. Your job is to take a student's raw answer and format it beautifully with proper markdown structure.
 
 **Question:** ${question}
 **Marks:** ${marks}
 
-**Raw Answer to Format:**
+**Student's Raw Answer:**
 ${userAnswer}
 
 ---
 
-**CRITICAL RULES - MUST FOLLOW:**
-1. PRESERVE 100% OF THE CONTENT - do NOT skip, summarize, or truncate
-2. Keep ALL numbered points exactly as provided (if input has 1-10, output has 1-10)
-3. Keep ALL sentences - every sentence from input must appear in output
-4. DO NOT add new information
-5. DO NOT remove any content
+**Your Task:** Format the above answer with:
+1. Clear section headings (use ## for main sections)
+2. Bullet points or numbered lists where appropriate
+3. Bold key terms and important concepts
+4. Proper paragraph structure
+5. Add emphasis where needed
+6. Use markdown tables when comparing items or presenting structured data
 
-**Formatting:**
-- Use ## for main headings
-- Use **bold** for key terms
-- Use bullet points (- ) for lists
-- Use proper markdown tables (| col1 | col2 |) for tabular data${continuationNote}
+**Important Rules:**
+- DO NOT change the content or meaning of the answer
+- DO NOT add new information the student didn't write
+- ONLY format and structure what's already there
+- Keep the academic tone
+- Make it easy to read and scan
 
-Return the COMPLETE formatted answer. Do not truncate.`;
+Return ONLY the formatted answer in markdown format.`;
 
         return this.generateContent(prompt);
     },
 
     async formatVaultContent(title: string, content: string, type: 'study_note' | 'case_study' | 'project'): Promise<string> {
-        const CHUNK_SIZE = 1500; // Smaller chunks for better AI output
-        const MAX_DIRECT_FORMAT = 2000; // Content under this is formatted directly
+        const typeGuidelines = {
+            study_note: `Format as a well-structured study note with:
+- Clear overview section
+- Key concepts highlighted
+- Important definitions bolded
+- Summary points at the end`,
+            case_study: `Format as a professional case study with:
+- Background/Context section
+- Problem statement
+- Analysis section
+- Key findings or lessons learned
+- Conclusion`,
+            project: `Format as a project documentation with:
+- Project overview
+- Objectives/Goals
+- Implementation details
+- Key features or deliverables
+- Results or outcomes`
+        };
 
-        // If content is short enough, format directly
-        if (content.length <= MAX_DIRECT_FORMAT) {
-            try {
-                return await this._formatVaultChunk(title, content, type, false);
-            } catch (error) {
-                console.warn('[Vault] AI formatting failed, using basic formatting');
-                return this._basicMarkdownFormat(content);
-            }
-        }
+        const prompt = `You are a formatting assistant. Your job is to take raw content and format it beautifully with proper markdown structure.
 
-        // Smart chunking for large content
-        console.log(`[SmartChunk] Content is ${content.length} chars, splitting into smaller chunks...`);
+**Title:** ${title}
+**Type:** ${type.replace('_', ' ')}
 
-        const chunks = this._splitIntoChunks(content, CHUNK_SIZE);
-        console.log(`[SmartChunk] Split into ${chunks.length} chunks`);
-
-        const formattedChunks: string[] = [];
-
-        for (let i = 0; i < chunks.length; i++) {
-            const isFirst = i === 0;
-
-            try {
-                console.log(`[SmartChunk] Formatting chunk ${i + 1}/${chunks.length} (${chunks[i].length} chars)...`);
-                const formatted = await this._formatVaultChunk(title, chunks[i], type, !isFirst);
-
-                // Validate that AI didn't truncate too much
-                if (formatted.length < chunks[i].length * 0.5) {
-                    console.warn(`[SmartChunk] Chunk ${i + 1} seems truncated, using basic format`);
-                    formattedChunks.push(this._basicMarkdownFormat(chunks[i]));
-                } else {
-                    formattedChunks.push(formatted);
-                }
-            } catch (error) {
-                console.warn(`[SmartChunk] Chunk ${i + 1} failed, using basic format`);
-                formattedChunks.push(this._basicMarkdownFormat(chunks[i]));
-            }
-        }
-
-        // Combine all formatted chunks
-        return formattedChunks.join('\n\n');
-    },
-
-    _basicMarkdownFormat(content: string): string {
-        // Simple markdown enhancement without AI
-        return content
-            .replace(/^(\d+)\.\s+(.+)$/gm, '**$1.** $2') // Bold numbered points
-            .replace(/^-\s+(.+)$/gm, '• $1') // Convert dashes to bullets
-            .replace(/\n{3,}/g, '\n\n'); // Normalize line breaks
-    },
-
-    _splitIntoChunks(content: string, chunkSize: number): string[] {
-        const chunks: string[] = [];
-        const paragraphs = content.split(/\n\n+/);
-
-        let currentChunk = '';
-
-        for (const para of paragraphs) {
-            if (currentChunk.length + para.length > chunkSize && currentChunk.length > 0) {
-                chunks.push(currentChunk.trim());
-                currentChunk = para;
-            } else {
-                currentChunk += (currentChunk ? '\n\n' : '') + para;
-            }
-        }
-
-        if (currentChunk.trim()) {
-            chunks.push(currentChunk.trim());
-        }
-
-        // If no paragraphs found (single block), split by character count
-        if (chunks.length === 0 && content.length > 0) {
-            for (let i = 0; i < content.length; i += chunkSize) {
-                chunks.push(content.slice(i, i + chunkSize));
-            }
-        }
-
-        return chunks;
-    },
-
-    async _formatVaultChunk(title: string, content: string, type: 'study_note' | 'case_study' | 'project', isContinuation: boolean): Promise<string> {
-        // Ultra-short prompt to maximize output tokens
-        const prompt = `Format this text with markdown. Keep 100% of the content - do not skip or summarize anything.
-
-Rules:
-- Bold key terms with **term**
-- Keep all numbered points (1, 2, 3...)
-- Keep all text exactly as-is
-- Use tables (| col |) where appropriate
-
-Text:
+**Raw Content:**
 ${content}
 
-Output the complete formatted text:`;
+---
+
+**Your Task:** ${typeGuidelines[type]}
+
+**General Formatting Rules:**
+1. Use ## for main section headings
+2. Use ### for subsections
+3. Use bullet points or numbered lists where appropriate
+4. Bold key terms and important concepts
+5. Use markdown tables when comparing items
+6. Keep proper paragraph structure
+
+**Important Rules:**
+- DO NOT change the content or meaning
+- DO NOT add new information that wasn't provided
+- ONLY format and structure what's already there
+- Make it easy to read and scan
+- Keep a professional academic tone
+
+Return ONLY the formatted content in markdown format.`;
 
         return this.generateContent(prompt);
     }

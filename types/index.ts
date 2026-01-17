@@ -151,6 +151,7 @@ export interface VaultResource {
   id: string;
   subjectId: string;
   unitId?: string;
+  partNumber?: number;
   type: VaultResourceType;
   title: string;
   content: string;

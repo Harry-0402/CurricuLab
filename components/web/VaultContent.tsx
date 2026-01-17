@@ -31,6 +31,7 @@ export function VaultContent() {
     const [formData, setFormData] = useState({
         subjectId: '',
         unitId: '',
+        partNumber: undefined as number | undefined,
         type: 'study_note' as VaultResourceType,
         title: '',
         content: ''
@@ -123,6 +124,7 @@ export function VaultContent() {
         setFormData({
             subjectId: activeSubjectId,
             unitId: '',
+            partNumber: undefined,
             type: 'study_note',
             title: '',
             content: ''
@@ -136,6 +138,7 @@ export function VaultContent() {
         setFormData({
             subjectId: resource.subjectId,
             unitId: resource.unitId || '',
+            partNumber: resource.partNumber,
             type: resource.type,
             title: resource.title,
             content: resource.content
@@ -154,6 +157,7 @@ export function VaultContent() {
                 id: editingId,
                 subjectId: formData.subjectId,
                 unitId: formData.unitId,
+                partNumber: formData.partNumber,
                 type: formData.type,
                 title: formData.title,
                 content: formData.content,
@@ -164,6 +168,7 @@ export function VaultContent() {
             saved = await createVaultResource({
                 subjectId: formData.subjectId,
                 unitId: formData.unitId,
+                partNumber: formData.partNumber,
                 type: formData.type,
                 title: formData.title,
                 content: formData.content,
@@ -330,6 +335,11 @@ export function VaultContent() {
                                                 {resource.unitId && (
                                                     <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-100 text-gray-500 border border-gray-200">
                                                         {resource.unitId.replace('unit-', 'U')}
+                                                    </span>
+                                                )}
+                                                {resource.partNumber && (
+                                                    <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-amber-50 text-amber-600 border border-amber-200">
+                                                        P{resource.partNumber}
                                                     </span>
                                                 )}
                                             </div>
@@ -524,6 +534,30 @@ export function VaultContent() {
                                                 )}
                                             >
                                                 Unit {unit}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Part <span className="text-gray-300">(Optional)</span></label>
+                                <div className="flex gap-2">
+                                    {[1, 2, 3, 4, 5].map(part => {
+                                        const isActive = formData.partNumber === part;
+                                        return (
+                                            <button
+                                                key={part}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, partNumber: isActive ? undefined : part })}
+                                                className={cn(
+                                                    "flex-1 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border",
+                                                    isActive
+                                                        ? "bg-amber-500 text-white border-amber-500"
+                                                        : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-300"
+                                                )}
+                                            >
+                                                Part {part}
                                             </button>
                                         );
                                     })}

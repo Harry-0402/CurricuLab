@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS vault_resources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     subject_id TEXT NOT NULL,
     unit_id TEXT,
+    part_number INTEGER,
     type TEXT NOT NULL CHECK (type IN ('study_note', 'case_study', 'project')),
     title TEXT NOT NULL,
     content TEXT,
