@@ -9,6 +9,7 @@ import { Subject, Unit, Note, Question } from "@/types";
 import { VIDEO_LIBRARY } from './video-library';
 import { SYLLABUS_RESOURCES } from './syllabus-links';
 import { ARTICLE_RESOURCES } from './article-links';
+import { INTERVIEW_RESOURCES } from './interview-resources';
 
 export interface Resource {
     id: string;
@@ -37,6 +38,7 @@ export const LOCAL_RESOURCES: Resource[] = [
     ...VIDEO_LIBRARY,
     ...SYLLABUS_RESOURCES,
     ...ARTICLE_RESOURCES,
+    ...INTERVIEW_RESOURCES,
     // --- Part I: Core Technical Competencies ---
     {
         id: 'tech-1',
@@ -496,7 +498,7 @@ If you consume the syllabus content + the 7 "Hero" channels, and **actually do t
         description: 'Top 21 high-probability questions for Google, Amazon, Deloitte, TCS/Accenture.',
         type: 'Article',
         url: '#',
-        category: 'Interview',
+        category: 'Interview Prep',
         content: `# Comprehensive Interview "Cheat Sheet"
 
 I have curated a list of 21 high-probability questions per company, focusing on the "Zero to Hero" transition.

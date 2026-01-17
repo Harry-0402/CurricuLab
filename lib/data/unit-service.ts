@@ -142,5 +142,26 @@ export const UnitService = {
             .from('units')
             .update({ is_completed: isCompleted })
             .eq('id', unitId);
+    },
+
+    async update(unit: Partial<Unit>): Promise<void> {
+        if (!unit.id) return;
+
+        const payload: any = {
+            title: unit.title,
+            description: unit.description,
+            topics: unit.topics,
+            updated_at: new Date().toISOString()
+        };
+
+        // Filter out undefined values
+        Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+
+        const { error } = await supabase
+            .from('units')
+            .update(payload)
+            .eq('id', unit.id);
+
+        if (error) throw error;
     }
 };

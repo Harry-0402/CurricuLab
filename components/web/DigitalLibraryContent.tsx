@@ -10,6 +10,7 @@ import remarkGfm from 'remark-gfm';
 export function DigitalLibraryContent() {
     // const [resources, setResources] = useState<Resource[]>([]);
     const [filter, setFilter] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
 
     // useEffect(() => {
@@ -19,7 +20,18 @@ export function DigitalLibraryContent() {
     const resources = LOCAL_RESOURCES;
 
     const categories = ['All', ...Array.from(new Set(resources.map(r => r.category)))];
-    const filteredResources = filter === 'All' ? resources : resources.filter(r => r.category === filter);
+
+    // Filter Logic: Category AND Search
+    const filteredResources = resources.filter(r => {
+        const matchesCategory = filter === 'All' || r.category === filter;
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = !searchQuery ||
+            r.title.toLowerCase().includes(searchLower) ||
+            r.description.toLowerCase().includes(searchLower) ||
+            (r.topic && r.topic.toLowerCase().includes(searchLower));
+
+        return matchesCategory && matchesSearch;
+    });
 
     const handleResourceClick = (resource: Resource) => {
         if (resource.content || resource.type === 'Article') {
@@ -42,19 +54,36 @@ export function DigitalLibraryContent() {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 mb-6">
-                    {categories.map(cat => (
-                        <button
-                            key={cat}
-                            onClick={() => setFilter(cat)}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap border ${filter === cat
-                                ? "bg-black text-white border-black shadow-md"
-                                : "bg-white text-gray-500 border-gray-100 hover:border-gray-200 hover:text-black"
-                                }`}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+                <div className="space-y-6">
+                    {/* Search Bar */}
+                    <div className="relative max-w-xl">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <Icons.Search size={20} />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search resources by title, topic, or description..."
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Category Filters */}
+                    <div className="flex flex-wrap items-center gap-2">
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setFilter(cat)}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap border ${filter === cat
+                                    ? "bg-black text-white border-black shadow-md"
+                                    : "bg-white text-gray-500 border-gray-100 hover:border-gray-200 hover:text-black"
+                                    }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto pb-10 pr-2 space-y-12">
@@ -67,7 +96,7 @@ export function DigitalLibraryContent() {
 
                         if (isAll) {
                             // Group by Category
-                            groups = resources.reduce((acc, resource) => {
+                            groups = filteredResources.reduce((acc, resource) => {
                                 const key = resource.category;
                                 if (!acc[key]) acc[key] = [];
                                 acc[key].push(resource);
@@ -138,8 +167,8 @@ export function DigitalLibraryContent() {
                                             <div>
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border ${['Roadmap', 'Cheat Sheet', 'YouTube', 'Coding', 'Interview'].includes(resource.category) ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                                                            resource.category === 'Academic' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
-                                                                'bg-gray-50 text-gray-500 border-gray-100'
+                                                        resource.category === 'Academic' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+                                                            'bg-gray-50 text-gray-500 border-gray-100'
                                                         }`}>
                                                         {resource.topic || resource.category}
                                                     </span>
