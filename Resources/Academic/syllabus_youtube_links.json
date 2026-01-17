@@ -1,0 +1,1400 @@
+{
+  "generated_for": "MBA-BA Semester I syllabi",
+  "courses": [
+    {
+      "course_code": "PB204",
+      "course_name": "Production and Operation Management",
+      "source": "PBA204 Syllabus.docx",
+      "units": [
+        {
+          "unit": "I",
+          "title": "Introduction to Operations Management",
+          "topics": [
+            "Nature, scope, importance and functions of Operations Management",
+            "Evolution from manufacturing to operations management",
+            "Evolution of the factory system",
+            "Manufacturing systems",
+            "Quality",
+            "Mass customization",
+            "Contributions: Henry Ford, Deming, Crosby, Taguchi"
+          ],
+          "youtube": [
+            {
+              "topic": "Nature, scope, importance and functions of Operations Management",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Nature%2C+scope%2C+importance+and+functions+of+Operations+Management"
+            },
+            {
+              "topic": "Evolution from manufacturing to operations management",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Evolution+from+manufacturing+to+operations+management"
+            },
+            {
+              "topic": "Evolution of the factory system",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Evolution+of+the+factory+system"
+            },
+            {
+              "topic": "Manufacturing systems",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Manufacturing+systems"
+            },
+            {
+              "topic": "Quality",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Quality"
+            },
+            {
+              "topic": "Mass customization",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Mass+customization"
+            },
+            {
+              "topic": "Contributions: Henry Ford, Deming, Crosby, Taguchi",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Contributions%3A+Henry+Ford%2C+Deming%2C+Crosby%2C+Taguchi"
+            }
+          ]
+        },
+        {
+          "unit": "II",
+          "title": "Productivity, Work Study, Methods Study, Work Measurement",
+          "topics": [
+            "Productivity",
+            "Work Study: objectives, scope and uses",
+            "Methods Study",
+            "Flow process chart",
+            "Flow diagram",
+            "Process mapping",
+            "Work Measurement",
+            "Elements of work measurement",
+            "Performance rating",
+            "Allowances",
+            "Standard time",
+            "Synthetic time standards",
+            "Work sampling",
+            "Numericals: standard time"
+          ],
+          "youtube": [
+            {
+              "topic": "Productivity",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Productivity"
+            },
+            {
+              "topic": "Work Study: objectives, scope and uses",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Work+Study%3A+objectives%2C+scope+and+uses"
+            },
+            {
+              "topic": "Methods Study",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Methods+Study"
+            },
+            {
+              "topic": "Flow process chart",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Flow+process+chart"
+            },
+            {
+              "topic": "Flow diagram",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Flow+diagram"
+            },
+            {
+              "topic": "Process mapping",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Process+mapping"
+            },
+            {
+              "topic": "Work Measurement",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Work+Measurement"
+            },
+            {
+              "topic": "Elements of work measurement",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Elements+of+work+measurement"
+            },
+            {
+              "topic": "Performance rating",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Performance+rating"
+            },
+            {
+              "topic": "Allowances",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Allowances"
+            },
+            {
+              "topic": "Standard time",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Standard+time"
+            },
+            {
+              "topic": "Synthetic time standards",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Synthetic+time+standards"
+            },
+            {
+              "topic": "Work sampling",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Work+sampling"
+            },
+            {
+              "topic": "Numericals: standard time",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Numericals%3A+standard+time"
+            }
+          ]
+        },
+        {
+          "unit": "III",
+          "title": "Facilities Location & Layout",
+          "topics": [
+            "Strategic importance of facilities location and layout",
+            "Factors affecting location and layout",
+            "Installation of facilities",
+            "Single location decisions",
+            "Multi-location decisions",
+            "Principles of facilities layout",
+            "Types of facilities layout"
+          ],
+          "youtube": [
+            {
+              "topic": "Strategic importance of facilities location and layout",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Strategic+importance+of+facilities+location+and+layout"
+            },
+            {
+              "topic": "Factors affecting location and layout",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Factors+affecting+location+and+layout"
+            },
+            {
+              "topic": "Installation of facilities",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Installation+of+facilities"
+            },
+            {
+              "topic": "Single location decisions",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Single+location+decisions"
+            },
+            {
+              "topic": "Multi-location decisions",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Multi-location+decisions"
+            },
+            {
+              "topic": "Principles of facilities layout",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Principles+of+facilities+layout"
+            },
+            {
+              "topic": "Types of facilities layout",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Types+of+facilities+layout"
+            }
+          ]
+        },
+        {
+          "unit": "IV",
+          "title": "Types of Industries & Methods of Manufacturing",
+          "topics": [
+            "Types of industries",
+            "Variety of businesses",
+            "Integration of manufacturing and services",
+            "Scale of operations",
+            "Methods of manufacturing",
+            "Project/Jobbing production",
+            "Batch production",
+            "Flow/Continuous production",
+            "Process production",
+            "Characteristics of each method"
+          ],
+          "youtube": [
+            {
+              "topic": "Types of industries",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Types+of+industries"
+            },
+            {
+              "topic": "Variety of businesses",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Variety+of+businesses"
+            },
+            {
+              "topic": "Integration of manufacturing and services",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Integration+of+manufacturing+and+services"
+            },
+            {
+              "topic": "Scale of operations",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Scale+of+operations"
+            },
+            {
+              "topic": "Methods of manufacturing",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Methods+of+manufacturing"
+            },
+            {
+              "topic": "Project/Jobbing production",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Project%2FJobbing+production"
+            },
+            {
+              "topic": "Batch production",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Batch+production"
+            },
+            {
+              "topic": "Flow/Continuous production",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Flow%2FContinuous+production"
+            },
+            {
+              "topic": "Process production",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Process+production"
+            },
+            {
+              "topic": "Characteristics of each method",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Characteristics+of+each+method"
+            }
+          ]
+        },
+        {
+          "unit": "V",
+          "title": "Inspection, SQC, Six Sigma, Lean Production Systems",
+          "topics": [
+            "Inspection",
+            "100% inspection",
+            "Sample inspection",
+            "OC curves (Operating Characteristic curves)",
+            "Statistical Quality Control (SQC)",
+            "Control charts: construction and interpretation",
+            "X-R charts",
+            "n chart",
+            "p chart",
+            "c chart",
+            "np chart",
+            "Introduction to Six Sigma",
+            "Numericals: control charts",
+            "Lean production systems",
+            "Toyota production system",
+            "JIT",
+            "KANBAN",
+            "Theory of Constraints"
+          ],
+          "youtube": [
+            {
+              "topic": "Inspection",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Inspection"
+            },
+            {
+              "topic": "100% inspection",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+100%25+inspection"
+            },
+            {
+              "topic": "Sample inspection",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Sample+inspection"
+            },
+            {
+              "topic": "OC curves (Operating Characteristic curves)",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+OC+curves+%28Operating+Characteristic+curves%29"
+            },
+            {
+              "topic": "Statistical Quality Control (SQC)",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Statistical+Quality+Control+%28SQC%29"
+            },
+            {
+              "topic": "Control charts: construction and interpretation",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Control+charts%3A+construction+and+interpretation"
+            },
+            {
+              "topic": "X-R charts",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+X-R+charts"
+            },
+            {
+              "topic": "n chart",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+n+chart"
+            },
+            {
+              "topic": "p chart",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+p+chart"
+            },
+            {
+              "topic": "c chart",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+c+chart"
+            },
+            {
+              "topic": "np chart",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+np+chart"
+            },
+            {
+              "topic": "Introduction to Six Sigma",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Introduction+to+Six+Sigma"
+            },
+            {
+              "topic": "Numericals: control charts",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Numericals%3A+control+charts"
+            },
+            {
+              "topic": "Lean production systems",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Lean+production+systems"
+            },
+            {
+              "topic": "Toyota production system",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Toyota+production+system"
+            },
+            {
+              "topic": "JIT",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+JIT"
+            },
+            {
+              "topic": "KANBAN",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+KANBAN"
+            },
+            {
+              "topic": "Theory of Constraints",
+              "search_url": "https://www.youtube.com/results?search_query=Production+and+Operation+Management+Theory+of+Constraints"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "course_code": "PB205",
+      "course_name": "Digital Transformation",
+      "source": "PBA205 Syllabus.doc",
+      "units": [
+        {
+          "unit": "I",
+          "title": "Understanding Digital Transformation",
+          "topics": [
+            "Definition of digital transformation",
+            "Scope of digital transformation",
+            "Importance of digital transformation",
+            "Benefits of digital transformation",
+            "Key drivers of digital transformation",
+            "Trends in digital transformation",
+            "Digital transformation frameworks (overview)"
+          ],
+          "youtube": [
+            {
+              "topic": "Definition of digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Definition+of+digital+transformation"
+            },
+            {
+              "topic": "Scope of digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Scope+of+digital+transformation"
+            },
+            {
+              "topic": "Importance of digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Importance+of+digital+transformation"
+            },
+            {
+              "topic": "Benefits of digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Benefits+of+digital+transformation"
+            },
+            {
+              "topic": "Key drivers of digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Key+drivers+of+digital+transformation"
+            },
+            {
+              "topic": "Trends in digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Trends+in+digital+transformation"
+            },
+            {
+              "topic": "Digital transformation frameworks (overview)",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Digital+transformation+frameworks+%28overview%29"
+            }
+          ]
+        },
+        {
+          "unit": "II",
+          "title": "Leading Digital Transformation",
+          "topics": [
+            "Role of leadership in digital transformation",
+            "Key competencies for digital leaders",
+            "Building a digital culture in organizations",
+            "Introduction to Agile methodologies",
+            "Introduction to Lean methodologies",
+            "Applying Agile principles to digital transformation",
+            "Applying Lean principles to digital transformation"
+          ],
+          "youtube": [
+            {
+              "topic": "Role of leadership in digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Role+of+leadership+in+digital+transformation"
+            },
+            {
+              "topic": "Key competencies for digital leaders",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Key+competencies+for+digital+leaders"
+            },
+            {
+              "topic": "Building a digital culture in organizations",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Building+a+digital+culture+in+organizations"
+            },
+            {
+              "topic": "Introduction to Agile methodologies",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Introduction+to+Agile+methodologies"
+            },
+            {
+              "topic": "Introduction to Lean methodologies",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Introduction+to+Lean+methodologies"
+            },
+            {
+              "topic": "Applying Agile principles to digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Applying+Agile+principles+to+digital+transformation"
+            },
+            {
+              "topic": "Applying Lean principles to digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Applying+Lean+principles+to+digital+transformation"
+            }
+          ]
+        },
+        {
+          "unit": "III",
+          "title": "Digital Transformation in Industries",
+          "topics": [
+            "Retail trends and technologies",
+            "Omnichannel strategies",
+            "Customer experience in retail",
+            "FinTech innovations and trends",
+            "Impact of digital transformation on banking and financial services",
+            "Technologies transforming healthcare (telemedicine)",
+            "Technologies transforming healthcare (health informatics)",
+            "Challenges in healthcare digital transformation",
+            "Opportunities in healthcare digital transformation"
+          ],
+          "youtube": [
+            {
+              "topic": "Retail trends and technologies",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Retail+trends+and+technologies"
+            },
+            {
+              "topic": "Omnichannel strategies",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Omnichannel+strategies"
+            },
+            {
+              "topic": "Customer experience in retail",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Customer+experience+in+retail"
+            },
+            {
+              "topic": "FinTech innovations and trends",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+FinTech+innovations+and+trends"
+            },
+            {
+              "topic": "Impact of digital transformation on banking and financial services",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Impact+of+digital+transformation+on+banking+and+financial+services"
+            },
+            {
+              "topic": "Technologies transforming healthcare (telemedicine)",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Technologies+transforming+healthcare+%28telemedicine%29"
+            },
+            {
+              "topic": "Technologies transforming healthcare (health informatics)",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Technologies+transforming+healthcare+%28health+informatics%29"
+            },
+            {
+              "topic": "Challenges in healthcare digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Challenges+in+healthcare+digital+transformation"
+            },
+            {
+              "topic": "Opportunities in healthcare digital transformation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Opportunities+in+healthcare+digital+transformation"
+            }
+          ]
+        },
+        {
+          "unit": "IV",
+          "title": "Innovation in the Digital Age",
+          "topics": [
+            "Types of innovation: incremental",
+            "Types of innovation: disruptive",
+            "Types of innovation: radical",
+            "Creating an innovation-friendly environment",
+            "Encouraging creativity and experimentation",
+            "Design thinking",
+            "Open innovation",
+            "Innovation labs and incubators",
+            "Crowdsourcing"
+          ],
+          "youtube": [
+            {
+              "topic": "Types of innovation: incremental",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Types+of+innovation%3A+incremental"
+            },
+            {
+              "topic": "Types of innovation: disruptive",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Types+of+innovation%3A+disruptive"
+            },
+            {
+              "topic": "Types of innovation: radical",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Types+of+innovation%3A+radical"
+            },
+            {
+              "topic": "Creating an innovation-friendly environment",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Creating+an+innovation-friendly+environment"
+            },
+            {
+              "topic": "Encouraging creativity and experimentation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Encouraging+creativity+and+experimentation"
+            },
+            {
+              "topic": "Design thinking",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Design+thinking"
+            },
+            {
+              "topic": "Open innovation",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Open+innovation"
+            },
+            {
+              "topic": "Innovation labs and incubators",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Innovation+labs+and+incubators"
+            },
+            {
+              "topic": "Crowdsourcing",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Crowdsourcing"
+            }
+          ]
+        },
+        {
+          "unit": "V",
+          "title": "Digital Technologies and Trends",
+          "topics": [
+            "Emerging technologies (overview)",
+            "Artificial Intelligence (AI)",
+            "Internet of Things (IoT)",
+            "Blockchain",
+            "Cloud computing",
+            "Big data",
+            "Machine learning",
+            "Impact of technologies on businesses and industries"
+          ],
+          "youtube": [
+            {
+              "topic": "Emerging technologies (overview)",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Emerging+technologies+%28overview%29"
+            },
+            {
+              "topic": "Artificial Intelligence (AI)",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Artificial+Intelligence+%28AI%29"
+            },
+            {
+              "topic": "Internet of Things (IoT)",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Internet+of+Things+%28IoT%29"
+            },
+            {
+              "topic": "Blockchain",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Blockchain"
+            },
+            {
+              "topic": "Cloud computing",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Cloud+computing"
+            },
+            {
+              "topic": "Big data",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Big+data"
+            },
+            {
+              "topic": "Machine learning",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Machine+learning"
+            },
+            {
+              "topic": "Impact of technologies on businesses and industries",
+              "search_url": "https://www.youtube.com/results?search_query=Digital+Transformation+Impact+of+technologies+on+businesses+and+industries"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "course_code": "PB206",
+      "course_name": "Legal Aspects of Business",
+      "source": "PBA206 Syllabus.docx",
+      "units": [
+        {
+          "unit": "I",
+          "title": "Law of Contract (Indian Contract Act, 1872)",
+          "topics": [
+            "Nature and kinds of contracts",
+            "Essential elements of a valid contract",
+            "Offer and acceptance",
+            "Consideration",
+            "Capacity to contract",
+            "Free consent",
+            "Legality and object",
+            "Types of contracts",
+            "Contingent contracts",
+            "Performance of contract",
+            "Discharge of contract",
+            "Quasi contract",
+            "Remedies for breach of contract",
+            "Indemnity and guarantee",
+            "Bailment and pledge",
+            "Law of agency"
+          ],
+          "youtube": [
+            {
+              "topic": "Nature and kinds of contracts",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Nature+and+kinds+of+contracts"
+            },
+            {
+              "topic": "Essential elements of a valid contract",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Essential+elements+of+a+valid+contract"
+            },
+            {
+              "topic": "Offer and acceptance",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Offer+and+acceptance"
+            },
+            {
+              "topic": "Consideration",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Consideration"
+            },
+            {
+              "topic": "Capacity to contract",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Capacity+to+contract"
+            },
+            {
+              "topic": "Free consent",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Free+consent"
+            },
+            {
+              "topic": "Legality and object",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Legality+and+object"
+            },
+            {
+              "topic": "Types of contracts",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Types+of+contracts"
+            },
+            {
+              "topic": "Contingent contracts",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Contingent+contracts"
+            },
+            {
+              "topic": "Performance of contract",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Performance+of+contract"
+            },
+            {
+              "topic": "Discharge of contract",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Discharge+of+contract"
+            },
+            {
+              "topic": "Quasi contract",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Quasi+contract"
+            },
+            {
+              "topic": "Remedies for breach of contract",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Remedies+for+breach+of+contract"
+            },
+            {
+              "topic": "Indemnity and guarantee",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Indemnity+and+guarantee"
+            },
+            {
+              "topic": "Bailment and pledge",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Bailment+and+pledge"
+            },
+            {
+              "topic": "Law of agency",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Law+of+agency"
+            }
+          ]
+        },
+        {
+          "unit": "II",
+          "title": "Sales of Goods & Partnership",
+          "topics": [
+            "Sales of Goods Act, 1930: general principles",
+            "Conditions and warranties",
+            "Doctrine of caveat emptor",
+            "Transfer of ownership",
+            "Performance of a contract of sale",
+            "Remedial measures (Sales of Goods)",
+            "Indian Partnership Act, 1932: definition and general principles",
+            "Formation of partnership",
+            "Rights of partners",
+            "Liabilities of partners",
+            "Dissolution of partnership firms"
+          ],
+          "youtube": [
+            {
+              "topic": "Sales of Goods Act, 1930: general principles",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Sales+of+Goods+Act%2C+1930%3A+general+principles"
+            },
+            {
+              "topic": "Conditions and warranties",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Conditions+and+warranties"
+            },
+            {
+              "topic": "Doctrine of caveat emptor",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Doctrine+of+caveat+emptor"
+            },
+            {
+              "topic": "Transfer of ownership",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Transfer+of+ownership"
+            },
+            {
+              "topic": "Performance of a contract of sale",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Performance+of+a+contract+of+sale"
+            },
+            {
+              "topic": "Remedial measures (Sales of Goods)",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Remedial+measures+%28Sales+of+Goods%29"
+            },
+            {
+              "topic": "Indian Partnership Act, 1932: definition and general principles",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Indian+Partnership+Act%2C+1932%3A+definition+and+general+principles"
+            },
+            {
+              "topic": "Formation of partnership",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Formation+of+partnership"
+            },
+            {
+              "topic": "Rights of partners",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Rights+of+partners"
+            },
+            {
+              "topic": "Liabilities of partners",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Liabilities+of+partners"
+            },
+            {
+              "topic": "Dissolution of partnership firms",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Dissolution+of+partnership+firms"
+            }
+          ]
+        },
+        {
+          "unit": "III",
+          "title": "Company Law (Companies Act, 1956)",
+          "topics": [
+            "Company and its various forms",
+            "Formation of a company",
+            "Memorandum of association",
+            "Articles of association",
+            "Prospectus",
+            "Share allotment",
+            "Shares and share capital",
+            "Promoters",
+            "Membership of a company",
+            "Meetings and proceedings",
+            "Directors",
+            "Managers and their remuneration",
+            "Secretary",
+            "Prevention of oppression and mismanagement",
+            "Winding up of a company"
+          ],
+          "youtube": [
+            {
+              "topic": "Company and its various forms",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Company+and+its+various+forms"
+            },
+            {
+              "topic": "Formation of a company",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Formation+of+a+company"
+            },
+            {
+              "topic": "Memorandum of association",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Memorandum+of+association"
+            },
+            {
+              "topic": "Articles of association",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Articles+of+association"
+            },
+            {
+              "topic": "Prospectus",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Prospectus"
+            },
+            {
+              "topic": "Share allotment",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Share+allotment"
+            },
+            {
+              "topic": "Shares and share capital",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Shares+and+share+capital"
+            },
+            {
+              "topic": "Promoters",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Promoters"
+            },
+            {
+              "topic": "Membership of a company",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Membership+of+a+company"
+            },
+            {
+              "topic": "Meetings and proceedings",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Meetings+and+proceedings"
+            },
+            {
+              "topic": "Directors",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Directors"
+            },
+            {
+              "topic": "Managers and their remuneration",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Managers+and+their+remuneration"
+            },
+            {
+              "topic": "Secretary",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Secretary"
+            },
+            {
+              "topic": "Prevention of oppression and mismanagement",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Prevention+of+oppression+and+mismanagement"
+            },
+            {
+              "topic": "Winding up of a company",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Winding+up+of+a+company"
+            }
+          ]
+        },
+        {
+          "unit": "IV",
+          "title": "Insurance, Insolvency, Carriage of Goods & Arbitration",
+          "topics": [
+            "Nature and principles of insurance",
+            "Life insurance",
+            "General insurance",
+            "Fire insurance",
+            "Marine insurance",
+            "Objects and scope of insolvency law",
+            "Procedure of insolvency",
+            "Property and debt of insolvent",
+            "Discharge of insolvent",
+            "Carriage of goods by land",
+            "Carriage of goods by sea",
+            "Carriage of goods by air",
+            "General provisions regarding arbitration",
+            "Modes of arbitration"
+          ],
+          "youtube": [
+            {
+              "topic": "Nature and principles of insurance",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Nature+and+principles+of+insurance"
+            },
+            {
+              "topic": "Life insurance",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Life+insurance"
+            },
+            {
+              "topic": "General insurance",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+General+insurance"
+            },
+            {
+              "topic": "Fire insurance",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Fire+insurance"
+            },
+            {
+              "topic": "Marine insurance",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Marine+insurance"
+            },
+            {
+              "topic": "Objects and scope of insolvency law",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Objects+and+scope+of+insolvency+law"
+            },
+            {
+              "topic": "Procedure of insolvency",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Procedure+of+insolvency"
+            },
+            {
+              "topic": "Property and debt of insolvent",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Property+and+debt+of+insolvent"
+            },
+            {
+              "topic": "Discharge of insolvent",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Discharge+of+insolvent"
+            },
+            {
+              "topic": "Carriage of goods by land",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Carriage+of+goods+by+land"
+            },
+            {
+              "topic": "Carriage of goods by sea",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Carriage+of+goods+by+sea"
+            },
+            {
+              "topic": "Carriage of goods by air",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Carriage+of+goods+by+air"
+            },
+            {
+              "topic": "General provisions regarding arbitration",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+General+provisions+regarding+arbitration"
+            },
+            {
+              "topic": "Modes of arbitration",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Modes+of+arbitration"
+            }
+          ]
+        },
+        {
+          "unit": "V",
+          "title": "Miscellaneous Laws",
+          "topics": [
+            "Essential Commodities Act, 1955",
+            "Consumer Protection Act, 1986",
+            "Co-operative Societies Act, 1912",
+            "Multi-State Co-operative Societies Act, 1984",
+            "Foreign Exchange Management Act (FEMA), 1999",
+            "MRTP Act",
+            "Information Technology Act, 2000"
+          ],
+          "youtube": [
+            {
+              "topic": "Essential Commodities Act, 1955",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Essential+Commodities+Act%2C+1955"
+            },
+            {
+              "topic": "Consumer Protection Act, 1986",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Consumer+Protection+Act%2C+1986"
+            },
+            {
+              "topic": "Co-operative Societies Act, 1912",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Co-operative+Societies+Act%2C+1912"
+            },
+            {
+              "topic": "Multi-State Co-operative Societies Act, 1984",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Multi-State+Co-operative+Societies+Act%2C+1984"
+            },
+            {
+              "topic": "Foreign Exchange Management Act (FEMA), 1999",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Foreign+Exchange+Management+Act+%28FEMA%29%2C+1999"
+            },
+            {
+              "topic": "MRTP Act",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+MRTP+Act"
+            },
+            {
+              "topic": "Information Technology Act, 2000",
+              "search_url": "https://www.youtube.com/results?search_query=Legal+Aspects+of+Business+Information+Technology+Act%2C+2000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "course_code": "PB207",
+      "course_name": "Data Visualization and Story Telling",
+      "source": "PBA207 Syllabus.docx",
+      "units": [
+        {
+          "unit": "I",
+          "title": "Visualization Basics",
+          "topics": [
+            "Introduction to visualization",
+            "Why to visualize",
+            "How to visualize",
+            "Stages of data visualizing",
+            "Usages of visualization",
+            "Types of charts"
+          ],
+          "youtube": [
+            {
+              "topic": "Introduction to visualization",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Introduction+to+visualization"
+            },
+            {
+              "topic": "Why to visualize",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Why+to+visualize"
+            },
+            {
+              "topic": "How to visualize",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+How+to+visualize"
+            },
+            {
+              "topic": "Stages of data visualizing",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Stages+of+data+visualizing"
+            },
+            {
+              "topic": "Usages of visualization",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Usages+of+visualization"
+            },
+            {
+              "topic": "Types of charts",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Types+of+charts"
+            }
+          ]
+        },
+        {
+          "unit": "II",
+          "title": "Visualization of Structured Data",
+          "topics": [
+            "Introduction to structured data visualization",
+            "Exploratory analysis",
+            "Univariate analysis",
+            "Multivariate analysis",
+            "Charts to visualize multiple measures",
+            "Modeling",
+            "Visualization during deployment"
+          ],
+          "youtube": [
+            {
+              "topic": "Introduction to structured data visualization",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Introduction+to+structured+data+visualization"
+            },
+            {
+              "topic": "Exploratory analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Exploratory+analysis"
+            },
+            {
+              "topic": "Univariate analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Univariate+analysis"
+            },
+            {
+              "topic": "Multivariate analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Multivariate+analysis"
+            },
+            {
+              "topic": "Charts to visualize multiple measures",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Charts+to+visualize+multiple+measures"
+            },
+            {
+              "topic": "Modeling",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Modeling"
+            },
+            {
+              "topic": "Visualization during deployment",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Visualization+during+deployment"
+            }
+          ]
+        },
+        {
+          "unit": "III",
+          "title": "Visualization of Unstructured Data",
+          "topics": [
+            "Introduction to unstructured data visualization",
+            "Importance and challenges of text data visualization",
+            "Forms of text data",
+            "Pre-processing pipeline for text data",
+            "Visualizing text data",
+            "Visualizing conversations"
+          ],
+          "youtube": [
+            {
+              "topic": "Introduction to unstructured data visualization",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Introduction+to+unstructured+data+visualization"
+            },
+            {
+              "topic": "Importance and challenges of text data visualization",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Importance+and+challenges+of+text+data+visualization"
+            },
+            {
+              "topic": "Forms of text data",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Forms+of+text+data"
+            },
+            {
+              "topic": "Pre-processing pipeline for text data",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Pre-processing+pipeline+for+text+data"
+            },
+            {
+              "topic": "Visualizing text data",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Visualizing+text+data"
+            },
+            {
+              "topic": "Visualizing conversations",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Visualizing+conversations"
+            }
+          ]
+        },
+        {
+          "unit": "IV",
+          "title": "Visual Storytelling",
+          "topics": [
+            "Introduction to visual storytelling",
+            "Why storytelling matters",
+            "Science behind storytelling"
+          ],
+          "youtube": [
+            {
+              "topic": "Introduction to visual storytelling",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Introduction+to+visual+storytelling"
+            },
+            {
+              "topic": "Why storytelling matters",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Why+storytelling+matters"
+            },
+            {
+              "topic": "Science behind storytelling",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Science+behind+storytelling"
+            }
+          ]
+        },
+        {
+          "unit": "V",
+          "title": "Storytelling Framework",
+          "topics": [
+            "Introduction to storytelling framework",
+            "Importance of business storytelling",
+            "Data storytelling",
+            "Narrative types",
+            "Dimensions of narrative storytelling",
+            "Data story types",
+            "Analytics dashboards"
+          ],
+          "youtube": [
+            {
+              "topic": "Introduction to storytelling framework",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Introduction+to+storytelling+framework"
+            },
+            {
+              "topic": "Importance of business storytelling",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Importance+of+business+storytelling"
+            },
+            {
+              "topic": "Data storytelling",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Data+storytelling"
+            },
+            {
+              "topic": "Narrative types",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Narrative+types"
+            },
+            {
+              "topic": "Dimensions of narrative storytelling",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Dimensions+of+narrative+storytelling"
+            },
+            {
+              "topic": "Data story types",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Data+story+types"
+            },
+            {
+              "topic": "Analytics dashboards",
+              "search_url": "https://www.youtube.com/results?search_query=Data+Visualization+and+Story+Telling+Analytics+dashboards"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "course_code": "PBA208",
+      "course_name": "Business Research Methodology",
+      "source": "PBA208 Syllabus.pdf (images)",
+      "units": [
+        {
+          "unit": "1",
+          "title": "Introduction to Business Research",
+          "topics": [
+            "Types of research",
+            "Process of research",
+            "Formulation of research problem",
+            "Development of research hypothesis"
+          ],
+          "youtube": [
+            {
+              "topic": "Types of research",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Types+of+research"
+            },
+            {
+              "topic": "Process of research",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Process+of+research"
+            },
+            {
+              "topic": "Formulation of research problem",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Formulation+of+research+problem"
+            },
+            {
+              "topic": "Development of research hypothesis",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Development+of+research+hypothesis"
+            }
+          ]
+        },
+        {
+          "unit": "2",
+          "title": "Research Design",
+          "topics": [
+            "Research design: definitions and functions",
+            "Exploratory research design",
+            "Descriptive research design",
+            "Experimental research design",
+            "Pre-experimental design",
+            "Quasi-experimental design",
+            "True-experimental design",
+            "Statistical design",
+            "Validity of research instruments",
+            "Face validity",
+            "Content validity",
+            "Construct validity",
+            "Methods of data collection",
+            "Attitudinal scales (Likert)",
+            "Questionnaire designing"
+          ],
+          "youtube": [
+            {
+              "topic": "Research design: definitions and functions",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Research+design%3A+definitions+and+functions"
+            },
+            {
+              "topic": "Exploratory research design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Exploratory+research+design"
+            },
+            {
+              "topic": "Descriptive research design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Descriptive+research+design"
+            },
+            {
+              "topic": "Experimental research design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Experimental+research+design"
+            },
+            {
+              "topic": "Pre-experimental design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Pre-experimental+design"
+            },
+            {
+              "topic": "Quasi-experimental design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Quasi-experimental+design"
+            },
+            {
+              "topic": "True-experimental design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+True-experimental+design"
+            },
+            {
+              "topic": "Statistical design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Statistical+design"
+            },
+            {
+              "topic": "Validity of research instruments",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Validity+of+research+instruments"
+            },
+            {
+              "topic": "Face validity",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Face+validity"
+            },
+            {
+              "topic": "Content validity",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Content+validity"
+            },
+            {
+              "topic": "Construct validity",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Construct+validity"
+            },
+            {
+              "topic": "Methods of data collection",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Methods+of+data+collection"
+            },
+            {
+              "topic": "Attitudinal scales (Likert)",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Attitudinal+scales+%28Likert%29"
+            },
+            {
+              "topic": "Questionnaire designing",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Questionnaire+designing"
+            }
+          ]
+        },
+        {
+          "unit": "3",
+          "title": "Sampling",
+          "topics": [
+            "Sampling: concept",
+            "Sampling design",
+            "Types of sampling designs",
+            "Probability sampling",
+            "Non-probability sampling",
+            "Mixed sampling design",
+            "Sampling frame",
+            "Sample size determination",
+            "Data processing: editing, coding, tabulating"
+          ],
+          "youtube": [
+            {
+              "topic": "Sampling: concept",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Sampling%3A+concept"
+            },
+            {
+              "topic": "Sampling design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Sampling+design"
+            },
+            {
+              "topic": "Types of sampling designs",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Types+of+sampling+designs"
+            },
+            {
+              "topic": "Probability sampling",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Probability+sampling"
+            },
+            {
+              "topic": "Non-probability sampling",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Non-probability+sampling"
+            },
+            {
+              "topic": "Mixed sampling design",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Mixed+sampling+design"
+            },
+            {
+              "topic": "Sampling frame",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Sampling+frame"
+            },
+            {
+              "topic": "Sample size determination",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Sample+size+determination"
+            },
+            {
+              "topic": "Data processing: editing, coding, tabulating",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Data+processing%3A+editing%2C+coding%2C+tabulating"
+            }
+          ]
+        },
+        {
+          "unit": "4",
+          "title": "Data Analysis",
+          "topics": [
+            "Univariate analysis",
+            "Bivariate analysis",
+            "Multivariate analysis",
+            "Hypothesis testing: concept",
+            "Types of errors",
+            "Steps in hypothesis testing"
+          ],
+          "youtube": [
+            {
+              "topic": "Univariate analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Univariate+analysis"
+            },
+            {
+              "topic": "Bivariate analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Bivariate+analysis"
+            },
+            {
+              "topic": "Multivariate analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Multivariate+analysis"
+            },
+            {
+              "topic": "Hypothesis testing: concept",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Hypothesis+testing%3A+concept"
+            },
+            {
+              "topic": "Types of errors",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Types+of+errors"
+            },
+            {
+              "topic": "Steps in hypothesis testing",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Steps+in+hypothesis+testing"
+            }
+          ]
+        },
+        {
+          "unit": "5",
+          "title": "Analytical Techniques",
+          "topics": [
+            "Parametric vs non-parametric tests",
+            "ANOVA",
+            "Correlation and regression",
+            "Chi-square test",
+            "Non-parametric tests for normality",
+            "Run test",
+            "Advanced data analysis techniques",
+            "Basic concepts of factor analysis",
+            "Determinant analysis",
+            "Conjoint analysis"
+          ],
+          "youtube": [
+            {
+              "topic": "Parametric vs non-parametric tests",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Parametric+vs+non-parametric+tests"
+            },
+            {
+              "topic": "ANOVA",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+ANOVA"
+            },
+            {
+              "topic": "Correlation and regression",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Correlation+and+regression"
+            },
+            {
+              "topic": "Chi-square test",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Chi-square+test"
+            },
+            {
+              "topic": "Non-parametric tests for normality",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Non-parametric+tests+for+normality"
+            },
+            {
+              "topic": "Run test",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Run+test"
+            },
+            {
+              "topic": "Advanced data analysis techniques",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Advanced+data+analysis+techniques"
+            },
+            {
+              "topic": "Basic concepts of factor analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Basic+concepts+of+factor+analysis"
+            },
+            {
+              "topic": "Determinant analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Determinant+analysis"
+            },
+            {
+              "topic": "Conjoint analysis",
+              "search_url": "https://www.youtube.com/results?search_query=Business+Research+Methodology+Conjoint+analysis"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

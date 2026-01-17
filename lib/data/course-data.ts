@@ -7,6 +7,7 @@ import { Subject, Unit, Note, Question } from "@/types";
  */
 
 import { VIDEO_LIBRARY } from './video-library';
+import { SYLLABUS_RESOURCES } from './syllabus-links';
 
 export interface Resource {
     id: string;
@@ -33,6 +34,7 @@ export const LOCAL_NOTES: Note[] = [];
 export const LOCAL_QUESTIONS: Question[] = [];
 export const LOCAL_RESOURCES: Resource[] = [
     ...VIDEO_LIBRARY,
+    ...SYLLABUS_RESOURCES,
     // --- Part I: Core Technical Competencies ---
     {
         id: 'tech-1',
