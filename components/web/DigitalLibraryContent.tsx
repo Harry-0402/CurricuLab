@@ -42,14 +42,14 @@ export function DigitalLibraryContent() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none shrink-0">
+                <div className="flex flex-wrap items-center gap-2 mb-6">
                     {categories.map(cat => (
                         <button
                             key={cat}
                             onClick={() => setFilter(cat)}
-                            className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === cat
-                                ? "bg-gray-900 text-white shadow-lg shadow-gray-200 ring-2 ring-gray-900 ring-offset-2 scale-105"
-                                : "bg-white text-gray-400 hover:text-gray-900 border border-transparent hover:border-gray-100 shadow-sm hover:shadow-md"
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap border ${filter === cat
+                                ? "bg-black text-white border-black shadow-md"
+                                : "bg-white text-gray-500 border-gray-100 hover:border-gray-200 hover:text-black"
                                 }`}
                         >
                             {cat}
@@ -57,63 +57,114 @@ export function DigitalLibraryContent() {
                     ))}
                 </div>
 
-                {filteredResources.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 overflow-y-auto pb-10 pr-2">
-                        {filteredResources.map(resource => (
-                            <div
-                                key={resource.id}
-                                role="button"
-                                onClick={() => handleResourceClick(resource)}
-                                className="group bg-white p-5 rounded-[24px] border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 text-left cursor-pointer h-full"
-                            >
-                                {/* Header: Icon + Arrow */}
-                                <div className="flex items-start justify-between">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center border border-gray-100 ${resource.type === 'Video' ? 'bg-red-50 text-red-600' :
-                                            resource.type === 'PDF' ? 'bg-orange-50 text-orange-600' :
-                                                resource.type === 'Article' ? 'bg-purple-50 text-purple-600' :
-                                                    'bg-blue-50 text-blue-600'
-                                        }`}>
-                                        {resource.type === 'Video' ? <Icons.Youtube size={20} /> :
-                                            resource.type === 'PDF' ? <Icons.FileText size={20} /> :
-                                                resource.type === 'Article' ? <Icons.BookOpen size={20} /> :
-                                                    <Icons.Link size={20} />}
-                                    </div>
-                                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                                        <Icons.ArrowUpRight size={16} />
-                                    </div>
-                                </div>
+                <div className="flex-1 overflow-y-auto pb-10 pr-2 space-y-12">
+                    {(() => {
+                        const isAll = filter === 'All';
+                        const isAcademic = filter === 'Academic';
 
-                                {/* Content */}
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${resource.category.includes('Hero') ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-500'
-                                            }`}>
-                                            {resource.category}
-                                        </span>
-                                    </div>
-                                    <h3 className="text-base font-black text-black group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug mb-2">
-                                        {resource.title}
-                                    </h3>
-                                    <p className="text-xs font-medium text-gray-400 mt-2 line-clamp-2 leading-relaxed">{resource.description}</p>
-                                </div>
+                        // 1. Determine Groups
+                        let groups: Record<string, Resource[]> = {};
 
-                                {/* Footer */}
-                                <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
-                                    <span className="text-gray-400 bg-gray-50 px-2 py-1 rounded-md">{resource.type}</span>
-                                    <span className="text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 duration-300">
-                                        {resource.content ? 'Read Now' : 'Open Link'}
-                                    </span>
+                        if (isAll) {
+                            // Group by Category
+                            groups = resources.reduce((acc, resource) => {
+                                const key = resource.category;
+                                if (!acc[key]) acc[key] = [];
+                                acc[key].push(resource);
+                                return acc;
+                            }, {} as Record<string, Resource[]>);
+                        } else if (isAcademic) {
+                            // Group by Topic
+                            groups = filteredResources.reduce((acc, resource) => {
+                                const key = resource.topic || 'General';
+                                if (!acc[key]) acc[key] = [];
+                                acc[key].push(resource);
+                                return acc;
+                            }, {} as Record<string, Resource[]>);
+                        } else {
+                            // No grouping (single group)
+                            groups = { [filter]: filteredResources };
+                        }
+
+                        // 2. Render Groups
+                        const groupKeys = Object.keys(groups);
+
+                        if (groupKeys.length === 0 || (groupKeys.length === 1 && groups[groupKeys[0]].length === 0)) {
+                            return (
+                                <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[40px] border border-dashed border-gray-200 text-gray-400 gap-3">
+                                    <Icons.Database size={40} className="mb-2" />
+                                    <p className="font-bold uppercase tracking-widest text-xs">No resources found in this library.</p>
+                                    <p className="text-[10px] text-gray-300 font-medium">Add data to LOCAL_RESOURCES in course-data.ts</p>
+                                </div>
+                            );
+                        }
+
+                        return groupKeys.map(groupTitle => (
+                            <div key={groupTitle}>
+                                {/* Show Header if we are in a grouped mode (All or Academic) */}
+                                {(isAll || isAcademic) && (
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <h2 className="text-2xl font-black text-gray-900 tracking-tight">{groupTitle}</h2>
+                                        <div className="h-px flex-1 bg-gray-100"></div>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                                    {groups[groupTitle].map(resource => (
+                                        <div
+                                            key={resource.id}
+                                            role="button"
+                                            onClick={() => handleResourceClick(resource)}
+                                            className="group bg-white p-5 rounded-[24px] border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 text-left cursor-pointer h-full"
+                                        >
+                                            {/* Header: Icon + Arrow */}
+                                            <div className="flex items-start justify-between">
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center border border-gray-100 ${resource.type === 'Video' ? 'bg-red-50 text-red-600' :
+                                                    resource.type === 'PDF' ? 'bg-orange-50 text-orange-600' :
+                                                        resource.type === 'Article' ? 'bg-purple-50 text-purple-600' :
+                                                            'bg-blue-50 text-blue-600'
+                                                    }`}>
+                                                    {resource.type === 'Video' ? <Icons.Youtube size={20} /> :
+                                                        resource.type === 'PDF' ? <Icons.FileText size={20} /> :
+                                                            resource.type === 'Article' ? <Icons.BookOpen size={20} /> :
+                                                                <Icons.Link size={20} />}
+                                                </div>
+                                                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                    <Icons.ArrowUpRight size={16} />
+                                                </div>
+                                            </div>
+
+                                            {/* Content */}
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border ${['Roadmap', 'Cheat Sheet', 'YouTube', 'Coding', 'Interview'].includes(resource.category) ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                                                            resource.category === 'Academic' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+                                                                'bg-gray-50 text-gray-500 border-gray-100'
+                                                        }`}>
+                                                        {resource.topic || resource.category}
+                                                    </span>
+                                                </div>
+                                                <h3 className="text-base font-black text-black group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug mb-2">
+                                                    {resource.title}
+                                                </h3>
+                                                <p className="text-xs font-medium text-gray-400 mt-2 line-clamp-2 leading-relaxed">{resource.description}</p>
+                                            </div>
+
+                                            {/* Footer */}
+                                            <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
+                                                <span className="text-gray-400 bg-gray-50 px-2 py-1 rounded-md">{resource.type}</span>
+                                                <span className="text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 duration-300">
+                                                    {resource.content ? 'Read Now' : 'Open Link'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[40px] border border-dashed border-gray-200 text-gray-400 gap-3">
-                        <Icons.Database size={40} className="mb-2" />
-                        <p className="font-bold uppercase tracking-widest text-xs">No resources found in this library.</p>
-                        <p className="text-[10px] text-gray-300 font-medium">Add data to LOCAL_RESOURCES in course-data.ts</p>
-                    </div>
-                )}
+                        ));
+                    })()}
+                </div>
+
             </div>
 
             {/* Content Modal */}

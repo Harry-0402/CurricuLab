@@ -12,7 +12,8 @@ export interface Resource {
     description: string;
     type: 'Video' | 'PDF' | 'Link' | 'Template' | 'Article';
     url: string;
-    category: string;
+    category: 'Learning' | 'Technical Skills' | 'Business Strategy' | 'Career & Soft Skills' | 'Roadmap' | 'Cheat Sheet' | 'YouTube' | 'Coding' | 'Academic' | string;
+    topic?: string;
     content?: string;
 }
 
@@ -380,7 +381,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Guided portfolio projects (SQL -> Excel -> Tableau).',
         type: 'Video',
         url: 'https://www.youtube.com/c/AlexTheAnalyst',
-        category: 'Hero: YouTube'
+        category: 'YouTube'
     },
     {
         id: 'hero-yt-2',
@@ -388,7 +389,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Advanced Power BI & DAX. Real-world complex problems.',
         type: 'Video',
         url: 'https://www.youtube.com/c/GuyinaCube',
-        category: 'Hero: YouTube'
+        category: 'YouTube'
     },
     {
         id: 'hero-yt-3',
@@ -396,7 +397,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Data Engineering & ETL pipelines.',
         type: 'Video',
         url: 'https://www.youtube.com/c/SeattleDataGuy',
-        category: 'Hero: YouTube'
+        category: 'YouTube'
     },
     {
         id: 'hero-yt-4',
@@ -404,7 +405,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'FAANG Interview Prep & Behavioral questions.',
         type: 'Video',
         url: 'https://www.youtube.com/c/SundasKhalid',
-        category: 'Hero: YouTube'
+        category: 'YouTube'
     },
     {
         id: 'hero-yt-5',
@@ -412,7 +413,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Python automation & unique datasets.',
         type: 'Video',
         url: 'https://www.youtube.com/c/ThuVudataanalytics',
-        category: 'Hero: YouTube'
+        category: 'YouTube'
     },
     {
         id: 'hero-yt-6',
@@ -420,7 +421,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Statistics intuition and Machine Learning concepts.',
         type: 'Video',
         url: 'https://www.youtube.com/user/joshstarmer',
-        category: 'Hero: YouTube'
+        category: 'YouTube'
     },
     {
         id: 'hero-yt-7',
@@ -428,7 +429,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Product Sense & Business Analytics.',
         type: 'Video',
         url: 'https://www.youtube.com/c/DrNancyLi',
-        category: 'Hero: YouTube'
+        category: 'YouTube'
     },
     {
         id: 'hero-yt-8',
@@ -436,7 +437,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'End-to-End Data Science & Deployment.',
         type: 'Video',
         url: 'https://www.youtube.com/user/krishnaik06',
-        category: 'Hero: YouTube'
+        category: 'YouTube'
     },
 
     // --- Special Guides (content-based) ---
@@ -446,7 +447,7 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'A 6-month comprehensive roadmap to becoming a "Hero" Analyst.',
         type: 'Article',
         url: '#',
-        category: 'Hero: Roadmap',
+        category: 'Roadmap',
         content: `# The "Zero to Hero" Roadmap
 
 To truly bridge the gap from "Competent" to "Hero," you need to go beyond standard syllabi.
@@ -480,7 +481,7 @@ If you consume the syllabus content + the 7 "Hero" channels, and **actually do t
         description: 'Top 21 high-probability questions for Google, Amazon, Deloitte, TCS/Accenture.',
         type: 'Article',
         url: '#',
-        category: 'Hero: Interview',
+        category: 'Interview',
         content: `# Comprehensive Interview "Cheat Sheet"
 
 I have curated a list of 21 high-probability questions per company, focusing on the "Zero to Hero" transition.
@@ -571,7 +572,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         description: 'Curated list of platforms for "Zero to Hero" coding skills.',
         type: 'Article',
         url: '#',
-        category: 'Hero: Coding',
+        category: 'Coding',
         content: `# Top Websites to Enhance Coding Skills
 
 ### 1. The "Gold Standard" for Interviews
@@ -626,6 +627,404 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         type: 'Link',
         url: 'https://www.datacamp.com',
         category: 'Hero: Coding'
+    },
+    // --- Subject Specific Resources ---
+
+    // Data Visualization and Story Telling
+    {
+        id: 'pba207-1',
+        title: 'The Data Warehouse Lifecycle Toolkit',
+        description: 'Textbook by Kimball et al.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=The+Data+Warehouse+Lifecycle+Toolkit+Kimball',
+        category: 'Academic',
+        topic: 'Data Visualization'
+    },
+    {
+        id: 'pba207-2',
+        title: 'Hadoop in Practice',
+        description: 'Textbook by Alex Holmes',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Hadoop+in+Practice+Alex+Holmes',
+        category: 'Academic',
+        topic: 'Data Visualization'
+    },
+    {
+        id: 'pba207-3',
+        title: 'Tableau Public',
+        description: 'Platform for data visualization.',
+        type: 'Link',
+        url: 'https://public.tableau.com/s/',
+        category: 'Academic',
+        topic: 'Data Visualization'
+    },
+    {
+        id: 'pba207-4',
+        title: 'Kaggle: Data Visualization',
+        description: 'Course on Kaggle.',
+        type: 'Link',
+        url: 'https://www.kaggle.com/learn/data-visualization',
+        category: 'Academic',
+        topic: 'Data Visualization'
+    },
+    {
+        id: 'pba207-5',
+        title: 'MakeoverMonday',
+        description: 'Community project.',
+        type: 'Link',
+        url: 'https://www.makeovermonday.co.uk/',
+        category: 'Academic',
+        topic: 'Data Visualization'
+    },
+
+
+    // Business Research Methods
+    {
+        id: 'pba208-1',
+        title: 'Business Research Methods',
+        description: 'Textbook by Donald R. Cooper.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Business+Research+Methods+Donald+Cooper',
+        category: 'Academic',
+        topic: 'Business Research'
+    },
+    {
+        id: 'pba208-2',
+        title: 'Research Methodology',
+        description: 'Textbook by C.R. Kothari.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Research+Methodology+Methods+and+Techniques+Kothari',
+        category: 'Academic',
+        topic: 'Business Research'
+    },
+    {
+        id: 'pba208-3',
+        title: 'Coursera: BRM',
+        description: 'Business Research Methods courses.',
+        type: 'Link',
+        url: 'https://www.coursera.org/search?query=business%20research%20methods',
+        category: 'Academic',
+        topic: 'Business Research'
+    },
+    {
+        id: 'pba208-4',
+        title: 'Google Scholar',
+        description: 'Academic search engine.',
+        type: 'Link',
+        url: 'https://scholar.google.com/',
+        category: 'Academic',
+        topic: 'Business Research'
+    },
+
+    // Production and Operations Management
+    {
+        id: 'pba204-1',
+        title: 'Operations Management (Krajewski)',
+        description: 'Textbook resource.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Operations+Management+Krajewski',
+        category: 'Academic',
+        topic: 'Operations Mgmt'
+    },
+    {
+        id: 'pba204-2',
+        title: 'The Goal - Eliyahoo Goldratt',
+        description: 'Reference book.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=The+Goal+Eliyahoo+Goldratt',
+        category: 'Academic',
+        topic: 'Operations Mgmt'
+    },
+    {
+        id: 'pba204-3',
+        title: 'MIT OpenCourseWare',
+        description: 'Supply Chain resources.',
+        type: 'Link',
+        url: 'https://ocw.mit.edu/search/?q=supply+chain',
+        category: 'Academic',
+        topic: 'Operations Mgmt'
+    },
+    {
+        id: 'pba204-4',
+        title: 'Six Sigma Council',
+        description: 'Certification and resources.',
+        type: 'Link',
+        url: 'https://www.sixsigmacouncil.org/',
+        category: 'Academic',
+        topic: 'Operations Mgmt'
+    },
+
+    // Legal Aspects of Business
+    {
+        id: 'pba206-1',
+        title: 'Labour and Industrial Laws',
+        description: 'Textbook by P.K. Padhi.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Labour+and+Industrial+Laws+PK+Padhi',
+        category: 'Academic',
+        topic: 'Business Law'
+    },
+    {
+        id: 'pba206-2',
+        title: 'India Code',
+        description: 'Digital Repository of Acts.',
+        type: 'Link',
+        url: 'https://www.indiacode.nic.in/',
+        category: 'Academic',
+        topic: 'Business Law'
+    },
+    {
+        id: 'pba206-3',
+        title: 'Manupatra',
+        description: 'Legal Research platform.',
+        type: 'Link',
+        url: 'https://www.manupatra.com/',
+        category: 'Academic',
+        topic: 'Business Law'
+    },
+
+    // Business Communication Skills - II
+    {
+        id: 'pba213-1',
+        title: 'Professional Communication',
+        description: 'Textbook by Aruna Koneru.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Professional+Communication+Aruna+Koneru',
+        category: 'Academic',
+        topic: 'Communication'
+    },
+    {
+        id: 'pba213-2',
+        title: 'LinkedIn Learning',
+        description: 'Business Communication topics.',
+        type: 'Link',
+        url: 'https://www.linkedin.com/learning/topics/business-communication',
+        category: 'Academic',
+        topic: 'Communication'
+    },
+    {
+        id: 'pba213-3',
+        title: 'Toastmasters International',
+        description: 'Public speaking and leadership.',
+        type: 'Link',
+        url: 'https://www.toastmasters.org/',
+        category: 'Academic',
+        topic: 'Communication'
+    },
+
+    // Data Analysis using Python
+    {
+        id: 'pba211-1',
+        title: 'Hands-on Data Structures (Python)',
+        description: 'Textbook by Basant Agarwal.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Hands-on+Data+Structures+and+Algorithms+with+Python+Basant+Agarwal',
+        category: 'Academic',
+        topic: 'Python Data Analysis'
+    },
+    {
+        id: 'pba211-2',
+        title: 'Python For Data Analysis',
+        description: 'Reference by Wes McKinney.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Python+For+Data+Analysis+Wes+McKinney',
+        category: 'Academic',
+        topic: 'Python Data Analysis'
+    },
+    {
+        id: 'pba211-3',
+        title: 'Anaconda Distribution',
+        description: 'Data science platform.',
+        type: 'Link',
+        url: 'https://www.anaconda.com/download',
+        category: 'Academic',
+        topic: 'Python Data Analysis'
+    },
+    {
+        id: 'pba211-4',
+        title: 'LeetCode (Python)',
+        description: 'Coding practice.',
+        type: 'Link',
+        url: 'https://leetcode.com/',
+        category: 'Academic',
+        topic: 'Python Data Analysis'
+    },
+
+    // Data Analysis Using Power BI
+    {
+        id: 'pba212-1',
+        title: 'Mastering Microsoft Power BI',
+        description: 'Textbook by Brett Powell.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Mastering+Microsoft+Power+BI+Brett+Powell',
+        category: 'Academic',
+        topic: 'Power BI'
+    },
+    {
+        id: 'pba212-2',
+        title: 'Microsoft Learn: PL-300',
+        description: 'Certification path.',
+        type: 'Link',
+        url: 'https://learn.microsoft.com/en-us/certifications/exams/pl-300/',
+        category: 'Academic',
+        topic: 'Power BI'
+    },
+    {
+        id: 'pba212-3',
+        title: 'SQLBI',
+        description: 'Power BI & DAX resources.',
+        type: 'Link',
+        url: 'https://www.sqlbi.com/',
+        category: 'Academic',
+        topic: 'Power BI'
+    },
+
+    // Digital Transformation
+    {
+        id: 'pb205-1',
+        title: 'Leading Digital',
+        description: 'Textbook by George Westerman.',
+        type: 'Link',
+        url: 'https://www.google.com/search?q=Leading+Digital+George+Westerman',
+        category: 'Academic',
+        topic: 'Digital Transformation'
+    },
+    {
+        id: 'pb205-2',
+        title: 'HBR: Digital Transformation',
+        description: 'Harvard Business Review topic.',
+        type: 'Link',
+        url: 'https://hbr.org/topic/digital-transformation',
+        category: 'Academic',
+        topic: 'Digital Transformation'
+    },
+    {
+        id: 'pb205-3',
+        title: 'McKinsey Digital Insights',
+        description: 'Industry insights.',
+        type: 'Link',
+        url: 'https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights',
+        category: 'Academic',
+        topic: 'Digital Transformation'
+    },
+    // --- User Imported Cheat Sheets ---
+    {
+        id: 'cs-1',
+        title: 'Divisibility Cheatsheet',
+        description: 'Quick reference for math divisibility rules.',
+        type: 'PDF',
+        url: '/assets/resources/Divisibility_Cheatsheet.pdf',
+        category: 'Cheat Sheet',
+        topic: 'Math'
+    },
+    {
+        id: 'cs-2',
+        title: 'Case Studies Cheat Sheet',
+        description: 'Frameworks and tips for solving business case studies.',
+        type: 'PDF',
+        url: '/assets/resources/Case_Studies_Cheatsheet.pdf',
+        category: 'Cheat Sheet',
+        topic: 'Business'
+    },
+    {
+        id: 'cs-3',
+        title: 'SQL Cheat Sheet',
+        description: 'Comprehensive guide to SQL syntax and commands.',
+        type: 'PDF',
+        url: '/assets/resources/SQL_Cheatsheet.pdf',
+        category: 'Cheat Sheet',
+        topic: 'SQL'
+    },
+    {
+        id: 'cs-4',
+        title: 'Problem Solving Cheatsheet',
+        description: 'Strategies and models for effective problem solving.',
+        type: 'PDF',
+        url: '/assets/resources/Problem_Solving_Cheatsheet.pdf',
+        category: 'Cheat Sheet',
+        topic: 'Soft Skills'
+    },
+    {
+        id: 'cs-5',
+        title: 'Excel Formatting Cheat Sheet',
+        description: 'Shortcuts and tips for professional Excel formatting.',
+        type: 'PDF',
+        url: '/assets/resources/Excel_Formatting_Cheatsheet.pdf',
+        category: 'Cheat Sheet',
+        topic: 'Excel'
+    },
+    {
+        id: 'cs-6',
+        title: 'Sports Analytics Article',
+        description: 'In-depth article on sports data analysis.',
+        type: 'PDF',
+        url: '/assets/resources/Sports_Analytics_Article.pdf',
+        category: 'Cheat Sheet',
+        topic: 'Analytics'
+    },
+    // --- User Imported Academic Resources ---
+    {
+        id: 'acad-1',
+        title: 'Data Analysis in Microsoft Excel',
+        description: 'Guide to analytics in Excel by Alex Holloway.',
+        type: 'PDF',
+        url: '/assets/resources/Data_Analysis_Excel.pdf',
+        category: 'Academic',
+        topic: 'Excel'
+    },
+    {
+        id: 'acad-2',
+        title: 'Digital Transformation: Survive and Thrive',
+        description: 'Strategic guide by Rice & Siebel.',
+        type: 'PDF',
+        url: '/assets/resources/Digital_Transformation_Rice.pdf',
+        category: 'Academic',
+        topic: 'Digital Transformation'
+    },
+    {
+        id: 'acad-3',
+        title: 'Labour and Industrial Laws (3rd Ed)',
+        description: 'Textbook by P.K. Padhi.',
+        type: 'PDF',
+        url: '/assets/resources/Labour_Laws_Padhi.pdf',
+        category: 'Academic',
+        topic: 'Business Law'
+    },
+    {
+        id: 'acad-4',
+        title: 'Mastering Data Analysis with Python',
+        description: 'Comprehensive guide by Rajender Kumar.',
+        type: 'PDF',
+        url: '/assets/resources/Data_Analysis_Python.pdf',
+        category: 'Academic',
+        topic: 'Python Data Analysis'
+    },
+    {
+        id: 'acad-5',
+        title: 'Operations Management',
+        description: 'Textbook by Krajewski & Lee.',
+        type: 'PDF',
+        url: '/assets/resources/Operations_Management_Krajewski.pdf',
+        category: 'Academic',
+        topic: 'Operations Mgmt'
+    },
+    {
+        id: 'acad-6',
+        title: 'Research Methodology',
+        description: 'Methods and techniques by C.R. Kothari.',
+        type: 'PDF',
+        url: '/assets/resources/Research_Methodology_Kothari.pdf',
+        category: 'Academic',
+        topic: 'Business Research'
+    },
+    {
+        id: 'acad-7',
+        title: 'Storytelling with Data',
+        description: 'Data visualization guide by Cole Nussbaumer Knaflic.',
+        type: 'PDF',
+        url: '/assets/resources/Storytelling_with_Data.pdf',
+        category: 'Academic',
+        topic: 'Data Visualization'
     }
 ];
 
