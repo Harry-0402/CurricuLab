@@ -55,6 +55,27 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(redirectUrl);
     }
 
+    // CHECK AUTHORIZATION (Whitelist) - Only if session exists
+    if (session) {
+        // Query authorized_users table
+        const { data: isAuthorized, error } = await supabase
+            .from('authorized_users')
+            .select('email')
+            .eq('email', session.user.email)
+            .single();
+
+        // If not found in table, and not on an error/logout page
+        if ((!isAuthorized || error) && req.nextUrl.pathname !== '/unauthorized') {
+            // Optional: Sign out the user strictly here, but better to redirect
+            // We can't easily sign out in middleware, but we can redirect to a page that signs them out
+            // For now, let's redirect to a clear 'Unauthorized' page or back to login with a cleared cookie trick?
+            // Simpler: Redirect to a dedicated Unauthorized route
+            const redirectUrl = req.nextUrl.clone();
+            redirectUrl.pathname = '/unauthorized'; // You MUST create this page
+            return NextResponse.redirect(redirectUrl);
+        }
+    }
+
     return res;
 }
 

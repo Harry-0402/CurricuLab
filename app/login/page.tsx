@@ -111,6 +111,34 @@ export default function LoginPage() {
                             )}
                         </button>
                     </div>
+
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-gray-200" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-[#fafbfc] px-2 text-gray-400 font-bold tracking-wider">Or continue with</span>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <button
+                            type="button"
+                            onClick={() => AuthService.signInWithOAuth('google')}
+                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-[20px] hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
+                        >
+                            <Icons.Google size={20} className="text-gray-900 group-hover:scale-110 transition-transform" />
+                            <span className="text-xs font-bold text-gray-700 group-hover:text-blue-600">Google</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => AuthService.signInWithOAuth('github')}
+                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-[20px] hover:border-gray-300 hover:bg-gray-50 hover:shadow-lg hover:shadow-gray-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
+                        >
+                            <Icons.Github size={20} className="text-gray-900 group-hover:scale-110 transition-transform" />
+                            <span className="text-xs font-bold text-gray-700 group-hover:text-black">GitHub</span>
+                        </button>
+                    </div>
                 </form>
 
                 <div className="mt-10 pt-8 border-t border-gray-100">
