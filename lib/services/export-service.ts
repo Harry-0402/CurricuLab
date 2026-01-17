@@ -1019,7 +1019,7 @@ export class PlatformExportService {
                     return trimmed.length > 0 && !trimmed.includes('---');
                 });
                 if (match.includes('---')) return ''; // Skip separator row
-                return `< tr > ${cells.map(c => `<td>${c.trim()}</td>`).join('')} </tr>`;
+                return `<tr>${cells.map(c => `<td>${c.trim()}</td>`).join('')}</tr>`;
             });
 
         // Wrap table rows in table tags
