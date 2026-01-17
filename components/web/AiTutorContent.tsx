@@ -143,7 +143,7 @@ export function AiTutorContent() {
 
     const handleExportHTML = async () => {
         if (messages.length === 0) return;
-        await PlatformExportService.generateChatHTMLExport(messages);
+        await PlatformExportService.generateChatHTMLExport(messages, "AI Tutor Chat");
         setShowExportMenu(false);
     };
 
