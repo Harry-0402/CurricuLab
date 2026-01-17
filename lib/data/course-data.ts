@@ -6,6 +6,8 @@ import { Subject, Unit, Note, Question } from "@/types";
  * for Subjects, Units, Notes, and Questions.
  */
 
+import { VIDEO_LIBRARY } from './video-library';
+
 export interface Resource {
     id: string;
     title: string;
@@ -30,6 +32,7 @@ export const LOCAL_UNITS: Unit[] = [];
 export const LOCAL_NOTES: Note[] = [];
 export const LOCAL_QUESTIONS: Question[] = [];
 export const LOCAL_RESOURCES: Resource[] = [
+    ...VIDEO_LIBRARY,
     // --- Part I: Core Technical Competencies ---
     {
         id: 'tech-1',
@@ -381,7 +384,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Guided portfolio projects (SQL -> Excel -> Tableau).',
         type: 'Video',
         url: 'https://www.youtube.com/c/AlexTheAnalyst',
-        category: 'YouTube'
+        category: 'Technical Skills',
+        topic: 'Data Analysis'
     },
     {
         id: 'hero-yt-2',
@@ -389,7 +393,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Advanced Power BI & DAX. Real-world complex problems.',
         type: 'Video',
         url: 'https://www.youtube.com/c/GuyinaCube',
-        category: 'YouTube'
+        category: 'Technical Skills',
+        topic: 'Power BI'
     },
     {
         id: 'hero-yt-3',
@@ -397,7 +402,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Data Engineering & ETL pipelines.',
         type: 'Video',
         url: 'https://www.youtube.com/c/SeattleDataGuy',
-        category: 'YouTube'
+        category: 'Technical Skills',
+        topic: 'Data Engineering'
     },
     {
         id: 'hero-yt-4',
@@ -405,7 +411,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'FAANG Interview Prep & Behavioral questions.',
         type: 'Video',
         url: 'https://www.youtube.com/c/SundasKhalid',
-        category: 'YouTube'
+        category: 'Career & Soft Skills',
+        topic: 'Interview Prep'
     },
     {
         id: 'hero-yt-5',
@@ -413,7 +420,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Python automation & unique datasets.',
         type: 'Video',
         url: 'https://www.youtube.com/c/ThuVudataanalytics',
-        category: 'YouTube'
+        category: 'Technical Skills',
+        topic: 'Python'
     },
     {
         id: 'hero-yt-6',
@@ -421,7 +429,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Statistics intuition and Machine Learning concepts.',
         type: 'Video',
         url: 'https://www.youtube.com/user/joshstarmer',
-        category: 'YouTube'
+        category: 'Technical Skills',
+        topic: 'Statistics'
     },
     {
         id: 'hero-yt-7',
@@ -429,7 +438,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'Product Sense & Business Analytics.',
         type: 'Video',
         url: 'https://www.youtube.com/c/DrNancyLi',
-        category: 'YouTube'
+        category: 'Business Strategy',
+        topic: 'Product Management'
     },
     {
         id: 'hero-yt-8',
@@ -437,7 +447,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         description: 'End-to-End Data Science & Deployment.',
         type: 'Video',
         url: 'https://www.youtube.com/user/krishnaik06',
-        category: 'YouTube'
+        category: 'Technical Skills',
+        topic: 'Data Science'
     },
 
     // --- Special Guides (content-based) ---
@@ -602,7 +613,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         description: 'Gold standard for interview prep.',
         type: 'Link',
         url: 'https://leetcode.com',
-        category: 'Hero: Coding'
+        category: 'Coding'
     },
     {
         id: 'coding-stratascratch',
@@ -610,7 +621,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         description: 'Real data science interview questions.',
         type: 'Link',
         url: 'https://www.stratascratch.com',
-        category: 'Hero: Coding'
+        category: 'Coding'
     },
     {
         id: 'coding-hackerrank',
@@ -618,7 +629,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         description: 'Skill assessments and certifications.',
         type: 'Link',
         url: 'https://www.hackerrank.com',
-        category: 'Hero: Coding'
+        category: 'Coding'
     },
     {
         id: 'coding-datacamp',
@@ -626,7 +637,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         description: 'Interactive learning for data skills.',
         type: 'Link',
         url: 'https://www.datacamp.com',
-        category: 'Hero: Coding'
+        category: 'Coding'
     },
     // --- Subject Specific Resources ---
 
