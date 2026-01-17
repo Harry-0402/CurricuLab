@@ -6,23 +6,43 @@ import { AuthService } from '@/lib/services/auth.service';
 import { Icons } from '@/components/shared/Icons';
 
 export default function ForgotPasswordPage() {
+    const router = useRouter();
     const [email, setEmail] = useState('');
+    const [otp, setOtp] = useState('');
+    const [step, setStep] = useState<'email' | 'otp'>('email');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const handleReset = async (e: React.FormEvent) => {
+    const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
         setMessage(null);
 
         try {
-            const { error } = await AuthService.resetPasswordForEmail(email);
+            const { error } = await AuthService.sendEmailOTP(email);
             if (error) throw error;
-            setMessage("Check your email for the password reset link.");
+            setStep('otp');
+            setMessage("Code sent! Check your email.");
         } catch (err: any) {
-            setError(err.message || "Failed to send reset link");
+            setError(err.message || "Failed to send code");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyCode = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        try {
+            const { error } = await AuthService.verifyEmailOTP(email, otp);
+            if (error) throw error;
+            router.push('/update-password');
+        } catch (err: any) {
+            setError(err.message || "Invalid code");
         } finally {
             setLoading(false);
         }
@@ -41,10 +61,14 @@ export default function ForgotPasswordPage() {
                         <Icons.Key size={32} />
                     </div>
                     <h1 className="text-2xl font-black text-gray-900">Forgot Password?</h1>
-                    <p className="text-gray-500 font-medium mt-2 text-sm max-w-xs mx-auto">Enter your email and we'll send you instructions to reset your password.</p>
+                    <p className="text-gray-500 font-medium mt-2 text-sm max-w-xs mx-auto">
+                        {step === 'email'
+                            ? "Enter your email and we'll send you a verification code."
+                            : "Enter the 6-digit code sent to your email."}
+                    </p>
                 </div>
 
-                <form onSubmit={handleReset} className="space-y-6">
+                <form onSubmit={step === 'email' ? handleSendCode : handleVerifyCode} className="space-y-6">
                     {message && (
                         <div className="p-4 bg-green-50 text-green-700 text-sm font-bold rounded-2xl border border-green-200 flex items-center gap-3">
                             <Icons.CheckCircle size={18} className="shrink-0" />
@@ -59,22 +83,41 @@ export default function ForgotPasswordPage() {
                         </div>
                     )}
 
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Email Address</label>
-                        <div className="relative group">
-                            <div className="absolute left-5 top-4 text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                                <Icons.Mail size={18} />
+                    {step === 'email' ? (
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Email Address</label>
+                            <div className="relative group">
+                                <div className="absolute left-5 top-4 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                    <Icons.Mail size={18} />
+                                </div>
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-bold text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-300 placeholder:font-medium"
+                                    placeholder="name@curriculab.com"
+                                />
                             </div>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-bold text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-300 placeholder:font-medium"
-                                placeholder="name@curriculab.com"
-                            />
                         </div>
-                    </div>
+                    ) : (
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Verification Code</label>
+                            <div className="relative group">
+                                <div className="absolute left-5 top-4 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                    <Icons.Shield size={18} />
+                                </div>
+                                <input
+                                    type="text"
+                                    required
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-bold text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-300 placeholder:font-medium tracking-widest"
+                                    placeholder="123456"
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     <button
                         type="submit"
@@ -84,11 +127,11 @@ export default function ForgotPasswordPage() {
                         {loading ? (
                             <>
                                 <Icons.Loader2 size={18} className="animate-spin" />
-                                <span>Sending...</span>
+                                <span>{step === 'email' ? "Sending Code..." : "Verifying..."}</span>
                             </>
                         ) : (
                             <>
-                                <span>Send Reset Link</span>
+                                <span>{step === 'email' ? "Send Code" : "Verify Code"}</span>
                                 <Icons.ArrowRight size={18} />
                             </>
                         )}
@@ -105,3 +148,4 @@ export default function ForgotPasswordPage() {
         </div>
     );
 }
+

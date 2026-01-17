@@ -50,5 +50,27 @@ export const AuthService = {
             password: password
         });
         return { data, error };
+    },
+
+    async sendEmailOTP(email: string) {
+        const { data, error } = await supabase.auth.signInWithOtp({
+            email,
+            options: {
+                // We want a code, not a magic link.
+                // Supabase might still send a link depending on template, but effectively it's the same flow if we verify the token.
+                // Actually, strictly speaking 'shouldCreateUser: false' is good if we only want existing users.
+                shouldCreateUser: false,
+            }
+        });
+        return { data, error };
+    },
+
+    async verifyEmailOTP(email: string, token: string) {
+        const { data, error } = await supabase.auth.verifyOtp({
+            email,
+            token,
+            type: 'email'
+        });
+        return { data, error };
     }
 };
