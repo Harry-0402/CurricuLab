@@ -301,16 +301,21 @@ Return the COMPLETE formatted answer. Do not truncate.`;
     },
 
     async formatVaultContent(title: string, content: string, type: 'study_note' | 'case_study' | 'project'): Promise<string> {
-        const CHUNK_SIZE = 2500; // Characters per chunk
-        const MAX_DIRECT_FORMAT = 3000; // Content under this is formatted directly
+        const CHUNK_SIZE = 1500; // Smaller chunks for better AI output
+        const MAX_DIRECT_FORMAT = 2000; // Content under this is formatted directly
 
         // If content is short enough, format directly
         if (content.length <= MAX_DIRECT_FORMAT) {
-            return this._formatVaultChunk(title, content, type, false);
+            try {
+                return await this._formatVaultChunk(title, content, type, false);
+            } catch (error) {
+                console.warn('[Vault] AI formatting failed, using basic formatting');
+                return this._basicMarkdownFormat(content);
+            }
         }
 
         // Smart chunking for large content
-        console.log(`[SmartChunk] Content is ${content.length} chars, splitting into chunks...`);
+        console.log(`[SmartChunk] Content is ${content.length} chars, splitting into smaller chunks...`);
 
         const chunks = this._splitIntoChunks(content, CHUNK_SIZE);
         console.log(`[SmartChunk] Split into ${chunks.length} chunks`);
@@ -319,20 +324,34 @@ Return the COMPLETE formatted answer. Do not truncate.`;
 
         for (let i = 0; i < chunks.length; i++) {
             const isFirst = i === 0;
-            const chunkTitle = isFirst ? title : `${title} (Part ${i + 1})`;
 
             try {
-                console.log(`[SmartChunk] Formatting chunk ${i + 1}/${chunks.length}...`);
-                const formatted = await this._formatVaultChunk(chunkTitle, chunks[i], type, !isFirst);
-                formattedChunks.push(formatted);
+                console.log(`[SmartChunk] Formatting chunk ${i + 1}/${chunks.length} (${chunks[i].length} chars)...`);
+                const formatted = await this._formatVaultChunk(title, chunks[i], type, !isFirst);
+
+                // Validate that AI didn't truncate too much
+                if (formatted.length < chunks[i].length * 0.5) {
+                    console.warn(`[SmartChunk] Chunk ${i + 1} seems truncated, using basic format`);
+                    formattedChunks.push(this._basicMarkdownFormat(chunks[i]));
+                } else {
+                    formattedChunks.push(formatted);
+                }
             } catch (error) {
-                console.warn(`[SmartChunk] Chunk ${i + 1} failed, using raw content`);
-                formattedChunks.push(chunks[i]);
+                console.warn(`[SmartChunk] Chunk ${i + 1} failed, using basic format`);
+                formattedChunks.push(this._basicMarkdownFormat(chunks[i]));
             }
         }
 
         // Combine all formatted chunks
-        return formattedChunks.join('\n\n---\n\n');
+        return formattedChunks.join('\n\n');
+    },
+
+    _basicMarkdownFormat(content: string): string {
+        // Simple markdown enhancement without AI
+        return content
+            .replace(/^(\d+)\.\s+(.+)$/gm, '**$1.** $2') // Bold numbered points
+            .replace(/^-\s+(.+)$/gm, '• $1') // Convert dashes to bullets
+            .replace(/\n{3,}/g, '\n\n'); // Normalize line breaks
     },
 
     _splitIntoChunks(content: string, chunkSize: number): string[] {
@@ -365,35 +384,19 @@ Return the COMPLETE formatted answer. Do not truncate.`;
     },
 
     async _formatVaultChunk(title: string, content: string, type: 'study_note' | 'case_study' | 'project', isContinuation: boolean): Promise<string> {
-        const continuationNote = isContinuation
-            ? `\n\n**IMPORTANT:** This is a CONTINUATION - do NOT add any introduction. Just format this part directly.`
-            : '';
+        // Ultra-short prompt to maximize output tokens
+        const prompt = `Format this text with markdown. Keep 100% of the content - do not skip or summarize anything.
 
-        const prompt = `You are a formatting assistant. Format the raw content with proper markdown structure.
+Rules:
+- Bold key terms with **term**
+- Keep all numbered points (1, 2, 3...)
+- Keep all text exactly as-is
+- Use tables (| col |) where appropriate
 
-**Title:** ${title}
-**Type:** ${type.replace('_', ' ')}
-
-**Raw Content to Format:**
+Text:
 ${content}
 
----
-
-**CRITICAL RULES - MUST FOLLOW:**
-1. PRESERVE 100% OF THE CONTENT - do NOT skip, summarize, or truncate anything
-2. Keep ALL numbered points, ALL bullet points, ALL paragraphs exactly as provided
-3. If content has numbers 1-10, your output MUST have numbers 1-10
-4. DO NOT add new content or explanations
-5. DO NOT remove any information
-
-**Formatting Guidelines:**
-- Use ## for main headings, ### for subheadings
-- Use **bold** for key terms
-- Use bullet points (- ) for lists
-- Use proper markdown tables (| header | header |) when data is tabular
-- Keep paragraph breaks${continuationNote}
-
-Return the COMPLETE formatted content. Every sentence from the input must appear in the output.`;
+Output the complete formatted text:`;
 
         return this.generateContent(prompt);
     }
