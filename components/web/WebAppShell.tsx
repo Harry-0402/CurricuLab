@@ -34,7 +34,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                 if (due.length > 0) {
                     setDueAlerts(due);
                     setShowDueAlert(true);
-                    const timer = setTimeout(() => setShowDueAlert(false), 20000); // 20 seconds
+                    const timer = setTimeout(() => setShowDueAlert(false), 8000); // 8 seconds
                     return () => clearTimeout(timer);
                 }
             } catch (error) {
