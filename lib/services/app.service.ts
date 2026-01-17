@@ -342,6 +342,7 @@ import { VaultResource, VaultResourceType } from '@/types';
 const mapVaultResource = (data: any): VaultResource => ({
     id: data.id,
     subjectId: data.subject_id,
+    unitId: data.unit_id || '',
     type: data.type,
     title: data.title,
     content: data.content || '',
@@ -371,6 +372,7 @@ export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): 
     const { data, error } = await supabase.from('vault_resources').insert([{
         id: crypto.randomUUID(),
         subject_id: resource.subjectId,
+        unit_id: resource.unitId || null,
         type: resource.type,
         title: resource.title,
         content: resource.content || '',
@@ -391,6 +393,7 @@ export const updateVaultResource = async (resource: VaultResource): Promise<Vaul
         .from('vault_resources')
         .update({
             subject_id: resource.subjectId,
+            unit_id: resource.unitId || null,
             type: resource.type,
             title: resource.title,
             content: resource.content,

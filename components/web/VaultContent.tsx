@@ -30,6 +30,7 @@ export function VaultContent() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         subjectId: '',
+        unitId: '',
         type: 'study_note' as VaultResourceType,
         title: '',
         content: ''
@@ -121,6 +122,7 @@ export function VaultContent() {
         setEditingId(null);
         setFormData({
             subjectId: activeSubjectId,
+            unitId: '',
             type: 'study_note',
             title: '',
             content: ''
@@ -133,6 +135,7 @@ export function VaultContent() {
         setEditingId(resource.id);
         setFormData({
             subjectId: resource.subjectId,
+            unitId: resource.unitId || '',
             type: resource.type,
             title: resource.title,
             content: resource.content
@@ -150,6 +153,7 @@ export function VaultContent() {
             saved = await updateVaultResource({
                 id: editingId,
                 subjectId: formData.subjectId,
+                unitId: formData.unitId,
                 type: formData.type,
                 title: formData.title,
                 content: formData.content,
@@ -159,6 +163,7 @@ export function VaultContent() {
         } else {
             saved = await createVaultResource({
                 subjectId: formData.subjectId,
+                unitId: formData.unitId,
                 type: formData.type,
                 title: formData.title,
                 content: formData.content,
@@ -315,12 +320,19 @@ export function VaultContent() {
                                         )}
                                     >
                                         <div className="flex justify-between items-center mb-2">
-                                            <span className={cn(
-                                                "px-2 py-1 rounded-md text-[10px] font-bold uppercase border",
-                                                config.bgColor, config.color
-                                            )}>
-                                                {config.label}
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <span className={cn(
+                                                    "px-2 py-1 rounded-md text-[10px] font-bold uppercase border",
+                                                    config.bgColor, config.color
+                                                )}>
+                                                    {config.label}
+                                                </span>
+                                                {resource.unitId && (
+                                                    <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-100 text-gray-500 border border-gray-200">
+                                                        {resource.unitId.replace('unit-', 'U')}
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div className="flex gap-1">
                                                 <button
                                                     onClick={(e) => handleOpenEditModal(e, resource)}
@@ -487,6 +499,31 @@ export function VaultContent() {
                                             >
                                                 <config.icon size={14} />
                                                 {config.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Unit <span className="text-gray-300">(Optional)</span></label>
+                                <div className="flex gap-2">
+                                    {[1, 2, 3, 4, 5].map(unit => {
+                                        const unitId = `unit-${unit}`;
+                                        const isActive = formData.unitId === unitId;
+                                        return (
+                                            <button
+                                                key={unit}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, unitId: isActive ? '' : unitId })}
+                                                className={cn(
+                                                    "flex-1 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border",
+                                                    isActive
+                                                        ? "bg-gray-900 text-white border-gray-900"
+                                                        : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-300"
+                                                )}
+                                            >
+                                                Unit {unit}
                                             </button>
                                         );
                                     })}

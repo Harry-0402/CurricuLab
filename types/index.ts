@@ -150,6 +150,7 @@ export type VaultResourceType = 'study_note' | 'case_study' | 'project';
 export interface VaultResource {
   id: string;
   subjectId: string;
+  unitId?: string;
   type: VaultResourceType;
   title: string;
   content: string;
