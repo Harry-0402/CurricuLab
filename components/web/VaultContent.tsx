@@ -24,6 +24,7 @@ export function VaultContent() {
     const [loading, setLoading] = useState(true);
     const [selectedResource, setSelectedResource] = useState<VaultResource | null>(null);
     const [selectedType, setSelectedType] = useState<VaultResourceType | 'all'>('all');
+    const [selectedUnitId, setSelectedUnitId] = useState<string>('all');
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,13 +64,14 @@ export function VaultContent() {
             setLoading(true);
             const data = await getVaultResources({
                 subjectId: activeSubjectId,
+                unitId: selectedUnitId === 'all' ? undefined : selectedUnitId,
                 type: selectedType === 'all' ? undefined : selectedType
             });
             setResources(data);
             setLoading(false);
         };
         loadResources();
-    }, [activeSubjectId, selectedType]);
+    }, [activeSubjectId, selectedType, selectedUnitId]);
 
     // Auto-format content when resource is selected
     useEffect(() => {
@@ -304,6 +306,18 @@ export function VaultContent() {
                         <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">
                             Resources ({filteredResources.length})
                         </h3>
+                        <div className="flex items-center gap-2">
+                            <select
+                                value={selectedUnitId}
+                                onChange={(e) => setSelectedUnitId(e.target.value)}
+                                className="bg-transparent text-xs font-bold text-gray-500 border-none outline-none cursor-pointer hover:text-gray-700"
+                            >
+                                <option value="all">All Units</option>
+                                {[1, 2, 3, 4, 5].map(u => (
+                                    <option key={u} value={`unit-${u}`}>Unit {u}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
                         {loading ? (

@@ -353,7 +353,7 @@ const mapVaultResource = (data: any): VaultResource => ({
     updatedAt: data.updated_at
 });
 
-export const getVaultResources = async (filters: { subjectId?: string; type?: VaultResourceType }): Promise<VaultResource[]> => {
+export const getVaultResources = async (filters: { subjectId?: string; unitId?: string; type?: VaultResourceType }): Promise<VaultResource[]> => {
     let query = supabase.from('vault_resources').select('*');
 
     if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
