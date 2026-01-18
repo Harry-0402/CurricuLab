@@ -22,7 +22,7 @@ export function WebRightPanel() {
 
     return (
         <aside className={cn(
-            "h-full border-l border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shrink-0 overflow-hidden relative print:hidden",
+            "h-full border-l border-gray-100 bg-white flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shrink-0 overflow-hidden relative print:hidden",
             isRightPanelMinimized ? "w-0 border-l-0" : "w-[340px]"
         )}>
             {/* Toggle Button Handle */}
@@ -64,14 +64,14 @@ export function WebRightPanel() {
                 {/* Upcoming Assignments Section */}
                 <div className="space-y-8 pb-10">
                     <div className="flex items-center justify-between">
-                        <h4 className="text-lg font-black text-gray-900 dark:text-white tracking-tight text-lg font-black text-gray-900 tracking-tight">Upcoming Deadlines</h4>
+                        <h4 className="text-lg font-black text-gray-900 tracking-tight text-lg font-black text-gray-900 tracking-tight">Upcoming Deadlines</h4>
                     </div>
                     <div className="space-y-5">
                         {upcoming.map(item => (
-                            <div key={item.id} className="p-6 bg-white dark:bg-zinc-900 border border-gray-100/80 dark:border-zinc-800 rounded-[35px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.03)] hover:border-blue-100 dark:hover:border-blue-900 transition-all duration-300 group cursor-pointer relative overflow-hidden">
+                            <div key={item.id} className="p-6 bg-white border border-gray-100/80 rounded-[35px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.03)] hover:border-blue-100 transition-all duration-300 group cursor-pointer relative overflow-hidden">
                                 <div className="flex items-start justify-between gap-4 relative z-10">
                                     <div className="space-y-1.5">
-                                        <h5 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-snug group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors pr-4">{item.title}</h5>
+                                        <h5 className="text-sm font-black text-gray-900 leading-snug group-hover:text-blue-700 transition-colors pr-4">{item.title}</h5>
                                         <p className="text-[11px] font-bold text-gray-400/80">{item.subtitle}</p>
                                     </div>
                                     <div className={cn(

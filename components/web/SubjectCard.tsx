@@ -67,7 +67,7 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
     return (
         <Link href={`/subject/${subject.id}`} className="block group h-full">
             <div
-                className="p-6 rounded-[32px] border shadow-sm group-hover:shadow-md transition-all duration-500 h-full flex flex-col dark:border-zinc-800"
+                className="p-6 rounded-[32px] border shadow-sm group-hover:shadow-md transition-all duration-500 h-full flex flex-col"
                 style={{
                     backgroundColor: `${subject.color}08`, // ~3% opacity tint
                     borderColor: `${subject.color}20`  // ~12% opacity border
@@ -113,7 +113,7 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
                                     <button
                                         key={i}
                                         onClick={(e) => handleAction(e, opt.label)}
-                                        className="w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-100 transition-colors"
+                                        className="w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 transition-colors"
                                     >
                                         <opt.icon size={14} className={opt.color} />
                                         <span className={opt.color}>{opt.label}</span>
@@ -125,13 +125,13 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
                 </div>
 
                 <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 min-h-[3.5rem]">{subject.title}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-2 min-h-[2.5rem]">{subject.description}</p>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">{subject.title}</h3>
+                    <p className="text-sm text-gray-500 mb-6 line-clamp-2 min-h-[2.5rem]">{subject.description}</p>
                 </div>
 
                 <div className="space-y-4 mt-auto">
                     <ProgressBar value={subject.progress} color={subject.color} />
-                    <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                    <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                         <span>{subject.unitCount} Units</span>
                         <span>{subject.progress}% Complete</span>
                     </div>

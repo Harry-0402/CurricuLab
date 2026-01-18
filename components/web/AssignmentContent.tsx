@@ -221,7 +221,7 @@ Format the response in clean, readable markdown.`;
             {/* Header Area */}
             <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                    <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Active Tasks</h2>
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">Active Tasks</h2>
                     <p className="text-sm font-bold text-gray-400">
                         {assignments.length} assignments tracked for {activeSubject?.code}
                     </p>
@@ -246,8 +246,8 @@ Format the response in clean, readable markdown.`;
                             className={cn(
                                 "px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all duration-300 flex items-center justify-center gap-1.5 border shadow-sm",
                                 isActive
-                                    ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100 dark:shadow-blue-900"
-                                    : "bg-white dark:bg-zinc-900 text-gray-400 dark:text-gray-500 border-gray-100 dark:border-zinc-800 hover:border-blue-200 dark:hover:border-blue-800 hover:text-blue-600"
+                                    ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100"
+                                    : "bg-white text-gray-400 border-gray-100 hover:border-blue-200 hover:text-blue-600"
                             )}
                         >
                             <span className="text-[10px] font-black tracking-widest uppercase">
@@ -267,7 +267,7 @@ Format the response in clean, readable markdown.`;
                     <div
                         key={assignment.id}
                         onClick={() => openDetailModal(assignment)}
-                        className="group bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[35px] p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer"
+                        className="group bg-white border border-gray-100 rounded-[35px] p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer"
                     >
 
                         <div className="space-y-4">
@@ -294,7 +294,7 @@ Format the response in clean, readable markdown.`;
                             </div>
 
                             <div className="space-y-2">
-                                <h3 className="text-lg font-black text-gray-900 dark:text-gray-100 leading-tight tracking-tight group-hover:text-blue-600 transition-colors">
+                                <h3 className="text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors">
                                     {assignment.title}
                                 </h3>
                                 <p className="text-sm font-bold text-gray-400 line-clamp-2">
@@ -304,8 +304,8 @@ Format the response in clean, readable markdown.`;
 
                             <div className="pt-4 flex items-center justify-between">
                                 <div className="flex flex-col">
-                                    <span className="text-[9px] font-black text-gray-300 dark:text-gray-600 uppercase tracking-widest">Due Date</span>
-                                    <span className="text-sm font-black text-gray-900 dark:text-gray-200">{assignment.dueDate}</span>
+                                    <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Due Date</span>
+                                    <span className="text-sm font-black text-gray-900">{assignment.dueDate}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button
@@ -316,7 +316,7 @@ Format the response in clean, readable markdown.`;
                                     </button>
                                     <button
                                         onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(assignment.id); }}
-                                        className="p-3 bg-gray-50 dark:bg-zinc-800/50 text-gray-400 dark:text-zinc-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 rounded-xl transition-all"
+                                        className="p-3 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
                                     >
                                         <Icons.Delete size={16} />
                                     </button>
@@ -329,14 +329,14 @@ Format the response in clean, readable markdown.`;
                 {/* Empty State / Add Card */}
                 <button
                     onClick={() => { setEditingAssignment(null); setIsModalOpen(true); }}
-                    className="group border-2 border-dashed border-gray-100 dark:border-zinc-800 rounded-[35px] p-8 flex flex-col items-center justify-center gap-4 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50/10 dark:hover:bg-blue-900/10 transition-all duration-500 min-h-[280px]"
+                    className="group border-2 border-dashed border-gray-100 rounded-[35px] p-8 flex flex-col items-center justify-center gap-4 hover:border-blue-200 hover:bg-blue-50/10 transition-all duration-500 min-h-[280px]"
                 >
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-zinc-800/50 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 rounded-full flex items-center justify-center text-gray-300 dark:text-zinc-600 group-hover:text-blue-600 transition-all duration-500 group-hover:scale-110">
+                    <div className="w-16 h-16 bg-gray-50 group-hover:bg-blue-100 rounded-full flex items-center justify-center text-gray-300 group-hover:text-blue-600 transition-all duration-500 group-hover:scale-110">
                         <Icons.Plus size={32} />
                     </div>
                     <div className="text-center">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-blue-600">New Assignment</p>
-                        <p className="text-xs font-bold text-gray-300 dark:text-gray-600 mt-1">Add to {activeSubject?.code}</p>
+                        <p className="text-xs font-bold text-gray-300 mt-1">Add to {activeSubject?.code}</p>
                     </div>
                 </button>
             </div>

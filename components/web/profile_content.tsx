@@ -7,23 +7,20 @@ import { Button } from '@/components/shared/Button';
 import { Switch } from '@/components/shared/Switch';
 import { cn } from '@/lib/utils';
 import { ChangelogService, ChangeLog } from '@/lib/services/changelog.service';
-import { toast } from 'sonner';
-import { AuthService } from '@/lib/services/auth.service';
 import { formatDistanceToNow } from 'date-fns';
 import { AttendanceWidget } from './AttendanceWidget';
-import { useTheme } from "next-themes";
 
 type Tab = 'Overview' | 'Settings';
-type SettingCategory = 'General' | 'Notifications' | 'Privacy & Security' | 'Data & Storage' | 'Change History';
+type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & Security' | 'Data & Storage' | 'Change History';
 
 export default function WebProfileContent() {
-    const [mounted, setMounted] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>('Overview');
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+
+    // Settings State
     const [activeSettingsCategory, setActiveSettingsCategory] = useState<SettingCategory>('General');
-    const [displayName, setDisplayName] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const [isSaving, setIsSaving] = useState(false);
     const [settings, setSettings] = useState({
+        theme: 'System',
         highContrast: false,
         notifyAssignments: true,
         notifySchedule: true,
@@ -37,35 +34,14 @@ export default function WebProfileContent() {
     const [logsLoading, setLogsLoading] = useState(true);
 
     useEffect(() => {
-        setMounted(true);
-        loadProfile();
+        const fetchUser = async () => {
+            const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
+            if (user?.email) {
+                setUserEmail(user.email);
+            }
+        };
+        fetchUser();
     }, []);
-
-    const loadProfile = async () => {
-        const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
-        if (user) {
-            setUserEmail(user.email || '');
-            setDisplayName(user.user_metadata?.full_name || user.email?.split('@')[0] || '');
-        }
-    };
-
-    const handleSaveProfile = async () => {
-        setIsSaving(true);
-        try {
-            const { error } = await AuthService.updateProfile({
-                email: userEmail,
-                data: { full_name: displayName }
-            });
-
-            if (error) throw error;
-            toast.success("Profile updated successfully!");
-        } catch (error: any) {
-            console.error(error);
-            toast.error(error.message || "Failed to update profile");
-        } finally {
-            setIsSaving(false);
-        }
-    };
 
     // Fetch logs when Change History is accessed
     useEffect(() => {
@@ -80,6 +56,8 @@ export default function WebProfileContent() {
         setLogs(data);
         setLogsLoading(false);
     };
+
+    const displayName = userEmail ? (userEmail.split('@')[0].charAt(0).toUpperCase() + userEmail.split('@')[0].slice(1)) : 'Javis';
 
     // --- Render Helpers ---
 
@@ -103,7 +81,40 @@ export default function WebProfileContent() {
 
     const renderSettingsContent = () => {
         switch (activeSettingsCategory) {
-
+            case 'Appearance':
+                return (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Color Theme</label>
+                            <div className="grid grid-cols-3 gap-3">
+                                {['Light', 'Dark', 'System'].map((t) => (
+                                    <button
+                                        key={t}
+                                        onClick={() => setSettings({ ...settings, theme: t })}
+                                        className={cn(
+                                            "py-6 rounded-2xl border font-bold text-sm transition-all",
+                                            settings.theme === t
+                                                ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100"
+                                                : "bg-gray-50 text-gray-500 border-gray-100 hover:border-blue-100"
+                                        )}
+                                    >
+                                        {t}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                            <div>
+                                <p className="text-sm font-black text-gray-900">High Contrast</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">Enhance visibility</p>
+                            </div>
+                            <Switch
+                                checked={settings.highContrast}
+                                onChange={(val) => setSettings({ ...settings, highContrast: val })}
+                            />
+                        </div>
+                    </div>
+                );
             case 'Notifications':
                 return (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
@@ -233,16 +244,15 @@ export default function WebProfileContent() {
             default: // General or Login settings
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="p-6 bg-white dark:bg-zinc-950 border border-gray-100 dark:border-zinc-900 rounded-3xl space-y-4">
-                            <h3 className="font-bold text-gray-900 dark:text-gray-100">Profile Information</h3>
+                        <div className="p-6 bg-white border border-gray-100 rounded-3xl space-y-4">
+                            <h3 className="font-bold text-gray-900">Profile Information</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Display Name</label>
                                     <input
                                         type="text"
-                                        value={displayName}
-                                        onChange={(e) => setDisplayName(e.target.value)}
-                                        className="w-full bg-gray-50 dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 rounded-xl px-4 py-3 font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                        defaultValue={displayName}
+                                        className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         placeholder="Update display name"
                                     />
                                 </div>
@@ -250,19 +260,14 @@ export default function WebProfileContent() {
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
                                     <input
                                         type="text"
-                                        value={userEmail}
-                                        onChange={(e) => setUserEmail(e.target.value)}
-                                        className="w-full bg-gray-50 dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 rounded-xl px-4 py-3 font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                        defaultValue={userEmail || ''}
+                                        className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         placeholder="Update email address"
                                     />
                                 </div>
                                 <div className="col-span-1 md:col-span-2 flex justify-end">
-                                    <Button
-                                        className="rounded-xl px-8 h-12"
-                                        onClick={handleSaveProfile}
-                                        disabled={isSaving}
-                                    >
-                                        {isSaving ? "Saving..." : "Save Changes"}
+                                    <Button className="rounded-xl px-8 h-12" onClick={() => alert("Profile update feature coming soon!")}>
+                                        Save Changes
                                     </Button>
                                 </div>
                             </div>
@@ -275,7 +280,7 @@ export default function WebProfileContent() {
 
     const categories = [
         { id: 'General' as const, icon: Icons.Settings, desc: 'Profile and account details' },
-
+        { id: 'Appearance' as const, icon: Icons.Trend, desc: 'Themes and colors' },
         { id: 'Notifications' as const, icon: Icons.Analytics, desc: 'Alerts and updates' },
         { id: 'Privacy & Security' as const, icon: Icons.Lock, desc: 'Visibility and safety' },
         { id: 'Data & Storage' as const, icon: Icons.Bookmark, desc: 'Sync and backup' },
@@ -284,10 +289,10 @@ export default function WebProfileContent() {
 
     return (
         <WebAppShell>
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
+            <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
 
                 {/* Top Navigation / Header */}
-                <div className="flex items-center gap-4 bg-white dark:bg-zinc-950 p-2 rounded-2xl border border-gray-100 dark:border-zinc-900 w-fit">
+                <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-gray-100 w-fit">
                     {(['Overview', 'Settings'] as Tab[]).map((tab) => (
                         <button
                             key={tab}
@@ -295,8 +300,8 @@ export default function WebProfileContent() {
                             className={cn(
                                 "px-6 py-2.5 rounded-xl text-sm font-bold transition-all",
                                 activeTab === tab
-                                    ? "bg-black dark:bg-white text-white dark:text-black shadow-md"
-                                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
+                                    ? "bg-black text-white shadow-md"
+                                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                             )}
                         >
                             {tab}
@@ -307,7 +312,7 @@ export default function WebProfileContent() {
                 {activeTab === 'Overview' ? (
                     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2">
                         {/* Header Card */}
-                        <div className="bg-white dark:bg-zinc-950 p-10 rounded-[40px] border border-gray-100 dark:border-zinc-900 shadow-sm flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+                        <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
                             <div className="w-28 h-28 rounded-3xl bg-blue-50 flex items-center justify-center text-blue-600 overflow-hidden shadow-inner border-2 border-white">
                                 <img
                                     src="/assets/profile-avatar.png"
@@ -316,13 +321,13 @@ export default function WebProfileContent() {
                                 />
                             </div>
                             <div className="flex-1 space-y-2">
-                                <h2 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight capitalize">{displayName}</h2>
-                                <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">MBA Student • Year 1</p>
+                                <h2 className="text-4xl font-black text-gray-900 tracking-tight capitalize">{displayName}</h2>
+                                <p className="text-gray-500 font-medium text-lg">MBA Student • Year 1</p>
                             </div>
                             <Button
                                 onClick={() => setActiveTab('Settings')}
                                 variant="outline"
-                                className="rounded-2xl px-6 h-12 border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white transition-all"
+                                className="rounded-2xl px-6 h-12 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 hover:text-gray-900 transition-all"
                             >
                                 Edit Profile
                             </Button>
@@ -344,8 +349,8 @@ export default function WebProfileContent() {
                                     className={cn(
                                         "w-full p-4 rounded-2xl flex items-center gap-3 text-left transition-all",
                                         activeSettingsCategory === cat.id
-                                            ? "bg-white dark:bg-zinc-950 shadow-sm border border-gray-100 dark:border-zinc-900 text-blue-600 ring-1 ring-blue-50 dark:ring-blue-900/30"
-                                            : "text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
+                                            ? "bg-white shadow-sm border border-gray-100 text-blue-600 ring-1 ring-blue-50"
+                                            : "text-gray-500 hover:bg-white hover:text-gray-900"
                                     )}
                                 >
                                     <cat.icon size={18} className={activeSettingsCategory === cat.id ? "text-blue-600" : "text-gray-400"} />
@@ -357,7 +362,7 @@ export default function WebProfileContent() {
                         {/* Settings Content */}
                         <div className="col-span-1 md:col-span-3">
                             <div className="mb-6">
-                                <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{activeSettingsCategory}</h1>
+                                <h1 className="text-2xl font-black text-gray-900 tracking-tight">{activeSettingsCategory}</h1>
                                 <p className="text-gray-400 font-bold text-sm mt-1">{categories.find(c => c.id === activeSettingsCategory)?.desc}</p>
                             </div>
                             {renderSettingsContent()}

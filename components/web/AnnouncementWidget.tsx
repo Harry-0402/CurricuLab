@@ -38,12 +38,12 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
             {/* Header Section - Modern Integrated Look */}
             <div className="flex items-center justify-between relative z-10 px-2">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-lg shadow-blue-100 dark:shadow-blue-900 border border-blue-50 dark:border-blue-900/30">
+                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-lg shadow-blue-100 border border-blue-50">
                         <Icons.Analytics size={24} />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Board Announcements</h2>
-                        <p className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Latest updates from faculty</p>
+                        <h2 className="text-3xl font-black text-gray-900 tracking-tight">Board Announcements</h2>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Latest updates from faculty</p>
                     </div>
                 </div>
                 <div className="flex gap-3">

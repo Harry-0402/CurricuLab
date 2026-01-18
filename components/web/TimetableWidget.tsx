@@ -53,14 +53,14 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
         <div className="space-y-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
                 <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 dark:shadow-blue-900 ring-4 ring-blue-50 dark:ring-blue-900/30">
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 ring-4 ring-blue-50">
                         <Icons.Calendar size={28} />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Academic Roadmap</h2>
+                        <h2 className="text-3xl font-black text-gray-900 tracking-tight">Academic Roadmap</h2>
                         <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-black rounded-md uppercase tracking-wider">Semester V</span>
-                            <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Year 2023-24</span>
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded-md uppercase tracking-wider">Semester V</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Year 2023-24</span>
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
             </div>
 
             {/* Main Content Area - Integrated into the page background */}
-            <div className="bg-white dark:bg-zinc-950 p-8 md:p-10 rounded-[32px] border border-gray-100 dark:border-zinc-900 shadow-sm space-y-10 overflow-hidden relative">
+            <div className="bg-white p-8 md:p-10 rounded-[32px] border border-gray-100 shadow-sm space-y-10 overflow-hidden relative">
                 {/* Background Decorations */}
                 <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -94,9 +94,9 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                                 <div className="w-px h-10 bg-gradient-to-b from-transparent via-gray-100 to-transparent" />
                             </div>
                             {DAYS.map(day => (
-                                <div key={day} className="bg-gray-50/50 dark:bg-zinc-900/50 p-2 md:p-3 rounded-2xl text-center border border-gray-100/50 dark:border-zinc-800/50">
-                                    <span className="text-[10px] md:text-xs font-black text-gray-900 dark:text-gray-200 uppercase tracking-tighter md:tracking-[0.2em] block">{day.slice(0, 3)}</span>
-                                    <span className="hidden md:block text-[10px] font-bold text-blue-500/60 dark:text-blue-400/60 mt-0.5 uppercase">Session</span>
+                                <div key={day} className="bg-gray-50/50 p-2 md:p-3 rounded-2xl text-center border border-gray-100/50">
+                                    <span className="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-tighter md:tracking-[0.2em] block">{day.slice(0, 3)}</span>
+                                    <span className="hidden md:block text-[10px] font-bold text-blue-500/60 mt-0.5 uppercase">Session</span>
                                 </div>
                             ))}
                         </div>
@@ -149,10 +149,10 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                                                 ) : (
                                                     <div
                                                         onClick={() => handleAdd(day, time)}
-                                                        className="h-full rounded-2xl md:rounded-3xl border-2 border-dashed border-gray-100 dark:border-zinc-800 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all flex flex-col items-center justify-center group/empty gap-1 md:gap-2 cursor-pointer"
+                                                        className="h-full rounded-2xl md:rounded-3xl border-2 border-dashed border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all flex flex-col items-center justify-center group/empty gap-1 md:gap-2 cursor-pointer"
                                                     >
-                                                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-gray-100 dark:border-zinc-800 flex items-center justify-center group-hover/empty:scale-110 group-hover/empty:bg-white dark:group-hover/empty:bg-zinc-900 group-hover/empty:shadow-sm transition-all">
-                                                            <Icons.Plus size={16} className="text-gray-300 dark:text-zinc-600 group-hover/empty:text-blue-500 transition-colors" />
+                                                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover/empty:scale-110 group-hover/empty:bg-white group-hover/empty:shadow-sm transition-all">
+                                                            <Icons.Plus size={16} className="text-gray-300 group-hover/empty:text-blue-500 transition-colors" />
                                                         </div>
                                                     </div>
                                                 )}
