@@ -57,10 +57,11 @@ export async function POST(request: Request) {
         });
 
         // Send mail with defined transport object
+        // NOTE: Gmail allows sending to multiple recipients.
         const info = await transporter.sendMail({
             from: `"CurricuLab" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`, // sender address
-            to: process.env.SMTP_USER, // Send TO self (admin) to ensure delivery
-            bcc: targets.join(', '), // BCC everyone else for privacy
+            to: process.env.SMTP_USER, // Send TO self (Admin) just to have a 'To' header
+            bcc: targets.join(', '), // BCC everyone (the actual broadcast)
             subject: subject, // Subject line
             html: html, // html body
         });
