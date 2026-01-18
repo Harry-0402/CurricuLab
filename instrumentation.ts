@@ -1,7 +1,7 @@
 export function register() {
     // Only run in Node.js runtime (server-side) AND in production
     if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.NODE_ENV === 'production') {
-        const TARGET_URL = 'https://curriculab-tyi9.onrender.com/';
+        const TARGET_URL = 'https://curriculab-sj6g.onrender.com/';
         const PING_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
         // Use a global variable to prevent multiple intervals during hot-reloads in development
