@@ -52,6 +52,11 @@ export const AuthService = {
         return { data, error };
     },
 
+    async updateProfile(attributes: { email?: string, data?: { full_name?: string } }) {
+        const { data, error } = await supabase.auth.updateUser(attributes);
+        return { data, error };
+    },
+
     async sendEmailOTP(email: string) {
         const { data, error } = await supabase.auth.signInWithOtp({
             email,

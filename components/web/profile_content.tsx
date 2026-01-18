@@ -7,6 +7,8 @@ import { Button } from '@/components/shared/Button';
 import { Switch } from '@/components/shared/Switch';
 import { cn } from '@/lib/utils';
 import { ChangelogService, ChangeLog } from '@/lib/services/changelog.service';
+import { toast } from 'sonner';
+import { AuthService } from '@/lib/services/auth.service';
 import { formatDistanceToNow } from 'date-fns';
 import { AttendanceWidget } from './AttendanceWidget';
 import { useTheme } from "next-themes";
@@ -21,6 +23,7 @@ export default function WebProfileContent() {
     const [activeSettingsCategory, setActiveSettingsCategory] = useState<SettingCategory>('General');
     const [displayName, setDisplayName] = useState('');
     const [userEmail, setUserEmail] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
     const [settings, setSettings] = useState({
         highContrast: false,
         notifyAssignments: true,
@@ -41,9 +44,27 @@ export default function WebProfileContent() {
 
     const loadProfile = async () => {
         const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
-        if (user?.email) {
-            setUserEmail(user.email);
-            setDisplayName(user.email.split('@')[0]);
+        if (user) {
+            setUserEmail(user.email || '');
+            setDisplayName(user.user_metadata?.full_name || user.email?.split('@')[0] || '');
+        }
+    };
+
+    const handleSaveProfile = async () => {
+        setIsSaving(true);
+        try {
+            const { error } = await AuthService.updateProfile({
+                email: userEmail,
+                data: { full_name: displayName }
+            });
+
+            if (error) throw error;
+            toast.success("Profile updated successfully!");
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message || "Failed to update profile");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -257,7 +278,8 @@ export default function WebProfileContent() {
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Display Name</label>
                                     <input
                                         type="text"
-                                        defaultValue={displayName}
+                                        value={displayName}
+                                        onChange={(e) => setDisplayName(e.target.value)}
                                         className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         placeholder="Update display name"
                                     />
@@ -266,14 +288,19 @@ export default function WebProfileContent() {
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
                                     <input
                                         type="text"
-                                        defaultValue={userEmail || ''}
+                                        value={userEmail}
+                                        onChange={(e) => setUserEmail(e.target.value)}
                                         className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         placeholder="Update email address"
                                     />
                                 </div>
                                 <div className="col-span-1 md:col-span-2 flex justify-end">
-                                    <Button className="rounded-xl px-8 h-12" onClick={() => alert("Profile update feature coming soon!")}>
-                                        Save Changes
+                                    <Button
+                                        className="rounded-xl px-8 h-12"
+                                        onClick={handleSaveProfile}
+                                        disabled={isSaving}
+                                    >
+                                        {isSaving ? "Saving..." : "Save Changes"}
                                     </Button>
                                 </div>
                             </div>
