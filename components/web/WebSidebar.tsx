@@ -42,11 +42,11 @@ export function WebSidebar() {
         <aside className="w-64 h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden">
             <div className="p-6 flex items-center gap-3">
                 <div className="relative w-10 h-10">
-                    <Image
+                    {/* Using standard img tag to avoid potential Next.js image optimization issues with local dev */}
+                    <img
                         src="/logo.png"
                         alt="CurricuLab Logo"
-                        fill
-                        className="object-contain"
+                        className="w-full h-full object-contain"
                     />
                 </div>
                 <span className="text-xl font-bold text-gray-900 tracking-tight">CurricuLab</span>
