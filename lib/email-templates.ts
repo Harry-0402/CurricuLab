@@ -1,5 +1,4 @@
 
-
 interface EmailTemplateProps {
     type: string;
     title: string;
@@ -19,6 +18,9 @@ export const generateNotificationEmail = ({ type, title, content, link, linkText
 
     // Icon handling (simple unicode text fallback for email compatibility)
     const icon = type === 'Assignment' ? '📝' : type === 'Announcement' ? '📢' : '🔔';
+
+    // Base64 encoded logo (embedded for email compatibility)
+    const logoBase64 = "iVBORw0KGgoAAAANSUhEUgAAAB4AAAAmCAYAAADTGStiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIHSURBVFhH7ZhLSwJRFMf/M+M4ajqOM+qMr9SUXpAEQdCiIAJpEQS1aBG0aNGiRYsWLVq0aNGiRYsWLVq0aNGiRYsWLVq0aNGiRYsW0SLaRJ+gTdAnaBM09ASUFEVRFEVRFEVRFEVRFEVRFEVRFEVRFEVRFEX5v1FKpdLS0lJTU9PT09LS0tLSUlNTU9LS0tLS0tLS0tLSUlNTU9LS0tLS0tLS0lJTU1OSkpKSkpKSkpKSkpKSkpKSkpKSkpKSEhMTExMTExMTExMTExMTExMTExMTE+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pi4uLi4uLi4uLi4uLi4uLi4uLi4uLiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmH6YDfT7fnBRMEB/EAAAAASUVORK5CYII=";
 
     return `
 <!DOCTYPE html>
@@ -41,7 +43,7 @@ export const generateNotificationEmail = ({ type, title, content, link, linkText
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td align="center" valign="middle">
-                                        <img src="https://curriculab-sj6g.onrender.com/logo.png" alt="CurricuLab Logo" style="width: 40px; height: 40px; margin-right: 12px; vertical-align: middle; display: inline-block;" />
+                                        <img src="data:image/png;base64,${logoBase64}" alt="CurricuLab Logo" style="width: 40px; height: 40px; margin-right: 12px; vertical-align: middle; display: inline-block;" />
                                     </td>
                                     <td align="center" valign="middle">
                                         <h1 style="color: ${white}; margin: 0; font-size: 24px; letter-spacing: 1px; display: inline-block; vertical-align: middle;">CurricuLab</h1>
