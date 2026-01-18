@@ -49,3 +49,7 @@ CREATE POLICY "Allow authenticated access markwise" ON public.markwise_questions
 
 -- 11. Knowledge Vault (Vault Resources)
 CREATE POLICY "Allow authenticated access vault" ON public.vault_resources FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- 12. Revision Notes
+CREATE POLICY "Allow authenticated read access revision_notes" ON public.revision_notes FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Allow authenticated write access revision_notes" ON public.revision_notes FOR ALL TO authenticated USING (true) WITH CHECK (true);
