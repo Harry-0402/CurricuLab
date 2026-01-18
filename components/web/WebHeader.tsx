@@ -6,12 +6,10 @@ import { Icons } from '@/components/shared/Icons';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { cn } from '@/lib/utils';
 import { AnalyticsModal } from './AnalyticsModal';
-import { SystemSettingsModal } from './SystemSettingsModal';
 
 export function WebHeader() {
     const { toggleRightPanel, isRightPanelMinimized } = useAppStore();
     const [showAnalytics, setShowAnalytics] = React.useState(false);
-    const [showSettings, setShowSettings] = React.useState(false);
     const [userEmail, setUserEmail] = React.useState<string | null>(null);
 
     const handleLogout = async () => {
@@ -60,19 +58,6 @@ export function WebHeader() {
                         <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-white"></span>
                     </button>
                     <Link
-                        href="/changelog"
-                        className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all"
-                        title="Change History"
-                    >
-                        <Icons.Clock size={20} />
-                    </Link>
-                    <button
-                        onClick={() => setShowSettings(true)}
-                        className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all"
-                    >
-                        <Icons.Settings size={20} />
-                    </button>
-                    <Link
                         href="/profile"
                         className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all"
                         title="My Profile"
@@ -102,10 +87,6 @@ export function WebHeader() {
             <AnalyticsModal
                 isOpen={showAnalytics}
                 onClose={() => setShowAnalytics(false)}
-            />
-            <SystemSettingsModal
-                isOpen={showSettings}
-                onClose={() => setShowSettings(false)}
             />
         </header>
     );
