@@ -1,9 +1,12 @@
 
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import sgMail from '@sendgrid/mail';
 import { generateNotificationEmail } from '@/lib/email-templates';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize SendGrid
+if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 export async function POST(request: Request) {
     try {
@@ -11,9 +14,14 @@ export async function POST(request: Request) {
         const { type, title, content, link, recipients } = body;
 
         // Verify configuration
-        if (!process.env.RESEND_API_KEY) {
-            console.error("Resend API key missing");
-            return NextResponse.json({ error: 'Server misconfigured (Resend API Key)' }, { status: 500 });
+        if (!process.env.SENDGRID_API_KEY) {
+            console.error("SendGrid API key missing");
+            return NextResponse.json({ error: 'Server misconfigured (SendGrid API Key)' }, { status: 500 });
+        }
+
+        if (!process.env.SENDGRID_FROM_EMAIL) {
+            console.error("SendGrid FROM email missing");
+            return NextResponse.json({ error: 'Server misconfigured (FROM email)' }, { status: 500 });
         }
 
         // Determine recipients
@@ -46,30 +54,41 @@ export async function POST(request: Request) {
             recipientCount: originalRecipientCount
         });
 
-        // Send via Resend API (DEMO MODE - admin only)
-        const { data, error } = await resend.emails.send({
-            from: 'CurricuLab <onboarding@resend.dev>',
-            to: [adminEmail],
+        // Send via SendGrid (DEMO MODE - admin only)
+        const msg = {
+            to: adminEmail,
+            from: {
+                email: process.env.SENDGRID_FROM_EMAIL!,
+                name: 'CurricuLab'
+            },
             subject: subject,
             html: html,
-        });
+        };
 
-        if (error) {
-            console.error('Resend API error:', error);
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
+        const response = await sgMail.send(msg);
 
-        console.log("Email sent successfully (demo mode):", data);
+        console.log("Email sent successfully (demo mode):", response[0].statusCode);
 
         return NextResponse.json({
             success: true,
-            messageId: data?.id,
+            messageId: response[0].headers['x-message-id'],
+            statusCode: response[0].statusCode,
             mode: 'demo',
             wouldSendTo: originalRecipientCount
         });
 
     } catch (error: any) {
         console.error('Email sending failed:', error);
+
+        // SendGrid error handling
+        if (error.response) {
+            console.error('SendGrid error body:', error.response.body);
+            return NextResponse.json({
+                error: error.message,
+                details: error.response.body
+            }, { status: error.code || 500 });
+        }
+
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
