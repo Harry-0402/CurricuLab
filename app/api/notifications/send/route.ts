@@ -1,12 +1,9 @@
 
 import { NextResponse } from 'next/server';
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 import { generateNotificationEmail } from '@/lib/email-templates';
 
-// Initialize SendGrid with API key
-if (process.env.SENDGRID_API_KEY) {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
     try {
@@ -14,14 +11,9 @@ export async function POST(request: Request) {
         const { type, title, content, link, recipients } = body;
 
         // Verify configuration
-        if (!process.env.SENDGRID_API_KEY) {
-            console.error("SendGrid API key missing");
-            return NextResponse.json({ error: 'Server misconfigured (SendGrid API Key)' }, { status: 500 });
-        }
-
-        if (!process.env.SENDGRID_FROM_EMAIL) {
-            console.error("SendGrid FROM email missing");
-            return NextResponse.json({ error: 'Server misconfigured (FROM email)' }, { status: 500 });
+        if (!process.env.RESEND_API_KEY) {
+            console.error("Resend API key missing");
+            return NextResponse.json({ error: 'Server misconfigured (Resend API Key)' }, { status: 500 });
         }
 
         // Determine recipients
@@ -35,59 +27,49 @@ export async function POST(request: Request) {
             targets = [adminEmail];
         }
 
-        console.log(`[Email] Attempting to send '${type}' to ${targets.length} recipients:`, targets);
+        console.log(`[Email] Found ${targets.length} recipients for broadcast`);
 
-        if (targets.length === 0) {
-            console.warn("[Email] No valid recipients found. Skipping email send.");
-            return NextResponse.json({ warning: "No recipients found" });
-        }
+        // DEMO MODE: Only send to admin
+        const originalRecipientCount = targets.length;
+        console.log(`[Email - DEMO MODE] Sending to admin only (simulating broadcast to ${originalRecipientCount} users)`);
 
         // HTML Template
         const subject = `New ${type}: ${title}`;
 
-        // Generate Professional HTML Template
+        // Generate HTML with demo notice showing recipient count
         const html = generateNotificationEmail({
             type,
             title,
             content,
             link,
-            linkText: link ? 'View Resource' : undefined
+            linkText: link ? 'View Resource' : undefined,
+            recipientCount: originalRecipientCount
         });
 
-        // Prepare email message
-        const msg = {
-            to: targets,
-            from: {
-                email: process.env.SENDGRID_FROM_EMAIL,
-                name: 'CurricuLab'
-            },
+        // Send via Resend API (DEMO MODE - admin only)
+        const { data, error } = await resend.emails.send({
+            from: 'CurricuLab <onboarding@resend.dev>',
+            to: [adminEmail],
             subject: subject,
             html: html,
-        };
+        });
 
-        // Send via SendGrid API
-        const response = await sgMail.send(msg);
+        if (error) {
+            console.error('Resend API error:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
 
-        console.log("Email sent successfully via SendGrid:", response[0].statusCode);
+        console.log("Email sent successfully (demo mode):", data);
 
         return NextResponse.json({
             success: true,
-            messageId: response[0].headers['x-message-id'],
-            statusCode: response[0].statusCode
+            messageId: data?.id,
+            mode: 'demo',
+            wouldSendTo: originalRecipientCount
         });
 
     } catch (error: any) {
         console.error('Email sending failed:', error);
-
-        // SendGrid error handling
-        if (error.response) {
-            console.error('SendGrid error body:', error.response.body);
-            return NextResponse.json({
-                error: error.message,
-                details: error.response.body
-            }, { status: error.code || 500 });
-        }
-
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
