@@ -71,7 +71,7 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
             type: 'Assignment',
             title: assignment.title,
             content: `A new assignment "${assignment.title}" has been posted. Due date: ${assignment.dueDate || 'No due date'}.`,
-            link: assignment.platform && assignment.platform !== 'Offline' ? assignment.platform : undefined // Or link to the app assignment page
+            link: assignment.platform // Only send link if platform is valid (which it is by type definition)
         })
     }).catch(err => console.error("Failed to send notification:", err));
 
