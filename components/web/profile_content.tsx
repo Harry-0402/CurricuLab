@@ -9,18 +9,19 @@ import { cn } from '@/lib/utils';
 import { ChangelogService, ChangeLog } from '@/lib/services/changelog.service';
 import { formatDistanceToNow } from 'date-fns';
 import { AttendanceWidget } from './AttendanceWidget';
+import { useTheme } from "next-themes";
 
 type Tab = 'Overview' | 'Settings';
 type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & Security' | 'Data & Storage' | 'Change History';
 
 export default function WebProfileContent() {
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>('Overview');
-    const [userEmail, setUserEmail] = useState<string | null>(null);
-
-    // Settings State
     const [activeSettingsCategory, setActiveSettingsCategory] = useState<SettingCategory>('General');
+    const [displayName, setDisplayName] = useState('');
+    const [userEmail, setUserEmail] = useState('');
     const [settings, setSettings] = useState({
-        theme: 'System',
         highContrast: false,
         notifyAssignments: true,
         notifySchedule: true,
@@ -34,14 +35,17 @@ export default function WebProfileContent() {
     const [logsLoading, setLogsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchUser = async () => {
-            const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
-            if (user?.email) {
-                setUserEmail(user.email);
-            }
-        };
-        fetchUser();
+        setMounted(true);
+        loadProfile();
     }, []);
+
+    const loadProfile = async () => {
+        const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
+        if (user?.email) {
+            setUserEmail(user.email);
+            setDisplayName(user.email.split('@')[0]);
+        }
+    };
 
     // Fetch logs when Change History is accessed
     useEffect(() => {
@@ -56,8 +60,6 @@ export default function WebProfileContent() {
         setLogs(data);
         setLogsLoading(false);
     };
-
-    const displayName = userEmail ? userEmail.split('@')[0] : 'Javis';
 
     // --- Render Helpers ---
 
@@ -87,20 +89,24 @@ export default function WebProfileContent() {
                         <div className="space-y-4">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Color Theme</label>
                             <div className="grid grid-cols-3 gap-3">
-                                {['Light', 'Dark', 'System'].map((t) => (
-                                    <button
-                                        key={t}
-                                        onClick={() => setSettings({ ...settings, theme: t })}
-                                        className={cn(
-                                            "py-6 rounded-2xl border font-bold text-sm transition-all",
-                                            settings.theme === t
-                                                ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100"
-                                                : "bg-gray-50 text-gray-500 border-gray-100 hover:border-blue-100"
-                                        )}
-                                    >
-                                        {t}
-                                    </button>
-                                ))}
+                                {!mounted ? (
+                                    <div className="col-span-3 text-center text-gray-400 text-sm">Loading themes...</div>
+                                ) : (
+                                    ['light', 'dark', 'system'].map((t) => (
+                                        <button
+                                            key={t}
+                                            onClick={() => setTheme(t)}
+                                            className={cn(
+                                                "h-12 rounded-xl text-sm font-bold capitalize transition-all",
+                                                theme === t
+                                                    ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+                                                    : "bg-white border border-gray-100 text-gray-600 hover:border-blue-200 hover:text-blue-600"
+                                            )}
+                                        >
+                                            {t}
+                                        </button>
+                                    ))
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
@@ -272,15 +278,7 @@ export default function WebProfileContent() {
                                 </div>
                             </div>
                         </div>
-                        <div className="p-6 bg-white border border-gray-100 rounded-3xl space-y-4 flex items-center justify-between">
-                            <div>
-                                <h3 className="font-bold text-gray-900">Password</h3>
-                                <p className="text-xs font-medium text-gray-400">Last changed 2 months ago</p>
-                            </div>
-                            <Button variant="outline" className="rounded-xl px-6 h-10 border-gray-200" onClick={() => window.location.href = '/update-password'}>
-                                Change Password
-                            </Button>
-                        </div>
+
                     </div>
                 );
         }

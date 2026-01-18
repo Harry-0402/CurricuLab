@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/shared/Toast";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -34,9 +35,16 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                <ToastProvider>
-                    {children}
-                </ToastProvider>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <ToastProvider>
+                        {children}
+                    </ToastProvider>
+                </ThemeProvider>
             </body>
         </html>
     );
