@@ -8,6 +8,7 @@ import { Switch } from '@/components/shared/Switch';
 import { cn } from '@/lib/utils';
 import { ChangelogService, ChangeLog } from '@/lib/services/changelog.service';
 import { formatDistanceToNow } from 'date-fns';
+import { AttendanceWidget } from './AttendanceWidget';
 
 type Tab = 'Overview' | 'Settings';
 type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & Security' | 'Data & Storage' | 'Change History';
@@ -317,14 +318,14 @@ export default function WebProfileContent() {
                         <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
                             <div className="w-28 h-28 rounded-3xl bg-blue-50 flex items-center justify-center text-blue-600 overflow-hidden shadow-inner border-2 border-white">
                                 <img
-                                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${displayName}&backgroundColor=b6e3f4`}
+                                    src="/assets/profile-avatar.png"
                                     alt="avatar"
                                     className="w-full h-full object-cover"
                                 />
                             </div>
                             <div className="flex-1 space-y-2">
                                 <h2 className="text-4xl font-black text-gray-900 tracking-tight capitalize">{displayName}</h2>
-                                <p className="text-gray-500 font-medium text-lg">B.Tech Student • Year 1</p>
+                                <p className="text-gray-500 font-medium text-lg">MBA Student • Year 1</p>
                             </div>
                             <Button
                                 onClick={() => setActiveTab('Settings')}
@@ -333,6 +334,11 @@ export default function WebProfileContent() {
                             >
                                 Edit Profile
                             </Button>
+                        </div>
+
+
+                        <div className="mt-8">
+                            <AttendanceWidget />
                         </div>
                     </div>
                 ) : (
@@ -367,6 +373,6 @@ export default function WebProfileContent() {
                     </div>
                 )}
             </div>
-        </WebAppShell>
+        </WebAppShell >
     );
 }
