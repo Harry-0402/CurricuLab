@@ -85,7 +85,8 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
                 type: 'Announcement',
                 title: newAnnouncement.title || 'New Announcement',
                 content: newAnnouncement.content || 'Check the dashboard for details.',
-                link: newAnnouncement.resourceLink,
+                link: 'https://curriculab-sj6g.onrender.com/announcements',
+                linkText: 'View Announcement',
                 recipients: recipients
             })
         });
