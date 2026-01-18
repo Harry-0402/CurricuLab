@@ -53,3 +53,7 @@ CREATE POLICY "Allow authenticated access vault" ON public.vault_resources FOR A
 -- 12. Revision Notes
 CREATE POLICY "Allow authenticated read access revision_notes" ON public.revision_notes FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow authenticated write access revision_notes" ON public.revision_notes FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- 13. Change Logs
+CREATE POLICY "Allow authenticated read access change_logs" ON public.change_logs FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Allow authenticated insert access change_logs" ON public.change_logs FOR INSERT TO authenticated WITH CHECK (true);
