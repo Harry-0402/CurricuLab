@@ -27,7 +27,7 @@ export default function WebProfileContent() {
         highContrast: false,
         notifyAssignments: true,
         notifySchedule: true,
-        notifyUpdates: false,
+        notifyUpdates: true,
         publicProfile: false,
         shareStreaks: true,
     });
@@ -278,7 +278,7 @@ export default function WebProfileContent() {
     const categories = [
         { id: 'General' as const, icon: Icons.Settings, desc: 'Profile and account details' },
 
-        { id: 'Notifications' as const, icon: Icons.Analytics, desc: 'Alerts and updates' },
+        { id: 'Notifications' as const, icon: Icons.Bell, desc: 'Alerts and updates' },
         { id: 'Privacy & Security' as const, icon: Icons.Lock, desc: 'Visibility and safety' },
         { id: 'Data & Storage' as const, icon: Icons.Bookmark, desc: 'Sync and backup' },
         { id: 'Change History' as const, icon: Icons.Clock, desc: 'System logs' },
