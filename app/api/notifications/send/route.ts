@@ -35,28 +35,27 @@ export async function POST(request: Request) {
             targets = [adminEmail];
         }
 
-        console.log(`[Email] Found ${targets.length} recipients for broadcast`);
+        console.log(`[Email] Sending '${type}' to ${targets.length} recipients`);
 
-        // DEMO MODE: Only send to admin
-        const originalRecipientCount = targets.length;
-        console.log(`[Email - DEMO MODE] Sending to admin only (simulating broadcast to ${originalRecipientCount} users)`);
+        // PRODUCTION MODE: Send to all registered users
+        console.log(`[Email - PRODUCTION MODE] Broadcasting to ${targets.length} users`);
 
         // HTML Template
         const subject = `New ${type}: ${title}`;
 
-        // Generate HTML with demo notice showing recipient count
+        // Generate HTML (no recipient count needed in production)
         const html = generateNotificationEmail({
             type,
             title,
             content,
             link,
             linkText: link ? 'View Resource' : undefined,
-            recipientCount: originalRecipientCount
+            recipientCount: 0 // 0 = hide demo notice
         });
 
-        // Send via SendGrid (DEMO MODE - admin only)
+        // Send via SendGrid (PRODUCTION - all users)
         const msg = {
-            to: adminEmail,
+            to: targets,
             from: {
                 email: process.env.SENDGRID_FROM_EMAIL!,
                 name: 'CurricuLab'
@@ -67,14 +66,14 @@ export async function POST(request: Request) {
 
         const response = await sgMail.send(msg);
 
-        console.log("Email sent successfully (demo mode):", response[0].statusCode);
+        console.log("Email sent successfully (production mode):", response[0].statusCode);
 
         return NextResponse.json({
             success: true,
             messageId: response[0].headers['x-message-id'],
             statusCode: response[0].statusCode,
-            mode: 'demo',
-            wouldSendTo: originalRecipientCount
+            mode: 'production',
+            sentTo: targets.length
         });
 
     } catch (error: any) {
