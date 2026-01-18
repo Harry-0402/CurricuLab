@@ -22,7 +22,7 @@ export async function POST(request: Request) {
             : [];
 
         // Fallback to admin email if no recipients
-        const adminEmail = 'hrchavan0402@gmail.com';
+        const adminEmail = 'curriculab01@gmail.com';
         if (targets.length === 0) {
             targets = [adminEmail];
         }
