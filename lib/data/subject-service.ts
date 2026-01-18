@@ -104,6 +104,13 @@ export const INITIAL_SUBJECTS: Subject[] = [
 
 export const SubjectService = {
     async getAll(): Promise<Subject[]> {
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+        const now = Date.now();
+
+        if (this.cachedSubjects && (now - this.lastFetch < CACHE_DURATION)) {
+            return this.cachedSubjects;
+        }
+
         const { data, error } = await supabase
             .from('subjects')
             .select('*')
@@ -118,7 +125,7 @@ export const SubjectService = {
             return INITIAL_SUBJECTS;
         }
 
-        return data.map((item: any) => {
+        this.cachedSubjects = data.map((item: any) => {
             const staticMatch = INITIAL_SUBJECTS.find(s => s.code === item.code || s.id === item.id);
             return {
                 id: item.id,
@@ -133,7 +140,14 @@ export const SubjectService = {
                 syllabusPdfUrl: staticMatch?.syllabusPdfUrl
             };
         }) as Subject[];
+        this.lastFetch = now;
+
+        return this.cachedSubjects;
     },
+
+    // Cache variables attached to the object
+    cachedSubjects: null as Subject[] | null,
+    lastFetch: 0,
 
     async update(subject: Subject): Promise<Subject | null> {
         const payload = {

@@ -47,8 +47,8 @@ export const ChangelogService = {
         if (error) {
             console.error('Failed to log change:', error);
         } else {
-            // Clean up old logs (keeping maintenance lightweight)
-            this.deleteOldLogs();
+            // Clean up old logs (keeping maintenance lightweight) - Fire and forget
+            this.deleteOldLogs().catch(err => console.error('Background log cleanup failed', err));
         }
     },
 
