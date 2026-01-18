@@ -19,11 +19,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
     title: "CurricuLab",
     description: "Study management platform for students.",
-    icons: {
-        icon: ['/favicon.ico', '/logo.png'],
-        shortcut: '/favicon.ico',
-        apple: '/logo.png',
-    }
 };
 
 export default function RootLayout({
