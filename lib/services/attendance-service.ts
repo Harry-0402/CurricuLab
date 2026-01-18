@@ -84,9 +84,9 @@ export const AttendanceService = {
         }));
     },
 
-    async getAttendanceStats(): Promise<SubjectAttendanceStats[]> {
-        const logs = await this.getAttendanceLogs();
-        const subjects = await getSubjects();
+    async getAttendanceStats(cachedLogs?: AttendanceLog[], cachedSubjects?: Subject[]): Promise<SubjectAttendanceStats[]> {
+        const logs = cachedLogs || await this.getAttendanceLogs();
+        const subjects = cachedSubjects || await getSubjects();
 
         // Filter out canceled classes for calculation
         const validLogs = logs.filter(l => l.status !== 'Canceled');
@@ -119,14 +119,14 @@ export const AttendanceService = {
     },
 
     // Check for missing attendance records based on Timetable for the last N days
-    async getMissingRecords(daysToCheck = 5) {
+    async getMissingRecords(daysToCheck = 5, cachedLogs?: AttendanceLog[], cachedSubjects?: Subject[], cachedTimetable?: any[]) {
         const user = await AuthService.getCurrentUser();
         if (!user) return [];
 
         const today = new Date();
-        const timetable = await getTimetable();
-        const existingLogs = await this.getAttendanceLogs();
-        const subjects = await getSubjects();
+        const timetable = cachedTimetable || await getTimetable();
+        const existingLogs = cachedLogs || await this.getAttendanceLogs();
+        const subjects = cachedSubjects || await getSubjects();
 
         const missingRecords: { date: string, subjectId: string, subjectName: string, dayName: string }[] = [];
 

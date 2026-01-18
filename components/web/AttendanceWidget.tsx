@@ -28,11 +28,19 @@ export function AttendanceWidget() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [fetchedStats, fetchedSubjects, missing] = await Promise.all([
-                AttendanceService.getAttendanceStats(),
+            // OPTIMIZATION: Fetch dependencies in parallel first
+            const [fetchedSubjects, allLogs, timetable] = await Promise.all([
                 getSubjects(),
-                AttendanceService.getMissingRecords(5)
+                AttendanceService.getAttendanceLogs(),
+                import('@/lib/services/timetable-service').then(m => m.getTimetable())
             ]);
+
+            // Then compute derived data using cached dependencies
+            const [fetchedStats, missing] = await Promise.all([
+                AttendanceService.getAttendanceStats(allLogs, fetchedSubjects),
+                AttendanceService.getMissingRecords(5, allLogs, fetchedSubjects, timetable)
+            ]);
+
             setStats(fetchedStats);
             setSubjects(fetchedSubjects);
             setMissingRecords(missing);

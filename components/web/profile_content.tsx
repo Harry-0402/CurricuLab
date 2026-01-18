@@ -322,7 +322,7 @@ export default function WebProfileContent() {
 
     return (
         <WebAppShell>
-            <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
 
                 {/* Top Navigation / Header */}
                 <div className="flex items-center gap-4 bg-white dark:bg-zinc-950 p-2 rounded-2xl border border-gray-100 dark:border-zinc-900 w-fit">
