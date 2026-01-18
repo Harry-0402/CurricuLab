@@ -83,16 +83,118 @@ export default function WebProfileContent() {
         URL.revokeObjectURL(url);
     };
 
-    // ... (Logs State remains)
+    // Changelog State
+    const [logs, setLogs] = useState<ChangeLog[]>([]);
+    const [logsLoading, setLogsLoading] = useState(true);
 
-    // ... (Effects remain)
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
+            if (user?.email) {
+                setUserEmail(user.email);
+                setEditEmail(user.email);
 
+                // Get name from metadata
+                const metaName = user.user_metadata?.full_name;
+                if (metaName) {
+                    setEditName(metaName);
+                } else {
+                    const derived = user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1);
+                    setEditName(derived);
+                }
+            }
+        };
+        fetchUser();
+    }, []);
 
-    // ... (Render Helpers remain)
+    // Fetch logs when Change History is accessed
+    useEffect(() => {
+        if (activeTab === 'Settings' && activeSettingsCategory === 'Change History') {
+            loadLogs();
+        }
+    }, [activeTab, activeSettingsCategory]);
+
+    const loadLogs = async () => {
+        setLogsLoading(true);
+        const data = await ChangelogService.getRecentChanges(50);
+        setLogs(data);
+        setLogsLoading(false);
+    };
+
+    // We use the editable name for display if available, else fallback logic
+    const displayName = editName || (userEmail ? (userEmail.split('@')[0].charAt(0).toUpperCase() + userEmail.split('@')[0].slice(1)) : 'Javis');
+
+    const handleSaveProfile = async () => {
+        setIsSaving(true);
+        try {
+            const updates: any = {};
+            if (editEmail !== userEmail) updates.email = editEmail;
+
+            // Assume we want to save display name to metadata
+            if (editName !== displayName) {
+                updates.data = { full_name: editName };
+            }
+
+            const { AuthService } = await import('@/lib/services/auth.service');
+            const { error } = await AuthService.updateProfile(updates);
+
+            if (error) throw error;
+
+            alert("Profile updated successfully! " + (updates.email ? "Check your new email for a confirmation link." : ""));
+
+            // Refresh user data if needed, or just rely on local state update for now
+            if (updates.email) setUserEmail(editEmail);
+
+        } catch (err: any) {
+            alert("Failed to update profile: " + err.message);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    // --- Render Helpers ---
+
+    const getActionIcon = (action: string) => {
+        switch (action) {
+            case 'CREATE': return <Icons.Plus className="text-green-600" size={16} />;
+            case 'UPDATE': return <Icons.Edit className="text-blue-600" size={16} />;
+            case 'DELETE': return <Icons.Delete className="text-red-600" size={16} />;
+            default: return <Icons.Info className="text-gray-600" size={16} />;
+        }
+    };
+
+    const getActionColor = (action: string) => {
+        switch (action) {
+            case 'CREATE': return 'bg-green-50 border-green-200 text-green-700';
+            case 'UPDATE': return 'bg-blue-50 border-blue-200 text-blue-700';
+            case 'DELETE': return 'bg-red-50 border-red-200 text-red-700';
+            default: return 'bg-gray-50 border-gray-200 text-gray-700';
+        }
+    };
 
     const renderSettingsContent = () => {
         switch (activeSettingsCategory) {
-            // ... (Notifications case remains)
+            case 'Notifications':
+                return (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        {[
+                            { id: 'notifyAssignments', label: 'Assignments', desc: 'Deadlines and task updates' },
+                            { id: 'notifySchedule', label: 'Schedule Changes', desc: 'Timetable and room adjustments' },
+                            { id: 'notifyUpdates', label: 'System Updates', desc: 'New features and improvements' },
+                        ].map((item) => (
+                            <div key={item.id} className="flex items-center justify-between p-5 bg-white border border-gray-100 rounded-3xl">
+                                <div>
+                                    <p className="text-sm font-black text-gray-900">{item.label}</p>
+                                    <p className="text-[11px] font-bold text-gray-400">{item.desc}</p>
+                                </div>
+                                <Switch
+                                    checked={(settings as any)[item.id]}
+                                    onChange={(val) => setSettings({ ...settings, [item.id]: val })}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                );
 
             case 'Privacy & Security':
                 return (
