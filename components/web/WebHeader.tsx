@@ -72,7 +72,7 @@ export function WebHeader() {
                     className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white px-4 py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
                 >
                     <Icons.Briefcase size={16} />
-                    <span className="text-xs font-bold uppercase tracking-wider">AI Resume Architect</span>
+                    <span className="text-xs font-bold uppercase tracking-wider">Resumeforge</span>
                 </Link>
 
                 <div className="flex items-center gap-2">
