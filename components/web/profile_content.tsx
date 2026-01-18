@@ -189,11 +189,7 @@ export default function WebProfileContent() {
             case 'Change History':
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h3 className="font-black text-lg text-gray-900">System Changelog</h3>
-                                <p className="text-xs font-bold text-gray-400">Recent system modifications</p>
-                            </div>
+                        <div className="flex items-center justify-end">
                             <button
                                 onClick={loadLogs}
                                 className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-blue-600 hover:border-blue-200 rounded-lg transition-all shadow-sm active:scale-95"
