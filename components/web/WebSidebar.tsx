@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { HomeIcon, BookOpenIcon, BellIcon, CalendarIcon, ClipboardIcon, AcademicCapIcon, UsersIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -31,10 +31,6 @@ const tools: NavItem[] = [
     { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
     { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb },
 ];
-
-import Image from 'next/image';
-
-// ... (existing imports)
 
 export function WebSidebar() {
     const pathname = usePathname();
