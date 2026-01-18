@@ -307,7 +307,7 @@ export default function WebProfileContent() {
                             className={cn(
                                 "px-6 py-2.5 rounded-xl text-sm font-bold transition-all",
                                 activeTab === tab
-                                    ? "bg-black text-white shadow-md"
+                                    ? "bg-blue-600 text-white shadow-md shadow-blue-200"
                                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                             )}
                         >
@@ -369,7 +369,7 @@ export default function WebProfileContent() {
                         {/* Settings Content */}
                         <div className="col-span-1 md:col-span-3">
                             <div className="mb-6">
-                                <h1 className="text-2xl font-black text-gray-900 tracking-tight">{activeSettingsCategory}</h1>
+                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">{activeSettingsCategory}</h1>
                                 <p className="text-gray-400 font-bold text-sm mt-1">{categories.find(c => c.id === activeSettingsCategory)?.desc}</p>
                             </div>
                             {renderSettingsContent()}
