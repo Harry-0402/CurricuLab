@@ -24,7 +24,8 @@
         /* Account for iOS safe area at the bottom (home indicator) */
         padding-bottom: env(safe-area-inset-bottom, 0px);
         overflow: hidden;
-        background-color: #fafbfc;
+        background-color: var(--background);
+        color: var(--foreground);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }

@@ -39,7 +39,7 @@ export function WebSidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="w-64 h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden">
+        <aside className="w-64 h-full border-r border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col sticky top-0 print:hidden">
             <div className="p-6 flex items-center gap-3">
                 <div className="relative w-10 h-10">
                     {/* Using standard img tag to avoid potential Next.js image optimization issues with local dev */}
