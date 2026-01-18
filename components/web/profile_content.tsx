@@ -253,7 +253,7 @@ export default function WebProfileContent() {
                                         type="text"
                                         defaultValue={displayName}
                                         className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                                        readOnly
+                                        placeholder="Update display name"
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -262,8 +262,13 @@ export default function WebProfileContent() {
                                         type="text"
                                         defaultValue={userEmail || ''}
                                         className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                                        readOnly
+                                        placeholder="Update email address"
                                     />
+                                </div>
+                                <div className="col-span-1 md:col-span-2 flex justify-end">
+                                    <Button className="rounded-xl px-8 h-12" onClick={() => alert("Profile update feature coming soon!")}>
+                                        Save Changes
+                                    </Button>
                                 </div>
                             </div>
                         </div>
