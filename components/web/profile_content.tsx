@@ -16,6 +16,9 @@ type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & S
 export default function WebProfileContent() {
     const [activeTab, setActiveTab] = useState<Tab>('Overview');
     const [userEmail, setUserEmail] = useState<string | null>(null);
+    const [editName, setEditName] = useState('');
+    const [editEmail, setEditEmail] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
 
     // Settings State
     const [activeSettingsCategory, setActiveSettingsCategory] = useState<SettingCategory>('General');
@@ -38,6 +41,16 @@ export default function WebProfileContent() {
             const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
             if (user?.email) {
                 setUserEmail(user.email);
+                setEditEmail(user.email);
+
+                // Get name from metadata
+                const metaName = user.user_metadata?.full_name;
+                if (metaName) {
+                    setEditName(metaName);
+                } else {
+                    const derived = user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1);
+                    setEditName(derived);
+                }
             }
         };
         fetchUser();
@@ -57,7 +70,36 @@ export default function WebProfileContent() {
         setLogsLoading(false);
     };
 
-    const displayName = userEmail ? (userEmail.split('@')[0].charAt(0).toUpperCase() + userEmail.split('@')[0].slice(1)) : 'Javis';
+    // We use the editable name for display if available, else fallback logic
+    const displayName = editName || (userEmail ? (userEmail.split('@')[0].charAt(0).toUpperCase() + userEmail.split('@')[0].slice(1)) : 'Javis');
+
+    const handleSaveProfile = async () => {
+        setIsSaving(true);
+        try {
+            const updates: any = {};
+            if (editEmail !== userEmail) updates.email = editEmail;
+
+            // Assume we want to save display name to metadata
+            if (editName !== displayName) {
+                updates.data = { full_name: editName };
+            }
+
+            const { AuthService } = await import('@/lib/services/auth.service');
+            const { error } = await AuthService.updateProfile(updates);
+
+            if (error) throw error;
+
+            alert("Profile updated successfully! " + (updates.email ? "Check your new email for a confirmation link." : ""));
+
+            // Refresh user data if needed, or just rely on local state update for now
+            if (updates.email) setUserEmail(editEmail);
+
+        } catch (err: any) {
+            alert("Failed to update profile: " + err.message);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     // --- Render Helpers ---
 
@@ -198,7 +240,7 @@ export default function WebProfileContent() {
                                                 </div>
                                                 <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400">
                                                     <Icons.Profile size={12} />
-                                                    Changed by: <span className="text-gray-700">{log.changedBy}</span>
+                                                    Changed by: <span className="text-gray-700">{log.changedBy ? (log.changedBy.includes('@') ? (log.changedBy.split('@')[0].charAt(0).toUpperCase() + log.changedBy.split('@')[0].slice(1)) : log.changedBy) : 'System'}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -218,7 +260,8 @@ export default function WebProfileContent() {
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Display Name</label>
                                     <input
                                         type="text"
-                                        defaultValue={displayName}
+                                        value={editName}
+                                        onChange={(e) => setEditName(e.target.value)}
                                         className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         placeholder="Update display name"
                                     />
@@ -227,14 +270,15 @@ export default function WebProfileContent() {
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
                                     <input
                                         type="text"
-                                        defaultValue={userEmail || ''}
+                                        value={editEmail}
+                                        onChange={(e) => setEditEmail(e.target.value)}
                                         className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         placeholder="Update email address"
                                     />
                                 </div>
                                 <div className="col-span-1 md:col-span-2 flex justify-end">
-                                    <Button className="rounded-xl px-8 h-12" onClick={() => alert("Profile update feature coming soon!")}>
-                                        Save Changes
+                                    <Button className="rounded-xl px-8 h-12" onClick={handleSaveProfile} disabled={isSaving}>
+                                        {isSaving ? 'Saving...' : 'Save Changes'}
                                     </Button>
                                 </div>
                             </div>
