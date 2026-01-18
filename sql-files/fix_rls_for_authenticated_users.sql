@@ -46,3 +46,6 @@ CREATE POLICY "Allow authenticated write access teams" ON public.teams FOR ALL T
 -- Note: The existing policy for markwise_questions uses "FOR ALL" default (public), which should work.
 -- But adding explicit authenticated access ensures clarity if default behavior changes.
 CREATE POLICY "Allow authenticated access markwise" ON public.markwise_questions FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- 11. Knowledge Vault (Vault Resources)
+CREATE POLICY "Allow authenticated access vault" ON public.vault_resources FOR ALL TO authenticated USING (true) WITH CHECK (true);
