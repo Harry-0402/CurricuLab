@@ -2,6 +2,16 @@ import { supabase } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 
 export const AuthService = {
+    async getSubscribers() {
+        // Fetch all authorized users to send notifications
+        const { data, error } = await supabase
+            .from('authorized_users')
+            .select('email');
+
+        if (error || !data) return [];
+        return data.map(u => u.email).filter(Boolean); // Return array of emails
+    },
+
     async signInWithEmail(email: string) {
         // For this app, we might use Magic Links or Password
         // Using Magic Link for simplicity if SMTP is set up, or Password if enabled

@@ -1,6 +1,7 @@
 import { supabase } from "@/utils/supabase/client";
 import { Announcement } from "@/types";
 import { ChangelogService } from "@/lib/services/changelog.service";
+import { AuthService } from "@/lib/services/auth.service";
 
 const mapAnnouncement = (a: any): Announcement => ({
     id: a.id,
@@ -75,16 +76,20 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
     });
 
     // Send Email Notification (Async/Non-blocking)
-    fetch('/api/notifications/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            type: 'Announcement',
-            title: newAnnouncement.title || 'New Announcement',
-            content: newAnnouncement.content || 'Check the dashboard for details.',
-            link: newAnnouncement.resourceLink
-        })
-    }).catch(err => console.error("Failed to send notification:", err));
+    (async () => {
+        const recipients = await AuthService.getSubscribers();
+        await fetch('/api/notifications/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'Announcement',
+                title: newAnnouncement.title || 'New Announcement',
+                content: newAnnouncement.content || 'Check the dashboard for details.',
+                link: newAnnouncement.resourceLink,
+                recipients: recipients
+            })
+        });
+    })().catch(err => console.error("Failed to send notification:", err));
 
     return newAnnouncement;
 };

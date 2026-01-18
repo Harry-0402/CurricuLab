@@ -1,6 +1,7 @@
 import { supabase } from "@/utils/supabase/client";
 import { Assignment } from "@/types";
 import { ChangelogService } from "@/lib/services/changelog.service";
+import { AuthService } from "@/lib/services/auth.service";
 
 const mapAssignment = (a: any): Assignment => ({
     id: a.id,
@@ -64,16 +65,20 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
     });
 
     // Send Email Notification (Async/Non-blocking)
-    fetch('/api/notifications/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            type: 'Assignment',
-            title: assignment.title,
-            content: `A new assignment "${assignment.title}" has been posted. Due date: ${assignment.dueDate || 'No due date'}.`,
-            link: assignment.platform // Only send link if platform is valid (which it is by type definition)
-        })
-    }).catch(err => console.error("Failed to send notification:", err));
+    (async () => {
+        const recipients = await AuthService.getSubscribers();
+        await fetch('/api/notifications/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'Assignment',
+                title: assignment.title,
+                content: `A new assignment "${assignment.title}" has been posted. Due date: ${assignment.dueDate || 'No due date'}.`,
+                link: assignment.platform,
+                recipients: recipients
+            })
+        });
+    })().catch(err => console.error("Failed to send notification:", err));
 
     return mapAssignment(data);
 };

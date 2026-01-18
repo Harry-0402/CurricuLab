@@ -16,22 +16,22 @@ const transporter = nodemailer.createTransport({
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { type, title, content, link } = body;
+        const { type, title, content, link, recipients } = body;
 
         // Verify configuration
         if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
             console.error("SMTP credentials missing");
-            // Fail silently or return error? Return error for debugging.
             return NextResponse.json({ error: 'Server misconfigured (SMTP)' }, { status: 500 });
         }
 
-        // TODO: In a real production app, you would fetch the list of subscribed students from Supabase here.
-        // For this demo, we will send it to the 'SMTP_USER' (the dev) or a hardcoded test list.
-        // You can also add a 'to' field in the request body if you want to target specific users.
+        // Determine recipients
+        // If recipients array is provided in body, use it.
+        // Otherwise, fallback to the SMTP_USER (Dev/Admin) for testing.
+        const targets = (recipients && Array.isArray(recipients) && recipients.length > 0)
+            ? recipients
+            : [process.env.SMTP_USER];
 
-        // For testing purposes, we send the notification to the sender/admin email to verify it works.
-        const recipients = [process.env.SMTP_USER];
-
+        // HTML Template
         const subject = `New ${type}: ${title}`;
 
         // Basic HTML Template
@@ -49,7 +49,8 @@ export async function POST(request: Request) {
         // Send mail with defined transport object
         const info = await transporter.sendMail({
             from: `"CurricuLab" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`, // sender address
-            to: recipients.join(', '), // list of receivers
+            to: process.env.SMTP_USER, // Send TO self (admin) to ensure delivery
+            bcc: targets.join(', '), // BCC everyone else for privacy
             subject: subject, // Subject line
             html: html, // html body
         });
