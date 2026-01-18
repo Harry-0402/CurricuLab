@@ -16,11 +16,11 @@ export function KPIStatCard({ label, value, subValue, icon, color }: KPIStatCard
     const Icon = Icons[icon];
 
     return (
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-start justify-between group hover:shadow-md transition-all duration-300">
+        <div className="bg-white dark:bg-zinc-950 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-900 flex items-start justify-between group hover:shadow-md transition-all duration-300">
             <div className="space-y-2">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{label}</p>
                 <div className="flex items-baseline gap-2">
-                    <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{value}</h3>
                     {subValue && <span className="text-xs font-medium text-gray-500">{subValue}</span>}
                 </div>
             </div>

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+/* ignore-next-line */
 @custom-variant dark (&:where(.dark, .dark *));
 
 
