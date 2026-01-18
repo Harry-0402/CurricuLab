@@ -7,6 +7,7 @@ import { WebRightPanel } from './WebRightPanel';
 import { getUpcomingAssignments } from '@/lib/services/app.service';
 import { Assignment } from '@/types';
 import { Icons } from '../shared/Icons';
+import { AutoLogout } from '../shared/AutoLogout';
 
 export function WebAppShell({ children }: { children: React.ReactNode }) {
     // Alert State
