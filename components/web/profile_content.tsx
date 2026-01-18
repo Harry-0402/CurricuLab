@@ -121,7 +121,7 @@ export default function WebProfileContent() {
                                                 "h-12 rounded-xl text-sm font-bold capitalize transition-all",
                                                 theme === t
                                                     ? "bg-blue-600 text-white shadow-md shadow-blue-200"
-                                                    : "bg-white border border-gray-100 text-gray-600 hover:border-blue-200 hover:text-blue-600"
+                                                    : "bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 text-gray-600 dark:text-gray-400 hover:border-blue-200 hover:text-blue-600 dark:hover:text-blue-400"
                                             )}
                                         >
                                             {t}
@@ -130,10 +130,10 @@ export default function WebProfileContent() {
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl">
                             <div>
-                                <p className="text-sm font-black text-gray-900">High Contrast</p>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">Enhance visibility</p>
+                                <p className="font-bold text-sm text-gray-900 dark:text-gray-100">High Contrast</p>
+                                <p className="text-xs font-medium text-gray-400">Enhance visibility</p>
                             </div>
                             <Switch
                                 checked={settings.highContrast}
@@ -271,8 +271,8 @@ export default function WebProfileContent() {
             default: // General or Login settings
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="p-6 bg-white border border-gray-100 rounded-3xl space-y-4">
-                            <h3 className="font-bold text-gray-900">Profile Information</h3>
+                        <div className="p-6 bg-white dark:bg-zinc-950 border border-gray-100 dark:border-zinc-900 rounded-3xl space-y-4">
+                            <h3 className="font-bold text-gray-900 dark:text-gray-100">Profile Information</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Display Name</label>
@@ -280,7 +280,7 @@ export default function WebProfileContent() {
                                         type="text"
                                         value={displayName}
                                         onChange={(e) => setDisplayName(e.target.value)}
-                                        className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                        className="w-full bg-gray-50 dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 rounded-xl px-4 py-3 font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         placeholder="Update display name"
                                     />
                                 </div>
@@ -290,7 +290,7 @@ export default function WebProfileContent() {
                                         type="text"
                                         value={userEmail}
                                         onChange={(e) => setUserEmail(e.target.value)}
-                                        className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                        className="w-full bg-gray-50 dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 rounded-xl px-4 py-3 font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         placeholder="Update email address"
                                     />
                                 </div>

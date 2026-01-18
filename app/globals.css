@@ -6,6 +6,11 @@
     --font-sans: var(--font-inter);
 }
 
+.dark {
+    --background: #09090b;
+    --foreground: #fafafa;
+}
+
 @layer base {
 
     html {
