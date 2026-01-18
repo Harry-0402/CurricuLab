@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     title: "CurricuLab",
     description: "Study management platform for students.",
     icons: {
-        icon: '/logo.png',
-        shortcut: '/logo.png',
+        icon: ['/favicon.ico', '/logo.png'],
+        shortcut: '/favicon.ico',
         apple: '/logo.png',
     }
 };
