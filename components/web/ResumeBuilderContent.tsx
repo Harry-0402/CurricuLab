@@ -302,7 +302,7 @@ export function ResumeBuilderContent() {
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Target Domain / Industry</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={['Data Analytics', 'Product Analytics', 'Marketing Analytics', 'Financial Analytics', 'Web Analytics', 'Economic Analytics', 'Social Media Analytics', 'Investment Analytics', 'HR'].includes(data.targetDomain) ? data.targetDomain : (data.targetDomain ? "Other" : "")}
+                                    value={['Data Analytics', 'Product Analytics', 'Marketing Analytics', 'Financial Analytics', 'Web Analytics', 'Economic Analytics', 'Social Media Analytics', 'Investment Analytics', 'HR'].includes(data.targetDomain || '') ? data.targetDomain : (data.targetDomain ? "Other" : "")}
                                     onChange={(e) => setData({ ...data, targetDomain: e.target.value === "Other" ? "Other" : e.target.value })}
                                 >
                                     <option value="">Select a Target Domain (Recommended)</option>
