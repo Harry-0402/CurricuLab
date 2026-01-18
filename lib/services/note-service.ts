@@ -1,5 +1,6 @@
 import { supabase } from "@/utils/supabase/client";
 import { Note } from "@/types";
+import { ChangelogService } from "@/lib/services/changelog.service";
 import { LOCAL_NOTES } from "@/lib/data/course-data";
 
 export const getNotesByUnit = async (unitId: string): Promise<Note[]> => {
@@ -59,6 +60,14 @@ export const createNote = async (note: Note): Promise<Note> => {
         throw error;
     }
 
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Note',
+        entity_id: data.id,
+        action: 'CREATE',
+        changes: { title: data.title, unitId: data.unit_id }
+    });
+
     return {
         id: data.id,
         unitId: data.unit_id,
@@ -79,10 +88,26 @@ export const updateNote = async (note: Note): Promise<Note> => {
     };
     const { data, error } = await supabase.from('notes').update(payload).eq('id', note.id).select().single();
     if (error) console.error(error);
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Note',
+        entity_id: note.id,
+        action: 'UPDATE',
+        changes: { title: note.title }
+    });
+
     return note;
 };
 
 export const deleteNote = async (id: string): Promise<void> => {
     const { error } = await supabase.from('notes').delete().eq('id', id);
     if (error) console.error(error);
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Note',
+        entity_id: id,
+        action: 'DELETE'
+    });
 };

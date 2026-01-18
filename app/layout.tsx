@@ -21,6 +21,8 @@ export const metadata: Metadata = {
     description: "Study management platform for students.",
     icons: {
         icon: '/logo.png',
+        shortcut: '/logo.png',
+        apple: '/logo.png',
     }
 };
 

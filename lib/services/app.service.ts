@@ -2,6 +2,7 @@ import { supabase } from "@/utils/supabase/client";
 import { Subject, Unit, Question, KPIStats, TimetableEntry, Announcement, Assignment } from "@/types";
 import { LOCAL_SUBJECTS, LOCAL_UNITS, LOCAL_NOTES, LOCAL_QUESTIONS } from "@/lib/data/course-data";
 import { SubjectService } from '@/lib/data/subject-service';
+import { ChangelogService } from '@/lib/services/changelog.service';
 
 // Re-export services
 export * from './assignment-service';
@@ -152,7 +153,17 @@ export const createQuestion = async (question: Omit<Question, 'id'>): Promise<Qu
         return null;
     }
 
-    return mapSupabaseQuestion(data);
+    const newQuestion = mapSupabaseQuestion(data);
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Question',
+        entity_id: newQuestion.id,
+        action: 'CREATE',
+        changes: { question: newQuestion.question, subjectId: newQuestion.subjectId }
+    });
+
+    return newQuestion;
 };
 
 export const updateQuestion = async (question: Question): Promise<Question | null> => {
@@ -178,7 +189,17 @@ export const updateQuestion = async (question: Question): Promise<Question | nul
         return null;
     }
 
-    return mapSupabaseQuestion(data);
+    const updatedQuestion = mapSupabaseQuestion(data);
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Question',
+        entity_id: updatedQuestion.id,
+        action: 'UPDATE',
+        changes: { question: updatedQuestion.question }
+    });
+
+    return updatedQuestion;
 };
 
 export const deleteQuestion = async (id: string): Promise<boolean> => {
@@ -191,6 +212,14 @@ export const deleteQuestion = async (id: string): Promise<boolean> => {
         console.error("Failed to delete question:", error);
         return false;
     }
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Question',
+        entity_id: id,
+        action: 'DELETE'
+    });
+
     return true;
 };
 
@@ -293,7 +322,16 @@ export const createMarkWiseQuestion = async (question: Omit<MarkWiseQuestion, 'i
         return null;
     }
 
-    return mapMarkWiseQuestion(data);
+    const newQuestion = mapMarkWiseQuestion(data);
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'MarkWise Question',
+        entity_id: newQuestion.id,
+        action: 'CREATE',
+        changes: { question: newQuestion.question, marks: newQuestion.marksType }
+    });
+
+    return newQuestion;
 };
 
 export const updateMarkWiseQuestion = async (question: MarkWiseQuestion): Promise<MarkWiseQuestion | null> => {
@@ -318,7 +356,16 @@ export const updateMarkWiseQuestion = async (question: MarkWiseQuestion): Promis
         return null;
     }
 
-    return mapMarkWiseQuestion(data);
+    const updatedQuestion = mapMarkWiseQuestion(data);
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'MarkWise Question',
+        entity_id: updatedQuestion.id,
+        action: 'UPDATE',
+        changes: { question: updatedQuestion.question }
+    });
+
+    return updatedQuestion;
 };
 
 export const deleteMarkWiseQuestion = async (id: string): Promise<boolean> => {
@@ -331,6 +378,14 @@ export const deleteMarkWiseQuestion = async (id: string): Promise<boolean> => {
         console.error("Failed to delete MarkWise question:", error);
         return false;
     }
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'MarkWise Question',
+        entity_id: id,
+        action: 'DELETE'
+    });
+
     return true;
 };
 
@@ -387,7 +442,16 @@ export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): 
         return null;
     }
 
-    return mapVaultResource(data);
+    const newResource = mapVaultResource(data);
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Vault Resource',
+        entity_id: newResource.id,
+        action: 'CREATE',
+        changes: { title: newResource.title, type: newResource.type }
+    });
+
+    return newResource;
 };
 
 export const updateVaultResource = async (resource: VaultResource): Promise<VaultResource | null> => {
@@ -412,7 +476,16 @@ export const updateVaultResource = async (resource: VaultResource): Promise<Vaul
         return null;
     }
 
-    return mapVaultResource(data);
+    const updatedResource = mapVaultResource(data);
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Vault Resource',
+        entity_id: updatedResource.id,
+        action: 'UPDATE',
+        changes: { title: updatedResource.title }
+    });
+
+    return updatedResource;
 };
 
 export const deleteVaultResource = async (id: string): Promise<boolean> => {

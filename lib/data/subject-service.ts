@@ -1,6 +1,7 @@
 
 import { supabase } from '@/utils/supabase/client';
 import { Subject } from '@/types';
+import { ChangelogService } from "@/lib/services/changelog.service";
 
 export const INITIAL_SUBJECTS: Subject[] = [
     {
@@ -170,7 +171,7 @@ export const SubjectService = {
             throw new Error('Update succeeded but no data was returned');
         }
 
-        return {
+        const updatedSubject = {
             id: data.id,
             code: data.code,
             title: data.title,
@@ -181,6 +182,16 @@ export const SubjectService = {
             unitCount: data.unit_count,
             lastStudied: data.last_studied
         } as Subject;
+
+        // Log Change
+        await ChangelogService.logChange({
+            entity_type: 'Subject',
+            entity_id: updatedSubject.id,
+            action: 'UPDATE',
+            changes: { title: updatedSubject.title, code: updatedSubject.code, progress: updatedSubject.progress }
+        });
+
+        return updatedSubject;
     },
 
     async getById(id: string): Promise<Subject | null> {

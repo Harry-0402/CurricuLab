@@ -1,4 +1,5 @@
 import { supabase } from '@/utils/supabase/client';
+import { ChangelogService } from '@/lib/services/changelog.service';
 
 export interface Person {
     id: number;
@@ -66,6 +67,14 @@ export const FacultyService = {
 
         if (error) throw error;
 
+        // Log Change
+        await ChangelogService.logChange({
+            entity_type: 'Faculty',
+            entity_id: String(data.id),
+            action: 'CREATE',
+            changes: { name: person.name, category: person.category }
+        });
+
         // Return the new object with its ID
         return {
             ...person,
@@ -92,6 +101,15 @@ export const FacultyService = {
             .eq('id', person.id);
 
         if (error) throw error;
+
+        // Log Change
+        await ChangelogService.logChange({
+            entity_type: 'Faculty',
+            entity_id: String(person.id),
+            action: 'UPDATE',
+            changes: { name: person.name }
+        });
+
         return person;
     },
 
@@ -102,6 +120,14 @@ export const FacultyService = {
             .eq('id', id);
 
         if (error) throw error;
+
+        // Log Change
+        await ChangelogService.logChange({
+            entity_type: 'Faculty',
+            entity_id: String(id),
+            action: 'DELETE'
+        });
+
         return id;
     }
 };

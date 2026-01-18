@@ -1,5 +1,6 @@
 import { supabase } from "@/utils/supabase/client";
 import { TimetableEntry } from "@/types";
+import { ChangelogService } from "@/lib/services/changelog.service";
 
 const mapTimetable = (t: any): TimetableEntry => ({
     id: t.id,
@@ -32,5 +33,14 @@ export const updateTimetableEntry = async (entry: TimetableEntry): Promise<Timet
     };
     const { data, error } = await supabase.from('timetable').update(payload).eq('id', entry.id).select().single();
     if (error) throw error;
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Timetable',
+        entity_id: entry.id,
+        action: 'UPDATE',
+        changes: { subjectCode: entry.subjectCode, day: entry.day }
+    });
+
     return mapTimetable(data);
 };

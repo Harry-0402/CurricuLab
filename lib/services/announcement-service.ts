@@ -1,5 +1,6 @@
 import { supabase } from "@/utils/supabase/client";
 import { Announcement } from "@/types";
+import { ChangelogService } from "@/lib/services/changelog.service";
 
 const mapAnnouncement = (a: any): Announcement => ({
     id: a.id,
@@ -49,11 +50,30 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
             };
             const { data: fallbackData, error: fallbackError } = await supabase.from('announcements').insert(fallbackPayload).select().single();
             if (fallbackError) throw fallbackError;
-            return mapAnnouncement(fallbackData);
+
+            const newAnnouncement = mapAnnouncement(fallbackData);
+            // Log Change
+            await ChangelogService.logChange({
+                entity_type: 'Announcement',
+                entity_id: newAnnouncement.id,
+                action: 'CREATE',
+                changes: { title: newAnnouncement.title }
+            });
+            return newAnnouncement;
         }
         throw error;
     }
-    return mapAnnouncement(data);
+
+    const newAnnouncement = mapAnnouncement(data);
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Announcement',
+        entity_id: newAnnouncement.id,
+        action: 'CREATE',
+        changes: { title: newAnnouncement.title }
+    });
+
+    return newAnnouncement;
 };
 
 export const updateAnnouncement = async (announcement: Announcement): Promise<Announcement> => {
@@ -86,11 +106,31 @@ export const updateAnnouncement = async (announcement: Announcement): Promise<An
                 .select()
                 .single();
             if (fallbackError) throw fallbackError;
-            return mapAnnouncement(fallbackData);
+
+            const updatedAnnouncement = mapAnnouncement(fallbackData);
+            // Log Change
+            await ChangelogService.logChange({
+                entity_type: 'Announcement',
+                entity_id: updatedAnnouncement.id,
+                action: 'UPDATE',
+                changes: { title: updatedAnnouncement.title }
+            });
+
+            return updatedAnnouncement;
         }
         throw error;
     }
-    return mapAnnouncement(data);
+
+    const updatedAnnouncement = mapAnnouncement(data);
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Announcement',
+        entity_id: updatedAnnouncement.id,
+        action: 'UPDATE',
+        changes: { title: updatedAnnouncement.title }
+    });
+
+    return updatedAnnouncement;
 };
 
 export const deleteAnnouncement = async (id: string): Promise<void> => {
@@ -101,4 +141,11 @@ export const deleteAnnouncement = async (id: string): Promise<void> => {
         .eq('id', id);
 
     if (error) throw error;
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Announcement',
+        entity_id: id,
+        action: 'DELETE'
+    });
 };

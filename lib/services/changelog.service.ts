@@ -12,19 +12,36 @@ export interface ChangeLog {
 }
 
 export const ChangelogService = {
-    async logChange(entityType: string, entityId: string, action: 'CREATE' | 'UPDATE' | 'DELETE', changes: any) {
+    async logChange(entityType: string | { entity_type: string, entity_id: string, action: 'CREATE' | 'UPDATE' | 'DELETE', changes?: any }, entityId?: string, action?: 'CREATE' | 'UPDATE' | 'DELETE', changes?: any) {
         // Get current user to attribute the change
         const user = await AuthService.getCurrentUser();
         const changedBy = user ? (user.email || user.id) : 'Guest/System';
 
+        let logEntry;
+        if (typeof entityType === 'object') {
+            logEntry = {
+                entity_type: entityType.entity_type,
+                entity_id: entityType.entity_id,
+                action: entityType.action,
+                changes: entityType.changes || {}
+            };
+        } else {
+            logEntry = {
+                entity_type: entityType,
+                entity_id: entityId,
+                action: action,
+                changes: changes || {}
+            };
+        }
+
         const { error } = await supabase
             .from('change_logs')
             .insert({
-                entity_type: entityType,
-                entity_id: entityId,
-                action,
+                entity_type: logEntry.entity_type,
+                entity_id: logEntry.entity_id,
+                action: logEntry.action,
                 changed_by: changedBy,
-                changes
+                changes: logEntry.changes
             });
 
         if (error) {

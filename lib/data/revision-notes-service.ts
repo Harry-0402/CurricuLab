@@ -1,5 +1,6 @@
 import { supabase } from '@/utils/supabase/client';
 import { RevisionNote } from '@/types';
+import { ChangelogService } from '@/lib/services/changelog.service';
 
 // Map database row to RevisionNote type
 function mapRevisionNote(row: any): RevisionNote {
@@ -51,6 +52,14 @@ export async function createRevisionNote(note: RevisionNote): Promise<RevisionNo
         throw error;
     }
 
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Revision Note',
+        entity_id: data.id,
+        action: 'CREATE',
+        changes: { title: data.title, unitId: data.unit_id }
+    });
+
     return mapRevisionNote(data);
 }
 
@@ -64,4 +73,12 @@ export async function deleteRevisionNotesByUnit(unitId: string): Promise<void> {
         console.error('Error deleting revision notes:', error);
         throw error;
     }
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Revision Note',
+        entity_id: unitId,
+        action: 'DELETE',
+        changes: { info: 'Deleted notes for unit ' + unitId }
+    });
 }

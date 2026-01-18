@@ -1,5 +1,6 @@
 import { supabase } from "@/utils/supabase/client";
 import { Assignment } from "@/types";
+import { ChangelogService } from "@/lib/services/changelog.service";
 
 const mapAssignment = (a: any): Assignment => ({
     id: a.id,
@@ -53,6 +54,15 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
     };
     const { data, error } = await supabase.from('assignments').insert(payload).select().single();
     if (error) throw error;
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Assignment',
+        entity_id: assignment.id,
+        action: 'CREATE',
+        changes: { title: assignment.title, subjectId: assignment.subjectId }
+    });
+
     return mapAssignment(data);
 };
 
@@ -67,10 +77,26 @@ export const updateAssignment = async (assignment: Assignment): Promise<Assignme
     };
     const { data, error } = await supabase.from('assignments').update(payload).eq('id', assignment.id).select().single();
     if (error) throw error;
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Assignment',
+        entity_id: assignment.id,
+        action: 'UPDATE',
+        changes: { title: assignment.title }
+    });
+
     return mapAssignment(data);
 };
 
 export const deleteAssignment = async (id: string): Promise<void> => {
     const { error } = await supabase.from('assignments').delete().eq('id', id);
     if (error) throw error;
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Assignment',
+        entity_id: id,
+        action: 'DELETE'
+    });
 };
