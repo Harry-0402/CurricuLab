@@ -1,13 +1,15 @@
 
+
 interface EmailTemplateProps {
     type: string;
     title: string;
     content: string;
     link?: string;
     linkText?: string;
+    recipientCount?: number;
 }
 
-export const generateNotificationEmail = ({ type, title, content, link, linkText = "View Details" }: EmailTemplateProps): string => {
+export const generateNotificationEmail = ({ type, title, content, link, linkText = "View Details", recipientCount = 1 }: EmailTemplateProps): string => {
     // Brand colors
     const primaryColor = "#4F46E5"; // Indigo-600
     const backgroundColor = "#F3F4F6";
@@ -98,6 +100,9 @@ export const generateNotificationEmail = ({ type, title, content, link, linkText
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600">
                     <tr>
                         <td align="center" style="padding-top: 20px;">
+                            <p style="color: #D97706; font-size: 13px; margin: 0 0 10px 0; background: #FFFBEB; padding: 12px; border-radius: 8px; border: 1px solid #FCD34D;">
+                                ⚠️ <strong>Demo Mode:</strong> This is a broadcast simulation. In production, this email would be sent to all ${recipientCount} registered user${recipientCount !== 1 ? 's' : ''}.
+                            </p>
                             <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
                                 You received this email because you are part of the CurricuLab organization.
                             </p>
