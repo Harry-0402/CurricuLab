@@ -189,17 +189,7 @@ export default function WebProfileContent() {
             case 'Change History':
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="flex items-center justify-end">
-                            <button
-                                onClick={loadLogs}
-                                className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-blue-600 hover:border-blue-200 rounded-lg transition-all shadow-sm active:scale-95"
-                                title="Refresh Logs"
-                            >
-                                <Icons.Subjects size={16} />
-                            </button>
-                        </div>
-
-                        <div className="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden min-h-[400px]">
+                        <div className="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden h-[500px] overflow-y-auto no-scrollbar">
                             {logsLoading ? (
                                 <div className="p-12 flex flex-col items-center justify-center text-gray-400">
                                     <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4" />
@@ -307,7 +297,7 @@ export default function WebProfileContent() {
                             className={cn(
                                 "px-6 py-2.5 rounded-xl text-sm font-bold transition-all",
                                 activeTab === tab
-                                    ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+                                    ? "bg-black text-white shadow-md"
                                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                             )}
                         >
@@ -368,9 +358,20 @@ export default function WebProfileContent() {
 
                         {/* Settings Content */}
                         <div className="col-span-1 md:col-span-3">
-                            <div className="mb-6">
-                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">{activeSettingsCategory}</h1>
-                                <p className="text-gray-400 font-bold text-sm mt-1">{categories.find(c => c.id === activeSettingsCategory)?.desc}</p>
+                            <div className="mb-6 flex items-center justify-between">
+                                <div>
+                                    <h1 className="text-2xl font-black text-gray-900 tracking-tight">{activeSettingsCategory}</h1>
+                                    <p className="text-gray-400 font-bold text-sm mt-1">{categories.find(c => c.id === activeSettingsCategory)?.desc}</p>
+                                </div>
+                                {activeSettingsCategory === 'Change History' && (
+                                    <button
+                                        onClick={loadLogs}
+                                        className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-blue-600 hover:border-blue-200 rounded-lg transition-all shadow-sm active:scale-95"
+                                        title="Refresh Logs"
+                                    >
+                                        <Icons.Subjects size={16} />
+                                    </button>
+                                )}
                             </div>
                             {renderSettingsContent()}
                         </div>
