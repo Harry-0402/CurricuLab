@@ -81,40 +81,7 @@ export default function WebProfileContent() {
 
     const renderSettingsContent = () => {
         switch (activeSettingsCategory) {
-            case 'Appearance':
-                return (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Color Theme</label>
-                            <div className="grid grid-cols-3 gap-3">
-                                {['Light', 'Dark', 'System'].map((t) => (
-                                    <button
-                                        key={t}
-                                        onClick={() => setSettings({ ...settings, theme: t })}
-                                        className={cn(
-                                            "py-6 rounded-2xl border font-bold text-sm transition-all",
-                                            settings.theme === t
-                                                ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100"
-                                                : "bg-gray-50 text-gray-500 border-gray-100 hover:border-blue-100"
-                                        )}
-                                    >
-                                        {t}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                            <div>
-                                <p className="text-sm font-black text-gray-900">High Contrast</p>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">Enhance visibility</p>
-                            </div>
-                            <Switch
-                                checked={settings.highContrast}
-                                onChange={(val) => setSettings({ ...settings, highContrast: val })}
-                            />
-                        </div>
-                    </div>
-                );
+
             case 'Notifications':
                 return (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
@@ -280,7 +247,7 @@ export default function WebProfileContent() {
 
     const categories = [
         { id: 'General' as const, icon: Icons.Settings, desc: 'Profile and account details' },
-        { id: 'Appearance' as const, icon: Icons.Trend, desc: 'Themes and colors' },
+
         { id: 'Notifications' as const, icon: Icons.Analytics, desc: 'Alerts and updates' },
         { id: 'Privacy & Security' as const, icon: Icons.Lock, desc: 'Visibility and safety' },
         { id: 'Data & Storage' as const, icon: Icons.Bookmark, desc: 'Sync and backup' },
