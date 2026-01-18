@@ -43,10 +43,12 @@ export function WebSidebar() {
             <div className="p-6 flex items-center gap-3">
                 <div className="relative w-10 h-10">
                     {/* Using standard img tag to avoid potential Next.js image optimization issues with local dev */}
-                    <img
-                        src="/logo.png"
-                        alt="CurricuLab Logo"
-                        className="w-full h-full object-contain"
+                    <Image
+                        src="/header-logo.png"
+                        alt="CurricuLab"
+                        width={32}
+                        height={32}
+                        className="rounded-md"
                     />
                 </div>
                 <span className="text-xl font-bold text-gray-900 tracking-tight">CurricuLab</span>
