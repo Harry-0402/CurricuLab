@@ -3,20 +3,19 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/lib/services/auth.service';
-import { toast } from 'sonner';
+import { useToast } from '@/components/shared/Toast';
 
 const TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
 
 export function AutoLogout() {
     const router = useRouter();
+    const { showToast } = useToast();
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     const logoutUser = async () => {
         try {
             await AuthService.signOut();
-            toast.error("Session Expired", {
-                description: "You have been logged out due to inactivity."
-            });
+            showToast("Session Expired: You have been logged out due to inactivity.", "error");
             router.push('/login');
         } catch (error) {
             console.error("Auto logout failed", error);
