@@ -6,7 +6,7 @@ import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { getSubjects, getUnits, getQuestions, createQuestion, updateQuestion, deleteQuestion } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
-import { PlatformExportService } from '@/lib/services/export-service';
+
 import { Subject, Unit, Question, MarksType } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -106,6 +106,7 @@ export function PaperTrailContent() {
     const handleExportHTML = async () => {
         if (!activeQuestion || !selectedSubject || !aiAnswer) return;
         const subject = subjects.find(s => s.id === selectedSubject);
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generatePaperTrailHTMLExport(
             subject?.title || 'PaperTrail',
             activeQuestion,
@@ -125,6 +126,7 @@ export function PaperTrailContent() {
             content: aiAnswer
         }];
 
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateWordDocument(
             subject?.title || 'PaperTrail',
             `PYQ Solution (${activeQuestion.marksType} Marks)`,

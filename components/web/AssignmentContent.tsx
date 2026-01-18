@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Subject, Assignment, Unit } from '@/types';
 import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
-import { PlatformExportService } from '@/lib/services/export-service';
+
 import { AssignmentModal } from './AssignmentModal';
 import {
     Dialog,
@@ -186,8 +186,9 @@ Format the response in clean, readable markdown.`;
     const handleExportWord = async () => {
         if (!selectedAssignment || !aiAnswer) return;
         const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
-        const unit = selectedAssignment.unitId ? units.find(u => u.id === selectedAssignment.unitId) : null;
+        const unit = units.find(u => u.id === selectedAssignment.unitId);
 
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateWordDocument(
             subject?.title || 'Assignment',
             unit?.title || selectedAssignment.title,
@@ -200,6 +201,7 @@ Format the response in clean, readable markdown.`;
         if (!selectedAssignment || !aiAnswer) return;
         const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
 
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateAssignmentHTMLExport(
             subject?.title || 'Assignment',
             selectedAssignment,

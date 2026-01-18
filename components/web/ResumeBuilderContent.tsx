@@ -5,7 +5,6 @@ import { Button } from '@/components/shared/Button';
 import { Icons } from '@/components/shared/Icons';
 import { ResumeData } from '@/types';
 import { AiService } from '@/lib/services/ai-service';
-import { PlatformExportService } from '@/lib/services/export-service';
 import { cn } from '@/lib/utils';
 
 const STORAGE_KEY = 'curriculab_resume_draft';
@@ -273,13 +272,19 @@ export function ResumeBuilderContent() {
                         <Icons.RefreshCw className="mr-2 h-4 w-4" />
                         Clear All
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => PlatformExportService.generateResumeHTMLExport(data)} className="border-blue-200 text-blue-600 hover:bg-blue-50">
-                        <Icons.Download className="mr-2 h-4 w-4" />
-                        HTML Export
+                    <Button variant="outline" size="sm" onClick={async () => {
+                        const { PlatformExportService } = await import('@/lib/services/export-service');
+                        await PlatformExportService.generateResumeHTMLExport(data);
+                    }} className="border-blue-200 text-blue-600 hover:bg-blue-50">
+                        <Icons.Download className="w-4 h-4 mr-2" />
+                        Export to HTML
                     </Button>
-                    <Button size="sm" onClick={() => PlatformExportService.generateResumeWordExport(data)} className="bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-100">
-                        <Icons.Download className="mr-2 h-4 w-4" />
-                        Word Export
+                    <Button size="sm" onClick={async () => {
+                        const { PlatformExportService } = await import('@/lib/services/export-service');
+                        await PlatformExportService.generateResumeWordExport(data);
+                    }} className="bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-100">
+                        <Icons.Download className="w-4 h-4 mr-2" />
+                        Export to Word
                     </Button>
                 </div>
             </div>

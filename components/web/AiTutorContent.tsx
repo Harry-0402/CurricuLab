@@ -80,7 +80,7 @@ const ChatCodeBlock = ({ children }: { children?: any }) => {
     );
 };
 
-import { PlatformExportService } from '@/lib/services/export-service';
+
 
 export function AiTutorContent() {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -137,12 +137,14 @@ export function AiTutorContent() {
 
     const handleExportWord = async () => {
         if (messages.length === 0) return;
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateChatExport(messages);
         setShowExportMenu(false);
     };
 
     const handleExportHTML = async () => {
         if (messages.length === 0) return;
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateChatHTMLExport(messages, "AI Tutor Chat");
         setShowExportMenu(false);
     };

@@ -6,7 +6,7 @@ import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { getSubjects, getUnits, getMarkWiseQuestions, createMarkWiseQuestion, updateMarkWiseQuestion, deleteMarkWiseQuestion, MarkWiseQuestion } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
-import { PlatformExportService } from '@/lib/services/export-service';
+
 import { Subject, Unit, MarksType } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -214,6 +214,7 @@ export function MarkWiseContent() {
         if (!selectedSubject) return;
         const sub = subjects.find(s => s.id === selectedSubject);
         const uni = units.find(u => u.id === selectedUnit);
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateQuestionBankExport(
             sub?.title || "All Subjects",
             uni?.title || "All Units",
@@ -226,6 +227,7 @@ export function MarkWiseContent() {
         if (!selectedSubject) return;
         const sub = subjects.find(s => s.id === selectedSubject);
         const uni = units.find(u => u.id === selectedUnit);
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateQuestionBankHTMLExport(
             sub?.title || "All Subjects",
             uni?.title || "All Units",

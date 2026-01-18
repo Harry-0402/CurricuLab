@@ -7,7 +7,7 @@ import { Subject, VaultResource, VaultResourceType } from '@/types';
 import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { useToast } from '@/components/shared/Toast';
-import { PlatformExportService } from '@/lib/services/export-service';
+
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -222,6 +222,7 @@ export function VaultContent() {
     const handleExportWord = async () => {
         if (!activeSubjectId) return;
         const sub = subjects.find(s => s.id === activeSubjectId);
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateVaultExport(
             sub?.title || "Knowledge Vault",
             resources
@@ -232,6 +233,7 @@ export function VaultContent() {
     const handleExportHTML = async () => {
         if (!activeSubjectId) return;
         const sub = subjects.find(s => s.id === activeSubjectId);
+        const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateVaultHTMLExport(
             sub?.title || "Knowledge Vault",
             resources

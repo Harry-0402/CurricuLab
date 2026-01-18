@@ -7,7 +7,7 @@ import { Icons } from '@/components/shared/Icons';
 import { getSubjects, getUnits, getSubjectById, getUnitById } from '@/lib/services/app.service';
 import { getRevisionNotesByUnit, createRevisionNote, deleteRevisionNotesByUnit } from '@/lib/data/revision-notes-service';
 import { AiService } from '@/lib/services/ai-service';
-import { PlatformExportService } from '@/lib/services/export-service';
+
 import { Subject, Unit, RevisionNote } from '@/types';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
@@ -56,6 +56,7 @@ export function RevisionGeneratorContent() {
         const unit = units.find(u => u.id === selectedUnit);
 
         if (subject && unit) {
+            const { PlatformExportService } = await import('@/lib/services/export-service');
             await PlatformExportService.generateNotesHTMLExport(subject.title, unit.title, notes);
             setShowExportMenu(false);
         }
@@ -67,6 +68,7 @@ export function RevisionGeneratorContent() {
         const unit = units.find(u => u.id === selectedUnit);
 
         if (subject && unit) {
+            const { PlatformExportService } = await import('@/lib/services/export-service');
             await PlatformExportService.generateWordDocument(subject.title, unit.title, notes);
             setShowExportMenu(false);
         }
