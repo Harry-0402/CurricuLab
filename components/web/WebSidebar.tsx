@@ -35,8 +35,8 @@ export function WebSidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="w-64 min-h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden overflow-y-auto">
-            <div className="p-6">
+        <aside className="w-64 h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden">
+            <div className="p-4 pb-2">
                 <span className="text-2xl font-extrabold bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent tracking-tight">CurricuLab</span>
             </div>
 
@@ -68,7 +68,7 @@ export function WebSidebar() {
                     })}
                 </nav>
 
-                <nav className="space-y-1 mt-8">
+                <nav className="space-y-1 mt-4">
                     <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Tools</p>
                     {tools.map((item) => (
                         <Link
