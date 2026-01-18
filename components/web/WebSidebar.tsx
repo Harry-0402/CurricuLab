@@ -2,8 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Icons } from '@/components/shared/Icons';
+import { HomeIcon, BookOpenIcon, BellIcon, CalendarIcon, ClipboardIcon, AcademicCapIcon, UsersIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
