@@ -14,10 +14,9 @@ import { AttendanceWidget } from './AttendanceWidget';
 import { useTheme } from "next-themes";
 
 type Tab = 'Overview' | 'Settings';
-type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & Security' | 'Data & Storage' | 'Change History';
+type SettingCategory = 'General' | 'Notifications' | 'Privacy & Security' | 'Data & Storage' | 'Change History';
 
 export default function WebProfileContent() {
-    const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>('Overview');
     const [activeSettingsCategory, setActiveSettingsCategory] = useState<SettingCategory>('General');
@@ -104,44 +103,7 @@ export default function WebProfileContent() {
 
     const renderSettingsContent = () => {
         switch (activeSettingsCategory) {
-            case 'Appearance':
-                return (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Color Theme</label>
-                            <div className="grid grid-cols-3 gap-3">
-                                {!mounted ? (
-                                    <div className="col-span-3 text-center text-gray-400 text-sm">Loading themes...</div>
-                                ) : (
-                                    ['light', 'dark', 'system'].map((t) => (
-                                        <button
-                                            key={t}
-                                            onClick={() => setTheme(t)}
-                                            className={cn(
-                                                "h-12 rounded-xl text-sm font-bold capitalize transition-all",
-                                                theme === t
-                                                    ? "bg-blue-600 text-white shadow-md shadow-blue-200"
-                                                    : "bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 text-gray-600 dark:text-gray-400 hover:border-blue-200 hover:text-blue-600 dark:hover:text-blue-400"
-                                            )}
-                                        >
-                                            {t}
-                                        </button>
-                                    ))
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl">
-                            <div>
-                                <p className="font-bold text-sm text-gray-900 dark:text-gray-100">High Contrast</p>
-                                <p className="text-xs font-medium text-gray-400">Enhance visibility</p>
-                            </div>
-                            <Switch
-                                checked={settings.highContrast}
-                                onChange={(val) => setSettings({ ...settings, highContrast: val })}
-                            />
-                        </div>
-                    </div>
-                );
+
             case 'Notifications':
                 return (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
@@ -313,7 +275,7 @@ export default function WebProfileContent() {
 
     const categories = [
         { id: 'General' as const, icon: Icons.Settings, desc: 'Profile and account details' },
-        { id: 'Appearance' as const, icon: Icons.Trend, desc: 'Themes and colors' },
+
         { id: 'Notifications' as const, icon: Icons.Analytics, desc: 'Alerts and updates' },
         { id: 'Privacy & Security' as const, icon: Icons.Lock, desc: 'Visibility and safety' },
         { id: 'Data & Storage' as const, icon: Icons.Bookmark, desc: 'Sync and backup' },
