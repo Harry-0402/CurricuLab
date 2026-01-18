@@ -10,7 +10,7 @@ import { AnalyticsModal } from './AnalyticsModal';
 export function WebHeader() {
     const { toggleRightPanel, isRightPanelMinimized } = useAppStore();
     const [showAnalytics, setShowAnalytics] = React.useState(false);
-    const [userEmail, setUserEmail] = React.useState<string | null>(null);
+    const [user, setUser] = React.useState<any>(null);
 
     const handleLogout = async () => {
         try {
@@ -22,16 +22,42 @@ export function WebHeader() {
     };
 
     React.useEffect(() => {
-        const fetchUser = async () => {
-            const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
-            if (user?.email) {
-                setUserEmail(user.email);
-            }
+        let subscription: any;
+
+        const setupAuthListener = async () => {
+            const { supabase } = await import('@/utils/supabase/client');
+
+            // Initial fetch
+            const { data: { user: currentUser } } = await supabase.auth.getUser();
+            setUser(currentUser);
+
+            // Subscribe to changes
+            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null);
+            });
+            subscription = data.subscription;
         };
-        fetchUser();
+
+        setupAuthListener();
+
+        return () => {
+            if (subscription) subscription.unsubscribe();
+        };
     }, []);
 
-    const displayName = userEmail ? userEmail.split('@')[0] : 'Student';
+    const getDisplayName = () => {
+        if (!user) return 'Student';
+        // Prefer metadata name
+        if (user.user_metadata?.full_name) return user.user_metadata.full_name;
+        // Fallback to email derived name
+        if (user.email) {
+            const name = user.email.split('@')[0];
+            return name.charAt(0).toUpperCase() + name.slice(1);
+        }
+        return 'Student';
+    };
+
+    const displayName = getDisplayName();
 
     return (
         <header className="h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-8 flex items-center justify-between print:hidden">
