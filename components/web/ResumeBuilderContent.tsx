@@ -302,14 +302,23 @@ export function ResumeBuilderContent() {
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Target Domain / Industry</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={data.targetDomain || ''}
-                                    onChange={(e) => setData({ ...data, targetDomain: e.target.value })}
+                                    value={['Data Analytics', 'Product Analytics', 'Marketing Analytics', 'Financial Analytics', 'Web Analytics', 'Economic Analytics', 'Social Media Analytics', 'Investment Analytics', 'HR'].includes(data.targetDomain) ? data.targetDomain : (data.targetDomain ? "Other" : "")}
+                                    onChange={(e) => setData({ ...data, targetDomain: e.target.value === "Other" ? "Other" : e.target.value })}
                                 >
                                     <option value="">Select a Target Domain (Recommended)</option>
-                                    {['Software Engineering', 'Data Science', 'Product Management', 'Finance', 'Consulting', 'Marketing', 'Design', 'Healthcare', 'Legal', 'Sales', 'General Management', 'Other'].map(d => (
+                                    {['Data Analytics', 'Product Analytics', 'Marketing Analytics', 'Financial Analytics', 'Web Analytics', 'Economic Analytics', 'Social Media Analytics', 'Investment Analytics', 'HR'].map(d => (
                                         <option key={d} value={d}>{d}</option>
                                     ))}
+                                    <option value="Other">Other</option>
                                 </select>
+                                {((data.targetDomain === "Other") || (data.targetDomain && !['Data Analytics', 'Product Analytics', 'Marketing Analytics', 'Financial Analytics', 'Web Analytics', 'Economic Analytics', 'Social Media Analytics', 'Investment Analytics', 'HR'].includes(data.targetDomain))) && (
+                                    <Input
+                                        placeholder="Enter your specific domain..."
+                                        value={data.targetDomain === "Other" ? "" : data.targetDomain}
+                                        onChange={(e: any) => setData({ ...data, targetDomain: e.target.value || "Other" })}
+                                        autoFocus
+                                    />
+                                )}
                             </div>
 
                             <div className="col-span-2 space-y-2">
