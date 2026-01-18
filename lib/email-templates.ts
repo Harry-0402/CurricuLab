@@ -36,7 +36,16 @@ export const generateNotificationEmail = ({ type, title, content, link, linkText
                     <!-- Header -->
                     <tr>
                         <td align="center" style="background-color: ${primaryColor}; padding: 30px;">
-                            <h1 style="color: ${white}; margin: 0; font-size: 24px; letter-spacing: 1px;">CurricuLab</h1>
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" valign="middle">
+                                        <img src="https://curriculab-sj6g.onrender.com/logo.png" alt="CurricuLab Logo" style="width: 40px; height: 40px; margin-right: 12px; vertical-align: middle; display: inline-block;" />
+                                    </td>
+                                    <td align="center" valign="middle">
+                                        <h1 style="color: ${white}; margin: 0; font-size: 24px; letter-spacing: 1px; display: inline-block; vertical-align: middle;">CurricuLab</h1>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
 
