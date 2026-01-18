@@ -63,6 +63,18 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
         changes: { title: assignment.title, subjectId: assignment.subjectId }
     });
 
+    // Send Email Notification (Async/Non-blocking)
+    fetch('/api/notifications/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            type: 'Assignment',
+            title: assignment.title,
+            content: `A new assignment "${assignment.title}" has been posted. Due date: ${assignment.dueDate || 'No due date'}.`,
+            link: assignment.platform && assignment.platform !== 'Offline' ? assignment.platform : undefined // Or link to the app assignment page
+        })
+    }).catch(err => console.error("Failed to send notification:", err));
+
     return mapAssignment(data);
 };
 

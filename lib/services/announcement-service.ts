@@ -66,12 +66,25 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
 
     const newAnnouncement = mapAnnouncement(data);
     // Log Change
+    // Log Change
     await ChangelogService.logChange({
         entity_type: 'Announcement',
         entity_id: newAnnouncement.id,
         action: 'CREATE',
         changes: { title: newAnnouncement.title }
     });
+
+    // Send Email Notification (Async/Non-blocking)
+    fetch('/api/notifications/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            type: 'Announcement',
+            title: newAnnouncement.title || 'New Announcement',
+            content: newAnnouncement.content || 'Check the dashboard for details.',
+            link: newAnnouncement.resourceLink
+        })
+    }).catch(err => console.error("Failed to send notification:", err));
 
     return newAnnouncement;
 };
