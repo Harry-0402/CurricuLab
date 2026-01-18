@@ -325,7 +325,7 @@ export default function WebProfileContent() {
             <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
 
                 {/* Top Navigation / Header */}
-                <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-gray-100 w-fit">
+                <div className="flex items-center gap-4 bg-white dark:bg-zinc-950 p-2 rounded-2xl border border-gray-100 dark:border-zinc-900 w-fit">
                     {(['Overview', 'Settings'] as Tab[]).map((tab) => (
                         <button
                             key={tab}
@@ -333,8 +333,8 @@ export default function WebProfileContent() {
                             className={cn(
                                 "px-6 py-2.5 rounded-xl text-sm font-bold transition-all",
                                 activeTab === tab
-                                    ? "bg-black text-white shadow-md"
-                                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                    ? "bg-black dark:bg-white text-white dark:text-black shadow-md"
+                                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
                             )}
                         >
                             {tab}
@@ -345,7 +345,7 @@ export default function WebProfileContent() {
                 {activeTab === 'Overview' ? (
                     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2">
                         {/* Header Card */}
-                        <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+                        <div className="bg-white dark:bg-zinc-950 p-10 rounded-[40px] border border-gray-100 dark:border-zinc-900 shadow-sm flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
                             <div className="w-28 h-28 rounded-3xl bg-blue-50 flex items-center justify-center text-blue-600 overflow-hidden shadow-inner border-2 border-white">
                                 <img
                                     src="/assets/profile-avatar.png"
@@ -354,13 +354,13 @@ export default function WebProfileContent() {
                                 />
                             </div>
                             <div className="flex-1 space-y-2">
-                                <h2 className="text-4xl font-black text-gray-900 tracking-tight capitalize">{displayName}</h2>
-                                <p className="text-gray-500 font-medium text-lg">MBA Student • Year 1</p>
+                                <h2 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight capitalize">{displayName}</h2>
+                                <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">MBA Student • Year 1</p>
                             </div>
                             <Button
                                 onClick={() => setActiveTab('Settings')}
                                 variant="outline"
-                                className="rounded-2xl px-6 h-12 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 hover:text-gray-900 transition-all"
+                                className="rounded-2xl px-6 h-12 border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white transition-all"
                             >
                                 Edit Profile
                             </Button>
@@ -382,8 +382,8 @@ export default function WebProfileContent() {
                                     className={cn(
                                         "w-full p-4 rounded-2xl flex items-center gap-3 text-left transition-all",
                                         activeSettingsCategory === cat.id
-                                            ? "bg-white shadow-sm border border-gray-100 text-blue-600 ring-1 ring-blue-50"
-                                            : "text-gray-500 hover:bg-white hover:text-gray-900"
+                                            ? "bg-white dark:bg-zinc-950 shadow-sm border border-gray-100 dark:border-zinc-900 text-blue-600 ring-1 ring-blue-50 dark:ring-blue-900/30"
+                                            : "text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
                                     )}
                                 >
                                     <cat.icon size={18} className={activeSettingsCategory === cat.id ? "text-blue-600" : "text-gray-400"} />
@@ -395,7 +395,7 @@ export default function WebProfileContent() {
                         {/* Settings Content */}
                         <div className="col-span-1 md:col-span-3">
                             <div className="mb-6">
-                                <h1 className="text-2xl font-black text-gray-900 tracking-tight">{activeSettingsCategory}</h1>
+                                <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{activeSettingsCategory}</h1>
                                 <p className="text-gray-400 font-bold text-sm mt-1">{categories.find(c => c.id === activeSettingsCategory)?.desc}</p>
                             </div>
                             {renderSettingsContent()}
