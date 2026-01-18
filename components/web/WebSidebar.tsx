@@ -44,8 +44,8 @@ export function WebSidebar() {
             <div className="px-4 py-2">
 
 
-                <nav className="space-y-1 mt-2">
-                    <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Main Menu</p>
+                <nav className="space-y-1">
+                    <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-2">Main Menu</p>
                     {navItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
