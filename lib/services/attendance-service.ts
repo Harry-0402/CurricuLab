@@ -118,38 +118,61 @@ export const AttendanceService = {
         }));
     },
 
-    // Check for missing attendance records based on Timetable for the last N days
-    async getMissingRecords(daysToCheck = 5) {
+    // Optimized method to fetch all dashboard data in parallel/batched to reduce network requests
+    async getDashboardData(daysToCheckMissing = 5) {
         const user = await AuthService.getCurrentUser();
-        if (!user) return [];
+        if (!user) throw new Error("User not authenticated");
 
+        // Fetch logs and subjects in parallel
+        const [logs, subjects] = await Promise.all([
+            this.getAttendanceLogs(),
+            getSubjects()
+        ]);
+
+        // Calculate Stats
+        const statsMap = new Map<string, { total: number, present: number, name: string }>();
+        subjects.forEach(s => {
+            statsMap.set(s.id, { total: 0, present: 0, name: s.title });
+        });
+
+        const validLogs = logs.filter(l => l.status !== 'Canceled');
+        validLogs.forEach(log => {
+            const current = statsMap.get(log.subjectId) || { total: 0, present: 0, name: log.subjectName || 'Unknown' };
+            current.total++;
+            if (log.status === 'Present') {
+                current.present++;
+            }
+            statsMap.set(log.subjectId, current);
+        });
+
+        const stats = Array.from(statsMap.entries()).map(([id, stat]) => ({
+            subjectId: id,
+            subjectName: stat.name,
+            totalClasses: stat.total,
+            presentClasses: stat.present,
+            percentage: stat.total > 0 ? Math.round((stat.present / stat.total) * 100) : 0
+        }));
+
+        // Calculate Missing Records
+        // Use the ALREADY FETCHED logs and subjects
         const today = new Date();
-        const timetable = await getTimetable();
-        const existingLogs = await this.getAttendanceLogs();
-        const subjects = await getSubjects();
+        const timetable = await getTimetable(); // This might still fetch, but it's separate. Could pass in if needed. 
+        // Assuming getTimetable is fast or also cached.
 
         const missingRecords: { date: string, subjectId: string, subjectName: string, dayName: string }[] = [];
 
-        // Check past N days (excluding today because user might mark it later)
-        for (let i = 1; i <= daysToCheck; i++) {
+        for (let i = 1; i <= daysToCheckMissing; i++) {
             const date = new Date(today);
             date.setDate(date.getDate() - i);
             const dateString = date.toISOString().split('T')[0];
-            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., "Monday"
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
 
-            // Get classes scheduled for this day
-            // Note: Timetable day is stored as "Monday", "Tuesday", etc.
             const scheduledClasses = timetable.filter(t => t.day === dayName);
 
             for (const cls of scheduledClasses) {
-                // Find subject ID by matching code or title (Timetable uses code/title, we need ID)
-                // Timetable only has code/title. We need to match it to a Subject ID for logging.
-                // Assuming matched by code first, then title.
                 const subject = subjects.find(s => s.code === cls.subjectCode || s.title === cls.subjectTitle);
-
                 if (subject) {
-                    // Check if log exists for this date + subject
-                    const hasLog = existingLogs.some(log =>
+                    const hasLog = logs.some(log =>
                         log.date === dateString && log.subjectId === subject.id
                     );
 
@@ -165,6 +188,6 @@ export const AttendanceService = {
             }
         }
 
-        return missingRecords;
+        return { stats, subjects, missingRecords };
     }
 };

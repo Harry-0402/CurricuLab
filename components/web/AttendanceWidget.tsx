@@ -28,15 +28,12 @@ export function AttendanceWidget() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [fetchedStats, fetchedSubjects, missing] = await Promise.all([
-                AttendanceService.getAttendanceStats(),
-                getSubjects(),
-                AttendanceService.getMissingRecords(5)
-            ]);
+            const { stats: fetchedStats, subjects: fetchedSubjects, missingRecords: missing } = await AttendanceService.getDashboardData(5);
+
             setStats(fetchedStats);
             setSubjects(fetchedSubjects);
             setMissingRecords(missing);
-            if (fetchedSubjects.length > 0) {
+            if (fetchedSubjects.length > 0 && !selectedSubject) {
                 setSelectedSubject(fetchedSubjects[0].id);
             }
         } catch (error) {
