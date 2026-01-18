@@ -103,7 +103,7 @@ export function AttendanceWidget() {
                                 cy="48"
                                 r="40"
                                 className={cn("transition-all duration-1000 ease-out",
-                                    actualOverall >= 75 ? "stroke-green-500" : actualOverall >= 60 ? "stroke-yellow-500" : "stroke-red-500"
+                                    actualOverall >= 80 ? "stroke-green-500" : actualOverall >= 60 ? "stroke-yellow-500" : "stroke-red-500"
                                 )}
                                 strokeWidth="8"
                                 fill="none"
@@ -119,7 +119,7 @@ export function AttendanceWidget() {
                     <div>
                         <p className="text-sm font-bold text-gray-500">Total Classes: <span className="text-gray-900">{totalClasses}</span></p>
                         <p className="text-sm font-bold text-gray-500">Present: <span className="text-gray-900">{totalPresent}</span></p>
-                        <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Target: 75%</p>
+                        <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Target: 80%</p>
                     </div>
                 </div>
 
@@ -130,7 +130,7 @@ export function AttendanceWidget() {
                             <div className="flex items-center gap-3">
                                 <span className="text-gray-400 text-xs">{stat.presentClasses}/{stat.totalClasses}</span>
                                 <span className={cn("font-bold w-8 text-right",
-                                    stat.percentage >= 75 ? "text-green-600" : stat.percentage >= 60 ? "text-yellow-600" : "text-red-600"
+                                    stat.percentage >= 80 ? "text-green-600" : stat.percentage >= 60 ? "text-yellow-600" : "text-red-600"
                                 )}>
                                     {stat.percentage}%
                                 </span>
