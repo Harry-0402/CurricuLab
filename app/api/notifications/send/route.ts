@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { generateNotificationEmail } from '@/lib/email-templates';
 
 // Create a reusable transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
@@ -26,25 +27,34 @@ export async function POST(request: Request) {
 
         // Determine recipients
         // If recipients array is provided in body, use it.
-        // Otherwise, fallback to the SMTP_USER (Dev/Admin) for testing.
-        const targets = (recipients && Array.isArray(recipients) && recipients.length > 0)
+        // Otherwise, fallback to a hardcoded admin email if SMTP_USER is not a valid email (e.g. 'resend')
+        let targets = (recipients && Array.isArray(recipients) && recipients.length > 0)
             ? recipients
-            : [process.env.SMTP_USER];
+            : [];
+
+        // Fallback: If no recipients and SMTP_USER looks like an email, use it.
+        if (targets.length === 0 && process.env.SMTP_USER?.includes('@')) {
+            targets = [process.env.SMTP_USER];
+        }
+
+        console.log(`[Email] Attempting to send '${type}' to ${targets.length} recipients:`, targets);
+
+        if (targets.length === 0) {
+            console.warn("[Email] No valid recipients found. Skipping email send.");
+            return NextResponse.json({ warning: "No recipients found using 'authorized_users'. Table might be empty." });
+        }
 
         // HTML Template
         const subject = `New ${type}: ${title}`;
 
-        // Basic HTML Template
-        const html = `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-                <h1 style="color: #4f46e5;">New ${type} Posted</h1>
-                <p><strong>${title}</strong></p>
-                <p>${content}</p>
-                ${link ? `<a href="${link}" style="display: inline-block; background-color: #4f46e5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 10px;">View Resource</a>` : ''}
-                <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;" />
-                <p style="color: #888; font-size: 12px;">CurricuLab Notification System</p>
-            </div>
-        `;
+        // Generate Professional HTML Template
+        const html = generateNotificationEmail({
+            type,
+            title,
+            content,
+            link,
+            linkText: link ? 'View Resource' : undefined
+        });
 
         // Send mail with defined transport object
         const info = await transporter.sendMail({

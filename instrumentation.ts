@@ -19,7 +19,7 @@ export function register() {
                 setInterval(() => {
                     pingServer(TARGET_URL);
                 }, PING_INTERVAL);
-            }, 5000);
+            }, 100000);
         }
     }
 }
