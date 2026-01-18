@@ -36,9 +36,9 @@ export function WebSidebar() {
 
     return (
         <aside className="w-64 h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden">
-            <div className="p-4 pb-2 flex items-center gap-2">
-                <Icons.Home size={24} className="text-blue-500" />
-                <span className="text-2xl font-extrabold text-blue-500 tracking-tight">CurricuLab</span>
+            <div className="p-4 pb-2 flex items-center justify-center gap-2">
+                <Icons.Users size={28} className="text-gray-700" />
+                <span className="text-2xl font-extrabold text-gray-900 tracking-tight">CurricuLab</span>
             </div>
 
             <div className="px-4 py-2">
