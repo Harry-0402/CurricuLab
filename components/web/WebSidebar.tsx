@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
@@ -37,18 +36,8 @@ export function WebSidebar() {
 
     return (
         <aside className="w-64 min-h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden overflow-y-auto">
-            <div className="p-6 flex items-center gap-3">
-                <div className="relative w-10 h-10">
-                    {/* Using standard img tag to avoid potential Next.js image optimization issues with local dev */}
-                    <Image
-                        src="/header-logo.png"
-                        alt="CurricuLab"
-                        width={32}
-                        height={32}
-                        className="rounded-md"
-                    />
-                </div>
-                <span className="text-xl font-bold text-gray-900 tracking-tight">CurricuLab</span>
+            <div className="p-6">
+                <span className="text-2xl font-extrabold bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent tracking-tight">CurricuLab</span>
             </div>
 
             <div className="px-4 py-2">
