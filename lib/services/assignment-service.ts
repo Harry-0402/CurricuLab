@@ -74,7 +74,8 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
                 type: 'Assignment',
                 title: assignment.title,
                 content: `A new assignment "${assignment.title}" has been posted. Due date: ${assignment.dueDate || 'No due date'}.`,
-                link: assignment.platform,
+                link: 'https://curriculab-sj6g.onrender.com/assignments',
+                linkText: 'View Assignment',
                 recipients: recipients
             })
         });
