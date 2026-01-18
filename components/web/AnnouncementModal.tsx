@@ -26,6 +26,8 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
         type: 'info'
     });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     useEffect(() => {
         if (announcement) {
             setFormData(announcement);
@@ -42,6 +44,9 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+
         try {
             const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
@@ -78,11 +83,15 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
             console.error('Detailed error:', errorDetails);
 
             alert(`Failed to save announcement. ${error.message || 'Please check if the database table exists.'}`);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleDelete = async () => {
         if (announcement) {
+            if (isSubmitting) return;
+            setIsSubmitting(true);
             try {
                 const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
@@ -103,6 +112,8 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                 const errorDetails = error.message || error.details || JSON.stringify(error, null, 2);
                 console.error('Detailed error:', errorDetails);
                 alert(`Failed to delete announcement. ${error.message || ''}`);
+            } finally {
+                setIsSubmitting(false);
             }
         }
     };
@@ -128,6 +139,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                             className="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none appearance-none cursor-pointer transition-all"
                             value={formData.type}
                             onChange={(e) => setFormData({ ...formData, type: e.target.value as Announcement['type'] })}
+                            disabled={isSubmitting}
                         >
                             <option value="info">Information (Blue)</option>
                             <option value="warning">Alert (Orange)</option>
@@ -145,6 +157,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -158,6 +171,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                             value={formData.content}
                             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -170,20 +184,21 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                             className="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none placeholder:text-gray-400/80 transition-all shadow-sm"
                             value={formData.resourceLink || ''}
                             onChange={(e) => setFormData({ ...formData, resourceLink: e.target.value })}
+                            disabled={isSubmitting}
                         />
                     </div>
 
                     <DialogFooter className="gap-2 pt-4">
                         {announcement && (
-                            <Button type="button" variant="danger" className="rounded-2xl flex-1 md:flex-none" onClick={handleDelete}>
-                                Delete
+                            <Button type="button" variant="danger" className="rounded-2xl flex-1 md:flex-none" onClick={handleDelete} disabled={isSubmitting}>
+                                {isSubmitting ? 'Deleting...' : 'Delete'}
                             </Button>
                         )}
-                        <Button type="button" variant="ghost" onClick={onClose} className="rounded-2xl flex-1 md:flex-none">
+                        <Button type="button" variant="ghost" onClick={onClose} className="rounded-2xl flex-1 md:flex-none" disabled={isSubmitting}>
                             Cancel
                         </Button>
-                        <Button type="submit" className="rounded-2xl flex-1 md:flex-none px-8">
-                            {announcement ? 'Update Now' : 'Publish Update'}
+                        <Button type="submit" className="rounded-2xl flex-1 md:flex-none px-8" disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving...' : (announcement ? 'Update Now' : 'Publish Update')}
                         </Button>
                     </DialogFooter>
                 </form>

@@ -46,6 +46,23 @@ export const ChangelogService = {
 
         if (error) {
             console.error('Failed to log change:', error);
+        } else {
+            // Clean up old logs (keeping maintenance lightweight)
+            this.deleteOldLogs();
+        }
+    },
+
+    async deleteOldLogs(days = 10) {
+        const dateLimit = new Date();
+        dateLimit.setDate(dateLimit.getDate() - days);
+
+        const { error } = await supabase
+            .from('change_logs')
+            .delete()
+            .lt('timestamp', dateLimit.toISOString());
+
+        if (error) {
+            console.error('Failed to cleanup old logs:', error);
         }
     },
 
