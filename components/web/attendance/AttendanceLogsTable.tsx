@@ -93,38 +93,38 @@ export function AttendanceLogsTable({
     };
 
     return (
-        <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm mt-8">
-            <div className="flex items-center justify-between mb-6">
+        <div className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm mt-8">
+            <div className="flex items-center justify-between mb-4">
                 <div>
-                    <h3 className="font-bold text-xl text-gray-900">Attendance Logs</h3>
+                    <h3 className="font-bold text-lg text-gray-900">Attendance Logs</h3>
                     <p className="text-xs text-gray-400 mt-1">Showing {filteredLogs.length} record(s) for {format(currentMonth, 'MMMM yyyy')}</p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                     <button
                         onClick={() => onMonthChange(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                         title="Previous month"
                     >
-                        <Icons.ChevronLeft size={18} />
+                        <Icons.ChevronLeft size={16} />
                     </button>
                     <button
                         onClick={() => onMonthChange(new Date())}
-                        className="px-3 py-1 text-xs font-bold hover:bg-gray-100 rounded-lg transition-colors"
+                        className="px-2 py-1 text-xs font-bold hover:bg-gray-100 rounded-lg transition-colors"
                     >
                         Today
                     </button>
                     <button
                         onClick={() => onMonthChange(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                         title="Next month"
                     >
-                        <Icons.ChevronRight size={18} />
+                        <Icons.ChevronRight size={16} />
                     </button>
                     <select
                         value={filterSubject}
                         onChange={(e) => onFilterSubjectChange(e.target.value)}
-                        className="px-3 py-2 bg-gray-50 border-gray-100 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        className="px-2 py-1.5 bg-gray-50 border-gray-100 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 max-w-[100px]"
                     >
                         <option value="All">All Subjects</option>
                         {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
@@ -132,7 +132,7 @@ export function AttendanceLogsTable({
                     <select
                         value={filterStatus}
                         onChange={(e) => onFilterStatusChange(e.target.value)}
-                        className="px-3 py-2 bg-gray-50 border-gray-100 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        className="px-2 py-1.5 bg-gray-50 border-gray-100 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     >
                         <option value="All">All Status</option>
                         <option value="Present">Present</option>
@@ -142,46 +142,46 @@ export function AttendanceLogsTable({
                     {selectedLogs.size > 0 && (
                         <button
                             onClick={onBulkDelete}
-                            className="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors"
+                            className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors"
                         >
                             Delete ({selectedLogs.size})
                         </button>
                     )}
                     <button
                         onClick={handleExportCSV}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
+                        className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
                         title="Export CSV"
                     >
-                        <Icons.Download size={18} />
+                        <Icons.Download size={16} />
                     </button>
                 </div>
             </div>
 
             {/* Summary Row */}
-            <div className="flex gap-4 mb-6">
-                <div className="bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
-                    <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Total</span>
-                    <span className="ml-2 text-sm font-black text-gray-900">{monthlyTotal}</span>
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-none">
+                <div className="bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 whitespace-nowrap">
+                    <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Total</span>
+                    <span className="ml-2 text-xs font-black text-gray-900">{monthlyTotal}</span>
                 </div>
-                <div className="bg-green-50 px-4 py-2 rounded-xl border border-green-100">
-                    <span className="text-xs text-green-600 uppercase font-bold tracking-wider">Present</span>
-                    <span className="ml-2 text-sm font-black text-green-700">{monthlyPresent}</span>
+                <div className="bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 whitespace-nowrap">
+                    <span className="text-[10px] text-green-600 uppercase font-bold tracking-wider">Present</span>
+                    <span className="ml-2 text-xs font-black text-green-700">{monthlyPresent}</span>
                 </div>
-                <div className="bg-red-50 px-4 py-2 rounded-xl border border-red-100">
-                    <span className="text-xs text-red-600 uppercase font-bold tracking-wider">Absent</span>
-                    <span className="ml-2 text-sm font-black text-red-700">{monthlyAbsent}</span>
+                <div className="bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 whitespace-nowrap">
+                    <span className="text-[10px] text-red-600 uppercase font-bold tracking-wider">Absent</span>
+                    <span className="ml-2 text-xs font-black text-red-700">{monthlyAbsent}</span>
                 </div>
-                <div className="bg-gray-100 px-4 py-2 rounded-xl border border-gray-200">
-                    <span className="text-xs text-gray-600 uppercase font-bold tracking-wider">Canceled</span>
-                    <span className="ml-2 text-sm font-black text-gray-700">{monthlyCanceled}</span>
+                <div className="bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 whitespace-nowrap">
+                    <span className="text-[10px] text-gray-600 uppercase font-bold tracking-wider">Canceled</span>
+                    <span className="ml-2 text-xs font-black text-gray-700">{monthlyCanceled}</span>
                 </div>
             </div>
 
             <div className="overflow-hidden rounded-xl border border-gray-100">
-                <table className="w-full text-left text-sm">
+                <table className="w-full text-left text-sm table-fixed">
                     <thead>
                         <tr className="bg-gray-50/50 border-b border-gray-100">
-                            <th className="px-4 py-3 font-medium text-gray-400 w-10">
+                            <th className="px-3 py-2 font-medium text-gray-400 w-8">
                                 <input
                                     type="checkbox"
                                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500/20"
@@ -189,27 +189,27 @@ export function AttendanceLogsTable({
                                     onChange={onToggleSelectAll}
                                 />
                             </th>
-                            <th className="px-4 py-3 font-medium text-gray-400">Date</th>
-                            <th className="px-4 py-3 font-medium text-gray-400">Subject</th>
-                            <th className="px-4 py-3 font-medium text-gray-400">Status</th>
-                            <th className="px-4 py-3 font-medium text-gray-400">Logged At</th>
-                            <th className="px-4 py-3 font-medium text-gray-400 text-right">Actions</th>
+                            <th className="px-3 py-2 font-medium text-gray-400 w-[140px]">Date</th>
+                            <th className="px-3 py-2 font-medium text-gray-400 w-auto">Subject</th>
+                            <th className="px-3 py-2 font-medium text-gray-400 w-[90px]">Status</th>
+                            <th className="px-3 py-2 font-medium text-gray-400 w-[80px]">Time</th>
+                            <th className="px-3 py-2 font-medium text-gray-400 text-right w-[40px]">Act.</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
                         {filteredLogs.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
+                                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
                                     <div className="flex flex-col items-center gap-2">
-                                        <Icons.Calendar size={32} className="text-gray-200" />
-                                        <p>No attendance logs found for this period</p>
+                                        <Icons.Calendar size={24} className="text-gray-200" />
+                                        <p className="text-xs">No attendance logs found</p>
                                     </div>
                                 </td>
                             </tr>
                         ) : (
                             filteredLogs.map(log => (
                                 <tr key={log.id} className="hover:bg-gray-50/50 transition-colors group">
-                                    <td className="px-4 py-3">
+                                    <td className="px-3 py-2">
                                         <input
                                             type="checkbox"
                                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500/20"
@@ -217,31 +217,35 @@ export function AttendanceLogsTable({
                                             onChange={() => onToggleSelectLog(log.id)}
                                         />
                                     </td>
-                                    <td className="px-4 py-3 font-medium text-gray-900">
+                                    <td className="px-3 py-2 font-medium text-gray-900 truncate">
                                         {format(new Date(log.date), 'MMM d, yyyy')}
-                                        <span className="text-xs text-gray-400 font-normal ml-1">({format(new Date(log.date), 'EEE')})</span>
+                                        <span className="text-xs text-gray-400 font-normal ml-1 hidden sm:inline">({format(new Date(log.date), 'EEE')})</span>
+                                        <span className="text-xs text-gray-400 font-normal ml-1 sm:hidden">({format(new Date(log.date), 'EE')})</span>
                                     </td>
-                                    <td className="px-4 py-3 font-medium text-gray-700">{log.subjectName}</td>
-                                    <td className="px-4 py-3">
+                                    <td className="px-3 py-2 font-medium text-gray-700 truncate max-w-[150px]" title={log.subjectName}>
+                                        {log.subjectName}
+                                    </td>
+                                    <td className="px-3 py-2">
                                         <span className={cn(
-                                            "px-2.5 py-1 rounded-lg text-xs font-bold",
+                                            "px-2 py-0.5 rounded-md text-[10px] uppercase font-bold tracking-wide",
                                             log.status === 'Present' ? "bg-green-50 text-green-700" :
                                                 log.status === 'Absent' ? "bg-red-50 text-red-700" :
                                                     "bg-gray-100 text-gray-600"
                                         )}>
-                                            {log.status}
+                                            {log.status === 'Present' ? 'P' : log.status === 'Absent' ? 'A' : 'C'}
+                                            <span className="hidden sm:inline lowercase ml-0.5">{log.status.substring(1)}</span>
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-gray-400 text-xs">
+                                    <td className="px-3 py-2 text-gray-400 text-xs truncate">
                                         {format(new Date(log.createdAt), 'h:mm a')}
                                     </td>
-                                    <td className="px-4 py-3 text-right">
+                                    <td className="px-3 py-2 text-right">
                                         <button
                                             onClick={() => onDeleteLog(log.id)}
-                                            className="p-1.5 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                            className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                             title="Delete Log"
                                         >
-                                            <Icons.Trash2 size={16} />
+                                            <Icons.Trash2 size={14} />
                                         </button>
                                     </td>
                                 </tr>
