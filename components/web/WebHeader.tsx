@@ -3,12 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { Icons } from '@/components/shared/Icons';
-import { useAppStore } from '@/lib/store/useAppStore';
+
 import { cn } from '@/lib/utils';
 import { AnalyticsModal } from './AnalyticsModal';
 
 export function WebHeader() {
-    const { toggleRightPanel, isRightPanelMinimized } = useAppStore();
+
     const [showAnalytics, setShowAnalytics] = React.useState(false);
     const [user, setUser] = React.useState<any>(null);
 
@@ -97,16 +97,7 @@ export function WebHeader() {
                     >
                         <Icons.LogOut size={20} />
                     </button>
-                    <button
-                        onClick={toggleRightPanel}
-                        className={cn(
-                            "p-2.5 rounded-xl transition-all",
-                            isRightPanelMinimized ? "text-gray-400 hover:text-gray-900 hover:bg-gray-50" : "text-blue-600 bg-blue-50 shadow-sm"
-                        )}
-                        title={isRightPanelMinimized ? "Show Side Panel" : "Hide Side Panel"}
-                    >
-                        <Icons.Layout size={20} />
-                    </button>
+
                 </div>
             </div>
 

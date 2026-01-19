@@ -23,6 +23,13 @@ export interface SubjectAttendanceStats {
     percentage: number;
 }
 
+export interface MissingRecord {
+    date: Date;
+    dayName: string;
+    subjectId: string;
+    subjectName: string;
+}
+
 export const AttendanceService = {
     async logAttendance(date: string, subjectId: string, status: 'Present' | 'Absent' | 'Canceled') {
         const user = await AuthService.getCurrentUser();
@@ -119,7 +126,11 @@ export const AttendanceService = {
     },
 
     // Optimized method to fetch all dashboard data in parallel/batched to reduce network requests
-    async getDashboardData(daysToCheckMissing = 5) {
+    async getDashboardData(daysToCheckMissing = 5): Promise<{
+        stats: SubjectAttendanceStats[];
+        subjects: Subject[];
+        missingRecords: MissingRecord[];
+    }> {
         const user = await AuthService.getCurrentUser();
         if (!user) throw new Error("User not authenticated");
 
@@ -159,7 +170,7 @@ export const AttendanceService = {
         const timetable = await getTimetable(); // This might still fetch, but it's separate. Could pass in if needed. 
         // Assuming getTimetable is fast or also cached.
 
-        const missingRecords: { date: string, subjectId: string, subjectName: string, dayName: string }[] = [];
+        const missingRecords: { date: Date, subjectId: string, subjectName: string, dayName: string }[] = [];
 
         for (let i = 1; i <= daysToCheckMissing; i++) {
             const date = new Date(today);
@@ -178,7 +189,7 @@ export const AttendanceService = {
 
                     if (!hasLog) {
                         missingRecords.push({
-                            date: dateString,
+                            date: new Date(dateString),
                             subjectId: subject.id,
                             subjectName: subject.title,
                             dayName: dayName

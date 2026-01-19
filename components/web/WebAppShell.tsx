@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { WebSidebar } from './WebSidebar';
 import { WebHeader } from './WebHeader';
-import { WebRightPanel } from './WebRightPanel';
+
 import { getUpcomingAssignments } from '@/lib/services/app.service';
 import { Assignment } from '@/types';
 import { Icons } from '../shared/Icons';
@@ -60,7 +60,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                             {children}
                         </div>
                     </main>
-                    <WebRightPanel />
+
                 </div>
             </div>
 
