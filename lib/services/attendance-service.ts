@@ -247,5 +247,80 @@ export const AttendanceService = {
             totalAssignments: assignmentsData.count || 0,
             totalAnnouncements: announcementsData.count || 0
         };
+    },
+
+    async getAttendanceAlerts(): Promise<{ subject: string, current: number, classesNeeded: number }[]> {
+        const stats = await this.getAttendanceStats();
+
+        return stats
+            .filter(s => s.percentage < 75)
+            .map(s => {
+                const target = 75;
+                const classesNeeded = Math.ceil((target * s.totalClasses - 100 * s.presentClasses) / (100 - target));
+                return {
+                    subject: s.subjectName,
+                    current: s.percentage,
+                    classesNeeded: Math.max(0, classesNeeded)
+                };
+            })
+            .sort((a, b) => a.current - b.current); // Most critical first
+    },
+
+    async getStudyStreak(): Promise<{ currentStreak: number, longestStreak: number }> {
+        const user = await AuthService.getCurrentUser();
+        if (!user) throw new Error("User not authenticated");
+
+        const { data, error } = await supabase
+            .from('attendance_logs')
+            .select('date, status')
+            .eq('user_id', user.id)
+            .order('date', { ascending: false });
+
+        if (error || !data) return { currentStreak: 0, longestStreak: 0 };
+
+        // Group by date and check if has at least 1 Present
+        const uniqueDates = [...new Set(data.map(log => log.date))];
+        const datesWithPresent = uniqueDates.filter(date =>
+            data.some(log => log.date === date && log.status === 'Present')
+        ).sort().reverse();
+
+        let currentStreak = 0;
+        let longestStreak = 0;
+        let tempStreak = 0;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        for (let i = 0; i < datesWithPresent.length; i++) {
+            const logDate = new Date(datesWithPresent[i]);
+            logDate.setHours(0, 0, 0, 0);
+
+            if (i === 0) {
+                // Check if today or yesterday
+                const diffDays = Math.floor((today.getTime() - logDate.getTime()) / (1000 * 60 * 60 * 24));
+                if (diffDays <= 1) {
+                    currentStreak = 1;
+                    tempStreak = 1;
+                } else {
+                    break; // Streak broken
+                }
+            } else {
+                const prevDate = new Date(datesWithPresent[i - 1]);
+                prevDate.setHours(0, 0, 0, 0);
+                const dayDiff = Math.floor((prevDate.getTime() - logDate.getTime()) / (1000 * 60 * 60 * 24));
+
+                if (dayDiff === 1) {
+                    tempStreak++;
+                    if (i < 10) currentStreak = tempStreak; // Only count recent
+                } else {
+                    if (tempStreak > longestStreak) longestStreak = tempStreak;
+                    tempStreak = 1;
+                }
+            }
+        }
+
+        if (tempStreak > longestStreak) longestStreak = tempStreak;
+
+        return { currentStreak, longestStreak };
     }
 };

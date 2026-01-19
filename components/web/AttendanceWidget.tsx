@@ -6,8 +6,10 @@ import { Icons } from '@/components/shared/Icons';
 import { AttendanceService, SubjectAttendanceStats, AttendanceLog } from '@/lib/services/attendance-service';
 import { getSubjects } from '@/lib/services/app.service';
 import { getTimetable } from '@/lib/services/timetable-service';
-import { Subject, TimetableEntry } from '@/types';
-import { format, subDays, isSameDay, formatDistanceToNow, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { getUpcomingAssignments } from '@/lib/services/assignment-service';
+import { ReminderService, Reminder } from '@/lib/services/reminder-service';
+import { Subject, TimetableEntry, Assignment } from '@/types';
+import { format, subDays, isSameDay, formatDistanceToNow, startOfMonth, endOfMonth, eachDayOfInterval, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 export function AttendanceWidget() {
@@ -36,6 +38,18 @@ export function AttendanceWidget() {
     // KPI Counts
     const [kpiCounts, setKpiCounts] = useState({ totalSubjects: 0, totalAssignments: 0, totalAnnouncements: 0 });
 
+    // Tab States
+    const [progressTab, setProgressTab] = useState<'streak' | 'reminders'>('streak');
+    const [alertsTab, setAlertsTab] = useState<'deadlines' | 'alerts'>('deadlines');
+
+    // Feature Data
+    const [streak, setStreak] = useState({ currentStreak: 0, longestStreak: 0 });
+    const [reminders, setReminders] = useState<Reminder[]>([]);
+    const [upcomingDeadlines, setUpcomingDeadlines] = useState<Assignment[]>([]);
+    const [attendanceAlerts, setAttendanceAlerts] = useState<{ subject: string, current: number, classesNeeded: number }[]>([]);
+    const [newReminderTitle, setNewReminderTitle] = useState('');
+    const [newReminderDate, setNewReminderDate] = useState('');
+
     useEffect(() => {
         loadData();
     }, []);
@@ -47,6 +61,10 @@ export function AttendanceWidget() {
             const fetchedLogs = await AttendanceService.getAllLogs();
             const kpiData = await AttendanceService.getKPICounts();
             const fetchedTimetable = await getTimetable();
+            const streakData = await AttendanceService.getStudyStreak();
+            const remindersData = await ReminderService.getAllReminders();
+            const deadlinesData = await getUpcomingAssignments(30);
+            const alertsData = await AttendanceService.getAttendanceAlerts();
 
             setStats(fetchedStats);
             setSubjects(fetchedSubjects);
@@ -54,6 +72,10 @@ export function AttendanceWidget() {
             setLogs(fetchedLogs);
             setKpiCounts(kpiData);
             setTimetable(fetchedTimetable);
+            setStreak(streakData);
+            setReminders(remindersData);
+            setUpcomingDeadlines(deadlinesData);
+            setAttendanceAlerts(alertsData);
 
             // Set first subject from filtered list based on today
             const todayDayName = format(new Date(), 'EEEE');
@@ -167,6 +189,39 @@ export function AttendanceWidget() {
         }
     };
 
+    // Reminder Handlers
+    const handleAddReminder = async () => {
+        if (!newReminderTitle.trim() || !newReminderDate) return;
+        try {
+            await ReminderService.createReminder(newReminderTitle, newReminderDate);
+            setNewReminderTitle('');
+            setNewReminderDate('');
+            await loadData();
+        } catch (error: any) {
+            alert(`Failed to create reminder: ${error.message}`);
+        }
+    };
+
+    const handleToggleReminder = async (reminderId: string) => {
+        try {
+            await ReminderService.toggleComplete(reminderId);
+            await loadData();
+        } catch (error: any) {
+            alert(`Failed to update reminder: ${error.message}`);
+        }
+    };
+
+    const handleDeleteReminder = async (reminderId: string) => {
+        if (confirm('Delete this reminder?')) {
+            try {
+                await ReminderService.deleteReminder(reminderId);
+                await loadData();
+            } catch (error: any) {
+                alert(`Failed to delete reminder: ${error.message}`);
+            }
+        }
+    };
+
     const exportToCSV = () => {
         const csv = [
             ['Date', 'Day', 'Subject', 'Status', 'Logged At'].join(','),
@@ -221,103 +276,10 @@ export function AttendanceWidget() {
     return (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left Column - Stats Card */}
-                <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm flex flex-col">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="font-bold text-xl text-gray-900">Attendance Overview</h3>
-                        <div className="text-xs font-bold px-3 py-1 bg-blue-50 text-blue-600 rounded-full">
-                            Semester Total
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-6 mb-8">
-                        <div className="relative w-24 h-24 flex items-center justify-center">
-                            <svg className="w-full h-full transform -rotate-90">
-                                <circle cx="48" cy="48" r="40" className="stroke-gray-100" strokeWidth="8" fill="none" />
-                                <circle
-                                    cx="48"
-                                    cy="48"
-                                    r="40"
-                                    className={cn("transition-all duration-1000 ease-out",
-                                        actualOverall >= 80 ? "stroke-green-500" : actualOverall >= 60 ? "stroke-yellow-500" : "stroke-red-500"
-                                    )}
-                                    strokeWidth="8"
-                                    fill="none"
-                                    strokeDasharray="251.2"
-                                    strokeDashoffset={251.2 - (251.2 * actualOverall) / 100}
-                                    strokeLinecap="round"
-                                />
-                            </svg>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="text-2xl font-black text-gray-900">{actualOverall}%</span>
-                            </div>
-                        </div>
-                        <div>
-                            <p className="text-sm font-bold text-gray-500">Total Classes: <span className="text-gray-900">{totalClasses}</span></p>
-                            <p className="text-sm font-bold text-gray-500">Present: <span className="text-gray-900">{totalPresent}</span></p>
-                            <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Target: 80%</p>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
-                        {stats.map(stat => (
-                            <div key={stat.subjectId} className="flex items-center justify-between text-sm">
-                                <span className="font-medium text-gray-700 truncate w-1/2" title={stat.subjectName}>{stat.subjectName}</span>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-gray-400 text-xs">{stat.presentClasses}/{stat.totalClasses}</span>
-                                    <span className={cn("font-bold w-8 text-right",
-                                        stat.percentage >= 80 ? "text-green-600" : stat.percentage >= 60 ? "text-yellow-600" : "text-red-600"
-                                    )}>
-                                        {stat.percentage}%
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                        {stats.length === 0 && <p className="text-sm text-gray-400 text-center py-4">No attendance data yet.</p>}
-                    </div>
-                </div>
-
-                {/* Right Column - KPI Cards + Actions */}
+                {/* Left Column - Mark Attendance + Stats */}
                 <div className="space-y-6">
-                    {/* KPI Cards - Side by Side */}
-                    <div className="flex gap-3">
-                        <div className="bg-blue-50 p-4 rounded-[20px] border border-blue-100 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-blue-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Subjects</p>
-                                    <p className="text-blue-900 text-3xl font-black">{kpiCounts.totalSubjects}</p>
-                                </div>
-                                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                                    <Icons.BookOpen size={24} className="text-blue-600" />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded-[20px] border border-green-100 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-green-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Assignments</p>
-                                    <p className="text-green-900 text-3xl font-black">{kpiCounts.totalAssignments}</p>
-                                </div>
-                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                                    <Icons.FileText size={24} className="text-green-600" />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-purple-50 p-4 rounded-[20px] border border-purple-100 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-purple-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Announcements</p>
-                                    <p className="text-purple-900 text-3xl font-black">{kpiCounts.totalAnnouncements}</p>
-                                </div>
-                                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                                    <Icons.Bell size={24} className="text-purple-600" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Mark Attendance */}
-                    <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
+                    <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm">
                         <h3 className="font-bold text-xl text-gray-900 mb-6">Mark Attendance</h3>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
@@ -377,6 +339,311 @@ export function AttendanceWidget() {
                         </form>
                     </div>
 
+
+                    {/* Stats Card */}
+                    <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm flex flex-col">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="font-bold text-xl text-gray-900">Attendance Overview</h3>
+                            <div className="text-xs font-bold px-3 py-1 bg-blue-50 text-blue-600 rounded-full">
+                                Semester Total
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-6 mb-8">
+                            <div className="relative w-24 h-24 flex items-center justify-center">
+                                <svg className="w-full h-full transform -rotate-90">
+                                    <circle cx="48" cy="48" r="40" className="stroke-gray-100" strokeWidth="8" fill="none" />
+                                    <circle
+                                        cx="48"
+                                        cy="48"
+                                        r="40"
+                                        className={cn("transition-all duration-1000 ease-out",
+                                            actualOverall >= 80 ? "stroke-green-500" : actualOverall >= 60 ? "stroke-yellow-500" : "stroke-red-500"
+                                        )}
+                                        strokeWidth="8"
+                                        fill="none"
+                                        strokeDasharray="251.2"
+                                        strokeDashoffset={251.2 - (251.2 * actualOverall) / 100}
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className="text-2xl font-black text-gray-900">{actualOverall}%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-gray-500">Total Classes: <span className="text-gray-900">{totalClasses}</span></p>
+                                <p className="text-sm font-bold text-gray-500">Present: <span className="text-gray-900">{totalPresent}</span></p>
+                                <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Target: 80%</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                            {stats.map(stat => (
+                                <div key={stat.subjectId} className="flex items-center justify-between text-sm">
+                                    <span className="font-medium text-gray-700 truncate w-1/2" title={stat.subjectName}>{stat.subjectName}</span>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-gray-400 text-xs">{stat.presentClasses}/{stat.totalClasses}</span>
+                                        <span className={cn("font-bold w-8 text-right",
+                                            stat.percentage >= 80 ? "text-green-600" : stat.percentage >= 60 ? "text-yellow-600" : "text-red-600"
+                                        )}>
+                                            {stat.percentage}%
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                            {stats.length === 0 && <p className="text-sm text-gray-400 text-center py-4">No attendance data yet.</p>}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column - KPI Cards + Actions */}
+                <div className="space-y-6">
+                    {/* KPI Cards - Side by Side */}
+                    <div className="flex gap-3">
+                        <div className="bg-blue-50 p-4 rounded-[20px] border border-blue-100 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-blue-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Subjects</p>
+                                    <p className="text-blue-900 text-3xl font-black">{kpiCounts.totalSubjects}</p>
+                                </div>
+                                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <Icons.BookOpen size={24} className="text-blue-600" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-green-50 p-4 rounded-[20px] border border-green-100 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-green-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Assignments</p>
+                                    <p className="text-green-900 text-3xl font-black">{kpiCounts.totalAssignments}</p>
+                                </div>
+                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <Icons.FileText size={24} className="text-green-600" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-purple-50 p-4 rounded-[20px] border border-purple-100 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-purple-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Announcements</p>
+                                    <p className="text-purple-900 text-3xl font-black">{kpiCounts.totalAnnouncements}</p>
+                                </div>
+                                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                    <Icons.Bell size={24} className="text-purple-600" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 1: Progress & Tracking */}
+                    <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm">
+                        {/* Tab Switcher */}
+                        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-4">
+                            <button
+                                onClick={() => setProgressTab('streak')}
+                                className={cn(
+                                    "flex-1 py-2 rounded-lg text-xs font-bold transition-all",
+                                    progressTab === 'streak'
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                🔥 Study Streak
+                            </button>
+                            <button
+                                onClick={() => setProgressTab('reminders')}
+                                className={cn(
+                                    "flex-1 py-2 rounded-lg text-xs font-bold transition-all",
+                                    progressTab === 'reminders'
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                📝 Reminders
+                            </button>
+                        </div>
+
+                        {/* Tab Content */}
+                        {progressTab === 'streak' ? (
+                            <div className="space-y-3">
+                                <div className="text-center py-4">
+                                    <div className="text-5xl font-black text-orange-500 mb-2">
+                                        {streak.currentStreak} {streak.currentStreak === 1 ? 'Day' : 'Days'}
+                                    </div>
+                                    <p className="text-sm text-gray-600 font-medium">Current Streak</p>
+                                </div>
+                                <div className="flex items-center justify-between text-xs bg-gray-50 p-3 rounded-xl">
+                                    <span className="text-gray-600">Longest Streak:</span>
+                                    <span className="font-bold text-gray-900">{streak.longestStreak} days</span>
+                                </div>
+                                {streak.currentStreak === 0 && (
+                                    <p className="text-xs text-center text-gray-400 py-2">Mark attendance today to start your streak!</p>
+                                )}
+                                {streak.currentStreak >= 7 && (
+                                    <div className="bg-orange-50 border border-orange-200 p-3 rounded-xl text-center">
+                                        <p className="text-xs font-bold text-orange-700">🎉 Amazing! Keep it up!</p>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {/* Add Reminder Form */}
+                                <div className="bg-gray-50 p-3 rounded-xl space-y-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Reminder title..."
+                                        value={newReminderTitle}
+                                        onChange={(e) => setNewReminderTitle(e.target.value)}
+                                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    />
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="date"
+                                            value={newReminderDate}
+                                            onChange={(e) => setNewReminderDate(e.target.value)}
+                                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                        />
+                                        <button
+                                            onClick={handleAddReminder}
+                                            disabled={!newReminderTitle.trim() || !newReminderDate}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Reminders List */}
+                                <div className="max-h-[180px] overflow-y-auto space-y-2">
+                                    {reminders.length === 0 ? (
+                                        <p className="text-xs text-center text-gray-400 py-4">No reminders yet</p>
+                                    ) : (
+                                        reminders.map(reminder => {
+                                            const daysUntil = differenceInDays(new Date(reminder.reminderDate), new Date());
+                                            return (
+                                                <div key={reminder.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg group hover:bg-gray-100 transition-colors">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={reminder.isCompleted}
+                                                        onChange={() => handleToggleReminder(reminder.id)}
+                                                        className="rounded border-gray-300"
+                                                    />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={cn(
+                                                            "text-xs font-medium truncate",
+                                                            reminder.isCompleted ? "line-through text-gray-400" : "text-gray-900"
+                                                        )}>
+                                                            {reminder.title}
+                                                        </p>
+                                                        <p className={cn(
+                                                            "text-[10px]",
+                                                            daysUntil < 0 ? "text-red-600 font-bold" : daysUntil <= 3 ? "text-orange-600" : "text-gray-400"
+                                                        )}>
+                                                            {daysUntil < 0 ? 'Overdue!' : daysUntil === 0 ? 'Today' : `in ${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
+                                                        </p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleDeleteReminder(reminder.id)}
+                                                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded transition-all"
+                                                    >
+                                                        <Icons.Trash2 size={12} className="text-red-600" />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Section 2: Alerts & Actions */}
+                    <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm">
+                        {/* Tab Switcher */}
+                        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-4">
+                            <button
+                                onClick={() => setAlertsTab('deadlines')}
+                                className={cn(
+                                    "flex-1 py-2 rounded-lg text-xs font-bold transition-all",
+                                    alertsTab === 'deadlines'
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                ⏰ Deadlines
+                            </button>
+                            <button
+                                onClick={() => setAlertsTab('alerts')}
+                                className={cn(
+                                    "flex-1 py-2 rounded-lg text-xs font-bold transition-all",
+                                    alertsTab === 'alerts'
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                ⚠️ Alerts
+                            </button>
+                        </div>
+
+                        {/* Tab Content */}
+                        {alertsTab === 'deadlines' ? (
+                            <div className="max-h-[200px] overflow-y-auto space-y-2">
+                                {upcomingDeadlines.length === 0 ? (
+                                    <p className="text-xs text-center text-gray-400 py-4">No upcoming deadlines 🎉</p>
+                                ) : (
+                                    upcomingDeadlines.slice(0, 5).map(assignment => {
+                                        const daysUntil = differenceInDays(new Date(assignment.dueDate), new Date());
+                                        return (
+                                            <div key={assignment.id} className="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold text-gray-900 truncate">{assignment.title}</p>
+                                                        <p className="text-[10px] text-gray-500 mt-0.5">{assignment.platform || 'Assignment'}</p>
+                                                    </div>
+                                                    <div className={cn(
+                                                        "px-2 py-1 rounded-lg text-[10px] font-black whitespace-nowrap",
+                                                        daysUntil < 0 ? "bg-red-100 text-red-700" :
+                                                            daysUntil <= 2 ? "bg-red-50 text-red-600" :
+                                                                daysUntil <= 7 ? "bg-yellow-50 text-yellow-700" :
+                                                                    "bg-green-50 text-green-700"
+                                                    )}>
+                                                        {daysUntil < 0 ? 'OVERDUE' : daysUntil === 0 ? 'TODAY' : `${daysUntil}d`}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        ) : (
+                            <div className="max-h-[200px] overflow-y-auto space-y-2">
+                                {attendanceAlerts.length === 0 ? (
+                                    <div className="text-center py-4">
+                                        <p className="text-2xl mb-1">🎯</p>
+                                        <p className="text-xs text-gray-600 font-medium">All subjects above 75%!</p>
+                                    </div>
+                                ) : (
+                                    attendanceAlerts.map((alert, idx) => (
+                                        <div key={idx} className="p-3 bg-red-50 border border-red-100 rounded-xl">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <p className="text-sm font-bold text-gray-900">{alert.subject}</p>
+                                                <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-[10px] font-black">
+                                                    {alert.current}%
+                                                </span>
+                                            </div>
+                                            <p className="text-[10px] text-red-600 font-medium">
+                                                Need {alert.classesNeeded} more {alert.classesNeeded === 1 ? 'class' : 'classes'} to reach 75%
+                                            </p>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+
+
                     {/* Missing Records Suggestions */}
                     {missingRecords.length > 0 && (
                         <div className="bg-orange-50 p-6 rounded-[32px] border border-orange-100">
@@ -416,7 +683,7 @@ export function AttendanceWidget() {
             </div>
 
             {/* Attendance Logs Table - Full Width */}
-            <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm mt-8">
+            <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm mt-8">
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h3 className="font-bold text-xl text-gray-900">Attendance Logs</h3>
