@@ -292,8 +292,8 @@ export const LOCAL_RESOURCES: Resource[] = [
         id: 'learn-3',
         title: 'Storytelling with Data',
         description: 'Book recommendation for data visualization.',
-        type: 'Link',
-        url: 'https://www.storytellingwithdata.com/books',
+        type: 'PDF',
+        url: 'https://drive.google.com/file/d/1hZDE3mvz3zVLLuKcjGGtyBba2agPXNOR/view?usp=sharing',
         category: 'Learning & Trends'
     },
     {
@@ -711,8 +711,8 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         id: 'pba208-2',
         title: 'Research Methodology',
         description: 'Textbook by C.R. Kothari.',
-        type: 'Link',
-        url: 'https://www.google.com/search?q=Research+Methodology+Methods+and+Techniques+Kothari',
+        type: 'PDF',
+        url: 'https://drive.google.com/file/d/14RZZwFqaw9l-9YiRtO7oJXjZxGexGFuU/view?usp=sharing',
         category: 'Academic',
         topic: 'Business Research'
     },
@@ -740,10 +740,19 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         id: 'pba204-1',
         title: 'Operations Management (Krajewski)',
         description: 'Textbook resource.',
-        type: 'Link',
-        url: 'https://www.google.com/search?q=Operations+Management+Krajewski',
+        type: 'PDF',
+        url: 'https://drive.google.com/file/d/1pZiZqo64-WB5fqYoLMrZ4ijaigCPsG9M/view?usp=sharing',
         category: 'Academic',
         topic: 'Operations Mgmt'
+    },
+    {
+        id: 'pba205-new-1',
+        title: 'Digital Transformation (Rice)',
+        description: 'Comprehensive guide to Digital Transformation.',
+        type: 'PDF',
+        url: 'https://drive.google.com/file/d/1wBasm93LWLw8BtgxdTocVVDjBL6otwmV/view?usp=sharing',
+        category: 'Academic',
+        topic: 'Digital Transformation'
     },
     {
         id: 'pba204-2',
@@ -778,8 +787,8 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         id: 'pba206-1',
         title: 'Labour and Industrial Laws',
         description: 'Textbook by P.K. Padhi.',
-        type: 'Link',
-        url: 'https://www.google.com/search?q=Labour+and+Industrial+Laws+PK+Padhi',
+        type: 'PDF',
+        url: 'https://drive.google.com/file/d/1Cjtby1ADpgdP4oPvz6d3hW-5VazCCtID/view?usp=sharing',
         category: 'Academic',
         topic: 'Business Law'
     },
@@ -996,7 +1005,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         title: 'Digital Transformation: Survive and Thrive',
         description: 'Strategic guide by Rice & Siebel.',
         type: 'PDF',
-        url: '/assets/resources/Digital_Transformation_Rice.pdf',
+        url: 'https://drive.google.com/file/d/1wBasm93LWLw8BtgxdTocVVDjBL6otwmV/view?usp=sharing',
         category: 'Academic',
         topic: 'Digital Transformation'
     },
@@ -1005,7 +1014,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         title: 'Labour and Industrial Laws (3rd Ed)',
         description: 'Textbook by P.K. Padhi.',
         type: 'PDF',
-        url: '/assets/resources/Labour_Laws_Padhi.pdf',
+        url: 'https://drive.google.com/file/d/1Cjtby1ADpgdP4oPvz6d3hW-5VazCCtID/view?usp=sharing',
         category: 'Academic',
         topic: 'Business Law'
     },
@@ -1023,7 +1032,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         title: 'Operations Management',
         description: 'Textbook by Krajewski & Lee.',
         type: 'PDF',
-        url: '/assets/resources/Operations_Management_Krajewski.pdf',
+        url: 'https://drive.google.com/file/d/1pZiZqo64-WB5fqYoLMrZ4ijaigCPsG9M/view?usp=sharing',
         category: 'Academic',
         topic: 'Operations Mgmt'
     },
@@ -1032,7 +1041,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         title: 'Research Methodology',
         description: 'Methods and techniques by C.R. Kothari.',
         type: 'PDF',
-        url: '/assets/resources/Research_Methodology_Kothari.pdf',
+        url: 'https://drive.google.com/file/d/14RZZwFqaw9l-9YiRtO7oJXjZxGexGFuU/view?usp=sharing',
         category: 'Academic',
         topic: 'Business Research'
     },
@@ -1041,7 +1050,7 @@ WHERE Salary < (SELECT MAX(Salary) FROM Employee);
         title: 'Storytelling with Data',
         description: 'Data visualization guide by Cole Nussbaumer Knaflic.',
         type: 'PDF',
-        url: '/assets/resources/Storytelling_with_Data.pdf',
+        url: 'https://drive.google.com/file/d/1hZDE3mvz3zVLLuKcjGGtyBba2agPXNOR/view?usp=sharing',
         category: 'Academic',
         topic: 'Data Visualization'
     }

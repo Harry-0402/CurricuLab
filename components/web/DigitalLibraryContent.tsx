@@ -199,7 +199,7 @@ export function DigitalLibraryContent() {
             {/* Content Modal */}
             {selectedResource && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[32px] w-full max-w-5xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300 ring-1 ring-white/20">
+                    <div className="bg-white rounded-[32px] w-full max-w-5xl h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300 ring-1 ring-white/20">
                         {/* Modal Header */}
                         <div className="p-8 border-b border-gray-100 flex items-start justify-between bg-gray-50/50">
                             <div>
@@ -224,12 +224,13 @@ export function DigitalLibraryContent() {
                         </div>
 
                         {/* Modal Content */}
-                        <div className="flex-1 overflow-y-auto p-8 md:p-12 bg-white scrollbar-thin">
+                        {/* Modal Content */}
+                        <div className={`flex-1 bg-white ${selectedResource.type === 'PDF' ? 'overflow-hidden rounded-b-[32px]' : 'overflow-y-auto p-8 md:p-12 no-scrollbar'}`}>
                             {selectedResource.type === 'PDF' ? (
-                                <div className="w-full" style={{ height: 'calc(90vh - 180px)' }}>
+                                <div className="w-full h-full">
                                     <iframe
                                         src={selectedResource.url}
-                                        className="w-full h-full rounded-xl border border-gray-200 shadow-inner"
+                                        className="w-full h-full border-none"
                                         title={selectedResource.title}
                                     />
                                 </div>
