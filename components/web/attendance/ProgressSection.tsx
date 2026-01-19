@@ -112,32 +112,32 @@ export function ProgressSection({
                             <p className="text-xs text-center text-gray-400 py-4">No reminders yet</p>
                         ) : (
                             reminders.map(reminder => {
-                                const daysUntil = differenceInDays(new Date(reminder.date), new Date());
+                                const daysUntil = differenceInDays(new Date(reminder.reminderDate), new Date());
                                 return (
                                     <div key={reminder.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg group transition-colors">
                                         <button
-                                            onClick={() => onToggleReminder(reminder.id, !reminder.is_completed)}
+                                            onClick={() => onToggleReminder(reminder.id, !reminder.isCompleted)}
                                             className={cn(
                                                 "w-4 h-4 rounded border flex items-center justify-center transition-all",
-                                                reminder.is_completed
+                                                reminder.isCompleted
                                                     ? "bg-green-500 border-green-500 text-white"
                                                     : "border-gray-300 hover:border-blue-500"
                                             )}
                                         >
-                                            {reminder.is_completed && <Icons.Check size={10} />}
+                                            {reminder.isCompleted && <Icons.Check size={10} />}
                                         </button>
                                         <div className="flex-1 min-w-0">
                                             <p className={cn("text-xs font-medium truncate transition-all",
-                                                reminder.is_completed ? "text-gray-400 line-through" : "text-gray-700"
+                                                reminder.isCompleted ? "text-gray-400 line-through" : "text-gray-700"
                                             )}>
                                                 {reminder.title}
                                             </p>
                                             <p className="text-[10px] text-gray-400">
-                                                {format(new Date(reminder.date), 'MMM d')}
+                                                {format(new Date(reminder.reminderDate), 'MMM d')}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            {!reminder.is_completed && (
+                                            {!reminder.isCompleted && (
                                                 <span className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded",
                                                     daysUntil < 0 ? "bg-red-50 text-red-600" :
                                                         daysUntil === 0 ? "bg-yellow-50 text-yellow-600" :
