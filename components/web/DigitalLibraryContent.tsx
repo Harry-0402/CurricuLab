@@ -34,7 +34,7 @@ export function DigitalLibraryContent() {
     });
 
     const handleResourceClick = (resource: Resource) => {
-        if (resource.content || resource.type === 'Article') {
+        if (resource.content || resource.type === 'Article' || resource.type === 'PDF') {
             setSelectedResource(resource);
         } else {
             window.open(resource.url, '_blank', 'noopener,noreferrer');
@@ -225,7 +225,15 @@ export function DigitalLibraryContent() {
 
                         {/* Modal Content */}
                         <div className="flex-1 overflow-y-auto p-8 md:p-12 bg-white scrollbar-thin">
-                            {selectedResource.content ? (
+                            {selectedResource.type === 'PDF' ? (
+                                <div className="w-full" style={{ height: 'calc(90vh - 180px)' }}>
+                                    <iframe
+                                        src={selectedResource.url}
+                                        className="w-full h-full rounded-xl border border-gray-200 shadow-inner"
+                                        title={selectedResource.title}
+                                    />
+                                </div>
+                            ) : selectedResource.content ? (
                                 <div className="prose prose-slate prose-lg max-w-none prose-headings:font-black prose-headings:tracking-tight prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkGfm]}
@@ -258,7 +266,7 @@ export function DigitalLibraryContent() {
                                         className="px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center gap-2"
                                     >
                                         <span>Visit Website</span>
-                                        <Icons.ArrowRight size={18} />
+                                        <Icons.ExternalLink size={18} />
                                     </a>
                                 </div>
                             )}
