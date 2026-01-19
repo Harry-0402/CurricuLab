@@ -5,20 +5,25 @@ import { Button } from '@/components/shared/Button';
 import { Icons } from '@/components/shared/Icons';
 import { AttendanceService, SubjectAttendanceStats, AttendanceLog } from '@/lib/services/attendance-service';
 import { getSubjects } from '@/lib/services/app.service';
-import { Subject } from '@/types';
+import { getTimetable } from '@/lib/services/timetable-service';
+import { Subject, TimetableEntry } from '@/types';
 import { format, subDays, isSameDay, formatDistanceToNow, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 export function AttendanceWidget() {
     const [stats, setStats] = useState<SubjectAttendanceStats[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [missingRecords, setMissingRecords] = useState<{ date: string, subjectId: string, subjectName: string, dayName: string }[]>([]);
 
     // Form State
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [selectedSubject, setSelectedSubject] = useState<string>('');
-    const [status, setStatus] = useState<'Present' | 'Absent' | 'Canceled'>('Present');
+    const [status, setStatus] = useState<'Present' | 'Absent' | 'Canceled'>(() => {
+        const today = new Date();
+        return today.getDay() === 0 ? 'Canceled' : 'Absent';
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Logs Table State
@@ -27,6 +32,9 @@ export function AttendanceWidget() {
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [selectedLogs, setSelectedLogs] = useState<Set<string>>(new Set());
     const [currentMonth, setCurrentMonth] = useState(new Date());
+
+    // KPI Counts
+    const [kpiCounts, setKpiCounts] = useState({ totalSubjects: 0, totalAssignments: 0, totalAnnouncements: 0 });
 
     useEffect(() => {
         loadData();
@@ -37,13 +45,24 @@ export function AttendanceWidget() {
         try {
             const { stats: fetchedStats, subjects: fetchedSubjects, missingRecords: missing } = await AttendanceService.getDashboardData(5);
             const fetchedLogs = await AttendanceService.getAllLogs();
+            const kpiData = await AttendanceService.getKPICounts();
+            const fetchedTimetable = await getTimetable();
 
             setStats(fetchedStats);
             setSubjects(fetchedSubjects);
             setMissingRecords(missing);
             setLogs(fetchedLogs);
-            if (fetchedSubjects.length > 0 && !selectedSubject) {
-                setSelectedSubject(fetchedSubjects[0].id);
+            setKpiCounts(kpiData);
+            setTimetable(fetchedTimetable);
+
+            // Set first subject from filtered list based on today
+            const todayDayName = format(new Date(), 'EEEE');
+            const scheduledToday = fetchedTimetable.filter(t => t.day === todayDayName);
+            const scheduledSubjects = fetchedSubjects.filter(s =>
+                scheduledToday.some(t => t.subjectCode === s.code || t.subjectTitle === s.title)
+            );
+            if (scheduledSubjects.length > 0 && !selectedSubject) {
+                setSelectedSubject(scheduledSubjects[0].id);
             }
         } catch (error) {
             console.error('Failed to load attendance data:', error);
@@ -60,12 +79,35 @@ export function AttendanceWidget() {
         try {
             await AttendanceService.logAttendance(selectedDate, selectedSubject, status);
             await loadData(); // Refresh everything
-            // Reset form slightly
-            setStatus('Present');
+            // Reset to Absent for next entry
+            setStatus('Absent');
         } catch (error: any) {
             alert(`Failed to log attendance: ${error.message}`);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    // Auto-set status based on day of week
+    const handleDateChange = (date: string) => {
+        setSelectedDate(date);
+        const dayOfWeek = new Date(date).getDay();
+        const dayName = format(new Date(date), 'EEEE');
+
+        // Sunday = 0
+        if (dayOfWeek === 0) {
+            setStatus('Canceled');
+        } else {
+            setStatus('Absent');
+        }
+
+        // Auto-select first subject scheduled on this day
+        const scheduledOnDay = timetable.filter(t => t.day === dayName);
+        const scheduledSubjects = subjects.filter(s =>
+            scheduledOnDay.some(t => t.subjectCode === s.code || t.subjectTitle === s.title)
+        );
+        if (scheduledSubjects.length > 0) {
+            setSelectedSubject(scheduledSubjects[0].id);
         }
     };
 
@@ -162,6 +204,13 @@ export function AttendanceWidget() {
         end: endOfMonth(currentMonth)
     });
 
+    // Filtered subjects based on selected date's timetable
+    const dayName = format(new Date(selectedDate), 'EEEE');
+    const scheduledOnSelectedDay = timetable.filter(t => t.day === dayName);
+    const availableSubjects = subjects.filter(s =>
+        scheduledOnSelectedDay.some(t => t.subjectCode === s.code || t.subjectTitle === s.title)
+    );
+
     const overallPercentage = stats.reduce((acc, curr) => acc + (curr.totalClasses > 0 ? (curr.presentClasses / curr.totalClasses) : 0), 0) / (stats.filter(s => s.totalClasses > 0).length || 1) * 100;
     const totalClasses = stats.reduce((acc, curr) => acc + curr.totalClasses, 0);
     const totalPresent = stats.reduce((acc, curr) => acc + curr.presentClasses, 0);
@@ -172,7 +221,7 @@ export function AttendanceWidget() {
     return (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Stats Card */}
+                {/* Left Column - Stats Card */}
                 <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm flex flex-col">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="font-bold text-xl text-gray-900">Attendance Overview</h3>
@@ -228,9 +277,46 @@ export function AttendanceWidget() {
                     </div>
                 </div>
 
-                {/* Actions Card */}
-                <div className="space-y-8">
-                    {/* Manual Log */}
+                {/* Right Column - KPI Cards + Actions */}
+                <div className="space-y-6">
+                    {/* KPI Cards - Side by Side */}
+                    <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-4 rounded-[20px] shadow-lg">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-blue-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Subjects</p>
+                                    <p className="text-white text-3xl font-black">{kpiCounts.totalSubjects}</p>
+                                </div>
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <Icons.BookOpen size={24} className="text-white" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-gradient-to-br from-green-500 to-green-600 p-4 rounded-[20px] shadow-lg">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-green-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Assignments</p>
+                                    <p className="text-white text-3xl font-black">{kpiCounts.totalAssignments}</p>
+                                </div>
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <Icons.FileText size={24} className="text-white" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 rounded-[20px] shadow-lg">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-purple-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Announcements</p>
+                                    <p className="text-white text-3xl font-black">{kpiCounts.totalAnnouncements}</p>
+                                </div>
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <Icons.Bell size={24} className="text-white" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Mark Attendance */}
                     <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
                         <h3 className="font-bold text-xl text-gray-900 mb-6">Mark Attendance</h3>
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -241,7 +327,7 @@ export function AttendanceWidget() {
                                         type="date"
                                         required
                                         value={selectedDate}
-                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                        onChange={(e) => handleDateChange(e.target.value)}
                                         className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-2.5 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm"
                                     />
                                 </div>
@@ -251,11 +337,19 @@ export function AttendanceWidget() {
                                         value={selectedSubject}
                                         onChange={(e) => setSelectedSubject(e.target.value)}
                                         className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-2.5 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm"
+                                        disabled={availableSubjects.length === 0}
                                     >
-                                        {subjects.map(s => (
-                                            <option key={s.id} value={s.id}>{s.title}</option>
-                                        ))}
+                                        {availableSubjects.length === 0 ? (
+                                            <option value="">- No classes scheduled -</option>
+                                        ) : (
+                                            availableSubjects.map(s => (
+                                                <option key={s.id} value={s.id}>{s.title}</option>
+                                            ))
+                                        )}
                                     </select>
+                                    {availableSubjects.length === 0 && (
+                                        <p className="text-xs text-orange-600 mt-1 font-medium">No subjects scheduled on {dayName}</p>
+                                    )}
                                 </div>
                             </div>
 

@@ -230,5 +230,22 @@ export const AttendanceService = {
             .in('id', logIds);
 
         if (error) throw error;
+    },
+
+    async getKPICounts(): Promise<{ totalSubjects: number, totalAssignments: number, totalAnnouncements: number }> {
+        const user = await AuthService.getCurrentUser();
+        if (!user) throw new Error("User not authenticated");
+
+        const [subjectsData, assignmentsData, announcementsData] = await Promise.all([
+            supabase.from('subjects').select('id', { count: 'exact', head: true }),
+            supabase.from('assignments').select('id', { count: 'exact', head: true }),
+            supabase.from('announcements').select('id', { count: 'exact', head: true })
+        ]);
+
+        return {
+            totalSubjects: subjectsData.count || 0,
+            totalAssignments: assignmentsData.count || 0,
+            totalAnnouncements: announcementsData.count || 0
+        };
     }
 };
