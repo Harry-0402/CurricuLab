@@ -280,37 +280,37 @@ export function AttendanceWidget() {
                 {/* Right Column - KPI Cards + Actions */}
                 <div className="space-y-6">
                     {/* KPI Cards - Side by Side */}
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-4 rounded-[20px] shadow-lg">
+                    <div className="flex gap-3">
+                        <div className="bg-blue-50 p-4 rounded-[20px] border border-blue-100 shadow-sm">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-blue-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Subjects</p>
-                                    <p className="text-white text-3xl font-black">{kpiCounts.totalSubjects}</p>
+                                    <p className="text-blue-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Subjects</p>
+                                    <p className="text-blue-900 text-3xl font-black">{kpiCounts.totalSubjects}</p>
                                 </div>
-                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                    <Icons.BookOpen size={24} className="text-white" />
+                                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <Icons.BookOpen size={24} className="text-blue-600" />
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-br from-green-500 to-green-600 p-4 rounded-[20px] shadow-lg">
+                        <div className="bg-green-50 p-4 rounded-[20px] border border-green-100 shadow-sm">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-green-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Assignments</p>
-                                    <p className="text-white text-3xl font-black">{kpiCounts.totalAssignments}</p>
+                                    <p className="text-green-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Assignments</p>
+                                    <p className="text-green-900 text-3xl font-black">{kpiCounts.totalAssignments}</p>
                                 </div>
-                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                    <Icons.FileText size={24} className="text-white" />
+                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <Icons.FileText size={24} className="text-green-600" />
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 rounded-[20px] shadow-lg">
+                        <div className="bg-purple-50 p-4 rounded-[20px] border border-purple-100 shadow-sm">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-purple-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Announcements</p>
-                                    <p className="text-white text-3xl font-black">{kpiCounts.totalAnnouncements}</p>
+                                    <p className="text-purple-600 text-[10px] font-bold uppercase tracking-widest mb-1">Total Announcements</p>
+                                    <p className="text-purple-900 text-3xl font-black">{kpiCounts.totalAnnouncements}</p>
                                 </div>
-                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                    <Icons.Bell size={24} className="text-white" />
+                                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                    <Icons.Bell size={24} className="text-purple-600" />
                                 </div>
                             </div>
                         </div>
