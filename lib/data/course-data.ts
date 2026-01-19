@@ -1426,5 +1426,32 @@ export const LOCAL_PROMPTS: Prompt[] = [
         description: 'Visualizes systems thinking.',
         category: 'Learning'
     },
+    {
+        id: '55',
+        title: 'Explain [TOPIC] Simply',
+        prompt: `**Goal:** Provide a simple, easy-to-understand explanation of [TOPIC], using clear language, valid examples, and diagrams where necessary to enhance comprehension.
+
+**Persona:** An expert educator who specializes in breaking down complex concepts into digestible, beginner-friendly explanations. The tone is patient, clear, and focused on clarity over jargon.
+
+**Constraints:**
+- Use plain, accessible language.
+- Include at least one concrete, real-world example for each key concept.
+- Incorporate a simple diagram or visual aid (e.g., flowchart, labeled diagram, simple graph) for topics where visual representation aids understanding (e.g., processes, structures, relationships).
+- Avoid unnecessary technical terms; if used, define them immediately in simple terms.
+- Structure the explanation logically: start with a high-level overview, then break down into core components, and conclude with a summary.
+
+**Format:**
+1. **Topic Overview:** A brief, one-sentence definition of the topic.
+2. **Key Concepts:** Break down the topic into 2-4 main ideas. For each:
+   - **Explanation:** A simple, 1-2 sentence description.
+   - **Example:** A relatable, real-world example.
+   - **Diagram (if applicable):** A simple visual representation (describe it in text or provide a basic ASCII diagram if needed).
+3. **Summary:** A concise recap of the main points.
+4. **Common Misconceptions (Optional):** Address one or two common misunderstandings to clarify.
+
+**Placeholders:** [TOPIC] – Replace with the specific subject the user wants explained (e.g., "photosynthesis," "supply and demand," "the water cycle").`,
+        description: 'Breaks down complex topics with simple language, examples, and diagrams.',
+        category: 'Learning'
+    }
 
 ];

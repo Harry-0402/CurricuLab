@@ -45,5 +45,14 @@ export const GPT_RESOURCES: Resource[] = [
         url: 'https://chatgpt.com/g/g-6962605ee32481918f2c0ee70c521b90-notesmith',
         category: 'Gems GPTs',
         topic: 'AI Tools'
+    },
+    {
+        id: 'gpt-6',
+        title: 'HumanForge',
+        description: 'AI-powered human resource and team building assistant.',
+        type: 'Link',
+        url: 'https://chatgpt.com/g/g-696e0b31d42081918957b4e6855c006b-humanforge',
+        category: 'Gems GPTs',
+        topic: 'AI Tools'
     }
 ];
