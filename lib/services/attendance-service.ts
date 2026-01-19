@@ -189,5 +189,46 @@ export const AttendanceService = {
         }
 
         return { stats, subjects, missingRecords };
+    },
+
+    async getAllLogs(): Promise<AttendanceLog[]> {
+        const user = await AuthService.getCurrentUser();
+        if (!user) throw new Error("User not authenticated");
+
+        const { data, error } = await supabase
+            .from('attendance_logs')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('date', { ascending: false });
+
+        if (error) throw error;
+
+        return (data || []).map(log => ({
+            id: log.id,
+            userId: log.user_id,
+            subjectId: log.subject_id,
+            subjectName: log.subject_name,
+            date: log.date,
+            status: log.status,
+            createdAt: log.created_at
+        }));
+    },
+
+    async deleteLog(logId: string): Promise<void> {
+        const { error } = await supabase
+            .from('attendance_logs')
+            .delete()
+            .eq('id', logId);
+
+        if (error) throw error;
+    },
+
+    async bulkDeleteLogs(logIds: string[]): Promise<void> {
+        const { error } = await supabase
+            .from('attendance_logs')
+            .delete()
+            .in('id', logIds);
+
+        if (error) throw error;
     }
 };
