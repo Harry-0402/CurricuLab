@@ -22,12 +22,15 @@ export function ProgressSection({
     const [progressTab, setProgressTab] = useState<'streak' | 'reminders'>('streak');
     const [newReminderTitle, setNewReminderTitle] = useState('');
     const [newReminderDate, setNewReminderDate] = useState('');
+    const [newReminderTime, setNewReminderTime] = useState('');
 
     const handleAdd = () => {
         if (!newReminderTitle || !newReminderDate) return;
-        onAddReminder(newReminderTitle, newReminderDate);
+        const dateTime = newReminderTime ? `${newReminderDate}T${newReminderTime}` : newReminderDate;
+        onAddReminder(newReminderTitle, dateTime);
         setNewReminderTitle('');
         setNewReminderDate('');
+        setNewReminderTime('');
     };
 
     return (
@@ -98,6 +101,12 @@ export function ProgressSection({
                             onChange={(e) => setNewReminderDate(e.target.value)}
                             className="flex-1 bg-gray-50 border-gray-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         />
+                        <input
+                            type="time"
+                            value={newReminderTime}
+                            onChange={(e) => setNewReminderTime(e.target.value)}
+                            className="w-24 bg-gray-50 border-gray-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        />
                         <button
                             onClick={handleAdd}
                             disabled={!newReminderTitle || !newReminderDate}
@@ -107,12 +116,20 @@ export function ProgressSection({
                         </button>
                     </div>
 
-                    <div className="max-h-[150px] overflow-y-auto space-y-2 pt-2">
+                    <div className="max-h-[140px] overflow-y-auto space-y-2 pt-2 pr-1 custom-scrollbar">
                         {reminders.length === 0 ? (
                             <p className="text-xs text-center text-gray-400 py-4">No reminders yet</p>
                         ) : (
                             reminders.map(reminder => {
                                 const daysUntil = differenceInDays(new Date(reminder.reminderDate), new Date());
+                                // Try to format time if it exists
+                                let timeDisplay = '';
+                                try {
+                                    if (reminder.reminderDate.includes('T') || reminder.reminderDate.includes(' ')) {
+                                        timeDisplay = format(new Date(reminder.reminderDate), 'h:mm a');
+                                    }
+                                } catch (e) { }
+
                                 return (
                                     <div key={reminder.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg group transition-colors">
                                         <button
@@ -132,9 +149,15 @@ export function ProgressSection({
                                             )}>
                                                 {reminder.title}
                                             </p>
-                                            <p className="text-[10px] text-gray-400">
-                                                {format(new Date(reminder.reminderDate), 'MMM d')}
-                                            </p>
+                                            <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
+                                                <span>{format(new Date(reminder.reminderDate), 'MMM d')}</span>
+                                                {timeDisplay && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span>{timeDisplay}</span>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             {!reminder.isCompleted && (

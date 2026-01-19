@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS reminders (
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     description TEXT,
-    reminder_date DATE NOT NULL,
+    reminder_date TIMESTAMP NOT NULL,
     is_completed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
