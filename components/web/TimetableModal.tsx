@@ -21,8 +21,8 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
 
     const [formData, setFormData] = useState<Partial<TimetableEntry>>({
         day: initialDay || 'Monday',
-        startTime: initialTime || '09:00 AM',
-        endTime: '10:00 AM',
+        startTime: initialTime || '10:15 AM',
+        endTime: '11:00 AM',
         subjectTitle: '',
         subjectCode: '',
         location: '',
@@ -36,8 +36,8 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
         } else {
             setFormData({
                 day: initialDay || 'Monday',
-                startTime: initialTime || '09:00 AM',
-                endTime: '10:00 AM',
+                startTime: initialTime || '10:15 AM',
+                endTime: '11:00 AM',
                 subjectTitle: '',
                 subjectCode: '',
                 location: '',
@@ -88,6 +88,7 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                             <Label htmlFor="day">Day of Week</Label>
                             <select
                                 id="day"
+                                aria-label="Select day of week"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer"
                                 value={formData.day}
                                 onChange={(e) => setFormData({ ...formData, day: e.target.value })}
@@ -101,11 +102,12 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                             <Label htmlFor="time">Start Time</Label>
                             <select
                                 id="time"
+                                aria-label="Select start time"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer"
                                 value={formData.startTime}
                                 onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                             >
-                                {["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM"].map(t => (
+                                    {["10:15 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"].map(t => (
                                     <option key={t} value={t}>{t}</option>
                                 ))}
                             </select>

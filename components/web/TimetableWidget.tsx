@@ -12,7 +12,7 @@ interface TimetableWidgetProps {
 }
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const TIME_SLOTS = ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM"];
+const TIME_SLOTS = ["10:15 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"];
 
 export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,8 +59,8 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                     <div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight">Academic Roadmap</h2>
                         <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded-md uppercase tracking-wider">Semester V</span>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Year 2023-24</span>
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded-md uppercase tracking-wider">Semester II</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">AY 2025-26</span>
                         </div>
                     </div>
                 </div>
@@ -74,6 +74,7 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                     </button>
                     <button
                         onClick={() => setIsSettingsOpen(true)}
+                        aria-label="Open widget settings"
                         className="p-3 text-gray-400 hover:text-gray-900 hover:bg-white border border-transparent hover:border-gray-100 rounded-2xl transition-all shadow-none hover:shadow-sm"
                     >
                         <Icons.Settings size={22} />
@@ -140,8 +141,9 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                                                             </div>
                                                             <div className="w-full h-0.5 md:h-1 bg-white/20 rounded-full overflow-hidden">
                                                                 <div
-                                                                    className="h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                                                                    style={{ width: `${entry.progress}%` }}
+                                                                    className="h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-500"
+                                                                    data-progress={entry.progress}
+                                                                    style={{ width: `${Math.min(100, Math.max(0, entry.progress))}%` }}
                                                                 />
                                                             </div>
                                                         </div>
