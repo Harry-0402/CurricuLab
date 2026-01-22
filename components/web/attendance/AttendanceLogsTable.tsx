@@ -112,7 +112,7 @@ export function AttendanceLogsTable({
                         onClick={() => onMonthChange(new Date())}
                         className="px-2 py-1 text-xs font-bold hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                        Today
+                        Month
                     </button>
                     <button
                         onClick={() => onMonthChange(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
