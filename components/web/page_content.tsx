@@ -9,9 +9,10 @@ import { useAppStore } from '@/lib/store/useAppStore';
 import { AnnouncementWidget } from './AnnouncementWidget';
 import { cn } from '@/lib/utils';
 import { getAnnouncements } from '@/lib/services/announcement-service';
+import { getTimetable } from '@/lib/services/timetable-service';
 
 export default function WebHomePage() {
-    const { timetable, announcements, setAnnouncements } = useAppStore();
+    const { timetable, announcements, setAnnouncements, setTimetable } = useAppStore();
 
     useEffect(() => {
         const fetchAnnouncements = async () => {
@@ -24,6 +25,20 @@ export default function WebHomePage() {
         };
         fetchAnnouncements();
     }, [setAnnouncements]);
+
+    useEffect(() => {
+        const fetchTimetable = async () => {
+            try {
+                const entries = await getTimetable();
+                if (entries && entries.length) {
+                    setTimetable(entries);
+                }
+            } catch (error) {
+                console.error('Failed to fetch timetable:', error);
+            }
+        };
+        fetchTimetable();
+    }, [setTimetable]);
 
     return (
         <WebAppShell>

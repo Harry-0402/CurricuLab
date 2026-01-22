@@ -57,6 +57,9 @@ interface AppState {
     markUnitComplete: (unitId: string, completed: boolean) => void;
     addToRecent: (id: string) => void;
 
+    // Timetable hydrate/replace
+    setTimetable: (entries: TimetableEntry[]) => void;
+
     // Timetable Actions
     addTimetableEntry: (entry: TimetableEntry) => void;
     updateTimetableEntry: (entry: TimetableEntry) => void;
@@ -103,6 +106,8 @@ export const useAppStore = create<AppState>()(
             addToRecent: (id) => set((state) => ({
                 recentlyOpened: [id, ...state.recentlyOpened.filter((item) => item !== id)].slice(0, 10)
             })),
+
+            setTimetable: (entries) => set({ timetable: entries }),
 
             addTimetableEntry: (entry) => set((state) => ({
                 timetable: [...state.timetable, entry]
