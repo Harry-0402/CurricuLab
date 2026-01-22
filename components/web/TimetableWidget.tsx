@@ -14,6 +14,36 @@ interface TimetableWidgetProps {
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const TIME_SLOTS = ["10:15 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"];
 
+const PROGRESS_WIDTH_CLASSES: Record<number, string> = {
+    0: "w-[0%]",
+    5: "w-[5%]",
+    10: "w-[10%]",
+    15: "w-[15%]",
+    20: "w-[20%]",
+    25: "w-[25%]",
+    30: "w-[30%]",
+    35: "w-[35%]",
+    40: "w-[40%]",
+    45: "w-[45%]",
+    50: "w-[50%]",
+    55: "w-[55%]",
+    60: "w-[60%]",
+    65: "w-[65%]",
+    70: "w-[70%]",
+    75: "w-[75%]",
+    80: "w-[80%]",
+    85: "w-[85%]",
+    90: "w-[90%]",
+    95: "w-[95%]",
+    100: "w-[100%]",
+};
+
+const getProgressWidthClass = (progress: number) => {
+    const clamped = Math.min(100, Math.max(0, progress));
+    const nearestStep = Math.round(clamped / 5) * 5;
+    return PROGRESS_WIDTH_CLASSES[nearestStep as keyof typeof PROGRESS_WIDTH_CLASSES] || "w-[0%]";
+};
+
 export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEntry, setSelectedEntry] = useState<TimetableEntry | undefined>(undefined);
@@ -141,9 +171,11 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                                                             </div>
                                                             <div className="w-full h-0.5 md:h-1 bg-white/20 rounded-full overflow-hidden">
                                                                 <div
-                                                                    className="h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-500"
+                                                                    className={cn(
+                                                                        "h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-500",
+                                                                        getProgressWidthClass(entry.progress)
+                                                                    )}
                                                                     data-progress={entry.progress}
-                                                                    style={{ width: `${Math.min(100, Math.max(0, entry.progress))}%` }}
                                                                 />
                                                             </div>
                                                         </div>
