@@ -203,15 +203,15 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                     <div className="flex flex-wrap items-center gap-6">
                         <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 rounded-2xl border border-indigo-100">
                             <div className="w-3 h-3 rounded-full bg-indigo-600 shadow-[0_0_8px_rgba(79,70,229,0.4)]"></div>
-                            <span className="text-[10px] font-black text-indigo-700 uppercase tracking-widest">Algorithms</span>
+                            <span className="text-[10px] font-black text-indigo-700 uppercase tracking-widest">PBA204</span>
                         </div>
                         <div className="flex items-center gap-3 px-4 py-2 bg-emerald-50 rounded-2xl border border-emerald-100">
                             <div className="w-3 h-3 rounded-full bg-emerald-600 shadow-[0_0_8px_rgba(5,150,105,0.4)]"></div>
-                            <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Database</span>
+                            <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">PBA211</span>
                         </div>
                         <div className="flex items-center gap-3 px-4 py-2 bg-rose-50 rounded-2xl border border-rose-100">
                             <div className="w-3 h-3 rounded-full bg-rose-600 shadow-[0_0_8px_rgba(225,29,72,0.4)]"></div>
-                            <span className="text-[10px] font-black text-rose-700 uppercase tracking-widest">Mathematics</span>
+                            <span className="text-[10px] font-black text-rose-700 uppercase tracking-widest">PBA206</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
