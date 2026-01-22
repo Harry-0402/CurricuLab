@@ -264,9 +264,9 @@ export const AttendanceService = {
         const stats = await this.getAttendanceStats();
 
         return stats
-            .filter(s => s.percentage < 75)
+            .filter(s => s.percentage < 80)
             .map(s => {
-                const target = 75;
+                const target = 80;
                 const classesNeeded = Math.ceil((target * s.totalClasses - 100 * s.presentClasses) / (100 - target));
                 return {
                     subject: s.subjectName,

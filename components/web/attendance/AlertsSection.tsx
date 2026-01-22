@@ -78,7 +78,7 @@ export function AlertsSection({ upcomingDeadlines, attendanceAlerts }: AlertsSec
                         {attendanceAlerts.length === 0 ? (
                             <div className="text-center py-4">
                                 <p className="text-2xl mb-1">🎯</p>
-                                <p className="text-xs text-gray-600 font-medium">All subjects above 75%!</p>
+                                <p className="text-xs text-gray-600 font-medium">All subjects above 80%!</p>
                             </div>
                         ) : (
                             attendanceAlerts.map((alert, idx) => (
@@ -90,7 +90,7 @@ export function AlertsSection({ upcomingDeadlines, attendanceAlerts }: AlertsSec
                                         </span>
                                     </div>
                                     <p className="text-[10px] text-red-600 font-medium">
-                                        Need {alert.classesNeeded} more {alert.classesNeeded === 1 ? 'class' : 'classes'} to reach 75%
+                                        Need {alert.classesNeeded} more {alert.classesNeeded === 1 ? 'class' : 'classes'} to reach 80%
                                     </p>
                                 </div>
                             ))
