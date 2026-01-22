@@ -97,7 +97,7 @@ export function AttendanceLogsTable({
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h3 className="font-bold text-lg text-gray-900">Attendance Logs</h3>
-                    <p className="text-xs text-gray-400 mt-1">Showing {filteredLogs.length} record(s) for {format(currentMonth, 'MMMM yyyy')}</p>
+                    <p className="text-xs text-gray-400 mt-1">Showing {filteredLogs.length} record(s) for {format(currentMonth, 'MMM yyyy')}</p>
                 </div>
 
                 <div className="flex items-center gap-2">
