@@ -412,6 +412,7 @@ export const getVaultResources = async (filters: { subjectId?: string; unitId?: 
     let query = supabase.from('vault_resources').select('*');
 
     if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
+    if (filters.unitId) query = query.eq('unit_id', filters.unitId);
     if (filters.type) query = query.eq('type', filters.type);
 
     const { data, error } = await query.order('created_at', { ascending: false });
