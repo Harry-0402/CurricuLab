@@ -30,7 +30,7 @@
 ### Backend Services
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth with multi-method support (email/password, OAuth, OTP)
-- **Email**: SendGrid, Resend, Nodemailer
+- **Email**: Resend, Nodemailer
 - **AI Services**: Groq SDK, Google Generative AI, OpenRouter API
 
 ### Additional Libraries
@@ -465,7 +465,7 @@ Response: { status: 'ok' }
 ```
 
 ### `/api/notifications` - Notification Service
-- Sends email notifications via SendGrid/Resend/Nodemailer
+- Sends email notifications via Resend/Nodemailer
 
 ---
 
@@ -531,7 +531,7 @@ Response: { status: 'ok' }
 - Support for batch notifications
 
 ### Providers
-1. **SendGrid** - Primary email service
+1. **Resend** - Email service (optional)
 2. **Resend** - Backup/alternative
 3. **Nodemailer** - Node.js SMTP
 
@@ -639,7 +639,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_anon_key>
 GROQ_API_KEY=<groq_key>
 OPENROUTER_API_KEY=<openrouter_key>
 GOOGLE_AI_API_KEY=<google_ai_key>
-SENDGRID_API_KEY=<sendgrid_key>
+# SENDGRID_API_KEY removed (functionality disabled)
 ```
 
 ---
@@ -750,7 +750,7 @@ A: In Supabase database (tables: notes, questions, vault_resources) with local f
 A: [SessionManager.tsx](components/SessionManager.tsx) tracks activity and logs out after 15 minutes of inactivity with a 2-minute warning.
 
 ### Q: How do I add email notifications?
-A: Use the notification service in [app/api/notifications](app/api/notifications) with SendGrid/Resend/Nodemailer configuration.
+A: Email notifications have been disabled. SendGrid functionality has been removed.
 
 ---
 
