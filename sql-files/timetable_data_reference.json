@@ -1,0 +1,372 @@
+{
+    "metadata": {
+        "institution": "Sandip University",
+        "school": "School of Commerce & Management Studies",
+        "program": "MBA (BA) - II",
+        "academic_year": "2025-2026",
+        "semester": "Semester II",
+        "effective_from": "12/01/2026"
+    },
+    "subjects": [
+        {
+            "id": "pba204",
+            "code": "PBA204",
+            "title": "Production and Operations Management",
+            "icon": "🏭",
+            "color": "#3B82F6",
+            "faculty": "Dr. Shailendra Baraniya",
+            "credits": {
+                "L": 3,
+                "T": 1,
+                "P": 0
+            }
+        },
+        {
+            "id": "pba205",
+            "code": "PBA205",
+            "title": "Digital Transformation",
+            "icon": "💻",
+            "color": "#8B5CF6",
+            "faculty": "Mr. Aniket Alvekar",
+            "credits": {
+                "L": 3,
+                "T": 1,
+                "P": 0
+            }
+        },
+        {
+            "id": "pba206",
+            "code": "PBA206",
+            "title": "Legal Aspects of Business",
+            "icon": "⚖️",
+            "color": "#EF4444",
+            "faculty": "Adv. Vishal Jadhav",
+            "credits": {
+                "L": 4,
+                "T": 0,
+                "P": 0
+            }
+        },
+        {
+            "id": "pba207",
+            "code": "PBA207",
+            "title": "Data Visualization and Story Telling",
+            "icon": "📊",
+            "color": "#10B981",
+            "faculty": "Dr. Samadhan Bundhe",
+            "credits": {
+                "L": 3,
+                "T": 0,
+                "P": 1
+            }
+        },
+        {
+            "id": "pba208",
+            "code": "PBA208",
+            "title": "Business Research Methods",
+            "icon": "🔬",
+            "color": "#F59E0B",
+            "faculty": "Dr. Zahir Shaikh",
+            "credits": {
+                "L": 3,
+                "T": 1,
+                "P": 0
+            }
+        },
+        {
+            "id": "pba211",
+            "code": "PBA211",
+            "title": "Data Analysis using Python",
+            "icon": "🐍",
+            "color": "#06B6D4",
+            "faculty": "Mr. Aniket Alvekar",
+            "credits": {
+                "L": 1,
+                "T": 0,
+                "P": 3
+            }
+        },
+        {
+            "id": "pba212",
+            "code": "PBA212",
+            "title": "Data Analysis using Power BI",
+            "icon": "📈",
+            "color": "#EC4899",
+            "faculty": "Dr. Samadhan Bundhe",
+            "credits": {
+                "L": 0,
+                "T": 0,
+                "P": 4
+            }
+        },
+        {
+            "id": "pba213",
+            "code": "PBA213",
+            "title": "Business Communication Skills - II",
+            "icon": "💬",
+            "color": "#6366F1",
+            "faculty": "Mrs. Prachi Muskar",
+            "credits": {
+                "L": 0,
+                "T": 0,
+                "P": 2
+            }
+        }
+    ],
+    "weekly_schedule": {
+        "Monday": [
+            {
+                "time": "10:15-11:00",
+                "code": "PBA206",
+                "subject": "Legal Aspects of Business",
+                "faculty": "Adv. Vishal Jadhav",
+                "type": "L"
+            },
+            {
+                "time": "11:00-12:00",
+                "code": "PBA205",
+                "subject": "Digital Transformation",
+                "faculty": "Mr. Aniket Alvekar",
+                "type": "L"
+            },
+            {
+                "time": "12:00-01:00",
+                "code": "PBA204",
+                "subject": "Production and Operations Management",
+                "faculty": "Dr. Shailendra Baraniya",
+                "type": "L"
+            },
+            {
+                "time": "02:00-03:00",
+                "code": "PBA207",
+                "subject": "Data Visualization and Story Telling",
+                "faculty": "Dr. Samadhan Bundhe",
+                "type": "L"
+            },
+            {
+                "time": "03:00-04:00",
+                "code": "PBA208",
+                "subject": "Business Research Methods",
+                "faculty": "Dr. Zahir Shaikh",
+                "type": "L"
+            },
+            {
+                "time": "04:00-05:00",
+                "code": "PBA212",
+                "subject": "Data Analysis using Power BI",
+                "faculty": "Dr. Samadhan Bundhe",
+                "type": "P"
+            }
+        ],
+        "Tuesday": [
+            {
+                "time": "10:15-11:00",
+                "code": "PBA206",
+                "subject": "Legal Aspects of Business",
+                "faculty": "Adv. Vishal Jadhav",
+                "type": "L"
+            },
+            {
+                "time": "11:00-12:00",
+                "code": "PBA208",
+                "subject": "Business Research Methods",
+                "faculty": "Dr. Zahir Shaikh",
+                "type": "L"
+            },
+            {
+                "time": "12:00-01:00",
+                "code": "PBA204",
+                "subject": "Production and Operations Management",
+                "faculty": "Dr. Shailendra Baraniya",
+                "type": "T"
+            },
+            {
+                "time": "02:00-03:00",
+                "code": "PBA211",
+                "subject": "Data Analysis using Python",
+                "faculty": "Mr. Aniket Alvekar",
+                "type": "P"
+            },
+            {
+                "time": "03:00-04:00",
+                "code": "PBA212",
+                "subject": "Data Analysis using Power BI",
+                "faculty": "Dr. Samadhan Bundhe",
+                "type": "P"
+            },
+            {
+                "time": "04:00-05:00",
+                "code": "PBA205",
+                "subject": "Digital Transformation",
+                "faculty": "Mr. Aniket Alvekar",
+                "type": "L"
+            }
+        ],
+        "Wednesday": [
+            {
+                "time": "10:15-11:00",
+                "code": "PBA206",
+                "subject": "Legal Aspects of Business",
+                "faculty": "Adv. Vishal Jadhav",
+                "type": "L"
+            },
+            {
+                "time": "11:00-12:00",
+                "code": "PBA208",
+                "subject": "Business Research Methods",
+                "faculty": "Dr. Zahir Shaikh",
+                "type": "L"
+            },
+            {
+                "time": "12:00-01:00",
+                "code": "PBA207",
+                "subject": "Data Visualization and Story Telling",
+                "faculty": "Dr. Samadhan Bundhe",
+                "type": "L"
+            },
+            {
+                "time": "02:00-03:00",
+                "code": "PBA211",
+                "subject": "Data Analysis using Python",
+                "faculty": "Mr. Aniket Alvekar",
+                "type": "P"
+            },
+            {
+                "time": "03:00-04:00",
+                "code": "PBA212",
+                "subject": "Data Analysis using Power BI",
+                "faculty": "Dr. Samadhan Bundhe",
+                "type": "P"
+            },
+            {
+                "time": "04:00-05:00",
+                "code": "PBA205",
+                "subject": "Digital Transformation",
+                "faculty": "Mr. Aniket Alvekar",
+                "type": "T"
+            }
+        ],
+        "Thursday": [
+            {
+                "time": "10:15-11:00",
+                "code": "PBA206",
+                "subject": "Legal Aspects of Business",
+                "faculty": "Adv. Vishal Jadhav",
+                "type": "L"
+            },
+            {
+                "time": "11:00-12:00",
+                "code": "PBA211",
+                "subject": "Data Analysis using Python",
+                "faculty": "Mr. Aniket Alvekar",
+                "type": "P"
+            },
+            {
+                "time": "12:00-01:00",
+                "code": "PBA207",
+                "subject": "Data Visualization and Story Telling",
+                "faculty": "Dr. Samadhan Bundhe",
+                "type": "L"
+            },
+            {
+                "time": "02:00-03:00",
+                "code": "PBA204",
+                "subject": "Production and Operations Management",
+                "faculty": "Dr. Shailendra Baraniya",
+                "type": "L"
+            },
+            {
+                "time": "03:00-04:00",
+                "code": "PBA208",
+                "subject": "Business Research Methods",
+                "faculty": "Dr. Zahir Shaikh",
+                "type": "L"
+            },
+            {
+                "time": "04:00-05:00",
+                "code": "PBA212",
+                "subject": "Data Analysis using Power BI",
+                "faculty": "Dr. Samadhan Bundhe",
+                "type": "P"
+            }
+        ],
+        "Friday": [
+            {
+                "time": "10:15-11:00",
+                "code": "PBA204",
+                "subject": "Production and Operations Management",
+                "faculty": "Dr. Shailendra Baraniya",
+                "type": "L"
+            },
+            {
+                "time": "11:00-12:00",
+                "code": "PBA205",
+                "subject": "Digital Transformation",
+                "faculty": "Mr. Aniket Alvekar",
+                "type": "L"
+            },
+            {
+                "time": "12:00-01:00",
+                "code": "PBA207",
+                "subject": "Data Visualization and Story Telling",
+                "faculty": "Dr. Samadhan Bundhe",
+                "type": "P"
+            },
+            {
+                "time": "02:00-03:00",
+                "code": "PBA211",
+                "subject": "Data Analysis using Python",
+                "faculty": "Mr. Aniket Alvekar",
+                "type": "P"
+            },
+            {
+                "time": "03:00-04:00",
+                "code": "PBA213",
+                "subject": "Business Communication Skills-II",
+                "faculty": "Mrs. Prachi Muskar",
+                "type": "P"
+            },
+            {
+                "time": "04:00-05:00",
+                "code": "PBA213",
+                "subject": "Business Communication Skills-II",
+                "faculty": "Mrs. Prachi Muskar",
+                "type": "P"
+            }
+        ],
+        "Saturday": [
+            {
+                "time": "10:15-11:00",
+                "code": "VAP",
+                "subject": "VAP",
+                "faculty": "TBD",
+                "type": "O"
+            },
+            {
+                "time": "11:00-12:00",
+                "code": "VAP",
+                "subject": "VAP",
+                "faculty": "TBD",
+                "type": "O"
+            }
+        ]
+    },
+    "statistics": {
+        "total_subjects": 8,
+        "total_weekly_sessions": 38,
+        "sessions_by_day": {
+            "Monday": 6,
+            "Tuesday": 6,
+            "Wednesday": 6,
+            "Thursday": 6,
+            "Friday": 6,
+            "Saturday": 2
+        },
+        "sessions_by_type": {
+            "Lecture": 22,
+            "Tutorial": 3,
+            "Practical": 11,
+            "Other": 2
+        }
+    }
+}
