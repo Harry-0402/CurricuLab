@@ -7,6 +7,7 @@ import { Label } from '@/components/shared/Label';
 import { TimetableEntry } from '@/types';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { Icons } from '@/components/shared/Icons';
+import * as TimetableService from '@/lib/services/timetable-service';
 
 interface TimetableModalProps {
     isOpen: boolean;
@@ -18,6 +19,8 @@ interface TimetableModalProps {
 
 export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime }: TimetableModalProps) {
     const { addTimetableEntry, updateTimetableEntry, deleteTimetableEntry } = useAppStore();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const [formData, setFormData] = useState<Partial<TimetableEntry>>({
         day: initialDay || 'Monday',
@@ -45,27 +48,53 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                 progress: 0
             });
         }
+        setError(null);
     }, [entry, initialDay, initialTime, isOpen]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
+        setError(null);
+
         const finalEntry = {
             ...formData,
             id: entry?.id || Math.random().toString(36).substr(2, 9),
         } as TimetableEntry;
 
-        if (entry) {
-            updateTimetableEntry(finalEntry);
-        } else {
-            addTimetableEntry(finalEntry);
+        try {
+            if (entry) {
+                // Update existing entry
+                await TimetableService.updateTimetableEntry(finalEntry);
+                updateTimetableEntry(finalEntry);
+            } else {
+                // Add new entry
+                await TimetableService.addTimetableEntry(finalEntry);
+                addTimetableEntry(finalEntry);
+            }
+            onClose();
+        } catch (err) {
+            console.error('Error saving timetable entry:', err);
+            setError(err instanceof Error ? err.message : 'Failed to save entry');
+        } finally {
+            setIsLoading(false);
         }
-        onClose();
     };
 
-    const handleDelete = () => {
-        if (entry) {
+    const handleDelete = async () => {
+        if (!entry) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            await TimetableService.deleteTimetableEntry(entry.id);
             deleteTimetableEntry(entry.id);
             onClose();
+        } catch (err) {
+            console.error('Error deleting timetable entry:', err);
+            setError(err instanceof Error ? err.message : 'Failed to delete entry');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -81,6 +110,13 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                         {entry ? 'Update the details of this existing session.' : 'Add a new subject session to your academic roadmap.'}
                     </DialogDescription>
                 </DialogHeader>
+
+                {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-2">
+                        <Icons.X size={16} className="text-red-600 mt-0.5 flex-shrink-0" />
+                        <p className="text-sm text-red-800 font-medium">{error}</p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6 mt-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -107,7 +143,7 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                                 value={formData.startTime}
                                 onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                             >
-                                    {["10:15 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"].map(t => (
+                                {["10:15 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"].map(t => (
                                     <option key={t} value={t}>{t}</option>
                                 ))}
                             </select>

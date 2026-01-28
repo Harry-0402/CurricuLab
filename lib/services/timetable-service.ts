@@ -20,6 +20,32 @@ export const getTimetable = async (): Promise<TimetableEntry[]> => {
     return data.map(mapTimetable);
 };
 
+export const addTimetableEntry = async (entry: TimetableEntry): Promise<TimetableEntry> => {
+    const payload = {
+        id: entry.id,
+        day: entry.day,
+        subject_title: entry.subjectTitle,
+        subject_code: entry.subjectCode,
+        location: entry.location,
+        start_time: entry.startTime,
+        end_time: entry.endTime,
+        teacher: entry.teacher,
+        progress: entry.progress
+    };
+    const { data, error } = await supabase.from('timetable').insert(payload).select().single();
+    if (error) throw error;
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Timetable',
+        entity_id: entry.id,
+        action: 'CREATE',
+        changes: { subjectCode: entry.subjectCode, day: entry.day }
+    });
+
+    return mapTimetable(data);
+};
+
 export const updateTimetableEntry = async (entry: TimetableEntry): Promise<TimetableEntry> => {
     const payload = {
         day: entry.day,
@@ -43,4 +69,17 @@ export const updateTimetableEntry = async (entry: TimetableEntry): Promise<Timet
     });
 
     return mapTimetable(data);
+};
+
+export const deleteTimetableEntry = async (id: string): Promise<void> => {
+    const { error } = await supabase.from('timetable').delete().eq('id', id);
+    if (error) throw error;
+
+    // Log Change
+    await ChangelogService.logChange({
+        entity_type: 'Timetable',
+        entity_id: id,
+        action: 'DELETE',
+        changes: {}
+    });
 };
