@@ -97,14 +97,15 @@ export function InterviewLineup() {
                                                 </div>
                                             )}
 
-                                            <div className="flex justify-end gap-1">
+                                            <div className="flex justify-between gap-2 mt-2">
                                                 {col.id !== 'Rejected' && (
                                                     <button
                                                         onClick={() => handleStatusMove(app.id, 'Rejected')}
-                                                        className="p-1.5 hover:bg-red-50 text-gray-300 hover:text-red-500 rounded-lg transition-colors"
+                                                        className="flex items-center gap-1 px-2 py-1.5 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-lg transition-colors text-xs font-medium"
                                                         title="Mark Rejected"
                                                     >
-                                                        <Icons.X size={14} />
+                                                        <Icons.X size={12} />
+                                                        <span>Reject</span>
                                                     </button>
                                                 )}
                                                 {col.id !== 'Offer' && (
@@ -113,10 +114,11 @@ export function InterviewLineup() {
                                                             const next = STATUS_COLS[(STATUS_COLS.findIndex(c => c.id === col.id) + 1) % STATUS_COLS.length].id;
                                                             handleStatusMove(app.id, next);
                                                         }}
-                                                        className="p-1.5 hover:bg-green-50 text-gray-300 hover:text-green-500 rounded-lg transition-colors"
+                                                        className="flex items-center gap-1 px-2 py-1.5 hover:bg-green-50 text-gray-400 hover:text-green-500 rounded-lg transition-colors text-xs font-medium ml-auto"
                                                         title="Move Next"
                                                     >
-                                                        <Icons.ArrowRight size={14} />
+                                                        <span>Next</span>
+                                                        <Icons.ArrowRight size={12} />
                                                     </button>
                                                 )}
                                             </div>
