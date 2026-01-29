@@ -4,10 +4,7 @@ import React, { useState } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-import { InterviewLineup } from './career/InterviewLineup';
-import { AIInterviewPrep } from './career/AIInterviewPrep';
-import { InterviewResources } from './career/InterviewResources';
-import { JobOpenings } from './career/JobOpenings';
+import { InterviewLineup, AIInterviewPrep, InterviewResources, JobOpenings } from './career';
 
 export function CareerGatewayContent() {
     const [activeTab, setActiveTab] = useState<'lineup' | 'ai' | 'resources' | 'jobs'>('lineup');
