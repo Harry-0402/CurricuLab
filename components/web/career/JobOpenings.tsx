@@ -38,7 +38,10 @@ export function JobOpenings() {
                 company: job.company,
                 role: job.title,
                 status: status,
-                notes: `Source: Job Board\nLocation: ${job.location}\nSalary: ${job.salary_range || 'N/A'}\nURL: ${job.url}`,
+                notes: `Source: Job Board
+Location: ${job.location}
+Salary: ${job.salary_range || 'N/A'}
+URL: ${job.url}`,
                 date: new Date().toISOString()
             });
             toast.success(`Job added to ${status} in Interview Lineup!`);
