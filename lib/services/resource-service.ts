@@ -6,7 +6,7 @@ export const ResourceService = {
         const { data, error } = await supabase
             .from('resources')
             .select('*')
-            .eq('is_active', true);
+            .select('*');
 
         if (error) {
             console.error('Error fetching resources:', error);
@@ -21,7 +21,7 @@ export const ResourceService = {
             .from('resources')
             .select('*')
             .eq('category', category)
-            .eq('is_active', true);
+            .eq('category', category);
 
         if (error) {
             console.error('Error fetching resources by category:', error);
