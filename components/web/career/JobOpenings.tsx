@@ -107,22 +107,7 @@ export function JobOpenings() {
                     {jobs.map(job => (
                         <div key={job.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row gap-6 md:items-center justify-between group relative">
                             {/* Edit/Delete Actions */}
-                            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button
-                                    onClick={(e) => handleEdit(e, job)}
-                                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                    title="Edit Job"
-                                >
-                                    <Icons.Edit size={16} />
-                                </button>
-                                <button
-                                    onClick={(e) => handleDelete(e, job.id)}
-                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                    title="Delete Job"
-                                >
-                                    <Icons.Trash2 size={16} />
-                                </button>
-                            </div>
+
 
                             <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
@@ -149,9 +134,27 @@ export function JobOpenings() {
                             </div>
 
                             <div className="flex flex-col md:items-end gap-3 pl-16 md:pl-0 mt-4 md:mt-0">
-                                <div className="text-right hidden md:block">
-                                    <p className="text-[10px] uppercase font-bold text-gray-400">Posted</p>
-                                    <p className="text-xs font-semibold text-gray-600">{new Date(job.posted_at).toLocaleDateString()}</p>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            onClick={(e) => handleEdit(e, job)}
+                                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            title="Edit Job"
+                                        >
+                                            <Icons.Edit size={14} />
+                                        </button>
+                                        <button
+                                            onClick={(e) => handleDelete(e, job.id)}
+                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Delete Job"
+                                        >
+                                            <Icons.Trash2 size={14} />
+                                        </button>
+                                    </div>
+                                    <div className="text-right hidden md:block">
+                                        <p className="text-[10px] uppercase font-bold text-gray-400">Posted</p>
+                                        <p className="text-xs font-semibold text-gray-600">{new Date(job.posted_at).toLocaleDateString()}</p>
+                                    </div>
                                 </div>
                                 <div className="flex gap-2 w-full md:w-auto">
                                     <button
