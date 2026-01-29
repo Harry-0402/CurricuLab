@@ -7,9 +7,10 @@ import { cn } from '@/lib/utils';
 import { InterviewLineup } from './career/InterviewLineup';
 import { AIInterviewPrep } from './career/AIInterviewPrep';
 import { InterviewResources } from './career/InterviewResources';
+import { JobOpenings } from './career/JobOpenings';
 
 export function CareerGatewayContent() {
-    const [activeTab, setActiveTab] = useState<'lineup' | 'ai' | 'resources'>('lineup');
+    const [activeTab, setActiveTab] = useState<'lineup' | 'ai' | 'resources' | 'jobs'>('lineup');
 
     return (
         <WebAppShell>
@@ -53,6 +54,16 @@ export function CareerGatewayContent() {
                             <Icons.Library size={18} />
                             <span>Resources</span>
                         </button>
+                        <button
+                            onClick={() => setActiveTab('jobs')}
+                            className={cn(
+                                "flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
+                                activeTab === 'jobs' ? "bg-white text-green-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                            )}
+                        >
+                            <Icons.Briefcase size={18} />
+                            <span>Job Openings</span>
+                        </button>
                     </div>
                 </div>
 
@@ -62,6 +73,7 @@ export function CareerGatewayContent() {
                         {activeTab === 'lineup' && <InterviewLineup />}
                         {activeTab === 'ai' && <AIInterviewPrep />}
                         {activeTab === 'resources' && <InterviewResources />}
+                        {activeTab === 'jobs' && <JobOpenings />}
                     </div>
                 </div>
 
