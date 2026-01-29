@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { JobService, JobListing } from '@/lib/services/job-service';
+import { CareerService } from '@/lib/services/career-service';
 import { Icons } from '@/components/shared/Icons';
 import { AddJobModal } from '@/components/web/AddJobModal';
+import { toast } from 'sonner';
 
 export function JobOpenings() {
     const [jobs, setJobs] = useState<JobListing[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [trackingIds, setTrackingIds] = useState<Set<string>>(new Set());
 
     const load = async () => {
         setLoading(true);
@@ -23,6 +26,30 @@ export function JobOpenings() {
 
     const handleApply = (url: string) => {
         window.open(url, '_blank');
+    };
+
+    const handleTrack = async (job: JobListing, status: 'Wishlist' | 'Applied') => {
+        if (trackingIds.has(job.id)) return;
+
+        setTrackingIds(prev => new Set(prev).add(job.id));
+        try {
+            await CareerService.create({
+                company: job.company,
+                role: job.title,
+                status: status,
+                notes: `Tracked from Job Board. Location: ${job.location}, Salary: ${job.salary_range || 'N/A'}. URL: ${job.url}`,
+                date: new Date().toISOString()
+            });
+            toast.success(`Job added to ${status} in Interview Lineup!`);
+        } catch (error) {
+            console.error('Failed to track job:', error);
+            toast.error('Failed to track job. Please try again.');
+            setTrackingIds(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(job.id);
+                return newSet;
+            });
+        }
     };
 
     if (loading) return (
@@ -77,18 +104,36 @@ export function JobOpenings() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 pl-16 md:pl-0">
+                            <div className="flex flex-col md:items-end gap-3 pl-16 md:pl-0">
                                 <div className="text-right hidden md:block">
                                     <p className="text-[10px] uppercase font-bold text-gray-400">Posted</p>
                                     <p className="text-xs font-semibold text-gray-600">{new Date(job.posted_at).toLocaleDateString()}</p>
                                 </div>
-                                <button
-                                    onClick={() => handleApply(job.url)}
-                                    className="flex-1 md:flex-none bg-black text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
-                                >
-                                    <span>Apply Now</span>
-                                    <Icons.ExternalLink size={14} />
-                                </button>
+                                <div className="flex gap-2 w-full md:w-auto">
+                                    <button
+                                        onClick={() => handleTrack(job, 'Wishlist')}
+                                        disabled={trackingIds.has(job.id)}
+                                        className="p-3 rounded-xl font-bold text-gray-400 hover:text-orange-500 hover:bg-orange-50 border border-gray-100 transition-all"
+                                        title="Add to Wishlist"
+                                    >
+                                        <Icons.Heart size={20} className={trackingIds.has(job.id) ? "fill-orange-500 text-orange-500" : ""} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleTrack(job, 'Applied')}
+                                        disabled={trackingIds.has(job.id)}
+                                        className="p-3 rounded-xl font-bold text-gray-400 hover:text-blue-500 hover:bg-blue-50 border border-gray-100 transition-all"
+                                        title="Mark as Applied"
+                                    >
+                                        <Icons.CheckCircle size={20} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleApply(job.url)}
+                                        className="flex-1 md:flex-none bg-black text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <span>Apply Now</span>
+                                        <Icons.ExternalLink size={14} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
