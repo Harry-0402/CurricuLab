@@ -20,32 +20,34 @@ export function CareerGatewayContent() {
                         <p className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">Career Gateway</p>
                     </div>
 
-                    <div className="flex p-1 bg-gray-100/80 rounded-2xl w-full md:w-auto">
+                    <div className="grid grid-cols-2 md:flex gap-2 md:p-1 md:bg-gray-100/80 md:rounded-2xl w-full md:w-auto">
                         <button
                             onClick={() => setActiveTab('lineup')}
                             className={cn(
-                                "flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
-                                activeTab === 'lineup' ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                                "px-4 md:px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
+                                activeTab === 'lineup' ? "bg-blue-50 md:bg-white text-blue-600 shadow-sm border-2 border-blue-200 md:border-0" : "bg-gray-50 md:bg-transparent text-gray-500 hover:text-gray-900 border-2 border-gray-100 md:border-0"
                             )}
                         >
                             <Icons.LayoutDashboard size={18} />
-                            <span>Interview Lineup</span>
+                            <span className="hidden sm:inline">Interview Lineup</span>
+                            <span className="sm:hidden">Lineup</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('ai')}
                             className={cn(
-                                "flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
-                                activeTab === 'ai' ? "bg-white text-purple-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                                "px-4 md:px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
+                                activeTab === 'ai' ? "bg-purple-50 md:bg-white text-purple-600 shadow-sm border-2 border-purple-200 md:border-0" : "bg-gray-50 md:bg-transparent text-gray-500 hover:text-gray-900 border-2 border-gray-100 md:border-0"
                             )}
                         >
                             <Icons.Bot size={18} />
-                            <span>AI Prep Coach</span>
+                            <span className="hidden sm:inline">AI Prep Coach</span>
+                            <span className="sm:hidden">AI Coach</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('resources')}
                             className={cn(
-                                "flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
-                                activeTab === 'resources' ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                                "px-4 md:px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
+                                activeTab === 'resources' ? "bg-orange-50 md:bg-white text-orange-600 shadow-sm border-2 border-orange-200 md:border-0" : "bg-gray-50 md:bg-transparent text-gray-500 hover:text-gray-900 border-2 border-gray-100 md:border-0"
                             )}
                         >
                             <Icons.Library size={18} />
@@ -54,12 +56,13 @@ export function CareerGatewayContent() {
                         <button
                             onClick={() => setActiveTab('jobs')}
                             className={cn(
-                                "flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
-                                activeTab === 'jobs' ? "bg-white text-green-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                                "px-4 md:px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
+                                activeTab === 'jobs' ? "bg-green-50 md:bg-white text-green-600 shadow-sm border-2 border-green-200 md:border-0" : "bg-gray-50 md:bg-transparent text-gray-500 hover:text-gray-900 border-2 border-gray-100 md:border-0"
                             )}
                         >
                             <Icons.Briefcase size={18} />
-                            <span>Job Openings</span>
+                            <span className="hidden sm:inline">Job Openings</span>
+                            <span className="sm:hidden">Jobs</span>
                         </button>
                     </div>
                 </div>
