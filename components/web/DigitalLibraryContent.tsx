@@ -234,15 +234,24 @@ export function DigitalLibraryContent() {
                         </div>
 
                         {/* Modal Content */}
-                        {/* Modal Content */}
+                        /* Document Viewer (PDF or Office) */
                         <div className={`flex-1 bg-white ${selectedResource.type === 'PDF' ? 'overflow-hidden rounded-b-[32px]' : 'overflow-y-auto p-8 md:p-12 no-scrollbar'}`}>
-                            {selectedResource.type === 'PDF' ? (
+                            {selectedResource.type === 'PDF' || selectedResource.type === 'Template' || selectedResource.url.match(/\.(pdf|docx|doc|pptx|xlsx)$/i) ? (
                                 <div className="w-full h-full">
-                                    <iframe
-                                        src={selectedResource.url}
-                                        className="w-full h-full border-none"
-                                        title={selectedResource.title}
-                                    />
+                                    {(() => {
+                                        const isOffice = selectedResource.url.match(/\.(docx|doc|pptx|xlsx)$/i) || selectedResource.type === 'Template';
+                                        const viewerUrl = isOffice
+                                            ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(selectedResource.url)}`
+                                            : selectedResource.url;
+
+                                        return (
+                                            <iframe
+                                                src={viewerUrl}
+                                                className="w-full h-full border-none"
+                                                title={selectedResource.title}
+                                            />
+                                        );
+                                    })()}
                                 </div>
                             ) : selectedResource.content ? (
                                 <div className="prose prose-slate prose-lg max-w-none prose-headings:font-black prose-headings:tracking-tight prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
@@ -285,6 +294,6 @@ export function DigitalLibraryContent() {
                     </div>
                 </div>
             )}
-        </WebAppShell>
+        </WebAppShell >
     );
 }
