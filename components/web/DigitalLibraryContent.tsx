@@ -253,7 +253,7 @@ export function DigitalLibraryContent() {
                         </div>
 
                         {/* Modal Content */}
-                        /* Document Viewer (PDF or Office) */
+
                         <div className={`flex-1 bg-white ${selectedResource.type === 'PDF' ? 'overflow-hidden rounded-b-[32px]' : 'overflow-y-auto p-8 md:p-12 no-scrollbar'}`}>
                             {selectedResource.type === 'PDF' || selectedResource.type === 'Template' || selectedResource.url.match(/\.(pdf|docx|doc|pptx|xlsx)$/i) ? (
                                 <div className="w-full h-full">
