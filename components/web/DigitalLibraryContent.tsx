@@ -3,21 +3,31 @@
 import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
-import { LOCAL_RESOURCES, Resource } from '@/lib/data/course-data';
+import { Resource } from '@/lib/data/course-data';
+import { ResourceService } from '@/lib/services/resource-service';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export function DigitalLibraryContent() {
-    // const [resources, setResources] = useState<Resource[]>([]);
+    const [resources, setResources] = useState<Resource[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
 
-    // useEffect(() => {
-    //    setResources(LOCAL_RESOURCES);
-    // }, []);
-
-    const resources = LOCAL_RESOURCES;
+    useEffect(() => {
+        async function fetchResources() {
+            try {
+                const data = await ResourceService.getAll();
+                setResources(data);
+            } catch (error) {
+                console.error("Failed to load resources", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchResources();
+    }, []);
 
     const categories = ['All', ...Array.from(new Set(resources.map(r => r.category)))];
 
@@ -123,7 +133,7 @@ export function DigitalLibraryContent() {
                                 <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[40px] border border-dashed border-gray-200 text-gray-400 gap-3">
                                     <Icons.Database size={40} className="mb-2" />
                                     <p className="font-bold uppercase tracking-widest text-xs">No resources found in this library.</p>
-                                    <p className="text-[10px] text-gray-300 font-medium">Add data to LOCAL_RESOURCES in course-data.ts</p>
+                                    <p className="text-[10px] text-gray-300 font-medium">No resources found in the database.</p>
                                 </div>
                             );
                         }
