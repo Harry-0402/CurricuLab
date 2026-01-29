@@ -26,5 +26,19 @@ export const JobService = {
         }
 
         return data as JobListing[];
+    },
+
+    async create(job: Partial<JobListing>): Promise<JobListing | null> {
+        const { data, error } = await supabase
+            .from('job_listings')
+            .insert([job])
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error creating job listing:', error);
+            throw error;
+        }
+        return data as JobListing;
     }
 };
