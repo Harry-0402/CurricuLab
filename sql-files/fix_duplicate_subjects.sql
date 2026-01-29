@@ -1,20 +1,15 @@
 -- ==========================================
--- Update Subjects for MBA (BA) - II, Semester II
--- Academic Year: 2025-2026
--- Institution: Sandip University
--- School: School of Commerce & Management Studies
+-- Fix Duplicate Subjects for MBA (BA) - II
+-- Use this script to merge "New" subjects into "Original" ones
+-- and remove the duplicates I created.
 -- ==========================================
-
--- SAFE UPDATE SCRIPT
--- This script checks if a subject exists by CODE before inserting.
--- If it exists (even with a different ID), it updates the record.
--- If not, it inserts a new one.
 
 DO $$
 DECLARE
     r RECORD;
-    v_existing_id TEXT;
+    v_original_id TEXT;
 BEGIN
+    -- Loop through the subjects we inserted
     FOR r IN SELECT * FROM (VALUES 
       ('pba204', 'PBA204', 'Production and Operations Management', '🏭', '#3B82F6', 'L: 3, T: 1, P: 0 - Faculty: Dr. Shailendra Baraniya'),
       ('pba205', 'PBA205', 'Digital Transformation', '💻', '#8B5CF6', 'L: 3, T: 1, P: 0 - Faculty: Mr. Aniket Alvekar'),
@@ -24,31 +19,30 @@ BEGIN
       ('pba211', 'PBA211', 'Data Analysis using Python', '🐍', '#06B6D4', 'L: 1, T: 0, P: 3 - Faculty: Mr. Aniket Alvekar'),
       ('pba212', 'PBA212', 'Data Analysis using Power BI', '📈', '#EC4899', 'L: 0, T: 0, P: 4 - Faculty: Dr. Samadhan Bundhe'),
       ('pba213', 'PBA213', 'Business Communication Skills - II', '💬', '#6366F1', 'L: 0, T: 0, P: 2 - Faculty: Mrs. Prachi Muskar')
-    ) AS t(id, code, title, icon, color, description)
+    ) AS t(new_id, code, title, icon, color, description)
     LOOP
-        -- Check if there is ANY existing record with this code
-        SELECT id INTO v_existing_id FROM public.subjects WHERE code = r.code LIMIT 1;
+        -- Find if there is an existing "original" record (same code, but NOT the new ID)
+        SELECT id INTO v_original_id 
+        FROM public.subjects 
+        WHERE code = r.code AND id != r.new_id 
+        LIMIT 1;
         
-        IF v_existing_id IS NOT NULL THEN
-            -- Update the existing record (preserving relationships)
+        IF v_original_id IS NOT NULL THEN
+            -- 1. Update the original record with the new metadata
             UPDATE public.subjects 
             SET title = r.title,
                 icon = r.icon,
                 color = r.color,
-                description = r.description,
-                -- Reset these if needed, or keep existing progress
-                -- progress = 0, 
-                -- unit_count = 0,
-                last_studied = NULL
-            WHERE id = v_existing_id;
+                description = r.description
+            WHERE id = v_original_id;
             
-            RAISE NOTICE 'Updated existing subject: % (ID: %)', r.code, v_existing_id;
+            -- 2. Delete the specific duplicate record (the new one we created)
+            DELETE FROM public.subjects WHERE id = r.new_id;
+            
+            RAISE NOTICE 'Fixed duplicate for %: Updated original (%) and deleted new (%)', r.code, v_original_id, r.new_id;
         ELSE
-            -- Insert new record
-            INSERT INTO public.subjects (id, code, title, icon, color, description, progress, unit_count)
-            VALUES (r.id, r.code, r.title, r.icon, r.color, r.description, 0, 0);
-            
-            RAISE NOTICE 'Inserted new subject: %', r.code;
+            -- No original found, so the "new" one is actually the only one. Keep it.
+            RAISE NOTICE 'No duplicate found for %, keeping %', r.code, r.new_id;
         END IF;
     END LOOP;
 END $$;
