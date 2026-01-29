@@ -91,7 +91,7 @@ export function InterviewLineup() {
                                             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{app.role}</p>
                                             {app.notes && (
                                                 <div className="mb-3 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
-                                                    <p className="text-xs font-medium text-gray-600 break-words whitespace-pre-wrap line-clamp-6" title={app.notes}>
+                                                    <p className="text-xs font-medium text-gray-600 break-words whitespace-pre-line line-clamp-6" title={app.notes}>
                                                         {app.notes}
                                                     </p>
                                                 </div>
