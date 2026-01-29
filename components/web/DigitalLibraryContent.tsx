@@ -8,24 +8,29 @@ import { ResourceService } from '@/lib/services/resource-service';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import { AddResourceModal } from '@/components/web/AddResourceModal';
+
 export function DigitalLibraryContent() {
     const [resources, setResources] = useState<Resource[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    const fetchResources = async () => {
+        setIsLoading(true);
+        try {
+            const data = await ResourceService.getAll();
+            setResources(data);
+        } catch (error) {
+            console.error("Failed to load resources", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        async function fetchResources() {
-            try {
-                const data = await ResourceService.getAll();
-                setResources(data);
-            } catch (error) {
-                console.error("Failed to load resources", error);
-            } finally {
-                setIsLoading(false);
-            }
-        }
         fetchResources();
     }, []);
 
@@ -44,7 +49,7 @@ export function DigitalLibraryContent() {
     });
 
     const handleResourceClick = (resource: Resource) => {
-        if (resource.content || resource.type === 'Article' || resource.type === 'PDF') {
+        if (resource.content || resource.type === 'Article' || resource.type === 'PDF' || resource.type === 'Template') {
             setSelectedResource(resource);
         } else {
             window.open(resource.url, '_blank', 'noopener,noreferrer');
@@ -53,14 +58,28 @@ export function DigitalLibraryContent() {
 
     return (
         <WebAppShell>
+            <AddResourceModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSuccess={fetchResources}
+            />
             <div className="max-w-[1600px] mx-auto space-y-8 h-[calc(100vh-140px)] flex flex-col">
                 <div className="flex items-center justify-between shrink-0">
                     <div>
                         <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
                         <p className="text-5xl font-black text-gray-900 tracking-tight">Digital Library</p>
                     </div>
-                    <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-sm border border-blue-100">
-                        <Icons.Database size={32} />
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="bg-gray-900 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-black transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+                        >
+                            <Icons.Plus size={18} />
+                            <span>Add Resource</span>
+                        </button>
+                        <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-sm border border-blue-100">
+                            <Icons.Database size={32} />
+                        </div>
                     </div>
                 </div>
 

@@ -3,6 +3,17 @@ import { supabase } from '@/utils/supabase/client';
 import { Subject } from '@/types';
 import { ChangelogService } from "@/lib/services/changelog.service";
 
+// Static Subjects for Fallback/Init
+export const INITIAL_SUBJECTS: Subject[] = [
+    { id: "s1", code: "PBA204", title: "Production and Operations Management", icon: "Settings", color: "bg-blue-500", description: "Operations, Productivity, Layouts", progress: 0, unitCount: 5, lastStudied: undefined },
+    { id: "s2", code: "PBA205", title: "Digital Transformation", icon: "Zap", color: "bg-purple-500", description: "Digital Tech, AI, Innovation", progress: 0, unitCount: 5, lastStudied: undefined },
+    { id: "s3", code: "PBA206", title: "Legal Aspects of Business", icon: "Shield", color: "bg-emerald-500", description: "Contracts, Company Law", progress: 0, unitCount: 5, lastStudied: undefined },
+    { id: "s4", code: "PBA207", title: "Data Visualization and Storytelling", icon: "BarChart3", color: "bg-amber-500", description: "Charts, Storytelling, Analysis", progress: 0, unitCount: 5, lastStudied: undefined },
+    { id: "s5", code: "PBA208", title: "Business Research Methodology", icon: "Search", color: "bg-rose-500", description: "Research, Sampling, Hypothesis", progress: 0, unitCount: 5, lastStudied: undefined },
+    { id: "s6", code: "PBA201", title: "Geopolitics & World Economic Systems", icon: "Globe", color: "bg-indigo-500", description: "Global Economics, Politics", progress: 0, unitCount: 5, lastStudied: undefined },
+    { id: "s7", code: "PBA202", title: "Management Information Systems", icon: "Database", color: "bg-cyan-500", description: "IS, DBs, Enterprise Systems", progress: 0, unitCount: 5, lastStudied: undefined }
+];
+
 export const SubjectService = {
     async getAll(): Promise<Subject[]> {
         const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes

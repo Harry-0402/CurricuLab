@@ -46,5 +46,38 @@ export const ResourceService = {
             return [];
         }
         return data as Resource[];
+    },
+
+    async create(resource: Partial<Resource>): Promise<Resource | null> {
+        const { data, error } = await supabase
+            .from('resources')
+            .insert([resource])
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error creating resource:', error);
+            throw error;
+        }
+        return data as Resource;
+    },
+
+    async uploadFile(file: File): Promise<string> {
+        const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`; // Simple sanitize
+
+        const { data, error } = await supabase.storage
+            .from('library-assets')
+            .upload(fileName, file);
+
+        if (error) {
+            console.error('Error uploading file:', error);
+            throw error;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('library-assets')
+            .getPublicUrl(fileName);
+
+        return publicUrl;
     }
 };

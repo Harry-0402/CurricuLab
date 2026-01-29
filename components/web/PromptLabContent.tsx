@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-import { LOCAL_PROMPTS, Prompt } from '@/lib/data/course-data';
+import { Prompt } from '@/lib/data/course-data';
+import { PromptService } from '@/lib/services/prompt-service';
+import { AddPromptModal } from '@/components/web/AddPromptModal';
 
 export function PromptLabContent() {
     const [prompts, setPrompts] = useState<Prompt[]>([]);
@@ -14,11 +16,17 @@ export function PromptLabContent() {
     const [isLibraryExpanded, setIsLibraryExpanded] = useState(true);
     const [isAILoading, setIsAILoading] = useState(false);
     const [showGoalModal, setShowGoalModal] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
     const [goalInput, setGoalInput] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
+    const loadPrompts = async () => {
+        const data = await PromptService.getAll();
+        setPrompts(data);
+    };
+
     useEffect(() => {
-        setPrompts(LOCAL_PROMPTS);
+        loadPrompts();
     }, []);
 
     const filteredPrompts = prompts.filter(p =>
@@ -76,12 +84,25 @@ export function PromptLabContent() {
 
     return (
         <WebAppShell>
+            <AddPromptModal
+                isOpen={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSuccess={loadPrompts}
+            />
             <div className="max-w-[1600px] mx-auto flex flex-col h-[calc(100vh-280px)] md:h-[calc(100vh-180px)] overflow-hidden">
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <p className="text-5xl font-black text-gray-900 tracking-tight">Prompt Lab</p>
                     </div>
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setShowAddModal(true)}
+                            className="flex items-center gap-2 px-5 py-3 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-colors"
+                        >
+                            <Icons.Plus size={18} />
+                            <span>Add Template</span>
+                        </button>
+
                         <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-gray-100 shadow-sm">
                             {[
                                 {
