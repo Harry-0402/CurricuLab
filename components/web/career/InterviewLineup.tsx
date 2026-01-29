@@ -57,11 +57,11 @@ export function InterviewLineup() {
 
     return (
         <div className="h-full flex flex-col">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
                 <h2 className="text-2xl font-black text-gray-900">Your Applications</h2>
                 <button
                     onClick={() => setIsAddOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-all"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-all"
                 >
                     <Icons.Plus size={16} />
                     <span>Track Application</span>
@@ -69,12 +69,12 @@ export function InterviewLineup() {
             </div>
 
             {/* Kanban Board */}
-            <div className="flex-1 overflow-x-auto pb-4">
-                <div className="flex gap-4 min-w-[1000px] h-full">
+            <div className="flex-1 overflow-x-auto md:overflow-x-auto pb-4">
+                <div className="flex flex-col md:flex-row gap-4 md:min-w-[1000px] h-full">
                     {STATUS_COLS.map(col => {
                         const colApps = apps.filter(a => a.status === col.id);
                         return (
-                            <div key={col.id} className="flex-1 flex flex-col bg-gray-50/50 rounded-2xl border border-gray-100 h-full max-h-full">
+                            <div key={col.id} className="flex-1 flex flex-col bg-gray-50/50 rounded-2xl border border-gray-100 h-auto md:h-full md:max-h-full min-h-[200px]">
                                 <div className={`p-4 border-b border-gray-100 font-bold flex justify-between items-center ${col.color.split(' ')[1]}`}>
                                     <span>{col.label}</span>
                                     <span className="bg-white px-2 py-0.5 rounded-md text-xs border border-gray-100 shadow-sm text-gray-600">{colApps.length}</span>
