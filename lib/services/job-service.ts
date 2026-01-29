@@ -40,5 +40,29 @@ export const JobService = {
             throw error;
         }
         return data as JobListing;
+    },
+
+    async update(id: string, updates: Partial<JobListing>): Promise<void> {
+        const { error } = await supabase
+            .from('job_listings')
+            .update(updates)
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error updating job listing:', error);
+            throw error;
+        }
+    },
+
+    async delete(id: string): Promise<void> {
+        const { error } = await supabase
+            .from('job_listings')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error deleting job listing:', error);
+            throw error;
+        }
     }
 };

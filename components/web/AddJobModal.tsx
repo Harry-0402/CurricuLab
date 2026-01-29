@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { JobService, JobListing } from '@/lib/services/job-service';
 import { toast } from 'sonner';
@@ -9,9 +9,10 @@ interface AddJobModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    initialData?: JobListing; // Optional for Edit mode
 }
 
-export function AddJobModal({ isOpen, onClose, onSuccess }: AddJobModalProps) {
+export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobModalProps) {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<Partial<JobListing>>({
         title: '',
@@ -22,6 +23,22 @@ export function AddJobModal({ isOpen, onClose, onSuccess }: AddJobModalProps) {
         url: '',
     });
 
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        } else {
+            // Reset for Create mode
+            setFormData({
+                title: '',
+                company: '',
+                location: '',
+                type: 'Remote',
+                salary_range: '',
+                url: '',
+            });
+        }
+    }, [initialData, isOpen]);
+
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -29,13 +46,26 @@ export function AddJobModal({ isOpen, onClose, onSuccess }: AddJobModalProps) {
         setLoading(true);
 
         try {
-            await JobService.create(formData as JobListing);
-            toast.success('Job posted successfully!');
+            if (initialData) {
+                // Update specific fields (excluding ID/dates)
+                await JobService.update(initialData.id, {
+                    title: formData.title,
+                    company: formData.company,
+                    location: formData.location,
+                    type: formData.type,
+                    salary_range: formData.salary_range,
+                    url: formData.url
+                });
+                toast.success('Job updated successfully!');
+            } else {
+                await JobService.create(formData as JobListing);
+                toast.success('Job posted successfully!');
+            }
             onSuccess();
             onClose();
         } catch (error) {
             console.error(error);
-            toast.error('Failed to post job. Please try again.');
+            toast.error(initialData ? 'Failed to update job.' : 'Failed to post job.');
         } finally {
             setLoading(false);
         }
@@ -46,8 +76,8 @@ export function AddJobModal({ isOpen, onClose, onSuccess }: AddJobModalProps) {
             <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <div>
-                        <h2 className="text-xl font-black text-gray-900">Post a Job</h2>
-                        <p className="text-xs text-gray-500 font-medium mt-1">Share an opportunity with the community</p>
+                        <h2 className="text-xl font-black text-gray-900">{initialData ? 'Edit Job' : 'Post a Job'}</h2>
+                        <p className="text-xs text-gray-500 font-medium mt-1">{initialData ? 'Update job details' : 'Share an opportunity with the community'}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                         <Icons.X size={20} className="text-gray-500" />
@@ -142,7 +172,7 @@ export function AddJobModal({ isOpen, onClose, onSuccess }: AddJobModalProps) {
                                 className="flex-1 py-3.5 rounded-xl font-bold bg-green-600 text-white hover:bg-green-700 transition-all shadow-lg shadow-green-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {loading ? <Icons.Loader2 className="animate-spin" /> : <Icons.CheckCircle size={18} />}
-                                <span>Post Job</span>
+                                <span>{initialData ? 'Update Job' : 'Post Job'}</span>
                             </button>
                         </div>
                     </form>
