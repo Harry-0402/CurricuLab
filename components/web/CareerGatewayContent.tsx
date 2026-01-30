@@ -21,47 +21,47 @@ export function CareerGatewayContent() {
                     </div>
 
                     <div className="w-full md:w-auto">
-                        {/* Mobile: 2x2 Grid */}
+                        {/* Mobile: 2x2 Grid - Icons Only */}
                         <div className="grid grid-cols-2 gap-2 md:hidden">
                             <button
                                 onClick={() => setActiveTab('lineup')}
                                 className={cn(
-                                    "px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5",
+                                    "px-4 py-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center",
                                     activeTab === 'lineup' ? "bg-blue-50 text-blue-600 shadow-sm border-2 border-blue-200" : "bg-gray-50 text-gray-500 hover:text-gray-900 border-2 border-gray-100"
                                 )}
+                                title="Interview Lineup"
                             >
-                                <Icons.LayoutDashboard size={16} />
-                                <span>Lineup</span>
+                                <Icons.LayoutDashboard size={20} />
                             </button>
                             <button
                                 onClick={() => setActiveTab('ai')}
                                 className={cn(
-                                    "px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5",
+                                    "px-4 py-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center",
                                     activeTab === 'ai' ? "bg-purple-50 text-purple-600 shadow-sm border-2 border-purple-200" : "bg-gray-50 text-gray-500 hover:text-gray-900 border-2 border-gray-100"
                                 )}
+                                title="AI Prep Coach"
                             >
-                                <Icons.Bot size={16} />
-                                <span>AI Coach</span>
+                                <Icons.Bot size={20} />
                             </button>
                             <button
                                 onClick={() => setActiveTab('resources')}
                                 className={cn(
-                                    "px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5",
+                                    "px-4 py-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center",
                                     activeTab === 'resources' ? "bg-orange-50 text-orange-600 shadow-sm border-2 border-orange-200" : "bg-gray-50 text-gray-500 hover:text-gray-900 border-2 border-gray-100"
                                 )}
+                                title="Resources"
                             >
-                                <Icons.Library size={16} />
-                                <span>Resources</span>
+                                <Icons.Library size={20} />
                             </button>
                             <button
                                 onClick={() => setActiveTab('jobs')}
                                 className={cn(
-                                    "px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5",
+                                    "px-4 py-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center",
                                     activeTab === 'jobs' ? "bg-green-50 text-green-600 shadow-sm border-2 border-green-200" : "bg-gray-50 text-gray-500 hover:text-gray-900 border-2 border-gray-100"
                                 )}
+                                title="Job Openings"
                             >
-                                <Icons.Briefcase size={16} />
-                                <span>Jobs</span>
+                                <Icons.Briefcase size={20} />
                             </button>
                         </div>
 
