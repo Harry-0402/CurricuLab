@@ -5,11 +5,9 @@ CREATE TABLE IF NOT EXISTS vault_resources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     subject_id TEXT NOT NULL,
     unit_id TEXT,
-    part_number INTEGER,
     type TEXT NOT NULL CHECK (type IN ('study_note', 'case_study', 'project')),
     title TEXT NOT NULL,
-    content TEXT,
-    formatted_content TEXT, -- Cached AI-formatted version
+    link TEXT, -- URL to deployed HTML resource
     tags TEXT[] DEFAULT '{}',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -18,6 +16,7 @@ CREATE TABLE IF NOT EXISTS vault_resources (
 -- Create indexes for faster queries
 CREATE INDEX IF NOT EXISTS idx_vault_resources_subject ON vault_resources(subject_id);
 CREATE INDEX IF NOT EXISTS idx_vault_resources_type ON vault_resources(type);
+CREATE INDEX IF NOT EXISTS idx_vault_resources_link ON vault_resources(link);
 
 -- Enable Row Level Security
 ALTER TABLE vault_resources ENABLE ROW LEVEL SECURITY;

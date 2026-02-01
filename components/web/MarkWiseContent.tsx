@@ -22,16 +22,28 @@ export function MarkWiseContent() {
         driveLink: ''
     });
 
-    // Load subjects on mount
+    // Load subjects and first subject's resources in parallel
     useEffect(() => {
-        const loadSubjects = async () => {
-            const data = await getSubjects();
-            setSubjects(data);
-            if (data.length > 0) {
-                setActiveSubject(data[0].id);
+        const loadInitialData = async () => {
+            const subjects = await getSubjects();
+            setSubjects(subjects);
+
+            if (subjects.length > 0) {
+                const firstSubjectId = subjects[0].id;
+                setActiveSubject(firstSubjectId);
+
+                // Load resources and units immediately in parallel
+                setIsLoadingResources(true);
+                const [resourceData, unitData] = await Promise.all([
+                    MarkWiseResourceService.getBySubject(firstSubjectId),
+                    getUnits(firstSubjectId)
+                ]);
+                setResources(resourceData);
+                setUnits(unitData);
+                setIsLoadingResources(false);
             }
         };
-        loadSubjects();
+        loadInitialData();
     }, []);
 
     // Load units when subject changes in form
@@ -45,34 +57,26 @@ export function MarkWiseContent() {
         loadUnits();
     }, [formData.subject]);
 
-    // Load resources when active subject changes
+    // Load resources when active subject changes (skip initial load)
     useEffect(() => {
         const loadResources = async () => {
-            if (activeSubject) {
-                setIsLoadingResources(true);
-                console.log('Fetching resources for subject:', activeSubject);
-                const [resourceData, unitData] = await Promise.all([
-                    MarkWiseResourceService.getBySubject(activeSubject),
-                    getUnits(activeSubject)
-                ]);
-                console.log('Resources fetched:', resourceData);
-                setResources(resourceData);
-                setUnits(unitData);
-                setIsLoadingResources(false);
-            }
+            // Skip if this is the initial load (handled above)
+            if (!activeSubject || (resources.length === 0 && activeSubject === subjects[0]?.id)) return;
+
+            setIsLoadingResources(true);
+            const [resourceData, unitData] = await Promise.all([
+                MarkWiseResourceService.getBySubject(activeSubject),
+                getUnits(activeSubject)
+            ]);
+            setResources(resourceData);
+            setUnits(unitData);
+            setIsLoadingResources(false);
         };
         loadResources();
     }, [activeSubject]);
 
     const handleSubmit = async () => {
         try {
-            console.log('Creating resource with data:', {
-                subject_id: formData.subject,
-                unit_id: formData.unit,
-                google_drive_link: formData.driveLink,
-                resource_type: 'html'
-            });
-
             const result = await MarkWiseResourceService.create({
                 subject_id: formData.subject,
                 unit_id: formData.unit,
@@ -81,11 +85,9 @@ export function MarkWiseContent() {
             });
 
             if (result) {
-                console.log('Resource created successfully:', result);
-                // Refresh resources if the new resource is for the active subject
+                // Optimistic UI update - add new resource immediately
                 if (formData.subject === activeSubject) {
-                    const updatedResources = await MarkWiseResourceService.getBySubject(activeSubject);
-                    setResources(updatedResources);
+                    setResources(prev => [result, ...prev]);
                 }
                 setIsAddModalOpen(false);
                 setFormData({ subject: '', unit: '', driveLink: '' });
@@ -105,9 +107,8 @@ export function MarkWiseContent() {
         try {
             const success = await MarkWiseResourceService.hardDelete(resourceId);
             if (success) {
-                // Refresh resources list
-                const updatedResources = await MarkWiseResourceService.getBySubject(activeSubject);
-                setResources(updatedResources);
+                // Optimistic UI update - remove locally
+                setResources(prev => prev.filter(r => r.id !== resourceId));
             }
         } catch (error) {
             console.error('Error deleting resource:', error);

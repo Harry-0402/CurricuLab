@@ -398,11 +398,9 @@ const mapVaultResource = (data: any): VaultResource => ({
     id: data.id,
     subjectId: data.subject_id,
     unitId: data.unit_id || '',
-    partNumber: data.part_number || undefined,
     type: data.type,
     title: data.title,
-    content: data.content || '',
-    formattedContent: data.formatted_content || '',
+    link: data.link || '',
     tags: data.tags || [],
     createdAt: data.created_at,
     updatedAt: data.updated_at
@@ -430,11 +428,9 @@ export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): 
         id: crypto.randomUUID(),
         subject_id: resource.subjectId,
         unit_id: resource.unitId || null,
-        part_number: resource.partNumber || null,
         type: resource.type,
         title: resource.title,
-        content: resource.content || '',
-        formatted_content: resource.formattedContent || '',
+        link: resource.link || '',
         tags: resource.tags || []
     }]).select().single();
 
@@ -461,11 +457,9 @@ export const updateVaultResource = async (resource: VaultResource): Promise<Vaul
         .update({
             subject_id: resource.subjectId,
             unit_id: resource.unitId || null,
-            part_number: resource.partNumber || null,
             type: resource.type,
             title: resource.title,
-            content: resource.content,
-            formatted_content: resource.formattedContent,
+            link: resource.link || '',
             tags: resource.tags
         })
         .eq('id', resource.id)

@@ -12,9 +12,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: string; bgColor: string }> = {
-    study_note: { label: 'Study Note', icon: Icons.Notes, color: 'text-blue-600', bgColor: 'bg-blue-50 border-blue-100' },
-    case_study: { label: 'Case Study', icon: Icons.FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 border-purple-100' },
-    project: { label: 'Project', icon: Icons.Lightbulb, color: 'text-emerald-600', bgColor: 'bg-emerald-50 border-emerald-100' }
+    study_note: { label: 'Study Note', icon: Icons.FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+    case_study: { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
+    project: { label: 'Project', icon: Icons.FolderKanban, color: 'text-green-600', bgColor: 'bg-green-50' }
 };
 
 export function VaultContent() {
@@ -33,27 +33,30 @@ export function VaultContent() {
     const [formData, setFormData] = useState({
         subjectId: '',
         unitId: '',
-        partNumber: undefined as number | undefined,
         type: 'study_note' as VaultResourceType,
         title: '',
-        content: ''
+        link: ''
     });
     const [isSaving, setIsSaving] = useState(false);
 
     // Delete confirmation state
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-
-    // AI formatting state
-    const [formattedContent, setFormattedContent] = useState<string>('');
-    const [isFormatting, setIsFormatting] = useState(false);
     const [showExportMenu, setShowExportMenu] = useState(false);
 
     useEffect(() => {
         const loadInitialData = async () => {
+            setLoading(true);
             const fetchedSubjects = await getSubjects();
             setSubjects(fetchedSubjects);
+
+            // Load resources for first subject immediately (parallel with subject load)
             if (fetchedSubjects.length > 0) {
-                setActiveSubjectId(fetchedSubjects[0].id);
+                const firstSubjectId = fetchedSubjects[0].id;
+                setActiveSubjectId(firstSubjectId);
+
+                // Fetch resources immediately without waiting
+                const data = await getVaultResources({ subjectId: firstSubjectId });
+                setResources(data);
             }
             setLoading(false);
         };
@@ -62,7 +65,9 @@ export function VaultContent() {
 
     useEffect(() => {
         const loadResources = async () => {
-            if (!activeSubjectId) return;
+            // Skip if activeSubjectId hasn't been set yet (handled by initial load)
+            if (!activeSubjectId || resources.length === 0 && activeSubjectId === subjects[0]?.id) return;
+
             setLoading(true);
             const data = await getVaultResources({
                 subjectId: activeSubjectId,
@@ -75,51 +80,7 @@ export function VaultContent() {
         loadResources();
     }, [activeSubjectId, selectedType, selectedUnitId]);
 
-    // Auto-format content when resource is selected
-    useEffect(() => {
-        const formatContent = async () => {
-            if (!selectedResource?.content) {
-                setFormattedContent('');
-                return;
-            }
 
-            // Use cached formatted content if available
-            if (selectedResource.formattedContent) {
-                setFormattedContent(selectedResource.formattedContent);
-                return;
-            }
-
-            // Format with AI (AiService now handles chunking for large content)
-            setIsFormatting(true);
-            setFormattedContent('');
-
-            try {
-                const formatted = await AiService.formatVaultContent(
-                    selectedResource.title,
-                    selectedResource.content,
-                    selectedResource.type
-                );
-                setFormattedContent(formatted);
-
-                // Cache the formatted content in the database
-                const updated = await updateVaultResource({
-                    ...selectedResource,
-                    formattedContent: formatted
-                });
-
-                if (updated) {
-                    setSelectedResource(updated);
-                }
-            } catch (error) {
-                console.error("Failed to format content:", error);
-                setFormattedContent(selectedResource.content);
-            } finally {
-                setIsFormatting(false);
-            }
-        };
-
-        formatContent();
-    }, [selectedResource?.id, selectedResource?.content]);
 
     const activeSubject = subjects.find(s => s.id === activeSubjectId);
 
@@ -128,10 +89,9 @@ export function VaultContent() {
         setFormData({
             subjectId: activeSubjectId,
             unitId: '',
-            partNumber: undefined,
             type: 'study_note',
             title: '',
-            content: ''
+            link: ''
         });
         setIsModalOpen(true);
     };
@@ -142,58 +102,50 @@ export function VaultContent() {
         setFormData({
             subjectId: resource.subjectId,
             unitId: resource.unitId || '',
-            partNumber: resource.partNumber,
             type: resource.type,
             title: resource.title,
-            content: resource.content
+            link: resource.link || ''
         });
         setIsModalOpen(true);
     };
 
     const handleSave = async () => {
-        if (!formData.subjectId || !formData.title) return;
+        if (!formData.subjectId || !formData.title || !formData.link) return;
 
         setIsSaving(true);
         let saved: VaultResource | null = null;
 
+        const resourceData = {
+            subjectId: formData.subjectId,
+            unitId: formData.unitId,
+            type: formData.type,
+            title: formData.title,
+            link: formData.link,
+            tags: selectedResource?.tags || []
+        };
+
         if (editingId) {
             saved = await updateVaultResource({
                 id: editingId,
-                subjectId: formData.subjectId,
-                unitId: formData.unitId,
-                partNumber: formData.partNumber,
-                type: formData.type,
-                title: formData.title,
-                content: formData.content,
-                formattedContent: '', // Clear cached format when content changes
-                tags: selectedResource?.tags || []
+                ...resourceData
             });
         } else {
-            saved = await createVaultResource({
-                subjectId: formData.subjectId,
-                unitId: formData.unitId,
-                partNumber: formData.partNumber,
-                type: formData.type,
-                title: formData.title,
-                content: formData.content,
-                formattedContent: '',
-                tags: []
-            });
+            saved = await createVaultResource(resourceData);
         }
 
         if (saved) {
             showToast(editingId ? 'Resource updated successfully!' : 'Resource added successfully!', 'success');
             setIsModalOpen(false);
 
-            // Refresh list
-            const data = await getVaultResources({
-                subjectId: activeSubjectId,
-                type: selectedType === 'all' ? undefined : selectedType
-            });
-            setResources(data);
-
-            if (editingId && selectedResource?.id === editingId) {
-                setSelectedResource(saved);
+            // Optimistic UI update - add/update locally instead of refetching all
+            if (editingId) {
+                setResources(prev => prev.map(r => r.id === editingId ? saved! : r));
+                if (selectedResource?.id === editingId) {
+                    setSelectedResource(saved);
+                }
+            } else {
+                // Add new resource to the beginning of the list
+                setResources(prev => [saved!, ...prev]);
             }
         }
         setIsSaving(false);
@@ -241,7 +193,7 @@ export function VaultContent() {
         setShowExportMenu(false);
     };
 
-    const filteredResources = resources;
+    const filteredResources = resources.filter(r => r.type in TYPE_CONFIG);
 
     return (
         <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto">
@@ -304,7 +256,7 @@ export function VaultContent() {
             </div>
 
             {/* Subject Switcher */}
-            <div className="flex items-center gap-1.5 shrink-0 print:hidden">
+            <div className="flex flex-wrap items-center gap-2 shrink-0 print:hidden">
                 {subjects.map((subject) => {
                     const isActive = activeSubjectId === subject.id;
                     return (
@@ -313,17 +265,17 @@ export function VaultContent() {
                             onClick={() => { setActiveSubjectId(subject.id); setSelectedResource(null); }}
                             title={subject.title}
                             className={cn(
-                                "px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all duration-300 flex items-center justify-center gap-1.5 border shadow-sm",
+                                "px-4 py-2 rounded-full whitespace-nowrap transition-all duration-300 flex items-center justify-center gap-1.5 border shadow-sm text-xs font-bold",
                                 isActive
                                     ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100"
-                                    : "bg-white text-gray-400 border-gray-100 hover:border-blue-200 hover:text-blue-600"
+                                    : "bg-white text-gray-500 border-gray-100 hover:border-blue-200 hover:text-blue-600"
                             )}
                         >
-                            <span className="text-[10px] font-black tracking-widest uppercase">
+                            <span className="tracking-wide uppercase">
                                 {subject.code || subject.title.substring(0, 3)}
                             </span>
                             {isActive && (
-                                <div className="w-1 h-1 bg-white rounded-full shrink-0" />
+                                <div className="w-1.5 h-1.5 bg-white rounded-full shrink-0" />
                             )}
                         </button>
                     );
@@ -366,327 +318,211 @@ export function VaultContent() {
                     })}
                 </div>
 
-                {/* Pro Tip Card */}
-                <div className="flex items-center gap-3 bg-amber-50/50 border border-amber-100/50 px-4 py-2 rounded-2xl animate-in slide-in-from-right duration-500">
-                    <div className="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 shrink-0">
-                        <Icons.Sparkles size={16} />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black text-amber-700 uppercase tracking-wider leading-none mb-1">Pro Tip: Better Results</p>
-                        <p className="text-xs text-amber-600/80 font-medium">Large content? Divide into <span className="font-bold text-amber-700">Part 1-5</span> for perfect AI formatting! ✨</p>
-                    </div>
-                </div>
             </div>
 
-            {/* Main Content - Split Pane */}
-            <div className="flex-1 flex gap-6 min-h-0 print:hidden">
-
-                {/* Left Panel: Resource List */}
-                <div className="w-5/12 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                        <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">
-                            Resources ({filteredResources.length})
-                        </h3>
-                        <div className="flex items-center gap-2">
-                            <select
-                                value={selectedUnitId}
-                                onChange={(e) => setSelectedUnitId(e.target.value)}
-                                className="bg-transparent text-xs font-bold text-gray-500 border-none outline-none cursor-pointer hover:text-gray-700"
-                            >
-                                <option value="all">All Units</option>
-                                {[1, 2, 3, 4, 5].map(u => (
-                                    <option key={u} value={`unit-${u}`}>Unit {u}</option>
-                                ))}
-                            </select>
+            {/* Main Content - Grid Layout */}
+            <div className="flex-1 overflow-y-auto min-h-0 print:hidden scrollbar-hide">
+                {loading ? (
+                    <div className="flex items-center justify-center h-64">
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-sm font-medium text-gray-500">Loading resources...</p>
                         </div>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
-                        {loading ? (
-                            <div className="flex justify-center p-8"><Icons.Loader2 className="animate-spin text-blue-500" /></div>
-                        ) : filteredResources.length === 0 ? (
-                            <div className="text-center p-8 text-gray-400 text-sm">No resources found. Add your first resource!</div>
-                        ) : (
-                            filteredResources.map(resource => {
-                                const config = TYPE_CONFIG[resource.type];
-                                return (
-                                    <div
-                                        key={resource.id}
-                                        onClick={() => { setSelectedResource(resource); setFormattedContent(''); }}
-                                        className={cn(
-                                            "p-4 rounded-2xl border cursor-pointer transition-all hover:shadow-md group relative",
-                                            selectedResource?.id === resource.id
-                                                ? "bg-blue-50 border-blue-200 shadow-sm"
-                                                : "bg-white border-gray-100 hover:border-blue-100"
-                                        )}
-                                    >
-                                        <div className="flex justify-between items-center mb-2">
-                                            <div className="flex items-center gap-2">
+                ) : filteredResources.length === 0 ? (
+                    <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                            <Icons.FileText className="mx-auto mb-4 text-gray-300" size={64} />
+                            <p className="text-lg font-bold text-gray-400">No resources yet</p>
+                            <p className="text-sm text-gray-400 mt-2">Click "Add Resource" to get started</p>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
+                        {filteredResources.map(resource => {
+                            const config = TYPE_CONFIG[resource.type];
+                            if (!config) return null; // Skip resources with invalid types
+                            return (
+                                <div
+                                    key={resource.id}
+                                    onClick={() => { setSelectedResource(resource); }}
+                                    className="bg-white rounded-3xl p-6 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
+                                >
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn("p-3 rounded-2xl transition-colors", config.bgColor)}>
+                                                <config.icon className={config.color} size={24} />
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-wrap">
                                                 <span className={cn(
-                                                    "px-2 py-1 rounded-md text-[10px] font-bold uppercase border",
+                                                    "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border",
                                                     config.bgColor, config.color
                                                 )}>
                                                     {config.label}
                                                 </span>
                                                 {resource.unitId && (
-                                                    <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-gray-100 text-gray-500 border border-gray-200">
-                                                        {resource.unitId.replace('unit-', 'U')}
+                                                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
+                                                        {resource.unitId.replace('unit-', 'Unit ')}
                                                     </span>
                                                 )}
-                                                {resource.partNumber && (
-                                                    <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-amber-50 text-amber-600 border border-amber-200">
-                                                        P{resource.partNumber}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <div className="flex gap-1">
-                                                <button
-                                                    onClick={(e) => handleOpenEditModal(e, resource)}
-                                                    className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
-                                                    title="Edit"
-                                                >
-                                                    <Icons.Edit size={14} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => handleDeleteClick(e, resource.id)}
-                                                    className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
-                                                    title="Delete"
-                                                >
-                                                    <Icons.Trash2 size={14} />
-                                                </button>
                                             </div>
                                         </div>
-                                        <p className="text-sm font-semibold text-gray-800 line-clamp-2 mb-2">{resource.title}</p>
-                                        {resource.content && (
-                                            <p className="text-xs text-gray-400 line-clamp-2">{resource.content.substring(0, 100)}...</p>
-                                        )}
+                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={(e) => handleOpenEditModal(e, resource)}
+                                                className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-colors"
+                                                title="Edit"
+                                            >
+                                                <Icons.Edit size={16} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => handleDeleteClick(e, resource.id)}
+                                                className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-colors"
+                                                title="Delete"
+                                            >
+                                                <Icons.Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     </div>
-                                );
-                            })
-                        )}
-                    </div>
-                </div>
 
-                {/* Right Panel: Content Display */}
-                <div className="w-7/12 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative">
-                    {selectedResource ? (
-                        <div className="flex flex-col h-full">
-                            {/* Resource Header */}
-                            <div className="p-6 border-b border-gray-100 bg-gray-50/30 shrink-0">
-                                <div className="flex items-center gap-3 mb-3">
-                                    {(() => {
-                                        const config = TYPE_CONFIG[selectedResource.type];
-                                        return (
-                                            <span className={cn(
-                                                "px-3 py-1.5 rounded-lg text-xs font-bold border",
-                                                config.bgColor, config.color
-                                            )}>
-                                                {config.label}
+                                    <div className="flex-grow flex flex-col">
+                                        <div className="flex-grow">
+                                            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                                                {resource.title}
+                                            </h3>
+                                        </div>
+
+                                        <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400">
+                                            <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
+                                            <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
+                                                Read More <Icons.ArrowRight size={12} />
                                             </span>
-                                        );
-                                    })()}
-                                    {isFormatting && (
-                                        <span className="flex items-center gap-2 text-sm text-gray-400">
-                                            <Icons.Loader2 className="animate-spin" size={16} />
-                                            Formatting...
-                                        </span>
-                                    )}
+                                        </div>
+                                    </div>
                                 </div>
-                                <h2 className="text-lg font-black text-gray-900 leading-tight">
-                                    {selectedResource.title}
-                                </h2>
-                            </div>
-
-                            {/* Content Area */}
-                            <div className="flex-1 overflow-y-auto p-8 bg-white no-scrollbar">
-                                {formattedContent ? (
-                                    <div className="w-full prose prose-sm max-w-none">
-                                        <ReactMarkdown
-                                            remarkPlugins={[remarkGfm]}
-                                            components={{
-                                                h1: ({ node, ...props }) => <h1 className="text-2xl font-bold text-gray-900 mt-6 mb-4" {...props} />,
-                                                h2: ({ node, ...props }) => <h2 className="text-xl font-bold text-gray-800 mt-5 mb-3" {...props} />,
-                                                h3: ({ node, ...props }) => <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2" {...props} />,
-                                                p: ({ node, ...props }) => <p className="text-gray-600 leading-relaxed mb-4" {...props} />,
-                                                ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-2 mb-4 text-gray-600" {...props} />,
-                                                ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-2 mb-4 text-gray-600" {...props} />,
-                                                li: ({ node, ...props }) => <li className="pl-2" {...props} />,
-                                                strong: ({ node, ...props }) => <span className="font-bold text-gray-900" {...props} />,
-                                                blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-500 my-4" {...props} />,
-                                                code: ({ node, ...props }) => <code className="bg-gray-100 text-blue-600 px-1 py-0.5 rounded text-sm font-mono" {...props} />,
-                                                table: ({ node, ...props }) => <table className="w-full border-collapse border border-gray-200 my-4 rounded-lg overflow-hidden" {...props} />,
-                                                thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
-                                                tbody: ({ node, ...props }) => <tbody {...props} />,
-                                                tr: ({ node, ...props }) => <tr className="border-b border-gray-200" {...props} />,
-                                                th: ({ node, ...props }) => <th className="px-4 py-2 text-left text-sm font-bold text-gray-700 border border-gray-200" {...props} />,
-                                                td: ({ node, ...props }) => <td className="px-4 py-2 text-sm text-gray-600 border border-gray-200" {...props} />
-                                            }}
-                                        >
-                                            {formattedContent}
-                                        </ReactMarkdown>
-                                    </div>
-                                ) : isFormatting ? (
-                                    <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
-                                        <Icons.Loader2 className="animate-spin text-blue-500" size={48} />
-                                        <p className="font-bold text-xs uppercase tracking-widest">Formatting your content...</p>
-                                    </div>
-                                ) : selectedResource.content ? (
-                                    <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
-                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
-                                            <Icons.FileText size={32} />
-                                        </div>
-                                        <p className="font-bold text-xs uppercase tracking-widest">Processing...</p>
-                                    </div>
-                                ) : (
-                                    <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
-                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
-                                            <Icons.Edit size={32} />
-                                        </div>
-                                        <p className="font-bold text-xs uppercase tracking-widest">No content yet</p>
-                                        <p className="text-gray-400 text-sm">Edit this resource to add content</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
-                            <Icons.ArrowLeft size={32} />
-                            <p className="font-bold text-xs uppercase tracking-widest">Select a resource to view details</p>
-                        </div>
-                    )}
-                </div>
-
+                            );
+                        })}
+                    </div>
+                )}
             </div>
 
             {/* Add/Edit Resource Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-6 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-black text-gray-900">{editingId ? 'Edit Resource' : 'Add New Resource'}</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                                <Icons.X size={24} />
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl p-8 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-8">
+                            <div>
+                                <h2 className="text-2xl font-black text-gray-900 tracking-tight">{editingId ? 'Edit Resource' : 'Add New Resource'}</h2>
+                                <p className="text-sm text-gray-500 mt-1">Fill in the details below to {editingId ? 'update' : 'create'} a resource.</p>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                <Icons.X size={24} className="text-gray-400" />
                             </button>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subject</label>
-                                <div className="relative">
-                                    <select
-                                        value={formData.subjectId}
-                                        onChange={(e) => setFormData({ ...formData, subjectId: e.target.value })}
-                                        className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
-                                    >
-                                        <option value="">Select Subject...</option>
-                                        {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
-                                    </select>
-                                    <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Subject</label>
+                                    <div className="relative">
+                                        <select
+                                            value={formData.subjectId}
+                                            onChange={(e) => setFormData({ ...formData, subjectId: e.target.value })}
+                                            className="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none transition-all hover:bg-gray-100"
+                                        >
+                                            <option value="">Select Subject...</option>
+                                            {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
+                                        </select>
+                                        <Icons.ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Unit <span className="text-gray-300 font-normal normal-case">(Optional)</span></label>
+                                    <div className="flex gap-2">
+                                        {[1, 2, 3, 4, 5].map(unit => {
+                                            const unitId = `unit-${unit}`;
+                                            const isActive = formData.unitId === unitId;
+                                            return (
+                                                <button
+                                                    key={unit}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, unitId: isActive ? '' : unitId })}
+                                                    className={cn(
+                                                        "flex-1 h-10 rounded-xl text-xs font-bold transition-all border",
+                                                        isActive
+                                                            ? "bg-gray-900 text-white border-gray-900 shadow-md"
+                                                            : "bg-white text-gray-400 border-gray-100 hover:border-gray-200 hover:bg-gray-50"
+                                                    )}
+                                                >
+                                                    U{unit}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Type</label>
+                                    <div className="flex gap-2">
+                                        {(['study_note', 'case_study', 'project'] as VaultResourceType[]).map(type => {
+                                            const config = TYPE_CONFIG[type];
+                                            const isActive = formData.type === type;
+                                            return (
+                                                <button
+                                                    key={type}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, type })}
+                                                    className={cn(
+                                                        "flex-1 px-2 py-2.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1.5",
+                                                        isActive
+                                                            ? `${config.bgColor} ${config.color} border-current`
+                                                            : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-300"
+                                                    )}
+                                                >
+                                                    <config.icon size={14} />
+                                                    <span className="hidden lg:inline">{config.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Type</label>
-                                <div className="flex gap-2">
-                                    {(['study_note', 'case_study', 'project'] as VaultResourceType[]).map(type => {
-                                        const config = TYPE_CONFIG[type];
-                                        const isActive = formData.type === type;
-                                        return (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, type })}
-                                                className={cn(
-                                                    "flex-1 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-2",
-                                                    isActive
-                                                        ? `${config.bgColor} ${config.color} border-current`
-                                                        : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-300"
-                                                )}
-                                            >
-                                                <config.icon size={14} />
-                                                {config.label}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Unit <span className="text-gray-300">(Optional)</span></label>
-                                <div className="flex gap-2">
-                                    {[1, 2, 3, 4, 5].map(unit => {
-                                        const unitId = `unit-${unit}`;
-                                        const isActive = formData.unitId === unitId;
-                                        return (
-                                            <button
-                                                key={unit}
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, unitId: isActive ? '' : unitId })}
-                                                className={cn(
-                                                    "flex-1 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border",
-                                                    isActive
-                                                        ? "bg-gray-900 text-white border-gray-900"
-                                                        : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-300"
-                                                )}
-                                            >
-                                                Unit {unit}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Part <span className="text-gray-300">(Optional)</span></label>
-                                <div className="flex gap-2">
-                                    {[1, 2, 3, 4, 5].map(part => {
-                                        const isActive = formData.partNumber === part;
-                                        return (
-                                            <button
-                                                key={part}
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, partNumber: isActive ? undefined : part })}
-                                                className={cn(
-                                                    "flex-1 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border",
-                                                    isActive
-                                                        ? "bg-amber-500 text-white border-amber-500"
-                                                        : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-300"
-                                                )}
-                                            >
-                                                Part {part}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Title</label>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Title</label>
                                 <input
                                     type="text"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    placeholder="Enter title..."
-                                    className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium"
+                                    placeholder="Enter a descriptive title..."
+                                    className="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Content</label>
-                                <textarea
-                                    rows={8}
-                                    value={formData.content}
-                                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                    placeholder="Enter your content here... (supports markdown)"
-                                    className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium resize-none"
-                                />
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Resource Link</label>
+                                <div className="relative">
+                                    <input
+                                        type="url"
+                                        value={formData.link || ''}
+                                        onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                                        placeholder="https://..."
+                                        className="w-full p-4 pl-10 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
+                                    />
+                                    <Icons.Link className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                </div>
+                                <p className="text-xs text-gray-400 mt-2 pl-1">Paste the deployed HTML file URL here.</p>
                             </div>
 
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving || !formData.title || !formData.subjectId}
-                                className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                                className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-[22px] text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 active:scale-[0.98]"
                             >
-                                {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Edit size={16} /> : <Icons.PlusCircle size={16} />)}
+                                {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Save size={18} /> : <Icons.Plus size={18} />)}
                                 {isSaving ? (editingId ? 'Updating...' : 'Saving...') : (editingId ? 'Update Resource' : 'Add Resource')}
                             </button>
                         </div>
@@ -694,7 +530,87 @@ export function VaultContent() {
                 </div>
             )}
 
-            {/* Delete Confirmation Modal */}
+            {/* View Resource Modal (Reading Mode) */}
+            {selectedResource && !isModalOpen && !deleteConfirmId && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[32px] w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white/50 backdrop-blur-xl rounded-t-[32px]">
+                            <div className="flex items-start gap-4">
+                                <div className={cn("p-3 rounded-2xl shrink-0 mt-1", TYPE_CONFIG[selectedResource.type].bgColor)}>
+                                    {React.createElement(TYPE_CONFIG[selectedResource.type].icon, {
+                                        className: TYPE_CONFIG[selectedResource.type].color,
+                                        size: 24
+                                    })}
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className={cn(
+                                            "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border",
+                                            TYPE_CONFIG[selectedResource.type].bgColor,
+                                            TYPE_CONFIG[selectedResource.type].color
+                                        )}>
+                                            {TYPE_CONFIG[selectedResource.type].label}
+                                        </span>
+                                        {selectedResource.unitId && (
+                                            <span className="text-xs font-bold text-gray-400">
+                                                • Unit {selectedResource.unitId.replace('unit-', '')}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h2 className="text-xl font-black text-gray-900 leading-tight">
+                                        {selectedResource.title}
+                                    </h2>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => {
+                                        if (selectedResource.link) {
+                                            window.open(selectedResource.link, '_blank');
+                                        }
+                                    }}
+                                    className="p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-blue-600"
+                                    title="Open in new tab"
+                                >
+                                    <Icons.ExternalLink size={20} />
+                                </button>
+                                <button
+                                    onClick={() => setSelectedResource(null)}
+                                    className="p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900"
+                                >
+                                    <Icons.X size={24} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="flex-1 overflow-y-auto bg-gray-50 rounded-b-[32px] relative">
+                            {selectedResource.link ? (
+                                <iframe
+                                    src={selectedResource.link}
+                                    className="w-full h-full border-0"
+                                    title="Resource Preview"
+                                    allow="autoplay; encrypted-media"
+                                />
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <Icons.Link className="text-gray-400" size={32} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-900">No Link Available</h3>
+                                        <p className="text-gray-500 max-w-sm mt-2">
+                                            This resource doesn't have a valid link attached to it.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {deleteConfirmId && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-in zoom-in-95 duration-200 border border-gray-100">

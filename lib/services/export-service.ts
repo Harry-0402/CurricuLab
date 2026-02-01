@@ -328,29 +328,20 @@ export class PlatformExportService {
         paragraphs.push(new Paragraph({
             children: [
                 new TextRun({ text: r.type.replace('_', ' ').toUpperCase(), bold: true, color: "2563EB" }),
-                new TextRun({ text: r.unitId ? ` | ${r.unitId.replace('unit-', 'Unit ')} ` : "", color: "6B7280" }),
-                new TextRun({ text: r.partNumber ? ` | Part ${r.partNumber} ` : "", color: "D97706" })
+                new TextRun({ text: r.unitId ? ` | ${r.unitId.replace('unit-', 'Unit ')} ` : "", color: "6B7280" })
             ],
             spacing: { after: 200 }
         }));
 
-        // Content
-        const content = r.formattedContent || r.content || "";
-        const lines = content.split('\n');
-
-        for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed) continue;
-
-            if (trimmed.startsWith('# ')) {
-                paragraphs.push(new Paragraph({ text: trimmed.replace('# ', '').trim(), heading: HeadingLevel.HEADING_2, spacing: { before: 200, after: 100 } }));
-            } else if (trimmed.startsWith('## ')) {
-                paragraphs.push(new Paragraph({ text: trimmed.replace('## ', '').trim(), heading: HeadingLevel.HEADING_3, spacing: { before: 200, after: 100 } }));
-            } else if (trimmed.startsWith('- ')) {
-                paragraphs.push(new Paragraph({ children: this.parseTextRuns(trimmed.substring(2)), bullet: { level: 0 } }));
-            } else {
-                paragraphs.push(new Paragraph({ children: this.parseTextRuns(trimmed), spacing: { after: 100 } }));
-            }
+        // Resource Link
+        if (r.link) {
+            paragraphs.push(new Paragraph({
+                children: [
+                    new TextRun({ text: "Resource URL: ", bold: true }),
+                    new TextRun({ text: r.link, color: "2563EB", underline: { type: "single" } })
+                ],
+                spacing: { after: 100 }
+            }));
         }
 
         paragraphs.push(new Paragraph({ text: "", spacing: { after: 400 } }));
@@ -422,11 +413,10 @@ export class PlatformExportService {
                             <div class="badges">
                                 <span class="badge type">${r.type.replace('_', ' ').toUpperCase()}</span>
                                 ${r.unitId ? `<span class="badge unit">${r.unitId.replace('unit-', 'Unit ')}</span>` : ''}
-                                ${r.partNumber ? `<span class="badge part">Part ${r.partNumber}</span>` : ''}
                             </div>
                         </div>
                         <div class="resource-content">
-                            ${this.markdownToHtml(r.formattedContent || r.content || "*No content provided.*")}
+                            ${r.link ? `<p><strong>Resource URL:</strong> <a href="${r.link}" target="_blank" style="color: #2563EB; text-decoration: underline;">${r.link}</a></p>` : '<p><em>No link provided.</em></p>'}
                         </div>
                     </div>
                 `).join('')}
