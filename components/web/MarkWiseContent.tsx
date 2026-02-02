@@ -21,6 +21,7 @@ export function MarkWiseContent() {
         unit: '',
         driveLink: ''
     });
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     // Load subjects and first subject's resources in parallel
     useEffect(() => {
@@ -42,6 +43,7 @@ export function MarkWiseContent() {
                 setUnits(unitData);
                 setIsLoadingResources(false);
             }
+            setIsInitialLoad(false);
         };
         loadInitialData();
     }, []);
@@ -59,10 +61,10 @@ export function MarkWiseContent() {
 
     // Load resources when active subject changes (skip initial load)
     useEffect(() => {
-        const loadResources = async () => {
-            // Skip if this is the initial load (handled above)
-            if (!activeSubject || (resources.length === 0 && activeSubject === subjects[0]?.id)) return;
+        // Skip the very first render (handled by initial load above)
+        if (isInitialLoad || !activeSubject) return;
 
+        const loadResources = async () => {
             setIsLoadingResources(true);
             const [resourceData, unitData] = await Promise.all([
                 MarkWiseResourceService.getBySubject(activeSubject),
@@ -73,7 +75,7 @@ export function MarkWiseContent() {
             setIsLoadingResources(false);
         };
         loadResources();
-    }, [activeSubject]);
+    }, [activeSubject, isInitialLoad]);
 
     const handleSubmit = async () => {
         try {

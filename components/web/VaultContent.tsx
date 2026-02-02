@@ -42,6 +42,7 @@ export function VaultContent() {
     // Delete confirmation state
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
     const [showExportMenu, setShowExportMenu] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -59,15 +60,16 @@ export function VaultContent() {
                 setResources(data);
             }
             setLoading(false);
+            setIsInitialLoad(false);
         };
         loadInitialData();
     }, []);
 
     useEffect(() => {
-        const loadResources = async () => {
-            // Skip if activeSubjectId hasn't been set yet (handled by initial load)
-            if (!activeSubjectId || resources.length === 0 && activeSubjectId === subjects[0]?.id) return;
+        // Skip the very first render (handled by initial load above)
+        if (isInitialLoad || !activeSubjectId) return;
 
+        const loadResources = async () => {
             setLoading(true);
             const data = await getVaultResources({
                 subjectId: activeSubjectId,
@@ -78,7 +80,7 @@ export function VaultContent() {
             setLoading(false);
         };
         loadResources();
-    }, [activeSubjectId, selectedType, selectedUnitId]);
+    }, [activeSubjectId, selectedType, selectedUnitId, isInitialLoad]);
 
 
 
