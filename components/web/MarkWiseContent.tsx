@@ -61,10 +61,10 @@ export function MarkWiseContent() {
 
     // Load resources when active subject changes (skip initial load)
     useEffect(() => {
-        // Skip the very first render (handled by initial load above)
-        if (isInitialLoad || !activeSubject) return;
-
         const loadResources = async () => {
+            // Skip the very first render (handled by initial load above)
+            if (isInitialLoad || !activeSubject) return;
+
             setIsLoadingResources(true);
             const [resourceData, unitData] = await Promise.all([
                 MarkWiseResourceService.getBySubject(activeSubject),

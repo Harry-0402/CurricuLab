@@ -145,7 +145,7 @@ export interface Assignment {
   platform?: 'ERP' | 'GCR' | 'Other';
 }
 
-export type VaultResourceType = 'study_note' | 'case_study' | 'project';
+export type VaultResourceType = 'study_note' | 'case_study' | 'project' | 'other_resources';
 
 export interface VaultResource {
   id: string;

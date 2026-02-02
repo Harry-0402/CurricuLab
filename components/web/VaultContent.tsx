@@ -14,7 +14,8 @@ import remarkGfm from 'remark-gfm';
 const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: string; bgColor: string }> = {
     study_note: { label: 'Study Note', icon: Icons.FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
     case_study: { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
-    project: { label: 'Project', icon: Icons.FolderKanban, color: 'text-green-600', bgColor: 'bg-green-50' }
+    project: { label: 'Project', icon: Icons.FolderKanban, color: 'text-green-600', bgColor: 'bg-green-50' },
+    other_resources: { label: 'Other Resources', icon: Icons.Link, color: 'text-orange-600', bgColor: 'bg-orange-50' }
 };
 
 export function VaultContent() {
@@ -66,10 +67,10 @@ export function VaultContent() {
     }, []);
 
     useEffect(() => {
-        // Skip the very first render (handled by initial load above)
-        if (isInitialLoad || !activeSubjectId) return;
-
         const loadResources = async () => {
+            // Skip the very first render (handled by initial load above)
+            if (isInitialLoad || !activeSubjectId) return;
+
             setLoading(true);
             const data = await getVaultResources({
                 subjectId: activeSubjectId,
@@ -299,7 +300,7 @@ export function VaultContent() {
                     >
                         All
                     </button>
-                    {(['study_note', 'case_study', 'project'] as VaultResourceType[]).map(type => {
+                    {(['study_note', 'case_study', 'project', 'other_resources'] as VaultResourceType[]).map(type => {
                         const config = TYPE_CONFIG[type];
                         const isActive = selectedType === type;
                         return (
@@ -468,27 +469,22 @@ export function VaultContent() {
 
                                 <div>
                                     <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Type</label>
-                                    <div className="flex gap-2">
-                                        {(['study_note', 'case_study', 'project'] as VaultResourceType[]).map(type => {
-                                            const config = TYPE_CONFIG[type];
-                                            const isActive = formData.type === type;
-                                            return (
-                                                <button
-                                                    key={type}
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, type })}
-                                                    className={cn(
-                                                        "flex-1 px-2 py-2.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1.5",
-                                                        isActive
-                                                            ? `${config.bgColor} ${config.color} border-current`
-                                                            : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-300"
-                                                    )}
-                                                >
-                                                    <config.icon size={14} />
-                                                    <span className="hidden lg:inline">{config.label}</span>
-                                                </button>
-                                            );
-                                        })}
+                                    <div className="relative">
+                                        <select
+                                            value={formData.type}
+                                            onChange={(e) => setFormData({ ...formData, type: e.target.value as VaultResourceType })}
+                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
+                                        >
+                                            {(['study_note', 'case_study', 'project', 'other_resources'] as VaultResourceType[]).map(type => {
+                                                const config = TYPE_CONFIG[type];
+                                                return (
+                                                    <option key={type} value={type}>
+                                                        {config.label}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                     </div>
                                 </div>
                             </div>
