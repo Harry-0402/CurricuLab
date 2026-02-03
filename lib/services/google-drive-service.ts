@@ -75,8 +75,11 @@ export const GoogleDriveService = {
             const drive = this.getAuthenticatedClient(tokens);
             const { fileBuffer, fileName, mimeType, metadata } = input;
 
-            // 1. Create/Get 'CurricuLab Materials' root folder
-            const rootFolderId = await this.createOrGetFolder(drive, 'CurricuLab Materials', null);
+            // 1. Use root folder from env
+            const rootFolderId = process.env.GOOGLE_DRIVE_CLASSROOM_FOLDER_ID;
+            if (!rootFolderId) {
+                throw new Error('GOOGLE_DRIVE_CLASSROOM_FOLDER_ID is not set');
+            }
 
             // 2. Create/Get Subject folder
             const subjectFolderId = await this.createOrGetFolder(drive, metadata.subjectTitle, rootFolderId);
