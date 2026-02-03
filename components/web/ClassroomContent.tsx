@@ -467,13 +467,24 @@ export function ClassroomContent() {
                         <p className="text-4xl font-black text-gray-900 tracking-tight">Classroom</p>
                         <p className="text-sm text-gray-500 mt-1">Upload and access study materials</p>
                     </div>
-                    <button
-                        onClick={() => setIsUploadModalOpen(true)}
-                        className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
-                    >
-                        <Icons.Upload size={18} />
-                        <span>Upload Material</span>
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <a
+                            href="https://drive.google.com/drive/u/0/folders/1gFFHW_E0kCMtaqodDHvYEP8vTGucKYff"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-6 py-4 bg-white text-gray-900 border border-gray-200 rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95"
+                        >
+                            <Icons.ExternalLink size={18} />
+                            <span>View Resources</span>
+                        </a>
+                        <button
+                            onClick={() => setIsUploadModalOpen(true)}
+                            className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
+                        >
+                            <Icons.Upload size={18} />
+                            <span>Upload Material</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Filters */}
