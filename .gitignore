@@ -44,3 +44,7 @@ next-env.d.ts
 *_content/
 *.zip
 *.txt
+
+# google credentials - DO NOT COMMIT
+.google-credentials/
+curriculab-*.json

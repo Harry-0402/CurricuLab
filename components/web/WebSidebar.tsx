@@ -30,6 +30,7 @@ const tools: NavItem[] = [
     { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
     { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb },
     { label: 'Career Gateway', href: '/tools/career', icon: Icons.Briefcase },
+    { label: 'Classroom', href: '/classroom', icon: Icons.FolderOpen },
 ];
 
 export function WebSidebar() {
