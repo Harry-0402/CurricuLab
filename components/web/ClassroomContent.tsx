@@ -469,7 +469,7 @@ export function ClassroomContent() {
                     </div>
                     <div className="flex items-center gap-3">
                         <a
-                            href="https://drive.google.com/drive/u/0/folders/1gFFHW_E0kCMtaqodDHvYEP8vTGucKYff"
+                            href={`https://drive.google.com/drive/folders/${process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLASSROOM_FOLDER_ID}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 px-6 py-4 bg-white text-gray-900 border border-gray-200 rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95"

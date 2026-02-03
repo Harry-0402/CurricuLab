@@ -76,9 +76,9 @@ export const GoogleDriveService = {
             const { fileBuffer, fileName, mimeType, metadata } = input;
 
             // 1. Use root folder from env
-            const rootFolderId = process.env.GOOGLE_DRIVE_CLASSROOM_FOLDER_ID;
+            const rootFolderId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLASSROOM_FOLDER_ID;
             if (!rootFolderId) {
-                throw new Error('GOOGLE_DRIVE_CLASSROOM_FOLDER_ID is not set');
+                throw new Error('NEXT_PUBLIC_GOOGLE_DRIVE_CLASSROOM_FOLDER_ID is not set');
             }
 
             // 2. Create/Get Subject folder
