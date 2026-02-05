@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Subject, VaultResource, VaultResourceType } from '@/types';
 import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
-import { useToast } from '@/components/shared/Toast';
+import { toast } from 'sonner';
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -19,7 +19,6 @@ const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: 
 };
 
 export function VaultContent() {
-    const { showToast } = useToast();
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [activeSubjectId, setActiveSubjectId] = useState<string>('');
     const [resources, setResources] = useState<VaultResource[]>([]);
@@ -137,7 +136,7 @@ export function VaultContent() {
         }
 
         if (saved) {
-            showToast(editingId ? 'Resource updated successfully!' : 'Resource added successfully!', 'success');
+            toast.success(editingId ? 'Resource updated successfully!' : 'Resource added successfully!');
             setIsModalOpen(false);
 
             // Optimistic UI update - add/update locally instead of refetching all
@@ -168,7 +167,7 @@ export function VaultContent() {
             if (selectedResource?.id === deleteConfirmId) {
                 setSelectedResource(null);
             }
-            showToast('Resource deleted', 'info');
+            toast.info('Resource deleted');
         }
         setDeleteConfirmId(null);
     };

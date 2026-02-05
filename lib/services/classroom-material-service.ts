@@ -80,16 +80,28 @@ export const ClassroomMaterialService = {
     },
 
     /**
-     * Get all active materials (optionally filtered by file type)
+     * Get all active materials (optionally filtered)
      */
-    async getAll(fileType?: string): Promise<ClassroomMaterial[]> {
+    async getAll(filters?: {
+        subjectId?: string;
+        category?: string;
+        fileType?: string;
+    }): Promise<ClassroomMaterial[]> {
         let query = supabase
             .from('classroom_materials')
             .select('*')
             .eq('is_active', true);
 
-        if (fileType && fileType !== 'all') {
-            query = query.eq('file_type', fileType);
+        if (filters?.subjectId && filters.subjectId !== 'all') {
+            query = query.eq('subject_id', filters.subjectId);
+        }
+
+        if (filters?.category && filters.category !== 'all') {
+            query = query.eq('material_category', filters.category);
+        }
+
+        if (filters?.fileType && filters.fileType !== 'all') {
+            query = query.eq('file_type', filters.fileType);
         }
 
         const { data, error } = await query.order('created_at', { ascending: false });

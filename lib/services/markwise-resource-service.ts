@@ -25,34 +25,26 @@ export interface CreateMarkWiseResourceInput {
 
 export const MarkWiseResourceService = {
     /**
-     * Get all resources for a specific subject
+     * Get all active resources (optionally filtered)
      */
-    async getBySubject(subjectId: string): Promise<MarkWiseResource[]> {
-        const { data, error } = await supabase
+    async getAll(filters?: {
+        subjectId?: string;
+        unitId?: string;
+    }): Promise<MarkWiseResource[]> {
+        let query = supabase
             .from('markwise_resources')
             .select('*')
-            .eq('subject_id', subjectId)
-            .eq('is_active', true)
-            .order('created_at', { ascending: false });
+            .eq('is_active', true);
 
-        if (error) {
-            console.error('Error fetching markwise resources:', error);
-            return [];
+        if (filters?.subjectId) {
+            query = query.eq('subject_id', filters.subjectId);
         }
 
-        return data || [];
-    },
+        if (filters?.unitId) {
+            query = query.eq('unit_id', filters.unitId);
+        }
 
-    /**
-     * Get all resources for a specific unit
-     */
-    async getByUnit(unitId: string): Promise<MarkWiseResource[]> {
-        const { data, error } = await supabase
-            .from('markwise_resources')
-            .select('*')
-            .eq('unit_id', unitId)
-            .eq('is_active', true)
-            .order('created_at', { ascending: false });
+        const { data, error } = await query.order('created_at', { ascending: false });
 
         if (error) {
             console.error('Error fetching markwise resources:', error);

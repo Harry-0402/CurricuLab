@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
+import { toast } from 'sonner';
 import { getSubjects, getUnits } from '@/lib/services/app.service';
 import { MarkWiseResourceService, MarkWiseResource } from '@/lib/services/markwise-resource-service';
 import { Subject, Unit } from '@/types';
@@ -36,7 +37,7 @@ export function MarkWiseContent() {
                 // Load resources and units immediately in parallel
                 setIsLoadingResources(true);
                 const [resourceData, unitData] = await Promise.all([
-                    MarkWiseResourceService.getBySubject(firstSubjectId),
+                    MarkWiseResourceService.getAll({ subjectId: firstSubjectId }),
                     getUnits(firstSubjectId)
                 ]);
                 setResources(resourceData);
@@ -67,7 +68,7 @@ export function MarkWiseContent() {
 
             setIsLoadingResources(true);
             const [resourceData, unitData] = await Promise.all([
-                MarkWiseResourceService.getBySubject(activeSubject),
+                MarkWiseResourceService.getAll({ subjectId: activeSubject }),
                 getUnits(activeSubject)
             ]);
             setResources(resourceData);
@@ -93,11 +94,11 @@ export function MarkWiseContent() {
                 }
                 setIsAddModalOpen(false);
                 setFormData({ subject: '', unit: '', driveLink: '' });
-                alert('Resource added successfully!');
+                toast.success('Resource added successfully!');
             }
         } catch (error: any) {
             console.error('Error creating resource:', error);
-            alert(`Failed to create resource: ${error.message || 'Unknown error'}`);
+            toast.error(`Failed to create resource: ${error.message || 'Unknown error'}`);
         }
     };
 
@@ -111,9 +112,13 @@ export function MarkWiseContent() {
             if (success) {
                 // Optimistic UI update - remove locally
                 setResources(prev => prev.filter(r => r.id !== resourceId));
+                toast.success('Resource deleted');
+            } else {
+                toast.error('Failed to delete resource');
             }
         } catch (error) {
             console.error('Error deleting resource:', error);
+            toast.error('An error occurred while deleting');
         }
     };
 
