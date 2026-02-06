@@ -47,17 +47,19 @@ export function MaterialCard({
                     {getFileIcon(material.file_type)}
                 </div>
                 <div className="flex gap-1">
-                    {/* Edit Button - Always Visible */}
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit(material);
-                        }}
-                        className="p-2 hover:bg-blue-50 rounded-lg transition-colors group/edit"
-                        title="Edit material"
-                    >
-                        <Icons.Edit className="w-4 h-4 text-gray-400 group-hover/edit:text-blue-600" />
-                    </button>
+                    {/* Edit Button - Only for owner */}
+                    {currentUser?.id === material.uploaded_by && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit(material);
+                            }}
+                            className="p-2 hover:bg-blue-50 rounded-lg transition-colors group/edit"
+                            title="Edit material"
+                        >
+                            <Icons.Edit className="w-4 h-4 text-gray-400 group-hover/edit:text-blue-600" />
+                        </button>
+                    )}
                     {/* Delete Button - Only for owner */}
                     {currentUser?.id === material.uploaded_by && (
                         <button

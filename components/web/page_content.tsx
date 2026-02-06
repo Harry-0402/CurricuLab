@@ -45,7 +45,7 @@ export default function WebHomePage() {
         <WebAppShell>
             <div className="flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <TimetableWidget entries={timetable} />
-                <FacultyLineup entries={timetable} />
+
                 <AnnouncementWidget announcements={announcements} />
             </div>
         </WebAppShell>

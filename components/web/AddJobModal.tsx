@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { JobService, JobListing } from '@/lib/services/job-service';
+import { AiService } from '@/lib/services/ai-service';
 import { toast } from 'sonner';
 
 interface AddJobModalProps {
@@ -38,6 +39,38 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
             });
         }
     }, [initialData, isOpen]);
+
+    const [pasteContent, setPasteContent] = useState('');
+    const [showPaste, setShowPaste] = useState(false);
+
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+    const handleSmartPaste = async () => {
+        if (!pasteContent.trim()) return;
+        setIsAnalyzing(true);
+
+        try {
+            const data = await AiService.parseJobDescription(pasteContent);
+
+            setFormData(prev => ({
+                ...prev,
+                title: data.title || prev.title,
+                company: data.company || prev.company,
+                location: data.location || prev.location,
+                salary_range: data.salary_range || prev.salary_range,
+                url: data.url || prev.url,
+                type: (data.type as any) || prev.type
+            }));
+
+            toast.success('Smart Paste: AI extracted details!');
+            setShowPaste(false);
+        } catch (error) {
+            console.error(error);
+            toast.error('AI Extraction Failed. Please try manually.');
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -85,6 +118,51 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
                 </div>
 
                 <div className="p-6 overflow-y-auto">
+                    {/* Smart Paste Toggle */}
+                    {!initialData && (
+                        <div className="mb-6">
+                            <button
+                                onClick={() => setShowPaste(!showPaste)}
+                                className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl text-indigo-700 font-bold text-sm hover:shadow-md transition-all group"
+                            >
+                                <span className="flex items-center gap-2">
+                                    <Icons.Sparkles size={16} className={showPaste ? "text-indigo-600" : "animate-pulse text-indigo-600"} />
+                                    Smart Paste from WhatsApp
+                                </span>
+                                <Icons.ChevronDown size={16} className={`transition-transform duration-300 ${showPaste ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            <div className={`grid transition-all duration-300 ease-in-out ${showPaste ? 'grid-rows-[1fr] opacity-100 mt-3' : 'grid-rows-[0fr] opacity-0'}`}>
+                                <div className="overflow-hidden">
+                                    <textarea
+                                        className="w-full p-4 bg-gray-50 border-2 border-indigo-100 focus:border-indigo-500 rounded-xl text-sm min-h-[120px] outline-none transition-all placeholder:text-gray-400"
+                                        placeholder="Paste the message here... (e.g. 'Hiring Java Dev at Google, Bangalore...')"
+                                        value={pasteContent}
+                                        onChange={(e) => setPasteContent(e.target.value)}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleSmartPaste}
+                                        disabled={isAnalyzing}
+                                        className="w-full py-3 mt-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2"
+                                    >
+                                        {isAnalyzing ? (
+                                            <>
+                                                <Icons.Loader2 size={14} className="animate-spin" />
+                                                <span>Analyzing with AI...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Icons.Wand2 size={14} />
+                                                <span>Auto-Fill with AI</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">Job Title</label>

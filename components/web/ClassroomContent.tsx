@@ -30,6 +30,7 @@ export function ClassroomContent() {
     // Filter State
     const [activeSubject, setActiveSubject] = useState('all');
     const [activeCategory, setActiveCategory] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Modal State
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -78,21 +79,26 @@ export function ClassroomContent() {
 
     // Load Materials on Filter Change
     useEffect(() => {
-        loadMaterials();
+        const timer = setTimeout(() => {
+            loadMaterials();
+        }, 300); // Debounce search
+
         // Load units if specific subject selected
         if (activeSubject !== 'all') {
             getUnits(activeSubject).then(setUnits).catch(console.error);
         } else {
             setUnits([]);
         }
-    }, [activeSubject, activeCategory]);
+        return () => clearTimeout(timer);
+    }, [activeSubject, activeCategory, searchQuery]);
 
     const loadMaterials = async () => {
         setIsLoading(true);
         try {
             const data = await ClassroomMaterialService.getAll({
                 subjectId: activeSubject,
-                category: activeCategory
+                category: activeCategory,
+                searchQuery: searchQuery || undefined
             });
             setMaterials(data);
         } catch (error) {
@@ -187,48 +193,70 @@ export function ClassroomContent() {
                     </div>
                 </div>
 
-                {/* Filters */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                    {/* Subject Filter */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        <button
-                            onClick={() => setActiveSubject('all')}
-                            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${activeSubject === 'all'
-                                ? 'bg-blue-600 text-white shadow-sm'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
-                        >
-                            All Subjects
-                        </button>
-                        {subjects.map((subject) => (
+                {/* Search & Filters */}
+                <div className="flex flex-col gap-4">
+                    {/* Search Bar */}
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Search materials by title or description..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-[22px] text-sm font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400 placeholder:font-medium"
+                        />
+                        <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                        {searchQuery && (
                             <button
-                                key={subject.id}
-                                onClick={() => setActiveSubject(subject.id)}
-                                className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${activeSubject === subject.id
+                                onClick={() => setSearchQuery('')}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full text-gray-400 transition-colors"
+                            >
+                                <Icons.X size={16} />
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        {/* Subject Filter */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <button
+                                onClick={() => setActiveSubject('all')}
+                                className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${activeSubject === 'all'
                                     ? 'bg-blue-600 text-white shadow-sm'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
-                                {subject.code}
+                                All Subjects
                             </button>
-                        ))}
-                    </div>
+                            {subjects.map((subject) => (
+                                <button
+                                    key={subject.id}
+                                    onClick={() => setActiveSubject(subject.id)}
+                                    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${activeSubject === subject.id
+                                        ? 'bg-blue-600 text-white shadow-sm'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        }`}
+                                >
+                                    {subject.code}
+                                </button>
+                            ))}
+                        </div>
 
-                    {/* Category Filter */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        {categories.map(cat => (
-                            <button
-                                key={cat.value}
-                                onClick={() => setActiveCategory(cat.value)}
-                                className={`px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${activeCategory === cat.value
-                                    ? 'bg-purple-600 text-white shadow-sm'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                    }`}
-                            >
-                                <cat.icon size={14} />
-                                {cat.label}
-                            </button>
-                        ))}
+                        {/* Category Filter */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            {categories.map(cat => (
+                                <button
+                                    key={cat.value}
+                                    onClick={() => setActiveCategory(cat.value)}
+                                    className={`px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${activeCategory === cat.value
+                                        ? 'bg-purple-600 text-white shadow-sm'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        }`}
+                                >
+                                    <cat.icon size={14} />
+                                    {cat.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 

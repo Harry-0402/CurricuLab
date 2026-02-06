@@ -22,9 +22,9 @@ export const FacultyService = {
             .select('*')
             .order('id', { ascending: true });
 
+        // If error or essentially empty, fall back to initial data
         if (error || !data || data.length === 0) {
-            console.warn('Supabase fetch failed or empty, falling back to mock data:', error);
-            // Fallback to initial mock data if DB fails (e.g., missing keys on Render)
+            console.warn('Supabase fetch failed or empty, using mock data:', error);
             return INITIAL_DATA.map((item, index) => ({
                 id: index + 1000,
                 ...item
@@ -32,6 +32,7 @@ export const FacultyService = {
         }
 
         // Map database columns (snake_case) to application model (camelCase)
+        // Strictly return DB data as requested ("faculty is only this")
         return data.map((item: any) => ({
             id: item.id,
             name: item.name,
@@ -47,6 +48,7 @@ export const FacultyService = {
     },
 
     async add(person: Omit<Person, 'id'>) {
+        // ... (rest of add method)
         const payload = {
             name: person.name,
             status: person.status,
@@ -132,24 +134,16 @@ export const FacultyService = {
     }
 };
 
-// Seed Data for initial population
+// Seed Data for initial population (Fallback only)
 export const INITIAL_DATA: Omit<Person, 'id'>[] = [
-    { name: "Dr. Albus Dumbledore", status: "Head of Department", category: "faculty", email: "headmaster@curriculab.edu", subject: "Leadership", gender: 'male', contactNo: "+1 (555) 010-1001" },
-    { name: "Prof. Minerva McGonagall", status: "Senior Teacher", category: "faculty", email: "minerva@curriculab.edu", subject: "Transfiguration", gender: 'female', contactNo: "+1 (555) 010-1002", whatsappNo: "+1 (555) 010-9999" },
-    { name: "Prof. Severus Snape", status: "Senior Teacher", category: "faculty", email: "severus@curriculab.edu", subject: "Potions", gender: 'male', contactNo: "+1 (555) 010-1003" },
-    { name: "Prof. Filius Flitwick", status: "Assistant Teacher", category: "faculty", email: "filius@curriculab.edu", subject: "Charms", gender: 'male', contactNo: "+1 (555) 010-1004" },
-    { name: "Prof. Pomona Sprout", status: "Senior Teacher", category: "faculty", email: "pomona@curriculab.edu", subject: "Herbology", gender: 'female', contactNo: "+1 (555) 010-1005" },
-    { name: "Rubeus Hagrid", status: "Lab Instructor", category: "faculty", email: "hagrid@curriculab.edu", subject: "Zoology", gender: 'male', contactNo: "+1 (555) 010-1006" },
+    // Real App Faculty (For fallback if DB is empty)
+    { name: "Dr. Shailendra Baraniya", status: "Professor", category: "faculty", email: "shailendra.baraniya@curriculab.edu", subject: "Production and Operations Management", gender: 'male', contactNo: "+91 9876543210" },
+    { name: "Mr. Aniket Alvekar", status: "Assistant Professor", category: "faculty", email: "aniket.alvekar@curriculab.edu", subject: "Digital Transformation", gender: 'male', contactNo: "+91 9876543211" },
+    { name: "Adv. Vishal Jadhav", status: "Professor", category: "faculty", email: "vishal.jadhav@curriculab.edu", subject: "Legal Aspects of Business", gender: 'male', contactNo: "+91 9876543212" },
+    { name: "Dr. Zahir Shaikh", status: "Professor", category: "faculty", email: "zahir.shaikh@curriculab.edu", subject: "Business Research Methods", gender: 'male', contactNo: "+91 9876543213" },
+    { name: "Mrs. Prachi Muskar", status: "Assistant Professor", category: "faculty", email: "prachi.muskar@curriculab.edu", subject: "Business Communication Skills-II", gender: 'female', contactNo: "+91 9876543214" },
+    { name: "Dr. Samadhan Bundhe", status: "Coordinator", category: "faculty", email: "samadhan.bundhe@sandipuniversity.edu.in", subject: "Data Visualization", gender: 'male', contactNo: "99600 17348" },
 
-    // MBA(BA) Students
-    { name: "Georgetta Diodae Wilson", status: "MBA Student", category: "fellows", email: "georgettawilson44@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7775066089", whatsappNo: "7775066089", prn: "250102041001" },
-    { name: "Akash Jayaprakash Mangalamthodi", status: "MBA Student", category: "fellows", email: "akashmangalam73857@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "9420475026", whatsappNo: "9420475026", prn: "250102041002" },
-    { name: "Tanu Chaudhary", status: "MBA Student", category: "fellows", email: "ctanu608@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "8931075330", whatsappNo: "8931075330", prn: "250102041003" },
-    { name: "Kaustubh Khushal Nandurkar", status: "MBA Student", category: "fellows", email: "kaustubh21112002@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "8080001550", whatsappNo: "8080001550", prn: "250102041004" },
-    { name: "Veeramalla Mani Shankar", status: "MBA Student", category: "fellows", email: "veeramallamani7@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "8688426036", whatsappNo: "8688426036", prn: "250102041005" },
-    { name: "Shah Kaif Javed", status: "MBA Student", category: "fellows", email: "kaifjshah@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "7666150737", whatsappNo: "7666150737", prn: "250102041006" },
-    { name: "Chavan Harish Ravindra", status: "MBA Student", category: "fellows", email: "hrchavan0402@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "7030430756", whatsappNo: "7030430756", prn: "250102041007" },
-    { name: "Anukriti Srivastava", status: "MBA Student", category: "fellows", email: "anukritisrivastava04@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7007334139", whatsappNo: "7007334139", prn: "250102041008" },
-    { name: "Divya Shahi", status: "MBA Student", category: "fellows", email: "shahidivya38@gamil.com", subject: "Business Administration", gender: 'female', contactNo: "9214867985", whatsappNo: "9214867985", prn: "25SUN0446" },
-    { name: "Tejas Sanjay Patil", status: "MBA Student", category: "fellows", email: "tejaspatil78787@gmail.com", subject: "Business Administration", gender: 'male', contactNo: "9673662750", whatsappNo: "9673662750", prn: "25SUN0970" }
+    // MBA(BA) Students (Sample for fallback)
+    { name: "Georgetta Diodae Wilson", status: "MBA Student", category: "fellows", email: "georgettawilson44@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7775066089", whatsappNo: "7775066089", prn: "250102041001" }
 ];

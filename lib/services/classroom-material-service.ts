@@ -86,6 +86,7 @@ export const ClassroomMaterialService = {
         subjectId?: string;
         category?: string;
         fileType?: string;
+        searchQuery?: string;
     }): Promise<ClassroomMaterial[]> {
         let query = supabase
             .from('classroom_materials')
@@ -102,6 +103,10 @@ export const ClassroomMaterialService = {
 
         if (filters?.fileType && filters.fileType !== 'all') {
             query = query.eq('file_type', filters.fileType);
+        }
+
+        if (filters?.searchQuery) {
+            query = query.or(`title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`);
         }
 
         const { data, error } = await query.order('created_at', { ascending: false });

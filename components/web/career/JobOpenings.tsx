@@ -100,6 +100,34 @@ URL: ${job.url}`,
                 </button>
             </div>
 
+            {/* Placement Community Banner */}
+            <div className="bg-gradient-to-br from-emerald-600 to-green-700 rounded-3xl p-8 relative overflow-hidden shadow-xl shadow-emerald-200">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
+
+                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 bg-white/20 backdrop-blur-md rounded-lg text-white">
+                                <Icons.Users size={20} />
+                            </div>
+                            <span className="text-emerald-100 font-bold uppercase tracking-widest text-xs">Official Community</span>
+                        </div>
+                        <h2 className="text-2xl font-black text-white mb-2">Join the Placement Group</h2>
+                        <p className="text-emerald-50 font-medium max-w-lg">
+                            Get instant alerts for on-campus drives, walk-ins, and exclusive off-campus opportunities directly on WhatsApp.
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => window.open('https://chat.whatsapp.com/placeholder', '_blank')}
+                        className="flex items-center gap-3 px-6 py-3.5 bg-white text-emerald-700 rounded-2xl font-black shadow-lg hover:bg-emerald-50 hover:scale-105 active:scale-95 transition-all w-full md:w-auto justify-center group"
+                    >
+                        <Icons.MessageCircle size={20} className="group-hover:rotate-12 transition-transform" />
+                        <span>Join WhatsApp Group</span>
+                    </button>
+                </div>
+            </div>
+
             {jobs.length === 0 ? (
                 <div className="text-center py-20 text-gray-400">
                     <Icons.Briefcase className="mx-auto mb-4 opacity-50" size={48} />

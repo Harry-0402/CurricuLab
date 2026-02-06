@@ -304,5 +304,39 @@ Return ONLY the formatted answer in markdown format.`;
             console.error("Failed to parse AI analysis", e);
             return { keywords: [], improvements: ["Could not generate detailed analysis. Please try again."] };
         }
+    },
+
+    async parseJobDescription(text: string): Promise<any> {
+        const prompt = `
+        You are an expert Job Description Parser.
+        Extract the following details from the unstructured job post text below.
+
+        Text:
+        "${text}"
+
+        Return ONLY raw JSON (no markdown formatting) with this exact structure:
+        {
+            "title": "Job Title (e.g. Senior Backend Engineer)",
+            "company": "Company Name (e.g. Google)",
+            "location": "City, Country or 'Remote' (e.g. Bangalore, India)",
+            "type": "Remote | On-site | Hybrid" (Infer from text, default to On-site),
+            "salary_range": "Salary string (e.g. 12-15 LPA, $100k-$120k) or null if not found",
+            "url": "Application URL (https://...) or null if not found"
+        }
+        
+        Rules:
+        - If multiple URLs are found, prefer the one that looks like an application link.
+        - If any field is missing, return null or an empty string.
+        - Be smart about inferring the Company name if it's mentioned primarily.
+        `;
+
+        try {
+            const result = await this.generateContent(prompt);
+            const cleanJson = result.replace(/```json/g, '').replace(/```/g, '').trim();
+            return JSON.parse(cleanJson);
+        } catch (e) {
+            console.error("Failed to parse job description", e);
+            throw new Error("Failed to extract job details. Please try again.");
+        }
     }
 };
