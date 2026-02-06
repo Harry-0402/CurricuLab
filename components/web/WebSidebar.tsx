@@ -32,6 +32,7 @@ const studyMaterials: NavItem[] = [
 
 const aiTools: NavItem[] = [
     { label: 'LearnPilot AI', href: '/ai-tutor', icon: Icons.Bot },
+    { label: 'MindGrid', href: '/tools/mindgrid', icon: Icons.LayoutGrid },
     { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb },
 ];
 
