@@ -37,6 +37,24 @@
             height: calc(100dvh - env(safe-area-inset-bottom, 0px));
         }
     }
+
+    /* KaTeX Layout Fixes */
+    .katex {
+        font-size: 1.1em !important;
+        line-height: normal !important;
+        text-indent: 0 !important;
+    }
+
+    .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        margin: 1rem 0 !important;
+        padding: 0.5rem 0 !important;
+    }
+
+    .katex-html {
+        overflow-x: auto;
+    }
 }
 
 @layer utilities {

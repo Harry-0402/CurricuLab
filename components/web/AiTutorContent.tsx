@@ -6,7 +6,10 @@ import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
+import { GoogleGenerativeAI, FinishReason } from "@google/generative-ai";
 
 // --- CONFIG ---
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
@@ -80,6 +83,15 @@ const ChatCodeBlock = ({ children }: { children?: any }) => {
     );
 };
 
+// Regex to fix common spacing issues in math blocks
+const preprocessContent = (content: string) => {
+    return content
+        // Fix inline math with spaces ($ x $) -> ($x$)
+        .replace(/(\$)(?=\S)([^$]+?)(?<=\S)(\$)/g, '$1$2$3')
+        // Ensure block math has newlines
+        .replace(/\$\$/g, '\n$$$\n');
+};
+
 
 
 export function AiTutorContent() {
@@ -149,7 +161,7 @@ export function AiTutorContent() {
         setShowExportMenu(false);
     };
 
-    const generateResponse = async (modelId: string, currentMessages: Message[], userPrompt: string): Promise<string> => {
+    const generateResponse = async (modelId: string, currentMessages: Message[], userPrompt: string): Promise<{ text: string, isTruncated: boolean }> => {
         const selectedModel = MODELS.find(m => m.id === modelId) || MODELS[0];
 
         // Handles Groq, Copilot, and OpenRouter via server-side route
@@ -166,14 +178,20 @@ export function AiTutorContent() {
 
             if (!response.ok) throw new Error(`${selectedModel.name} API Error: ${response.statusText}`);
             const data = await response.json();
-            return data.message;
+            return {
+                text: data.message,
+                isTruncated: data.finishReason === 'length' || data.finishReason === 'max_tokens'
+            };
         } else {
             const history = currentMessages.slice(-10).map(m => ({
                 role: m.role === 'user' ? 'user' : 'model',
                 parts: [{ text: m.content }],
             }));
 
-            const model = genAI.getGenerativeModel({ model: selectedModel.id });
+            const model = genAI.getGenerativeModel({
+                model: selectedModel.id,
+                systemInstruction: "You are an expert AI Tutor. Use Markdown for structure. use LaTeX for ALL math equations (inline: $...$, block: $$...$$)."
+            });
             const chat = model.startChat({
                 history: history, // history shouldn't include the new user prompt yet, standard gemini pattern is startChat -> sendMessage
                 generationConfig: { maxOutputTokens: 2000 },
@@ -181,7 +199,11 @@ export function AiTutorContent() {
 
             const result = await chat.sendMessage(userPrompt);
             const response = result.response;
-            return response.text();
+            const finishReason = response.candidates?.[0]?.finishReason;
+            return {
+                text: response.text(),
+                isTruncated: finishReason === FinishReason.MAX_TOKENS
+            };
         }
     };
 
@@ -196,8 +218,14 @@ export function AiTutorContent() {
         setIsLoading(true);
 
         try {
-            const text = await generateResponse(selectedModelId, messages, userMessage);
-            setMessages(prev => [...prev, { role: 'assistant', content: text }]);
+            const { text, isTruncated } = await generateResponse(selectedModelId, messages, userMessage);
+
+            let finalText = text;
+            if (isTruncated) {
+                finalText += "\n\n_... (The response was cut off due to length limits. Ask me to 'continue' to see the rest!)_";
+            }
+
+            setMessages(prev => [...prev, { role: 'assistant', content: finalText }]);
         } catch (error: any) {
             console.error(`Model ${selectedModelId} failed:`, error);
 
@@ -359,7 +387,8 @@ export function AiTutorContent() {
                                         >
                                             {m.role === 'assistant' ? (
                                                 <ReactMarkdown
-                                                    remarkPlugins={[remarkGfm]}
+                                                    remarkPlugins={[remarkGfm, remarkMath]}
+                                                    rehypePlugins={[rehypeKatex]}
                                                     components={{
                                                         // Custom styling for markdown elements
                                                         table: ({ node, ...props }) => <div className="overflow-x-auto my-4 rounded-lg border border-gray-200"><table className="w-full text-left text-sm" {...props} /></div>,
@@ -393,7 +422,7 @@ export function AiTutorContent() {
                                                         ol: ({ node, ...props }) => <ol className="list-decimal pl-5 my-2 space-y-1" {...props} />
                                                     }}
                                                 >
-                                                    {m.content}
+                                                    {preprocessContent(m.content)}
                                                 </ReactMarkdown>
                                             ) : (
                                                 m.content

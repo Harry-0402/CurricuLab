@@ -17,7 +17,14 @@ export async function POST(req: Request) {
         // --- SYSTEM PROMPTS ---
         const TUTOR_PROMPT = `You are an expert AI Tutor for a Business Analytics MBA program. 
         Your role is to help students understand complex concepts in Operations Management, Digital Transformation, Business Law, Data Visualization, and Research Methodology.
-        Current Context: The user is a student in the "CurricuLab" platform.`;
+        Current Context: The user is a student in the "CurricuLab" platform.
+        
+        FORMATTING RULES:
+        - Use Markdown for structure.
+        - Use LaTeX for ALL mathematical equations and formulas.
+        - Inline Math: Wrap in single dollar signs (e.g., $E=mc^2$).
+        - Block Math: Wrap in double dollar signs (e.g., $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$).
+        - Use bold for key terms.`;
 
         const PROMPT_ENGINEER_PROMPT = `You are a Strict Prompt Optimizer.
         Your ONLY output must be the refined, professional version of the user's input.
@@ -50,6 +57,7 @@ export async function POST(req: Request) {
         ];
 
         let reply = "";
+        let finishReason: string | null = null;
         let errorDetails = "";
 
         // --- SMART ROUTER (OPENROUTER COMPETITIVE RACING) ---
@@ -83,9 +91,11 @@ export async function POST(req: Request) {
                 }
 
                 const data = await response.json();
-                const content = data.choices[0]?.message?.content;
+                const choice = data.choices?.[0];
+                const content = choice?.message?.content;
+
                 if (!content) throw new Error(`Model ${modelId} returned no content`);
-                return content;
+                return { content, finishReason: choice?.finish_reason };
             };
 
             // Race the top 3 models for maximum speed
@@ -94,7 +104,9 @@ export async function POST(req: Request) {
 
             try {
                 // Return the first one that successfully completes
-                reply = await Promise.any(topCandidates.map(model => callModel(model)));
+                const result = await Promise.any(topCandidates.map(model => callModel(model)));
+                reply = result.content;
+                finishReason = result.finishReason;
             } catch (error: any) {
                 console.warn("Primary model race failed, falling back to sequential:", error);
                 errorDetails = "Race failed. | ";
@@ -102,8 +114,12 @@ export async function POST(req: Request) {
                 // Fallback to sequential for remaining models if race completely fails
                 for (const modelId of remainingCandidates) {
                     try {
-                        reply = await callModel(modelId);
-                        if (reply) break;
+                        const result = await callModel(modelId);
+                        if (result.content) {
+                            reply = result.content;
+                            finishReason = result.finishReason;
+                            break;
+                        }
                     } catch (e: any) {
                         console.error(`Sequential fallback failed for ${modelId}:`, e);
                         errorDetails += `${modelId}: error | `;
@@ -122,7 +138,9 @@ export async function POST(req: Request) {
                         temperature: mode === 'prompt_engineer' ? 0.2 : 0.7,
                         max_tokens: 1024,
                     });
-                    reply = chatCompletion.choices[0]?.message?.content || "";
+                    const choice = chatCompletion.choices[0];
+                    reply = choice?.message?.content || "";
+                    finishReason = choice?.finish_reason || null;
                 } catch (e: any) {
                     console.error('Groq fallback failed:', e);
                 }
@@ -147,7 +165,9 @@ export async function POST(req: Request) {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    reply = data.choices[0]?.message?.content || "";
+                    const choice = data.choices[0];
+                    reply = choice?.message?.content || "";
+                    finishReason = choice?.finish_reason || null;
                 }
             }
         }
@@ -159,7 +179,7 @@ export async function POST(req: Request) {
             });
         }
 
-        return NextResponse.json({ message: reply });
+        return NextResponse.json({ message: reply, finishReason });
 
     } catch (error: any) {
         console.error('API Error:', error);

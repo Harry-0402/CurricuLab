@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
@@ -13,77 +14,80 @@ interface NavItem {
     badge?: string;
 }
 
-const navItems: NavItem[] = [
+const academicSuite: NavItem[] = [
     { label: 'Dashboard', href: '/', icon: Icons.Home },
     { label: 'My Courses', href: '/subjects', icon: Icons.Subjects },
-    { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
+    { label: 'Classroom', href: '/classroom', icon: Icons.FolderOpen },
     { label: 'Assignments', href: '/assignments', icon: Icons.Questions },
-    { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.Users },
-    { label: 'MarkWise', href: '/tools/markwise', icon: Icons.CheckSquare },
-    { label: 'Team', href: '/team', icon: Icons.Profile },
+    { label: 'Career Gateway', href: '/tools/career', icon: Icons.Briefcase },
 ];
 
-const tools: NavItem[] = [
-    { label: 'LearnPilot AI', href: '/ai-tutor', icon: Icons.Bot },
+const studyMaterials: NavItem[] = [
+    { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
+    { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
     { label: 'PaperTrail PYQs', href: '/tools/papertrail', icon: Icons.FileText },
     { label: 'Revision Notes', href: '/tools/revision', icon: Icons.Notes },
-    { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
+    { label: 'MarkWise', href: '/tools/markwise', icon: Icons.CheckSquare },
+];
+
+const aiTools: NavItem[] = [
+    { label: 'LearnPilot AI', href: '/ai-tutor', icon: Icons.Bot },
     { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb },
-    { label: 'Career Gateway', href: '/tools/career', icon: Icons.Briefcase },
-    { label: 'Classroom', href: '/classroom', icon: Icons.FolderOpen },
+];
+
+const community: NavItem[] = [
+    { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.Users },
+    { label: 'Team', href: '/team', icon: Icons.Profile },
 ];
 
 export function WebSidebar() {
     const pathname = usePathname();
 
+    const renderNavGroup = (title: string, items: NavItem[], className?: string) => (
+        <nav className={cn("space-y-0.5 mb-4", className)}>
+            <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">{title}</p>
+            {items.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                            "flex items-center justify-between px-3 py-2 rounded-lg transition-all",
+                            isActive ? "bg-blue-50 text-blue-600 shadow-sm" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                        )}
+                    >
+                        <div className="flex items-center gap-2.5">
+                            <item.icon size={18} className={isActive ? "text-blue-600" : "text-gray-400"} />
+                            <span className="text-sm font-medium leading-none">{item.label}</span>
+                        </div>
+                        {item.badge && (
+                            <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>
+                        )}
+                    </Link>
+                );
+            })}
+        </nav>
+    );
+
     return (
-        <aside className="w-64 h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden">
-            <div className="p-4 pb-2 flex items-center gap-2">
-                <Icons.LayoutGrid size={28} className="text-gray-700" />
+        <aside className="w-60 h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden overflow-y-auto custom-scrollbar">
+            <div className="px-6 py-5 pb-2 flex items-center gap-3 shrink-0">
+                <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0">
+                    <img
+                        src="/curriculab-logo.png"
+                        alt="CurricuLab Logo"
+                        className="w-full h-full object-cover"
+                    />
+                </div>
                 <span className="text-2xl font-extrabold text-gray-900 tracking-tight">CurricuLab</span>
             </div>
 
-            <div className="px-4 py-2">
-
-
-                <nav className="space-y-1">
-                    <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-6">Main Menu</p>
-                    {navItems.map((item) => {
-                        const isActive = pathname === item.href;
-                        return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    "flex items-center justify-between p-3 rounded-xl transition-all",
-                                    isActive ? "bg-blue-50 text-blue-600 shadow-sm" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                                )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <item.icon size={20} className={isActive ? "text-blue-600" : "text-gray-400"} />
-                                    <span className="text-sm font-medium">{item.label}</span>
-                                </div>
-                                {item.badge && (
-                                    <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{item.badge}</span>
-                                )}
-                            </Link>
-                        );
-                    })}
-                </nav>
-
-                <nav className="space-y-1 mt-4">
-                    <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Tools</p>
-                    {tools.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all font-medium text-sm"
-                        >
-                            <item.icon size={20} className="text-gray-400" />
-                            <span>{item.label}</span>
-                        </Link>
-                    ))}
-                </nav>
+            <div className="px-3 py-3">
+                {renderNavGroup("Academic Suite", academicSuite)}
+                {renderNavGroup("Study Materials", studyMaterials)}
+                {renderNavGroup("AI Tools", aiTools)}
+                {renderNavGroup("Community", community)}
             </div>
 
             <div className="mt-auto p-4 border-t border-gray-100 italic text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
