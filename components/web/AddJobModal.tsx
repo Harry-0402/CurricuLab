@@ -42,15 +42,65 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
 
     const [pasteContent, setPasteContent] = useState('');
     const [showPaste, setShowPaste] = useState(false);
-
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+    // New State for PDF
+    const [pasteMode, setPasteMode] = useState<'text' | 'pdf'>('text');
+    const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [pdfPreview, setPdfPreview] = useState<string | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error("File size must be less than 5MB");
+                return;
+            }
+            setPdfFile(file);
+            const url = URL.createObjectURL(file);
+            setPdfPreview(url);
+        }
+    };
+
+    const handleRemovePdf = () => {
+        setPdfFile(null);
+        setPdfPreview(null);
+    };
+
+    const fileToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                let encoded = reader.result?.toString().replace(/^data:(.*,)?/, "");
+                if (encoded) {
+                    if ((encoded.length % 4) > 0) {
+                        encoded += '='.repeat(4 - (encoded.length % 4));
+                    }
+                    resolve(encoded);
+                } else {
+                    reject(new Error("Failed to encode"));
+                }
+            };
+            reader.onerror = error => reject(error);
+        });
+    };
+
     const handleSmartPaste = async () => {
-        if (!pasteContent.trim()) return;
+        if (pasteMode === 'text' && !pasteContent.trim()) return;
+        if (pasteMode === 'pdf' && !pdfFile) return;
+
         setIsAnalyzing(true);
 
         try {
-            const data = await AiService.parseJobDescription(pasteContent);
+            let data: any;
+
+            if (pasteMode === 'text') {
+                data = await AiService.parseJobDescription(pasteContent);
+            } else if (pasteMode === 'pdf' && pdfFile) {
+                const base64 = await fileToBase64(pdfFile);
+                data = await AiService.parseJobFile(base64, pdfFile.type);
+            }
 
             setFormData(prev => ({
                 ...prev,
@@ -64,6 +114,10 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
 
             toast.success('Smart Paste: AI extracted details!');
             setShowPaste(false);
+            // Cleanup
+            setPasteMode('text');
+            setPdfFile(null);
+            setPdfPreview(null);
         } catch (error) {
             console.error(error);
             toast.error('AI Extraction Failed. Please try manually.');
@@ -106,7 +160,7 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[85vh]">
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <div>
                         <h2 className="text-xl font-black text-gray-900">{initialData ? 'Edit Job' : 'Post a Job'}</h2>
@@ -133,23 +187,84 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
                             </button>
 
                             <div className={`grid transition-all duration-300 ease-in-out ${showPaste ? 'grid-rows-[1fr] opacity-100 mt-3' : 'grid-rows-[0fr] opacity-0'}`}>
-                                <div className="overflow-hidden">
-                                    <textarea
-                                        className="w-full p-4 bg-gray-50 border-2 border-indigo-100 focus:border-indigo-500 rounded-xl text-sm min-h-[120px] outline-none transition-all placeholder:text-gray-400"
-                                        placeholder="Paste the message here... (e.g. 'Hiring Java Dev at Google, Bangalore...')"
-                                        value={pasteContent}
-                                        onChange={(e) => setPasteContent(e.target.value)}
-                                    />
+                                <div className="space-y-4 overflow-hidden">
+                                    <div className="flex gap-2 p-1 bg-gray-100 rounded-xl w-fit">
+                                        <button
+                                            type="button"
+                                            onClick={() => setPasteMode('text')}
+                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${pasteMode === 'text' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                        >
+                                            Text
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setPasteMode('pdf')}
+                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${pasteMode === 'pdf' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                        >
+                                            PDF / Image Upload
+                                        </button>
+                                    </div>
+
+                                    {pasteMode === 'text' ? (
+                                        <textarea
+                                            className="w-full p-4 bg-gray-50 border-2 border-indigo-100 focus:border-indigo-500 rounded-xl text-sm min-h-[120px] outline-none transition-all placeholder:text-gray-400"
+                                            placeholder="Paste the message here... (e.g. 'Hiring Java Dev at Google, Bangalore...')"
+                                            value={pasteContent}
+                                            onChange={(e) => setPasteContent(e.target.value)}
+                                        />
+                                    ) : (
+                                        <div className="border-2 border-dashed border-indigo-200 rounded-xl p-6 flex flex-col items-center justify-center bg-indigo-50/50 hover:bg-indigo-50 transition-colors relative">
+                                            {pdfPreview ? (
+                                                <div className="w-full space-y-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-indigo-700 truncate max-w-[200px]">{pdfFile?.name}</span>
+                                                        <button
+                                                            onClick={handleRemovePdf}
+                                                            className="text-red-500 hover:text-red-600 p-1 hover:bg-red-50 rounded"
+                                                        >
+                                                            <Icons.Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                    {pdfFile?.type.startsWith('image/') ? (
+                                                        <img
+                                                            src={pdfPreview}
+                                                            className="w-full h-[200px] object-contain rounded-lg border border-gray-200 bg-white"
+                                                            alt="Preview"
+                                                        />
+                                                    ) : (
+                                                        <iframe
+                                                            src={pdfPreview}
+                                                            className="w-full h-[200px] rounded-lg border border-gray-200 bg-white"
+                                                            title="PDF Preview"
+                                                        />
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <Icons.UploadCloud className="text-indigo-400 mb-2" size={32} />
+                                                    <p className="text-sm font-bold text-indigo-900">Click to upload PDF or Image</p>
+                                                    <p className="text-xs text-indigo-500 mt-1">Maximum size: 5MB</p>
+                                                    <input
+                                                        type="file"
+                                                        accept="application/pdf,image/png,image/jpeg,image/webp"
+                                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                                        onChange={handleFileChange}
+                                                    />
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+
                                     <button
                                         type="button"
                                         onClick={handleSmartPaste}
-                                        disabled={isAnalyzing}
+                                        disabled={isAnalyzing || (pasteMode === 'text' && !pasteContent.trim()) || (pasteMode === 'pdf' && !pdfFile)}
                                         className="w-full py-3 mt-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2"
                                     >
                                         {isAnalyzing ? (
                                             <>
                                                 <Icons.Loader2 size={14} className="animate-spin" />
-                                                <span>Analyzing with AI...</span>
+                                                <span>Analyzing {pasteMode === 'pdf' ? 'PDF' : 'Text'}...</span>
                                             </>
                                         ) : (
                                             <>

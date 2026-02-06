@@ -66,33 +66,41 @@ export function WebHeader() {
                 <p className="text-lg font-bold text-gray-900 capitalize">{displayName}</p>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
                 <Link
-                    href="/tools/resume"
-                    className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white px-4 py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
+                    href="https://drive.google.com/drive/folders/14oGNaQxQGpiqt6pwZ6V4gN6XKERSRBQ0?usp=sharing"
+                    target="_blank"
+                    className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
                 >
-                    <Icons.Briefcase size={16} />
-                    <span className="text-xs font-bold uppercase tracking-wider">Resumeforge</span>
+                    <Icons.FolderOpen size={16} className="text-gray-400 group-hover:text-amber-500 transition-colors" />
+                    <span className="text-xs font-bold text-gray-600 group-hover:text-amber-600 transition-colors">Resources</span>
                 </Link>
 
-                <div className="flex items-center gap-2">
+                <Link
+                    href="/tools/resume"
+                    className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
+                >
+                    <Icons.Briefcase size={16} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
+                    <span className="text-xs font-bold text-gray-600 group-hover:text-indigo-600 transition-colors">ResumeForge</span>
+                </Link>
 
-                    <Link
-                        href="/profile"
-                        className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all"
-                        title="My Profile"
-                    >
-                        <Icons.User size={20} />
-                    </Link>
-                    <button
-                        onClick={handleLogout}
-                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                        title="Sign Out"
-                    >
-                        <Icons.LogOut size={20} />
-                    </button>
+                <Link
+                    href="/profile"
+                    className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
+                    title="My Profile"
+                >
+                    <Icons.User size={16} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
+                    <span className="text-xs font-bold text-gray-600 group-hover:text-indigo-600 transition-colors">Profile</span>
+                </Link>
 
-                </div>
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-red-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
+                    title="Sign Out"
+                >
+                    <Icons.LogOut size={16} className="text-gray-400 group-hover:text-red-600 transition-colors" />
+                    <span className="text-xs font-bold text-gray-600 group-hover:text-red-600 transition-colors">Logout</span>
+                </button>
             </div>
 
 

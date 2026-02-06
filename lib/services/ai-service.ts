@@ -332,11 +332,212 @@ Return ONLY the formatted answer in markdown format.`;
 
         try {
             const result = await this.generateContent(prompt);
-            const cleanJson = result.replace(/```json/g, '').replace(/```/g, '').trim();
+            const jsonMatch = result.match(/\{[\s\S]*\}/);
+            const cleanJson = jsonMatch ? jsonMatch[0] : result.replace(/```json/g, '').replace(/```/g, '').trim();
             return JSON.parse(cleanJson);
         } catch (e) {
             console.error("Failed to parse job description", e);
             throw new Error("Failed to extract job details. Please try again.");
         }
+    },
+
+    async parseJobFile(base64Data: string, mimeType: string): Promise<any> {
+        const prompt = `
+        You are an expert Job Description Parser.
+        Extract the following details from the attached job posting (image or PDF).
+
+        Return ONLY raw JSON (no markdown formatting) with this exact structure:
+        {
+            "title": "Job Title (e.g. Senior Backend Engineer)",
+            "company": "Company Name (e.g. Google)",
+            "location": "City, Country or 'Remote' (e.g. Bangalore, India)",
+            "type": "Remote | On-site | Hybrid" (Infer from text, default to On-site),
+            "salary_range": "Salary string (e.g. 12-15 LPA, $100k-$120k) or null if not found",
+            "url": "Application URL (https://...) or null if not found"
+        }
+        
+        Rules:
+        - If multiple URLs are found, prefer the one that looks like an application link.
+        - If any field is missing, return null or an empty string.
+        - Be smart about inferring the Company name if it's mentioned primarily.
+        `;
+
+        try {
+            if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
+            // Use Gemini 2.0 Flash for best multimodal performance
+            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+            const result = await model.generateContent([
+                prompt,
+                {
+                    inlineData: {
+                        data: base64Data,
+                        mimeType: mimeType
+                    }
+                }
+            ]);
+
+            const response = await result.response;
+            const text = response.text();
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            const cleanJson = jsonMatch ? jsonMatch[0] : text.replace(/```json/g, '').replace(/```/g, '').trim();
+            return JSON.parse(cleanJson);
+        } catch (e: any) {
+            console.error("Failed to parse file", e);
+            throw new Error(`Failed to extract job details from file: ${e.message}`);
+        }
+    },
+
+    extractJson(text: string): any {
+        try {
+            // First, try to find a markdown code block with JSON
+            const codeBlockMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+            if (codeBlockMatch) {
+                return JSON.parse(codeBlockMatch[1]);
+            }
+
+            // If no code block, try to find the first array or object
+            const firstBracket = text.indexOf('[');
+            const firstBrace = text.indexOf('{');
+
+            let startIdx = -1;
+            let endChar = '';
+
+            // Determine if we are looking for array or object based on which comes first
+            if (firstBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace)) {
+                startIdx = firstBracket;
+                endChar = ']';
+            } else if (firstBrace !== -1) {
+                startIdx = firstBrace;
+                endChar = '}';
+            }
+
+            if (startIdx !== -1) {
+                let balance = 0;
+                let inString = false;
+                let escape = false;
+
+                for (let i = startIdx; i < text.length; i++) {
+                    const char = text[i];
+
+                    if (escape) {
+                        escape = false;
+                        continue;
+                    }
+
+                    if (char === '\\') {
+                        escape = true;
+                        continue;
+                    }
+
+                    if (char === '"') {
+                        inString = !inString;
+                        continue;
+                    }
+
+                    if (!inString) {
+                        if (char === (endChar === ']' ? '[' : '{')) balance++;
+                        else if (char === endChar) balance--;
+
+                        if (balance === 0) {
+                            // Found the end
+                            const jsonStr = text.substring(startIdx, i + 1);
+                            return JSON.parse(jsonStr);
+                        }
+                    }
+                }
+            }
+
+            // Fallback: simple cleanup
+            const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+            return JSON.parse(cleanJson);
+        } catch (e) {
+            console.error("JSON Extraction Failed:", e);
+            throw e;
+        }
+    },
+
+    async smartSearchJobs(query: string, jobs: any[]): Promise<string[]> {
+        const prompt = `
+        You are an intelligent Job Matcher.
+        Filter the following list of jobs based on the user's search query.
+        
+        User Query: "${query}"
+
+        Jobs List:
+        ${JSON.stringify(jobs.map(j => ({
+            id: j.id,
+            title: j.title,
+            company: j.company,
+            location: j.location,
+            type: j.type,
+            salary: j.salary_range
+        })))}
+
+        Rules:
+        - Understand semantic meaning (e.g. "Work from home" matches "Remote").
+        - Handle currency matching (e.g. "6L" matches "6 LPA" or "₹6,00,000").
+        - "High pay" implies looking at salary.
+        - Return ONLY a raw JSON array of the matching Job IDs.
+        - If no matches found, return empty array [].
+        `;
+
+        try {
+            const result = await this.generateContent(prompt);
+            return this.extractJson(result);
+        } catch (e) {
+            console.error("Failed to search jobs", e);
+            return [];
+        }
+    },
+
+    async generateCoverLetter(jobTitle: string, company: string, jobDescription: string | null, userContext: string, resumeBase64?: string): Promise<string> {
+        const prompt = `
+        You are an expert Career Coach. Write a professional, personalized cover letter.
+        
+        **Role:** ${jobTitle}
+        **Company:** ${company}
+        **Job Details:** ${jobDescription || "No specific details provided."}
+        
+        **Candidate Profile:**
+        ${userContext ? `Bio/Summary: "${userContext}"` : ""}
+        ${resumeBase64 ? "A resume PDF has been attached. Extract relevant skills and experience from it." : ""}
+        
+        **Rules:**
+        - Tone: Professional, enthusiastic, yet authentic.
+        - Structure:
+            1. Hook: Why I'm interested in ${company}.
+            2. Match: How my specific skills (from profile/resume) match the job requirements.
+            3. Close: Call to action for an interview.
+        - Length: Concise (approx 250-300 words).
+        - Format: Standard Cover Letter format (Dear Hiring Manager...).
+        - Do NOT include placeholders like [Date] or [Your Name] if not provided, just keep it ready to copy-paste.
+        `;
+
+        // If resume PDF is provided, use multimodal model
+        if (resumeBase64) {
+            try {
+                if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
+                const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+                const result = await model.generateContent([
+                    prompt,
+                    {
+                        inlineData: {
+                            data: resumeBase64,
+                            mimeType: "application/pdf"
+                        }
+                    }
+                ]);
+                const response = await result.response;
+                return response.text();
+            } catch (e: any) {
+                console.error("Multimodal generation failed, falling back to text only", e);
+                // Fallback or rethrow? Let's rethrow for now so UI knows it failed
+                throw new Error(`Failed to process resume PDF: ${e.message}`);
+            }
+        }
+
+        return this.generateContent(prompt);
     }
 };
