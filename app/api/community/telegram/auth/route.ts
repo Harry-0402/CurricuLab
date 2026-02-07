@@ -8,7 +8,7 @@ const API_ID = parseInt(process.env.TELEGRAM_API_ID || '0');
 const API_HASH = process.env.TELEGRAM_API_HASH || '';
 
 export async function POST(req: NextRequest) {
-    const { action, phone, code, phoneCodeHash, password } = await req.json();
+    const { action, phone, code, phoneCodeHash, password, sessionString } = await req.json();
 
     try {
         if (action === 'send_code') {
@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
         }
 
         if (action === 'sign_in') {
-            const { sessionString } = await req.json(); // Extract sessionString from request
             // Use the SAME session that requested the code
             const client = await TelegramService.createTemporaryClient(sessionString);
 
