@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 // Custom Components
 import { GoogleClassroomView } from './classroom/GoogleClassroomView';
+import CourseCard from './classroom/CourseCard';
 
 export function ClassroomContent() {
     // State
@@ -77,7 +78,6 @@ export function ClassroomContent() {
             const data = await res.json();
             if (data.courses && data.courses.length > 0) {
                 setCourses(data.courses);
-                setSelectedCourse(data.courses[0]);
             }
         } catch (error) {
             console.error('Error loading courses:', error);
@@ -93,52 +93,50 @@ export function ClassroomContent() {
 
     return (
         <WebAppShell>
-            <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto overflow-hidden">
+            <div className="max-w-[1400px] mx-auto p-4 animate-in fade-in duration-500">
                 {/* Header */}
-                <div className="flex items-center justify-between shrink-0 mb-8">
-                    <div>
-                        <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Resources</h1>
-                        <p className="text-4xl font-black text-gray-900 tracking-tight">Classroom</p>
+                <div className="flex items-center justify-between mb-12">
+                    <div className="space-y-2">
+                        <h1 className="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-[0.2em]">
+                            {selectedCourse ? 'Classroom' : 'Resources'}
+                        </h1>
+                        <h1 className="text-5xl font-black text-gray-900 tracking-tight">
+                            {selectedCourse ? selectedCourse.name : 'Classroom'}
+                        </h1>
+                        {!selectedCourse && (
+                            <p className="text-gray-400 font-medium max-w-xl">
+                                Access your synced Google Classroom courses, assignments, and study materials in one place.
+                            </p>
+                        )}
                     </div>
 
-                    {isDriveConnected && courses.length > 0 && (
-                        <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-2xl border border-gray-100">
-                            <div className="relative">
-                                <select
-                                    value={selectedCourse?.id || ''}
-                                    onChange={(e) => {
-                                        const course = courses.find(c => c.id === e.target.value);
-                                        setSelectedCourse(course);
-                                    }}
-                                    className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-2.5 pr-10 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer min-w-[240px] max-w-[400px] truncate"
+                    <div className="flex items-center gap-4">
+                        {isDriveConnected && selectedCourse && (
+                            <>
+                                <button
+                                    onClick={() => setSelectedCourse(null)}
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-200 transition-all active:scale-95"
                                 >
-                                    {courses.map(course => (
-                                        <option key={course.id} value={course.id}>
-                                            {course.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                    <Icons.ChevronDown size={16} />
-                                </div>
-                            </div>
+                                    <Icons.ArrowLeft size={16} />
+                                    <span>Back to All Classes</span>
+                                </button>
 
-                            {selectedCourse && (
                                 <a
                                     href={selectedCourse.alternateLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm whitespace-nowrap"
+                                    className="flex items-center gap-2 px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm whitespace-nowrap"
                                 >
                                     <Icons.ExternalLink size={16} />
                                     <span>Open in Classroom</span>
                                 </a>
-                            )}
-                        </div>
-                    )}
+                            </>
+                        )}
+                    </div>
                 </div>
 
-                {isLoading ? (
+                {/* Main Content Area */}
+                {isLoading || isCoursesLoading ? (
                     <div className="flex-1 flex items-center justify-center">
                         <div className="flex flex-col items-center gap-3">
                             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -146,12 +144,24 @@ export function ClassroomContent() {
                         </div>
                     </div>
                 ) : (
-                    <div className="flex-1 overflow-hidden">
-                        <GoogleClassroomView
-                            isDriveConnected={isDriveConnected}
-                            connectGoogleDrive={connectGoogleDrive}
-                            selectedCourse={selectedCourse}
-                        />
+                    <div className="pb-20">
+                        {!selectedCourse ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+                                {courses.map(course => (
+                                    <CourseCard
+                                        key={course.id}
+                                        course={course}
+                                        onSelect={setSelectedCourse}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <GoogleClassroomView
+                                isDriveConnected={isDriveConnected}
+                                connectGoogleDrive={connectGoogleDrive}
+                                selectedCourse={selectedCourse}
+                            />
+                        )}
                     </div>
                 )}
             </div>

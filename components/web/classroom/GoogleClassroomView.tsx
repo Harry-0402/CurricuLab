@@ -113,26 +113,6 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
         );
     }
 
-    if (!selectedCourse) {
-        return (
-            <div className="flex flex-col items-center justify-center py-12 text-center h-64">
-                <div className="bg-gray-50 p-6 rounded-full mb-4">
-                    <Icons.FolderOpen className="w-12 h-12 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">No Course Selected</h3>
-                <p className="text-gray-500 max-w-sm mb-6">
-                    Select a subject from the list to view its assignments and materials.
-                </p>
-                <button
-                    onClick={connectGoogleDrive}
-                    className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm active:scale-95"
-                >
-                    <Icons.RefreshCw size={18} />
-                    <span>Reconnect Account</span>
-                </button>
-            </div>
-        );
-    }
 
     return (
         <div className="flex flex-col h-full relative">
