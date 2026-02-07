@@ -111,7 +111,7 @@ export function TelegramChatInterface({ onLogout }: TelegramChatInterfaceProps) 
 
         try {
             const users = newGroupUsers.split(',').map(u => u.trim());
-            await fetch('/api/community/telegram/chat', {
+            const res = await fetch('/api/community/telegram/chat', {
                 method: 'POST',
                 body: JSON.stringify({
                     action: 'create_group',
@@ -119,13 +119,20 @@ export function TelegramChatInterface({ onLogout }: TelegramChatInterfaceProps) 
                     users: users
                 }),
             });
-            setIsCreateGroupOpen(false);
-            setNewGroupName('');
-            setNewGroupUsers('');
-            loadChats(); // Refresh list
-            alert("Group created!");
+            const data = await res.json();
+
+            if (data.success) {
+                setIsCreateGroupOpen(false);
+                setNewGroupName('');
+                setNewGroupUsers('');
+                loadChats(); // Refresh list
+                alert("Group created successfully!");
+            } else {
+                alert(`Failed to create group: ${data.error || 'Unknown error'}`);
+            }
         } catch (err) {
-            alert("Failed to create group. Ensure usernames are valid.");
+            console.error(err);
+            alert("Failed to create group. Please try again.");
         }
     };
 
