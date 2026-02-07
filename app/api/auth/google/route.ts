@@ -2,10 +2,13 @@ import { google } from 'googleapis';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
+    const requestUrl = new URL(request.url);
+    const redirectUri = `${requestUrl.origin}/api/auth/google/callback`;
+
     const oauth2Client = new google.auth.OAuth2(
         process.env.GOOGLE_OAUTH_CLIENT_ID,
         process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-        process.env.GOOGLE_OAUTH_REDIRECT_URI
+        redirectUri
     );
 
     // Generate a url that asks permissions for the Drive scope and Classroom scopes
