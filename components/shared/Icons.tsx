@@ -91,7 +91,7 @@ export const Icons = {
     FolderOpen: Folder,
     BarChart3,
     AlertCircle,
-    MessageCircle,
     Activity,
-    Eye
+    Eye,
+    MessageCircle
 };
