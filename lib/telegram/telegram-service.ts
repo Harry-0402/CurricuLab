@@ -16,8 +16,10 @@ export class TelegramService {
 
     /**
      * Get or create a TelegramClient for a specific user session.
+     * @param userId The user's email.
+     * @param supabaseClient Optional authenticated Supabase client (required if RLS is enabled).
      */
-    static async getClient(userId: string): Promise<TelegramClient | null> {
+    static async getClient(userId: string, supabaseClient?: any): Promise<TelegramClient | null> {
         if (this.instances.has(userId)) {
             const client = this.instances.get(userId)!;
             if (!client.connected) {
@@ -26,14 +28,18 @@ export class TelegramService {
             return client;
         }
 
-        // Fetch session from DB
-        const { data, error } = await supabaseAdmin
+        // Use provided client or fallback to admin (which might be anon)
+        const db = supabaseClient || supabaseAdmin;
+
+        // Fetch session from DB using email
+        const { data, error } = await db
             .from('authorized_users')
             .select('telegram_session')
-            .eq('email', userId) // Match logic in saveSession (userId is email here)
+            .eq('email', userId)
             .single();
 
         if (error || !data?.telegram_session) {
+            console.error("Session fetch error:", error);
             return null;
         }
 

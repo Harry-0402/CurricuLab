@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const client = await TelegramService.getClient(user.email);
+        const client = await TelegramService.getClient(user.email, supabase);
 
         if (!client) {
             return NextResponse.json({ error: 'Telegram session not found. Please log in.' }, { status: 403 });
