@@ -57,11 +57,11 @@ export async function middleware(req: NextRequest) {
 
     // CHECK AUTHORIZATION (Whitelist) - Only for authenticated users
     if (session) {
-        // Query authorized_users table to verify this email is allowed
+        // Query authorized_users table to verify this email is allowed (Case-insensitive)
         const { data: isAuthorized, error } = await supabase
             .from('authorized_users')
             .select('email')
-            .eq('email', session.user.email)
+            .ilike('email', session.user.email!)
             .single();
 
         // If not found in whitelist, redirect to Unauthorized page

@@ -35,7 +35,14 @@ export function ClassroomContent() {
                     window.history.replaceState({}, '', window.location.pathname);
                     toast.success('Google Classroom connected successfully!');
                 } else if (urlParams.get('error')) {
-                    toast.error('Failed to connect Google Classroom.');
+                    const errorCode = urlParams.get('error');
+                    let message = 'Failed to connect Google Classroom.';
+
+                    if (errorCode === 'token_storage_failed') message = 'Securely storing your connection failed. Please try again.';
+                    if (errorCode === 'oauth_failed') message = 'Google authorization failed. Ensure you granted all permissions.';
+                    if (errorCode === 'unauthorized') message = 'You must be signed in to connect Google Classroom.';
+
+                    toast.error(message);
                     window.history.replaceState({}, '', window.location.pathname);
                 } else {
                     const res = await fetch('/api/auth/google/status');
