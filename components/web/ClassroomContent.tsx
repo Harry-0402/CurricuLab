@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
+import { cn } from '@/lib/utils';
 import { supabase } from '@/utils/supabase/client';
 import { toast } from 'sonner';
 
@@ -100,7 +101,10 @@ export function ClassroomContent() {
                         <h1 className="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-[0.2em]">
                             {selectedCourse ? 'Classroom' : 'Resources'}
                         </h1>
-                        <h1 className="text-5xl font-black text-gray-900 tracking-tight">
+                        <h1 className={cn(
+                            "font-black text-gray-900 tracking-tight",
+                            selectedCourse ? "text-3xl" : "text-4xl md:text-5xl"
+                        )}>
                             {selectedCourse ? selectedCourse.name : 'Classroom'}
                         </h1>
                         {!selectedCourse && (
