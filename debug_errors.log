@@ -1,0 +1,540 @@
+
+Timestamp: 2026-02-07T07:03:33.625Z
+Error: {
+  "config": {
+    "url": "https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE",
+    "method": "GET",
+    "apiVersion": "",
+    "userAgentDirectives": [
+      {
+        "product": "google-api-nodejs-client",
+        "version": "8.0.1",
+        "comment": "gzip"
+      }
+    ],
+    "headers": {},
+    "params": {
+      "courseStates": [
+        "ACTIVE"
+      ]
+    },
+    "retry": true,
+    "responseType": "unknown",
+    "retryConfig": {
+      "currentRetryAttempt": 0,
+      "retry": 3,
+      "httpMethodsToRetry": [
+        "GET",
+        "HEAD",
+        "PUT",
+        "OPTIONS",
+        "DELETE"
+      ],
+      "noResponseRetries": 2,
+      "retryDelayMultiplier": 2,
+      "timeOfFirstRequest": 1770447813526,
+      "totalTimeout": 9007199254740991,
+      "maxRetryDelay": 9007199254740991,
+      "statusCodesToRetry": [
+        [
+          100,
+          199
+        ],
+        [
+          408,
+          408
+        ],
+        [
+          429,
+          429
+        ],
+        [
+          500,
+          599
+        ]
+      ]
+    }
+  },
+  "response": {
+    "size": 0,
+    "data": {
+      "error": {
+        "code": 403,
+        "message": "Request had insufficient authentication scopes.",
+        "errors": [
+          {
+            "message": "Insufficient Permission",
+            "domain": "global",
+            "reason": "insufficientPermissions"
+          }
+        ],
+        "status": "PERMISSION_DENIED",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+            "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+            "domain": "googleapis.com",
+            "metadata": {
+              "service": "classroom.googleapis.com",
+              "method": "google.classroom.v1.Courses.ListCourses"
+            }
+          }
+        ]
+      }
+    },
+    "config": {
+      "url": "https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE",
+      "method": "GET",
+      "apiVersion": "",
+      "userAgentDirectives": [
+        {
+          "product": "google-api-nodejs-client",
+          "version": "8.0.1",
+          "comment": "gzip"
+        }
+      ],
+      "headers": {},
+      "params": {
+        "courseStates": [
+          "ACTIVE"
+        ]
+      },
+      "retry": true,
+      "responseType": "unknown"
+    }
+  },
+  "code": 403,
+  "status": 403
+}
+Message: Request had insufficient authentication scopes.
+Response: {
+  "error": {
+    "code": 403,
+    "message": "Request had insufficient authentication scopes.",
+    "errors": [
+      {
+        "message": "Insufficient Permission",
+        "domain": "global",
+        "reason": "insufficientPermissions"
+      }
+    ],
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+        "domain": "googleapis.com",
+        "metadata": {
+          "service": "classroom.googleapis.com",
+          "method": "google.classroom.v1.Courses.ListCourses"
+        }
+      }
+    ]
+  }
+}
+----------------------------------------
+
+Timestamp: 2026-02-07T07:03:34.164Z
+Error: {
+  "config": {
+    "url": "https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE",
+    "method": "GET",
+    "apiVersion": "",
+    "userAgentDirectives": [
+      {
+        "product": "google-api-nodejs-client",
+        "version": "8.0.1",
+        "comment": "gzip"
+      }
+    ],
+    "headers": {},
+    "params": {
+      "courseStates": [
+        "ACTIVE"
+      ]
+    },
+    "retry": true,
+    "responseType": "unknown",
+    "retryConfig": {
+      "currentRetryAttempt": 0,
+      "retry": 3,
+      "httpMethodsToRetry": [
+        "GET",
+        "HEAD",
+        "PUT",
+        "OPTIONS",
+        "DELETE"
+      ],
+      "noResponseRetries": 2,
+      "retryDelayMultiplier": 2,
+      "timeOfFirstRequest": 1770447814107,
+      "totalTimeout": 9007199254740991,
+      "maxRetryDelay": 9007199254740991,
+      "statusCodesToRetry": [
+        [
+          100,
+          199
+        ],
+        [
+          408,
+          408
+        ],
+        [
+          429,
+          429
+        ],
+        [
+          500,
+          599
+        ]
+      ]
+    }
+  },
+  "response": {
+    "size": 0,
+    "data": {
+      "error": {
+        "code": 403,
+        "message": "Request had insufficient authentication scopes.",
+        "errors": [
+          {
+            "message": "Insufficient Permission",
+            "domain": "global",
+            "reason": "insufficientPermissions"
+          }
+        ],
+        "status": "PERMISSION_DENIED",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+            "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+            "domain": "googleapis.com",
+            "metadata": {
+              "service": "classroom.googleapis.com",
+              "method": "google.classroom.v1.Courses.ListCourses"
+            }
+          }
+        ]
+      }
+    },
+    "config": {
+      "url": "https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE",
+      "method": "GET",
+      "apiVersion": "",
+      "userAgentDirectives": [
+        {
+          "product": "google-api-nodejs-client",
+          "version": "8.0.1",
+          "comment": "gzip"
+        }
+      ],
+      "headers": {},
+      "params": {
+        "courseStates": [
+          "ACTIVE"
+        ]
+      },
+      "retry": true,
+      "responseType": "unknown"
+    }
+  },
+  "code": 403,
+  "status": 403
+}
+Message: Request had insufficient authentication scopes.
+Response: {
+  "error": {
+    "code": 403,
+    "message": "Request had insufficient authentication scopes.",
+    "errors": [
+      {
+        "message": "Insufficient Permission",
+        "domain": "global",
+        "reason": "insufficientPermissions"
+      }
+    ],
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+        "domain": "googleapis.com",
+        "metadata": {
+          "service": "classroom.googleapis.com",
+          "method": "google.classroom.v1.Courses.ListCourses"
+        }
+      }
+    ]
+  }
+}
+----------------------------------------
+
+Timestamp: 2026-02-07T07:06:41.011Z
+Error: {
+  "config": {
+    "url": "https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE",
+    "method": "GET",
+    "apiVersion": "",
+    "userAgentDirectives": [
+      {
+        "product": "google-api-nodejs-client",
+        "version": "8.0.1",
+        "comment": "gzip"
+      }
+    ],
+    "headers": {},
+    "params": {
+      "courseStates": [
+        "ACTIVE"
+      ]
+    },
+    "retry": true,
+    "responseType": "unknown",
+    "retryConfig": {
+      "currentRetryAttempt": 0,
+      "retry": 3,
+      "httpMethodsToRetry": [
+        "GET",
+        "HEAD",
+        "PUT",
+        "OPTIONS",
+        "DELETE"
+      ],
+      "noResponseRetries": 2,
+      "retryDelayMultiplier": 2,
+      "timeOfFirstRequest": 1770448000938,
+      "totalTimeout": 9007199254740991,
+      "maxRetryDelay": 9007199254740991,
+      "statusCodesToRetry": [
+        [
+          100,
+          199
+        ],
+        [
+          408,
+          408
+        ],
+        [
+          429,
+          429
+        ],
+        [
+          500,
+          599
+        ]
+      ]
+    }
+  },
+  "response": {
+    "size": 0,
+    "data": {
+      "error": {
+        "code": 403,
+        "message": "Request had insufficient authentication scopes.",
+        "errors": [
+          {
+            "message": "Insufficient Permission",
+            "domain": "global",
+            "reason": "insufficientPermissions"
+          }
+        ],
+        "status": "PERMISSION_DENIED",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+            "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+            "domain": "googleapis.com",
+            "metadata": {
+              "service": "classroom.googleapis.com",
+              "method": "google.classroom.v1.Courses.ListCourses"
+            }
+          }
+        ]
+      }
+    },
+    "config": {
+      "url": "https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE",
+      "method": "GET",
+      "apiVersion": "",
+      "userAgentDirectives": [
+        {
+          "product": "google-api-nodejs-client",
+          "version": "8.0.1",
+          "comment": "gzip"
+        }
+      ],
+      "headers": {},
+      "params": {
+        "courseStates": [
+          "ACTIVE"
+        ]
+      },
+      "retry": true,
+      "responseType": "unknown"
+    }
+  },
+  "code": 403,
+  "status": 403
+}
+Message: Request had insufficient authentication scopes.
+Response: {
+  "error": {
+    "code": 403,
+    "message": "Request had insufficient authentication scopes.",
+    "errors": [
+      {
+        "message": "Insufficient Permission",
+        "domain": "global",
+        "reason": "insufficientPermissions"
+      }
+    ],
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+        "domain": "googleapis.com",
+        "metadata": {
+          "service": "classroom.googleapis.com",
+          "method": "google.classroom.v1.Courses.ListCourses"
+        }
+      }
+    ]
+  }
+}
+----------------------------------------
+
+Timestamp: 2026-02-07T07:06:41.474Z
+Error: {
+  "config": {
+    "url": "https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE",
+    "method": "GET",
+    "apiVersion": "",
+    "userAgentDirectives": [
+      {
+        "product": "google-api-nodejs-client",
+        "version": "8.0.1",
+        "comment": "gzip"
+      }
+    ],
+    "headers": {},
+    "params": {
+      "courseStates": [
+        "ACTIVE"
+      ]
+    },
+    "retry": true,
+    "responseType": "unknown",
+    "retryConfig": {
+      "currentRetryAttempt": 0,
+      "retry": 3,
+      "httpMethodsToRetry": [
+        "GET",
+        "HEAD",
+        "PUT",
+        "OPTIONS",
+        "DELETE"
+      ],
+      "noResponseRetries": 2,
+      "retryDelayMultiplier": 2,
+      "timeOfFirstRequest": 1770448001414,
+      "totalTimeout": 9007199254740991,
+      "maxRetryDelay": 9007199254740991,
+      "statusCodesToRetry": [
+        [
+          100,
+          199
+        ],
+        [
+          408,
+          408
+        ],
+        [
+          429,
+          429
+        ],
+        [
+          500,
+          599
+        ]
+      ]
+    }
+  },
+  "response": {
+    "size": 0,
+    "data": {
+      "error": {
+        "code": 403,
+        "message": "Request had insufficient authentication scopes.",
+        "errors": [
+          {
+            "message": "Insufficient Permission",
+            "domain": "global",
+            "reason": "insufficientPermissions"
+          }
+        ],
+        "status": "PERMISSION_DENIED",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+            "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+            "domain": "googleapis.com",
+            "metadata": {
+              "service": "classroom.googleapis.com",
+              "method": "google.classroom.v1.Courses.ListCourses"
+            }
+          }
+        ]
+      }
+    },
+    "config": {
+      "url": "https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE",
+      "method": "GET",
+      "apiVersion": "",
+      "userAgentDirectives": [
+        {
+          "product": "google-api-nodejs-client",
+          "version": "8.0.1",
+          "comment": "gzip"
+        }
+      ],
+      "headers": {},
+      "params": {
+        "courseStates": [
+          "ACTIVE"
+        ]
+      },
+      "retry": true,
+      "responseType": "unknown"
+    }
+  },
+  "code": 403,
+  "status": 403
+}
+Message: Request had insufficient authentication scopes.
+Response: {
+  "error": {
+    "code": 403,
+    "message": "Request had insufficient authentication scopes.",
+    "errors": [
+      {
+        "message": "Insufficient Permission",
+        "domain": "global",
+        "reason": "insufficientPermissions"
+      }
+    ],
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+        "domain": "googleapis.com",
+        "metadata": {
+          "service": "classroom.googleapis.com",
+          "method": "google.classroom.v1.Courses.ListCourses"
+        }
+      }
+    ]
+  }
+}
+----------------------------------------
