@@ -53,7 +53,8 @@ export class TelegramService {
     static async createTemporaryClient(sessionString?: string): Promise<TelegramClient> {
         const session = new StringSession(sessionString || "");
         const client = new TelegramClient(session, API_ID, API_HASH, {
-            connectionRetries: 5,
+            connectionRetries: 10,
+            useWSS: false,
         });
         await client.connect();
         return client;
