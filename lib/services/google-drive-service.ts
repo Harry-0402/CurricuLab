@@ -49,11 +49,16 @@ export const GoogleDriveService = {
     /**
      * Get authenticated Drive client using user tokens
      */
-    getAuthenticatedClient(tokens: DriveTokens) {
+    getAuthenticatedClient(tokens: DriveTokens, redirectUri?: string) {
+        // Fallback logic for universal support
+        const effectiveRedirectUri = redirectUri ||
+            process.env.GOOGLE_OAUTH_REDIRECT_URI ||
+            'https://curriculab-sj6g.onrender.com/api/auth/google/callback';
+
         const oauth2Client = new google.auth.OAuth2(
             process.env.GOOGLE_OAUTH_CLIENT_ID,
             process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-            process.env.GOOGLE_OAUTH_REDIRECT_URI
+            effectiveRedirectUri
         );
 
         oauth2Client.setCredentials({
@@ -70,9 +75,9 @@ export const GoogleDriveService = {
     /**
      * Upload a file to Google Drive
      */
-    async uploadFile(input: UploadFileInput, tokens: DriveTokens): Promise<DriveFile> {
+    async uploadFile(input: UploadFileInput, tokens: DriveTokens, redirectUri?: string): Promise<DriveFile> {
         try {
-            const drive = this.getAuthenticatedClient(tokens);
+            const drive = this.getAuthenticatedClient(tokens, redirectUri);
             const { fileBuffer, fileName, mimeType, metadata } = input;
 
             // 1. Use root folder from env
@@ -153,9 +158,9 @@ export const GoogleDriveService = {
     /**
      * Delete a file from Google Drive
      */
-    async deleteFile(fileId: string, tokens: DriveTokens): Promise<boolean> {
+    async deleteFile(fileId: string, tokens: DriveTokens, redirectUri?: string): Promise<boolean> {
         try {
-            const drive = this.getAuthenticatedClient(tokens);
+            const drive = this.getAuthenticatedClient(tokens, redirectUri);
             await drive.files.delete({ fileId });
             return true;
         } catch (error) {

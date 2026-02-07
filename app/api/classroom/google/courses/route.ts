@@ -36,7 +36,14 @@ export async function GET(req: NextRequest) {
             expiry_date: new Date(tokenData.expires_at).getTime(),
         };
 
-        const courses = await GoogleClassroomService.listCourses(tokens);
+        // Robust origin detection for proxies (Render)
+        const requestUrl = new URL(req.url);
+        const host = req.headers.get('host');
+        const protocol = req.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
+        const origin = host ? `${protocol}://${host}` : requestUrl.origin;
+        const redirectUri = `${origin}/api/auth/google/callback`;
+
+        const courses = await GoogleClassroomService.listCourses(tokens, redirectUri);
         console.log('debug: Courses fetched:', courses.length);
 
         return NextResponse.json({ courses });

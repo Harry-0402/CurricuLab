@@ -36,7 +36,14 @@ export async function GET(
             expiry_date: new Date(tokenData.expires_at).getTime(),
         };
 
-        const submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens);
+        // Robust origin detection for proxies (Render)
+        const requestUrl = new URL(req.url);
+        const host = req.headers.get('host');
+        const protocol = req.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
+        const origin = host ? `${protocol}://${host}` : requestUrl.origin;
+        const redirectUri = `${origin}/api/auth/google/callback`;
+
+        const submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens, redirectUri);
 
         return NextResponse.json({ submission });
 
@@ -88,8 +95,15 @@ export async function POST(
             expiry_date: new Date(tokenData.expires_at).getTime(),
         };
 
+        // Robust origin detection for proxies (Render)
+        const requestUrl = new URL(req.url);
+        const host = req.headers.get('host');
+        const protocol = req.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
+        const origin = host ? `${protocol}://${host}` : requestUrl.origin;
+        const redirectUri = `${origin}/api/auth/google/callback`;
+
         // 1. Get existing submission
-        let submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens);
+        let submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens, redirectUri);
 
         if (!submission) {
             return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
@@ -101,31 +115,35 @@ export async function POST(
                 workId,
                 submission.id,
                 attachments,
-                tokens
+                tokens,
+                redirectUri
             );
         } else if (action === 'turnIn') {
             await GoogleClassroomService.turnInAssignment(
                 courseId,
                 workId,
                 submission.id,
-                tokens
+                tokens,
+                redirectUri
             );
-            submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens);
+            submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens, redirectUri);
         } else if (action === 'unsubmit') {
             await GoogleClassroomService.reclaimAssignment(
                 courseId,
                 workId,
                 submission.id,
-                tokens
+                tokens,
+                redirectUri
             );
-            submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens);
+            submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens, redirectUri);
         } else if (action === 'detach') {
             submission = await GoogleClassroomService.removeAttachmentFromSubmission(
                 courseId,
                 workId,
                 submission.id,
                 attachmentIds,
-                tokens
+                tokens,
+                redirectUri
             );
         } else {
             return NextResponse.json({ error: 'Invalid action' }, { status: 400 });

@@ -40,6 +40,13 @@ export async function POST(req: NextRequest) {
             expiry_date: new Date(tokenData.expires_at).getTime(),
         };
 
+        // Robust origin detection for proxies (Render)
+        const requestUrl = new URL(req.url);
+        const host = req.headers.get('host');
+        const protocol = req.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
+        const origin = host ? `${protocol}://${host}` : requestUrl.origin;
+        const redirectUri = `${origin}/api/auth/google/callback`;
+
         const buffer = Buffer.from(await file.arrayBuffer());
 
         const driveFile = await GoogleDriveService.uploadFile({
@@ -50,7 +57,7 @@ export async function POST(req: NextRequest) {
                 ...metadata,
                 title: file.name,
             }
-        }, tokens);
+        }, tokens, redirectUri);
 
         return NextResponse.json({ file: driveFile });
 

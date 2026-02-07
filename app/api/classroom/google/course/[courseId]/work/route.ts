@@ -39,10 +39,17 @@ export async function GET(
             expiry_date: new Date(tokenData.expires_at).getTime(),
         };
 
+        // Robust origin detection for proxies (Render)
+        const requestUrl = new URL(req.url);
+        const host = req.headers.get('host');
+        const protocol = req.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
+        const origin = host ? `${protocol}://${host}` : requestUrl.origin;
+        const redirectUri = `${origin}/api/auth/google/callback`;
+
         const [courseWork, courseMaterials, announcements] = await Promise.all([
-            GoogleClassroomService.listCourseWork(courseId, tokens),
-            GoogleClassroomService.listCourseWorkMaterials(courseId, tokens),
-            GoogleClassroomService.listAnnouncements(courseId, tokens)
+            GoogleClassroomService.listCourseWork(courseId, tokens, redirectUri),
+            GoogleClassroomService.listCourseWorkMaterials(courseId, tokens, redirectUri),
+            GoogleClassroomService.listAnnouncements(courseId, tokens, redirectUri)
         ]);
 
         console.log(`Debug: Course ${courseId} - Work: ${courseWork.length}, Materials: ${courseMaterials.length}, Announcements: ${announcements.length}`);

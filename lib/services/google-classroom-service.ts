@@ -90,11 +90,16 @@ export const GoogleClassroomService = {
     /**
      * Get authenticated Classroom client using user tokens
      */
-    getAuthenticatedClient(tokens: DriveTokens) {
+    getAuthenticatedClient(tokens: DriveTokens, redirectUri?: string) {
+        // Fallback logic for universal support
+        const effectiveRedirectUri = redirectUri ||
+            process.env.GOOGLE_OAUTH_REDIRECT_URI ||
+            'https://curriculab-sj6g.onrender.com/api/auth/google/callback';
+
         const oauth2Client = new google.auth.OAuth2(
             process.env.GOOGLE_OAUTH_CLIENT_ID,
             process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-            process.env.GOOGLE_OAUTH_REDIRECT_URI
+            effectiveRedirectUri
         );
 
         oauth2Client.setCredentials({
@@ -111,8 +116,8 @@ export const GoogleClassroomService = {
     /**
      * List all active courses for the authenticated user
      */
-    async listCourses(tokens: DriveTokens): Promise<ClassroomCourse[]> {
-        const classroom = this.getAuthenticatedClient(tokens);
+    async listCourses(tokens: DriveTokens, redirectUri?: string): Promise<ClassroomCourse[]> {
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         try {
             const response = await classroom.courses.list({
                 courseStates: ['ACTIVE'],
@@ -127,8 +132,8 @@ export const GoogleClassroomService = {
     /**
      * List coursework for a specific course
      */
-    async listCourseWork(courseId: string, tokens: DriveTokens): Promise<ClassroomCourseWork[]> {
-        const classroom = this.getAuthenticatedClient(tokens);
+    async listCourseWork(courseId: string, tokens: DriveTokens, redirectUri?: string): Promise<ClassroomCourseWork[]> {
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         let allCourseWork: ClassroomCourseWork[] = [];
         let nextPageToken: string | undefined = undefined;
         let pageCount = 0;
@@ -172,8 +177,8 @@ export const GoogleClassroomService = {
     /**
      * List course work materials (e.g. PPTs, reading materials)
      */
-    async listCourseWorkMaterials(courseId: string, tokens: DriveTokens): Promise<any[]> {
-        const classroom = this.getAuthenticatedClient(tokens);
+    async listCourseWorkMaterials(courseId: string, tokens: DriveTokens, redirectUri?: string): Promise<any[]> {
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         let allMaterials: any[] = [];
         let nextPageToken: string | undefined = undefined;
         let pageCount = 0;
@@ -230,8 +235,8 @@ export const GoogleClassroomService = {
     /**
      * List announcements for a specific course
      */
-    async listAnnouncements(courseId: string, tokens: DriveTokens): Promise<ClassroomAnnouncement[]> {
-        const classroom = this.getAuthenticatedClient(tokens);
+    async listAnnouncements(courseId: string, tokens: DriveTokens, redirectUri?: string): Promise<ClassroomAnnouncement[]> {
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         let allAnnouncements: ClassroomAnnouncement[] = [];
         let nextPageToken: string | undefined = undefined;
         let pageCount = 0;
@@ -264,8 +269,8 @@ export const GoogleClassroomService = {
     /**
      * Get a student's submission for a specific coursework
      */
-    async getStudentSubmission(courseId: string, courseWorkId: string, tokens: DriveTokens): Promise<ClassroomStudentSubmission | null> {
-        const classroom = this.getAuthenticatedClient(tokens);
+    async getStudentSubmission(courseId: string, courseWorkId: string, tokens: DriveTokens, redirectUri?: string): Promise<ClassroomStudentSubmission | null> {
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         try {
             // We can only get 'me' submission for the student
             const response = await classroom.courses.courseWork.studentSubmissions.list({
@@ -293,9 +298,10 @@ export const GoogleClassroomService = {
         courseId: string,
         courseWorkId: string,
         submissionId: string,
-        tokens: DriveTokens
+        tokens: DriveTokens,
+        redirectUri?: string
     ): Promise<void> {
-        const classroom = this.getAuthenticatedClient(tokens);
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         try {
             await classroom.courses.courseWork.studentSubmissions.turnIn({
                 courseId,
@@ -315,9 +321,10 @@ export const GoogleClassroomService = {
         courseId: string,
         courseWorkId: string,
         submissionId: string,
-        tokens: DriveTokens
+        tokens: DriveTokens,
+        redirectUri?: string
     ): Promise<void> {
-        const classroom = this.getAuthenticatedClient(tokens);
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         try {
             await classroom.courses.courseWork.studentSubmissions.reclaim({
                 courseId,
@@ -338,9 +345,10 @@ export const GoogleClassroomService = {
         courseWorkId: string,
         submissionId: string,
         attachments: classroom_v1.Schema$Attachment[],
-        tokens: DriveTokens
+        tokens: DriveTokens,
+        redirectUri?: string
     ): Promise<ClassroomStudentSubmission | null> {
-        const classroom = this.getAuthenticatedClient(tokens);
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         try {
             await classroom.courses.courseWork.studentSubmissions.modifyAttachments({
                 courseId,
@@ -367,9 +375,10 @@ export const GoogleClassroomService = {
         courseWorkId: string,
         submissionId: string,
         attachmentIds: string[],
-        tokens: DriveTokens
+        tokens: DriveTokens,
+        redirectUri?: string
     ): Promise<ClassroomStudentSubmission | null> {
-        const classroom = this.getAuthenticatedClient(tokens);
+        const classroom = this.getAuthenticatedClient(tokens, redirectUri);
         try {
             // Using any because deleteIds might not be in the current @types/googleapis version
             // but is part of the API according to some docs
