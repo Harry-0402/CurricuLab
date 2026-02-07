@@ -13,6 +13,7 @@ export function TelegramLogin({ onLoginSuccess }: TelegramLoginProps) {
     const [code, setCode] = useState('');
     const [password, setPassword] = useState('');
     const [phoneCodeHash, setPhoneCodeHash] = useState('');
+    const [tempSession, setTempSession] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
