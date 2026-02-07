@@ -13,7 +13,12 @@ export async function GET(request: Request) {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (session) {
-            const redirectUri = `${requestUrl.origin}/api/auth/google/callback`;
+            // Robust origin detection for proxies (Render)
+            const host = request.headers.get('host');
+            const protocol = request.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
+            const origin = host ? `${protocol}://${host}` : requestUrl.origin;
+
+            const redirectUri = `${origin}/api/auth/google/callback`;
             const oauth2Client = new google.auth.OAuth2(
                 process.env.GOOGLE_OAUTH_CLIENT_ID,
                 process.env.GOOGLE_OAUTH_CLIENT_SECRET,
