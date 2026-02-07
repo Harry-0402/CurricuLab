@@ -10,39 +10,45 @@ export default function CourseCard({ course, onSelect }: CourseCardProps) {
     return (
         <button
             onClick={() => onSelect(course)}
-            className="group relative bg-white border border-gray-100 p-8 rounded-[40px] transition-all hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-2 overflow-hidden flex flex-col h-full text-left w-full"
+            className="group relative bg-white border border-gray-100 p-6 rounded-[30px] transition-all hover:shadow-xl hover:shadow-blue-100 hover:-translate-y-1 overflow-hidden flex flex-col h-full text-left w-full min-h-[220px]"
         >
             {/* Class Icon Decoration */}
-            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                <Icons.BookOpen size={28} />
+            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                <Icons.BookOpen size={22} />
             </div>
 
-            <div className="flex-1">
-                <h3 className="text-2xl font-black text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+            <div className="flex-1 space-y-2">
+                <h3 className="text-xl font-black text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
                     {course.name}
                 </h3>
 
-                {course.section && (
-                    <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-2">
-                        Section: {course.section}
-                    </p>
-                )}
+                <div className="space-y-1">
+                    {course.section ? (
+                        <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+                            Section: {course.section}
+                        </p>
+                    ) : (
+                        <p className="text-gray-300 text-[10px] font-bold uppercase tracking-widest">
+                            General Class
+                        </p>
+                    )}
 
-                {course.room && (
-                    <p className="text-gray-400 text-xs font-medium italic">
-                        Room: {course.room}
-                    </p>
-                )}
+                    {course.room && (
+                        <p className="text-gray-400 text-[10px] font-medium italic">
+                            Room: {course.room}
+                        </p>
+                    )}
+                </div>
             </div>
 
-            <div className="mt-8 flex items-center gap-2 text-xs font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-6 py-3 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all w-fit">
+            <div className="mt-6 flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-5 py-2.5 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all w-fit">
                 Enter Class
-                <Icons.ChevronRight size={16} className="transition-transform group-hover:translate-x-1" />
+                <Icons.ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
             </div>
 
             {/* Background decoration */}
-            <div className="absolute -bottom-6 -right-6 text-gray-50 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
-                <Icons.FolderOpen size={160} />
+            <div className="absolute -bottom-4 -right-4 text-gray-50 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
+                <Icons.FolderOpen size={120} />
             </div>
         </button>
     );

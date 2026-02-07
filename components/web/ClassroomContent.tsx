@@ -20,58 +20,77 @@ export function ClassroomContent() {
     const [isCoursesLoading, setIsCoursesLoading] = useState(false);
     const [user, setUser] = useState<any>(null);
 
-    // Initial Load - User & Drive Status
+    // Initial Load - Parallel Fetching
     useEffect(() => {
-        const checkAuthAndDrive = async () => {
+        const initializeClassroom = async () => {
             setIsLoading(true);
             try {
-                // Check User Session first
+                // 1. Check User Session
                 const { data: { session } } = await supabase.auth.getSession();
-                if (!session) return;
+                if (!session) {
+                    setIsLoading(false);
+                    return;
+                }
                 setUser(session.user);
 
-                // Check Drive Connection
+                // Check URL params for redirect handling
                 const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('drive_connected')) {
-                    setIsDriveConnected(true);
-                    window.history.replaceState({}, '', window.location.pathname);
-                    toast.success('Google Classroom connected successfully!');
-                } else if (urlParams.get('error')) {
-                    const errorCode = urlParams.get('error');
-                    let message = 'Failed to connect Google Classroom.';
+                const isRedirect = urlParams.get('drive_connected') || urlParams.get('error');
 
-                    if (errorCode === 'token_storage_failed') message = 'Securely storing your connection failed. Please try again.';
-                    if (errorCode === 'oauth_failed') message = 'Google authorization failed. Ensure you granted all permissions.';
-                    if (errorCode === 'unauthorized') message = 'You must be signed in to connect Google Classroom.';
-
-                    toast.error(message);
+                if (isRedirect) {
+                    // Handle Validation Redirects synchronously
+                    if (urlParams.get('drive_connected')) {
+                        setIsDriveConnected(true);
+                        toast.success('Google Classroom connected successfully!');
+                        // Fetch courses immediately after successful connect
+                        loadCourses();
+                    } else if (urlParams.get('error')) {
+                        setIsDriveConnected(false);
+                        const errorCode = urlParams.get('error');
+                        let message = 'Failed to connect Google Classroom.';
+                        if (errorCode === 'token_storage_failed') message = 'Securely storing your connection failed. Please try again.';
+                        if (errorCode === 'oauth_failed') message = 'Google authorization failed. Ensure you granted all permissions.';
+                        if (errorCode === 'unauthorized') message = 'You must be signed in to connect Google Classroom.';
+                        toast.error(message);
+                    }
                     window.history.replaceState({}, '', window.location.pathname);
+                    setIsLoading(false);
                 } else {
-                    const res = await fetch('/api/auth/google/status');
-                    if (res.ok) {
-                        const data = await res.json();
-                        setIsDriveConnected(data.connected);
+                    // 2. Parallel Fetch: Status & Courses
+                    // We optimistically fetch courses assuming they might be connected
+                    const [statusRes, coursesRes] = await Promise.all([
+                        fetch('/api/auth/google/status'),
+                        fetch('/api/classroom/google/courses')
+                    ]);
+
+                    // Handle Status
+                    if (statusRes.ok) {
+                        const statusData = await statusRes.json();
+                        setIsDriveConnected(statusData.connected);
                     } else {
                         setIsDriveConnected(false);
                     }
+
+                    // Handle Courses (only if status was essentially ok, but we check response)
+                    if (coursesRes.ok) {
+                        const coursesData = await coursesRes.json();
+                        if (coursesData.courses && coursesData.courses.length > 0) {
+                            setCourses(coursesData.courses);
+                        }
+                    }
                 }
             } catch (error) {
-                console.error('Error checking drive status:', error);
+                console.error('Error initializing classroom:', error);
                 setIsDriveConnected(false);
             } finally {
                 setIsLoading(false);
             }
         };
-        checkAuthAndDrive();
+
+        initializeClassroom();
     }, []);
 
-    // Load courses when connected
-    useEffect(() => {
-        if (isDriveConnected) {
-            loadCourses();
-        }
-    }, [isDriveConnected]);
-
+    // Helper to reload courses manually if needed (e.g. after reconnect)
     const loadCourses = async () => {
         setIsCoursesLoading(true);
         try {
