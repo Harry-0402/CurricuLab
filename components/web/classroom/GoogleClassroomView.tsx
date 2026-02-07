@@ -222,19 +222,17 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
 
                                             <div className="flex flex-wrap gap-3">
                                                 {material.materials && material.materials.map((item: any, idx: number) => (
-                                                    <a
+                                                    <button
                                                         key={idx}
-                                                        href={item.driveFile?.driveFile?.alternateLink || item.link?.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-lg transition-colors border border-blue-100"
+                                                        onClick={() => handlePreview(item)}
+                                                        className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-lg transition-colors border border-blue-100 group"
                                                     >
                                                         {item.driveFile ? <Icons.FileText size={16} /> : <Icons.Link size={16} />}
-                                                        <span className="font-medium truncate max-w-[200px]">
+                                                        <span className="font-medium truncate max-w-[200px] text-left">
                                                             {item.driveFile?.driveFile?.title || item.link?.title || 'View Resource'}
                                                         </span>
-                                                        <Icons.ExternalLink size={12} className="opacity-50" />
-                                                    </a>
+                                                        <Icons.Eye size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+                                                    </button>
                                                 ))}
                                             </div>
                                         </div>
@@ -279,16 +277,17 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Attachments</p>
                                                     <div className="flex flex-wrap gap-2">
                                                         {announcement.materials.map((item: any, idx: number) => (
-                                                            <a
+                                                            <button
                                                                 key={idx}
-                                                                href={item.driveFile?.driveFile?.alternateLink || item.link?.url}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="flex items-center gap-2 text-xs font-medium text-gray-700 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50"
+                                                                onClick={() => handlePreview(item)}
+                                                                className="flex items-center gap-2 text-xs font-medium text-gray-700 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 group transition-colors"
                                                             >
                                                                 {item.driveFile ? <Icons.FileText size={14} /> : <Icons.Link size={14} />}
-                                                                {item.driveFile?.driveFile?.title || item.link?.title || 'Attachment'}
-                                                            </a>
+                                                                <span className="truncate max-w-[200px]">
+                                                                    {item.driveFile?.driveFile?.title || item.link?.title || 'Attachment'}
+                                                                </span>
+                                                                <Icons.Eye size={12} className="opacity-0 group-hover:opacity-50 transition-opacity" />
+                                                            </button>
                                                         ))}
                                                     </div>
                                                 </div>
