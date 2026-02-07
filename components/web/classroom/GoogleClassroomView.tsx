@@ -8,10 +8,9 @@ interface GoogleClassroomViewProps {
     isDriveConnected: boolean | null;
     connectGoogleDrive: () => void;
     selectedCourse: ClassroomCourse | null;
-    user: any;
 }
 
-export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, selectedCourse, user }: GoogleClassroomViewProps) {
+export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, selectedCourse }: GoogleClassroomViewProps) {
     const [courseWork, setCourseWork] = useState<ClassroomCourseWork[]>([]);
     const [courseMaterials, setCourseMaterials] = useState<any[]>([]);
     const [announcements, setAnnouncements] = useState<ClassroomAnnouncement[]>([]);
@@ -58,130 +57,6 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
             }
         } catch (error) {
             console.error('Error loading submission details:', error);
-        } finally {
-            setIsActionLoading(false);
-        }
-    };
-
-    const handleTurnIn = async () => {
-        if (!selectedCourse || !selectedAssignment || !submission) return;
-        setIsActionLoading(true);
-        try {
-            const res = await fetch(`/api/classroom/google/course/${selectedCourse.id}/work/${selectedAssignment.id}/submit`, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'turnIn' }),
-            });
-            const data = await res.json();
-            if (res.ok && data.submission) {
-                setSubmission(data.submission);
-                toast.success('Assignment turned in successfully!');
-            } else {
-                throw new Error(data.error || 'Failed to turn in');
-            }
-        } catch (error) {
-            toast.error('Failed to turn in assignment');
-        } finally {
-            setIsActionLoading(false);
-        }
-    };
-
-    const handleUnsubmit = async () => {
-        if (!selectedCourse || !selectedAssignment || !submission) return;
-        setIsActionLoading(true);
-        try {
-            const res = await fetch(`/api/classroom/google/course/${selectedCourse.id}/work/${selectedAssignment.id}/submit`, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'unsubmit' }),
-            });
-            const data = await res.json();
-            if (res.ok && data.submission) {
-                setSubmission(data.submission);
-                toast.success('Assignment unsubmitted');
-            } else {
-                throw new Error(data.error || 'Failed to unsubmit');
-            }
-        } catch (error) {
-            toast.error('Failed to unsubmit assignment');
-        } finally {
-            setIsActionLoading(false);
-        }
-    };
-
-    const handleRemoveAttachment = async (attachmentId: string) => {
-        if (!selectedCourse || !selectedAssignment || !submission) return;
-
-        setIsActionLoading(true);
-        const toastId = toast.loading('Removing attachment...');
-        try {
-            const res = await fetch(`/api/classroom/google/course/${selectedCourse.id}/work/${selectedAssignment.id}/submit`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'detach',
-                    attachmentIds: [attachmentId]
-                }),
-            });
-            const data = await res.json();
-            if (res.ok && data.submission) {
-                setSubmission(data.submission);
-                toast.success('Attachment removed', { id: toastId });
-            } else {
-                throw new Error(data.error || 'Failed to remove attachment');
-            }
-        } catch (error) {
-            toast.error('Failed to remove attachment', { id: toastId });
-        } finally {
-            setIsActionLoading(false);
-        }
-    };
-
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !selectedCourse || !selectedAssignment) return;
-
-        setIsActionLoading(true);
-        const toastId = toast.loading(`Uploading ${file.name}...`);
-
-        try {
-            // 1. Upload to Drive
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('metadata', JSON.stringify({
-                subjectTitle: selectedCourse.name,
-                type: 'submission',
-                assignmentTitle: selectedAssignment.title,
-                studentName: user?.user_metadata?.full_name || user?.email || 'Student'
-            }));
-
-            const driveRes = await fetch('/api/drive/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!driveRes.ok) throw new Error('Failed to upload to Drive');
-            const driveData = await driveRes.json();
-            const driveFile = driveData.file;
-
-            // 2. Attach to Classroom
-            const attachRes = await fetch(`/api/classroom/google/course/${selectedCourse.id}/work/${selectedAssignment.id}/submit`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'attach',
-                    attachments: [{
-                        driveFile: {
-                            id: driveFile.id
-                        }
-                    }]
-                }),
-            });
-
-            const attachData = await attachRes.json();
-            if (!attachRes.ok) throw new Error(attachData.error || 'Failed to attach to assignment');
-
-            setSubmission(attachData.submission);
-            toast.success('File uploaded and attached!', { id: toastId });
-        } catch (error) {
-            console.error('Upload error:', error);
-            toast.error('Failed to upload file', { id: toastId });
         } finally {
             setIsActionLoading(false);
         }
@@ -564,16 +439,7 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                                 </p>
                                                             </button>
 
-                                                            {submission?.state !== 'TURNED_IN' && (
-                                                                <button
-                                                                    onClick={() => handleRemoveAttachment(item.id)}
-                                                                    className="p-1.5 hover:bg-red-50 text-gray-300 hover:text-red-500 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                                                    title="Remove attachment"
-                                                                >
-                                                                    <Icons.X size={14} />
-                                                                </button>
-                                                            )}
-                                                            <Icons.ExternalLink size={14} className="text-gray-300 group-hover:opacity-100 opacity-0 transition-opacity" />
+                                                            <Icons.ExternalLink size={14} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
                                                         </div>
                                                     );
                                                 })
@@ -584,78 +450,27 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                             )}
                                         </div>
 
-                                        <div className="space-y-3 relative">
-                                            {submission?.state === 'TURNED_IN' ? (
-                                                <button
-                                                    onClick={handleUnsubmit}
-                                                    disabled={isActionLoading}
-                                                    className="w-full py-4 px-4 bg-white border border-red-200 text-red-600 rounded-2xl font-black text-sm hover:bg-red-50 transition-all flex items-center justify-center gap-2"
-                                                >
-                                                    {isActionLoading ? (
-                                                        <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-                                                    ) : (
-                                                        <>
-                                                            <Icons.RefreshCw size={18} />
-                                                            Unsubmit
-                                                        </>
-                                                    )}
-                                                </button>
-                                            ) : (
-                                                <>
-                                                    <label className="w-full py-4 px-4 bg-white border-2 border-dashed border-gray-200 text-gray-500 rounded-2xl font-black text-sm hover:border-blue-400 hover:text-blue-600 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                                                        <input
-                                                            type="file"
-                                                            className="hidden"
-                                                            onChange={handleFileUpload}
-                                                            disabled={isActionLoading}
-                                                        />
-                                                        <Icons.Plus size={18} />
-                                                        Add Work
-                                                    </label>
-                                                    <button
-                                                        onClick={handleTurnIn}
-                                                        disabled={isActionLoading}
-                                                        className="w-full py-4 px-4 bg-blue-600 text-white rounded-2xl font-black text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2 disabled:cursor-not-allowed"
-                                                    >
-                                                        {isActionLoading ? (
-                                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                                        ) : (
-                                                            <>
-                                                                <Icons.Send size={18} />
-                                                                {submission?.assignmentSubmission?.attachments?.length ? 'Turn In' : 'Mark as done'}
-                                                            </>
-                                                        )}
-                                                    </button>
-                                                </>
-                                            )}
-                                        </div>
+                                        <div className="space-y-4">
+                                            <a
+                                                href={selectedAssignment.alternateLink}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full py-4 px-4 bg-blue-600 text-white rounded-2xl font-black text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 active:scale-95 flex items-center justify-center gap-2 group"
+                                            >
+                                                <Icons.ExternalLink size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                                Open in Google Classroom
+                                            </a>
 
-                                        {submission?.alternateLink && (
-                                            <div className="mt-4 pt-4 border-t border-gray-100 relative">
-                                                <a
-                                                    href={submission.alternateLink}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center justify-center gap-2 py-3 px-4 bg-gray-50 text-gray-600 rounded-2xl text-xs font-bold hover:bg-gray-100 transition-all group"
-                                                >
-                                                    <Icons.FolderOpen size={16} className="text-gray-400 group-hover:text-blue-500" />
-                                                    View Submission Folder in Drive
-                                                </a>
+                                            <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl">
+                                                <div className="flex gap-3">
+                                                    <Icons.Info size={20} className="text-blue-500 shrink-0" />
+                                                    <div className="text-[10px] font-bold text-blue-800 leading-relaxed">
+                                                        To add, remove, or turn in your work, please use the Google Classroom website. Changes will appear here automatically.
+                                                    </div>
+                                                </div>
                                             </div>
-                                        )}
+                                        </div>
                                     </section>
-
-                                    <div className="bg-orange-50 border border-orange-100 p-4 rounded-2xl">
-                                        <div className="flex gap-3">
-                                            <Icons.Info size={20} className="text-orange-500 shrink-0" />
-                                            <div className="text-xs font-bold text-orange-800 leading-relaxed">
-                                                {submission?.state === 'TURNED_IN'
-                                                    ? "Unsubmit to add or change attachments. Don't forget to resubmit once you're done."
-                                                    : "Turning in will submit your attached work to your teacher. You can't edit it once submitted unless you unsubmit."
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

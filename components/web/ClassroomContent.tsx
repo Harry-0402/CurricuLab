@@ -144,7 +144,6 @@ export function ClassroomContent() {
                             isDriveConnected={isDriveConnected}
                             connectGoogleDrive={connectGoogleDrive}
                             selectedCourse={selectedCourse}
-                            user={user}
                         />
                     </div>
                 )}
