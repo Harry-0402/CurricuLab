@@ -30,6 +30,7 @@ export function TelegramLogin({ onLoginSuccess }: TelegramLoginProps) {
 
             if (data.success) {
                 setPhoneCodeHash(data.phoneCodeHash);
+                setTempSession(data.sessionString);
                 setStep('code');
             } else {
                 setError(data.error || 'Failed to send code.');
@@ -53,6 +54,7 @@ export function TelegramLogin({ onLoginSuccess }: TelegramLoginProps) {
                     phone,
                     code,
                     phoneCodeHash,
+                    sessionString: tempSession,
                     password: password || undefined
                 }),
             });
@@ -61,7 +63,7 @@ export function TelegramLogin({ onLoginSuccess }: TelegramLoginProps) {
             if (data.success) {
                 onLoginSuccess();
             } else {
-                if (data.error.includes('SESSION_PASSWORD_NEEDED')) {
+                if (data.error && data.error.includes('SESSION_PASSWORD_NEEDED')) {
                     setStep('password');
                 } else {
                     setError(data.error || 'Failed to sign in.');
