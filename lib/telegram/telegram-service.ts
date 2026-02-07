@@ -30,7 +30,7 @@ export class TelegramService {
         const { data, error } = await supabaseAdmin
             .from('authorized_users')
             .select('telegram_session')
-            .eq('id', userId) // Assuming we link by internal User ID or Email
+            .eq('email', userId) // Match logic in saveSession (userId is email here)
             .single();
 
         if (error || !data?.telegram_session) {
