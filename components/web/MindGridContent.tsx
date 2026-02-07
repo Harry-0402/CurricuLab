@@ -7,9 +7,11 @@ import { WebAppShell } from '@/components/web/WebAppShell';
 import AddAgentModal from './AddAgentModal';
 
 import { MindGridService } from '@/lib/services/mindgrid-service';
+import { supabase } from '@/utils/supabase/client';
 
 export interface Agent {
     id: string;
+    user_id?: string;
     name: string;
     description: string;
     url: string;
@@ -23,6 +25,7 @@ export default function MindGridContent() {
     const [activeFilter, setActiveFilter] = useState<'All' | Agent['platform']>('All');
     const [showAddModal, setShowAddModal] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     const loadAgents = async (isInitial = false) => {
         // If initial load and we have cached data, don't show the full skeleton
@@ -52,6 +55,11 @@ export default function MindGridContent() {
     };
 
     useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setCurrentUser(user);
+        };
+        fetchUser();
         loadAgents(true);
     }, []);
 
@@ -205,7 +213,7 @@ export default function MindGridContent() {
                                         <Icons.ChevronRight size={16} className="transition-transform group-hover/btn:translate-x-1" />
                                     </a>
 
-                                    {!agent.is_default && (
+                                    {!agent.is_default && agent.user_id === currentUser?.id && (
                                         <button
                                             onClick={() => handleDeleteAgent(agent.id)}
                                             className="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50"

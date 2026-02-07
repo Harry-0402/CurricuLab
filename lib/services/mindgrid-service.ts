@@ -8,7 +8,6 @@ export const MindGridService = {
         const { data, error } = await supabase
             .from('mindgrid_agents')
             .select('*')
-            .or(`user_id.eq.${user?.id},is_default.eq.true`)
             .order('created_at', { ascending: true });
 
         if (error) {
