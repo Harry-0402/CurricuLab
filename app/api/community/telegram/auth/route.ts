@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TelegramService } from '@/lib/telegram/telegram-service';
 import { createSupabaseServerClient } from '@/utils/supabase/server';
-import { TelegramClient } from 'telegram';
+import { TelegramClient, Api } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 
 const API_ID = parseInt(process.env.TELEGRAM_API_ID || '0');
@@ -27,16 +27,14 @@ export async function POST(req: NextRequest) {
             const client = await TelegramService.createTemporaryClient();
 
             // Perform sign in
-            await client.signInUser(
-                { apiId: API_ID, apiHash: API_HASH },
-                {
+            // Perform sign in using raw API call to pass phoneCodeHash directly
+            const result = await client.invoke(
+                new Api.auth.SignIn({
                     phoneNumber: phone,
                     phoneCodeHash: phoneCodeHash,
                     phoneCode: code,
-                    password: password || undefined,
-                    onError: (err) => { throw err; },
-                }
-            );
+                })
+            ) as unknown as Api.auth.Authorization;
 
             // Save Session
             const sessionString = client.session.save() as unknown as string;
