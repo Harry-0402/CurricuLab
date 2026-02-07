@@ -19,14 +19,17 @@ export async function POST(req: NextRequest) {
                 phone
             );
 
+            const sessionString = client.session.save() as unknown as string;
+
             await client.disconnect();
-            return NextResponse.json({ success: true, phoneCodeHash });
+            return NextResponse.json({ success: true, phoneCodeHash, sessionString });
         }
 
         if (action === 'sign_in') {
-            const client = await TelegramService.createTemporaryClient();
+            const { sessionString } = await req.json(); // Extract sessionString from request
+            // Use the SAME session that requested the code
+            const client = await TelegramService.createTemporaryClient(sessionString);
 
-            // Perform sign in
             // Perform sign in using raw API call to pass phoneCodeHash directly
             const result = await client.invoke(
                 new Api.auth.SignIn({
@@ -36,15 +39,15 @@ export async function POST(req: NextRequest) {
                 })
             ) as unknown as Api.auth.Authorization;
 
-            // Save Session
-            const sessionString = client.session.save() as unknown as string;
+            // Save Session (It might have updated)
+            const newSessionString = client.session.save() as unknown as string; // Capture potentially updated session
 
             // Get Current User
             const supabase = await createSupabaseServerClient();
             const { data: { user } } = await supabase.auth.getUser();
 
             if (user?.email) {
-                await TelegramService.saveSession(user.email, sessionString, phone);
+                await TelegramService.saveSession(user.email, newSessionString, phone);
             } else {
                 throw new Error("User not authenticated with CurricuLab");
             }

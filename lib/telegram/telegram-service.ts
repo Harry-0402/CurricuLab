@@ -50,8 +50,9 @@ export class TelegramService {
     /**
      * Create a temporary client for login flow (before session is saved).
      */
-    static async createTemporaryClient(): Promise<TelegramClient> {
-        const client = new TelegramClient(new StringSession(""), API_ID, API_HASH, {
+    static async createTemporaryClient(sessionString?: string): Promise<TelegramClient> {
+        const session = new StringSession(sessionString || "");
+        const client = new TelegramClient(session, API_ID, API_HASH, {
             connectionRetries: 5,
         });
         await client.connect();
