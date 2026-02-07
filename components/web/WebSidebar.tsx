@@ -38,7 +38,7 @@ const aiTools: NavItem[] = [
 
 const community: NavItem[] = [
     { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.Users },
-    { label: 'Team', href: '/team', icon: Icons.Profile },
+    { label: 'Documentation', href: '/docs', icon: Icons.BookOpen },
 ];
 
 export function WebSidebar() {
