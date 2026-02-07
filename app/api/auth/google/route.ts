@@ -12,11 +12,10 @@ export async function GET(request: Request) {
     const scopes = [
         'https://www.googleapis.com/auth/drive.file',
         'https://www.googleapis.com/auth/classroom.courses.readonly',
-        'https://www.googleapis.com/auth/classroom.coursework.me',
+        'https://www.googleapis.com/auth/classroom.coursework.me.readonly',
         'https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly',
         'https://www.googleapis.com/auth/classroom.announcements.readonly',
-        'https://www.googleapis.com/auth/classroom.student-submissions.me.readonly',
-        'https://www.googleapis.com/auth/classroom.rosters.readonly'
+        'https://www.googleapis.com/auth/classroom.student-submissions.me.readonly'
     ];
 
     const url = oauth2Client.generateAuthUrl({
