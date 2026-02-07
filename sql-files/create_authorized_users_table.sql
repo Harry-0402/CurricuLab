@@ -18,14 +18,15 @@ CREATE POLICY "Allow read access for authenticated users" ON public.authorized_u
 -- I will add a placeholder note.
 INSERT INTO public.authorized_users (email)
 VALUES 
-    ('georgettawilson44@gmail.com'),
     ('akashmangalam73857@gmail.com'),
-    ('ctanu608@gmail.com'),
-    ('kaustubh21112002@gmail.com'),
-    ('veeramallamani7@gmail.com'),
-    ('kaifjshah@gmail.com'),
-    ('hrchavan0402@gmail.com'),
     ('anukritisrivastava04@gmail.com'),
-    ('shahidivya38@gmail.com'), -- Corrected from 'gamil.com'
-    ('tejaspatil78787@gmail.com')
+    ('ctanu608@gmail.com'),
+    ('curriculab01@gmail.com'),
+    ('georgettawilson44@gmail.com'),
+    ('hrchavan0402@gmail.com'),
+    ('kaifjshah1313@gmail.com'),
+    ('kaustubhnandurkar21@gmail.com'),
+    ('tejaspatil78787@gmail.com'),
+    ('veeramallamani7@gmail.com'),
+    ('shahidivya38@gmail.com')
 ON CONFLICT (email) DO NOTHING;
