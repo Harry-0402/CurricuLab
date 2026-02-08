@@ -215,3 +215,68 @@ export interface ResumeData {
   activities?: string[];
   hobbies?: string[];
 }
+
+// ============================================
+// SKILLFORGE TYPES - Personal Studies Management
+// ============================================
+
+export type SkillForgeTrackStatus = 'active' | 'paused' | 'completed' | 'wishlist';
+export type SkillForgeResourceStatus = 'not_started' | 'in_progress' | 'completed' | 'wishlist';
+export type SkillForgeResourceType = 'course' | 'video' | 'article' | 'book' | 'podcast' | 'tutorial' | 'other';
+export type SkillForgeProficiency = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+export type SkillForgeMood = 'excited' | 'focused' | 'confused' | 'tired' | 'motivated';
+
+export interface SkillForgeTrack {
+  id: string;
+  userId: string;
+  title: string;
+  description: string;
+  category: string;
+  targetDate?: string;
+  status: SkillForgeTrackStatus;
+  progress: number;
+  color: string;
+  icon: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface SkillForgeResource {
+  id: string;
+  userId: string;
+  trackId?: string;
+  title: string;
+  url?: string;
+  platform: string;
+  type: SkillForgeResourceType;
+  status: SkillForgeResourceStatus;
+  notes?: string;
+  priority: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface SkillForgeJournalEntry {
+  id: string;
+  userId: string;
+  trackId?: string;
+  title: string;
+  content: string;
+  keyLearnings: string[];
+  mood?: SkillForgeMood;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface SkillForgeSkill {
+  id: string;
+  userId: string;
+  name: string;
+  category: string;
+  proficiencyLevel: SkillForgeProficiency;
+  trackIds: string[];
+  notes?: string;
+  lastPracticed?: string;
+  createdAt: string;
+  updatedAt?: string;
+}

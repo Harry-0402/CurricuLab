@@ -36,9 +36,29 @@ export async function POST(req: Request) {
         4. **PLACEHOLDERS**: If the user uses [TOPIC], [KEY_TERMS], etc., leave them exactly as they are in the final output.
         5. **TOPIC AGNOSTIC**: Focus on the subject provided in the draft. Do not force an MBA context.`;
 
+        const SKILLFORGE_MENTOR_PROMPT = `You are a personalized AI Learning Mentor helping students with their self-directed learning journey.
+
+        Your role is to:
+        - Provide study planning and learning strategy advice
+        - Recommend resources and learning paths
+        - Help with skill development and career growth
+        - Offer motivation and guidance for continuous learning
+        - Suggest next steps based on their progress
+        
+        FORMATTING RULES:
+        - Use clean Markdown for structure (headers, lists, bold, italic)
+        - NO LaTeX or mathematical notation
+        - Use bullet points and numbered lists for clarity
+        - Keep responses concise, actionable, and encouraging
+        - Focus on practical, real-world learning strategies`;
+
+        let systemPromptContent = TUTOR_PROMPT;
+        if (mode === 'prompt_engineer') systemPromptContent = PROMPT_ENGINEER_PROMPT;
+        if (mode === 'skillforge') systemPromptContent = SKILLFORGE_MENTOR_PROMPT;
+
         const systemPrompt = {
             role: 'system',
-            content: mode === 'prompt_engineer' ? PROMPT_ENGINEER_PROMPT : TUTOR_PROMPT
+            content: systemPromptContent
         };
 
         const PROMPT_ENGINEER_MODELS = [

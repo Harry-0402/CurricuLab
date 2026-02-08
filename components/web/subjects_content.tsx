@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { ComponentProps } from 'react';
+import Link from 'next/link';
+import { Icons } from '@/components/shared/Icons';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { SubjectCard } from '@/components/web/SubjectCard';
 import { Subject } from '@/types';
@@ -114,9 +116,19 @@ export default function WebSubjectsContent() {
     return (
         <WebAppShell>
             <div className="space-y-8">
-                <div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">My Courses</h2>
-                    <p className="text-gray-500">Manage your subjects and track your study progress. (Dynamic Updates Active)</p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 className="text-3xl font-bold text-gray-900 mb-2">My Courses</h2>
+                        <p className="text-gray-500">Manage your subjects and track your study progress. (Dynamic Updates Active)</p>
+                    </div>
+                    <Link
+                        href="https://drive.google.com/drive/folders/14oGNaQxQGpiqt6pwZ6V4gN6XKERSRBQ0?usp=sharing"
+                        target="_blank"
+                        className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl transition-all shadow-sm active:scale-95 group self-start md:self-auto"
+                    >
+                        <Icons.FolderOpen size={18} className="text-gray-400 group-hover:text-amber-500 transition-colors" />
+                        <span className="text-sm font-bold text-gray-600 group-hover:text-amber-600 transition-colors">Resources</span>
+                    </Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

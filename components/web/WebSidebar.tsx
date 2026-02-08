@@ -42,6 +42,11 @@ const community: NavItem[] = [
     { label: 'Documentation', href: '/docs', icon: Icons.BookOpen },
 ];
 
+const personalGrowth: NavItem[] = [
+    { label: 'SkillForge', href: '/skillforge', icon: Icons.Zap },
+    { label: 'Focus Zone', href: '/focus', icon: Icons.Clock },
+];
+
 export function WebSidebar() {
     const pathname = usePathname();
 
@@ -89,10 +94,11 @@ export function WebSidebar() {
                 {renderNavGroup("Academic Suite", academicSuite)}
                 {renderNavGroup("Study Materials", studyMaterials)}
                 {renderNavGroup("AI Tools", aiTools)}
+                {renderNavGroup("Personal Growth", personalGrowth)}
                 {renderNavGroup("Community", community)}
             </div>
 
-            <div className="mt-auto p-4 border-t border-gray-100 italic text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
+            <div className="mt-auto py-1 border-t border-gray-100 italic text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
                 CurricuLab v1.2 Beta
             </div>
         </aside>

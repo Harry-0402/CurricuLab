@@ -67,14 +67,7 @@ export function WebHeader() {
             </div>
 
             <div className="flex items-center gap-2">
-                <Link
-                    href="https://drive.google.com/drive/folders/14oGNaQxQGpiqt6pwZ6V4gN6XKERSRBQ0?usp=sharing"
-                    target="_blank"
-                    className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
-                >
-                    <Icons.FolderOpen size={16} className="text-gray-400 group-hover:text-amber-500 transition-colors" />
-                    <span className="text-xs font-bold text-gray-600 group-hover:text-amber-600 transition-colors">Resources</span>
-                </Link>
+
 
                 <Link
                     href="/tools/resume"
