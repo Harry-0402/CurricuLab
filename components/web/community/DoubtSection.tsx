@@ -1,13 +1,10 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from '@/utils/supabase/client';
 import { Icons } from '@/components/shared/Icons';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"; // Assuming you have these or use standard HTML dialog
-// If UI components are not available, I will build a custom modal.
-// Using custom modal for simplicity and to match existing patterns if UI lib is scarce.
 
 interface Doubt {
     id: string;
@@ -24,16 +21,20 @@ interface Doubt {
         avatar_url: string;
         role: string;
     };
-    comments_count?: number;
+    comments_count?: { count: number }[];
 }
 
 export function DoubtSection() {
-    const supabase = createClientComponentClient();
     const [doubts, setDoubts] = useState<Doubt[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [isAskModalOpen, setIsAskModalOpen] = useState(false);
+    const [selectedDoubt, setSelectedDoubt] = useState<Doubt | null>(null);
+    const [comments, setComments] = useState<any[]>([]);
+    const [newComment, setNewComment] = useState('');
+    const [isCommentsLoading, setIsCommentsLoading] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
     // Form State
     const [newDoubt, setNewDoubt] = useState({
@@ -44,11 +45,17 @@ export function DoubtSection() {
         category: 'General'
     });
 
-    const categories = ['All', 'General', 'Mathematics', 'Physics', 'Computer Science', 'Management', 'Economics'];
+    const categories = ['All', 'General', 'PBA204', 'PBA205', 'PBA206', 'PBA207', 'PBA208', 'PBA211', 'PBA212', 'PBA213'];
 
     useEffect(() => {
         fetchDoubts();
+        getCurrentUser();
     }, []);
+
+    const getCurrentUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        setCurrentUserId(user?.id || null);
+    };
 
     const fetchDoubts = async () => {
         setIsLoading(true);
@@ -57,7 +64,7 @@ export function DoubtSection() {
                 .from('doubts')
                 .select(`
                     *,
-                    profiles:users (
+                    profiles (
                         full_name,
                         avatar_url,
                         role
@@ -67,7 +74,7 @@ export function DoubtSection() {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setDoubts(data || []);
+            setDoubts(data as unknown as Doubt[] || []);
         } catch (error) {
             console.error('Error fetching doubts:', error);
             toast.error('Failed to load doubts');
@@ -114,22 +121,169 @@ export function DoubtSection() {
         }
     };
 
-    const handleLike = async (doubtId: string, currentLikes: number) => {
-        // Optimistic update
-        setDoubts(prev => prev.map(d => d.id === doubtId ? { ...d, likes: currentLikes + 1 } : d));
+    const handleLike = async (doubtId: string) => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                toast.error('Please login to like');
+                return;
+            }
+
+            // Check if user already liked this doubt
+            const { data: existingLike } = await supabase
+                .from('doubt_likes')
+                .select('id')
+                .eq('doubt_id', doubtId)
+                .eq('user_id', user.id)
+                .single();
+
+            if (existingLike) {
+                // Unlike - remove the like
+                const { error: deleteError } = await supabase
+                    .from('doubt_likes')
+                    .delete()
+                    .eq('id', existingLike.id);
+
+                if (deleteError) throw deleteError;
+
+                // Decrement the counter
+                const doubt = doubts.find(d => d.id === doubtId);
+                if (doubt) {
+                    await supabase
+                        .from('doubts')
+                        .update({ likes: Math.max(0, doubt.likes - 1) })
+                        .eq('id', doubtId);
+                }
+
+                toast.success('Like removed');
+            } else {
+                // Like - add the like
+                const { error: insertError } = await supabase
+                    .from('doubt_likes')
+                    .insert({ doubt_id: doubtId, user_id: user.id });
+
+                if (insertError) throw insertError;
+
+                // Increment the counter
+                const doubt = doubts.find(d => d.id === doubtId);
+                if (doubt) {
+                    await supabase
+                        .from('doubts')
+                        .update({ likes: doubt.likes + 1 })
+                        .eq('id', doubtId);
+                }
+
+                toast.success('Liked!');
+            }
+
+            // Refresh the list
+            fetchDoubts();
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            toast.error('Failed to update like');
+        }
+    };
+
+    const handleDelete = async (doubtId: string) => {
+        if (!confirm('Are you sure you want to delete this doubt? This action cannot be undone.')) {
+            return;
+        }
 
         try {
             const { error } = await supabase
                 .from('doubts')
-                .update({ likes: currentLikes + 1 })
+                .delete()
                 .eq('id', doubtId);
 
             if (error) throw error;
+
+            toast.success('Doubt deleted successfully');
+            fetchDoubts();
         } catch (error) {
-            console.error('Error liking doubt:', error);
-            // Revert
-            setDoubts(prev => prev.map(d => d.id === doubtId ? { ...d, likes: currentLikes } : d));
-            toast.error('Failed to like doubt');
+            console.error('Error deleting doubt:', error);
+            toast.error('Failed to delete doubt');
+        }
+    };
+
+    const handleViewDoubt = async (doubt: Doubt) => {
+        setSelectedDoubt(doubt);
+        setIsCommentsLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('doubt_comments')
+                .select(`
+                    *,
+                    profiles (
+                        full_name,
+                        avatar_url,
+                        role
+                    )
+                `)
+                .eq('doubt_id', doubt.id)
+                .order('created_at', { ascending: true });
+
+            if (error) throw error;
+            setComments(data || []);
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+            toast.error('Failed to load comments');
+        } finally {
+            setIsCommentsLoading(false);
+        }
+    };
+
+    const handlePostComment = async () => {
+        if (!newComment.trim() || !selectedDoubt) return;
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                toast.error('Please login to reply');
+                return;
+            }
+
+            const { error } = await supabase
+                .from('doubt_comments')
+                .insert({
+                    doubt_id: selectedDoubt.id,
+                    user_id: user.id,
+                    content: newComment,
+                    is_faculty_reply: false // Backend can override based on user role if needed
+                });
+
+            if (error) throw error;
+
+            toast.success('Reply posted!');
+            setNewComment('');
+            // Refresh comments
+            handleViewDoubt(selectedDoubt);
+        } catch (error) {
+            console.error('Error posting comment:', error);
+            toast.error('Failed to post reply');
+        }
+    };
+
+    const handleDeleteComment = async (commentId: string) => {
+        if (!confirm('Are you sure you want to delete this comment?')) {
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from('doubt_comments')
+                .delete()
+                .eq('id', commentId);
+
+            if (error) throw error;
+
+            toast.success('Comment deleted successfully');
+            // Refresh comments
+            if (selectedDoubt) {
+                handleViewDoubt(selectedDoubt);
+            }
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            toast.error('Failed to delete comment');
         }
     };
 
@@ -144,7 +298,7 @@ export function DoubtSection() {
         <div className="space-y-6">
             {/* Header & Controls */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                <div className="relative w-full md:w-96">
+                <div className="relative w-full md:w-60">
                     <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input
                         type="text"
@@ -155,14 +309,14 @@ export function DoubtSection() {
                     />
                 </div>
 
-                <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                     {categories.map(cat => (
                         <button
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
-                            className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${selectedCategory === cat
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                            className={`px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors border ${selectedCategory === cat
+                                ? 'bg-blue-600 text-white border-blue-600'
+                                : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:text-gray-900'
                                 }`}
                         >
                             {cat}
@@ -225,13 +379,24 @@ export function DoubtSection() {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-lg">
-                                    <Icons.MessageCircle size={14} className="text-gray-400" />
-                                    <span className="text-xs font-bold text-gray-600">{doubt.comments_count?.[0]?.count || 0}</span>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-lg">
+                                        <Icons.MessageCircle size={14} className="text-gray-400" />
+                                        <span className="text-xs font-bold text-gray-600">{doubt.comments_count?.[0]?.count || 0}</span>
+                                    </div>
+                                    {currentUserId === doubt.user_id && (
+                                        <button
+                                            onClick={() => handleDelete(doubt.id)}
+                                            className="p-1.5 hover:bg-red-50 rounded-lg transition-colors group/delete"
+                                            title="Delete doubt"
+                                        >
+                                            <Icons.Trash2 size={16} className="text-gray-400 group-hover/delete:text-red-600" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 
-                            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors cursor-pointer" onClick={() => handleViewDoubt(doubt)}>
                                 {doubt.title}
                             </h3>
                             <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
@@ -250,13 +415,16 @@ export function DoubtSection() {
 
                             <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                                 <button
-                                    onClick={() => handleLike(doubt.id, doubt.likes)}
+                                    onClick={() => handleLike(doubt.id)}
                                     className="flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors text-sm font-medium"
                                 >
                                     <Icons.Heart size={16} />
                                     {doubt.likes} Likes
                                 </button>
-                                <button className="text-blue-600 text-sm font-bold hover:underline">
+                                <button
+                                    onClick={() => handleViewDoubt(doubt)}
+                                    className="text-blue-600 text-sm font-bold hover:underline"
+                                >
                                     View Discussion
                                 </button>
                             </div>
@@ -331,10 +499,111 @@ export function DoubtSection() {
 
                             <button
                                 onClick={handleAskDoubt}
-                                className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+                                disabled={!newDoubt.title || !newDoubt.description}
+                                className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Post Doubt
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* View Doubt & Comments Modal */}
+            {selectedDoubt && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                            <h3 className="font-bold text-gray-900">Discussion</h3>
+                            <button onClick={() => setSelectedDoubt(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                <Icons.X size={20} className="text-gray-500" />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
+                            {/* Selected Doubt Content */}
+                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-6">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${selectedDoubt.is_anonymous ? 'bg-indigo-100 text-indigo-600' : 'bg-blue-100 text-blue-600'
+                                        }`}>
+                                        {selectedDoubt.is_anonymous ? <Icons.User size={24} /> : <span className="uppercase">{selectedDoubt.profiles?.full_name?.[0] || 'U'}</span>}
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900 text-lg">{selectedDoubt.title}</h4>
+                                        <p className="text-sm text-gray-500">
+                                            Posted by <span className="font-medium text-gray-900">{selectedDoubt.is_anonymous ? 'Anonymous' : selectedDoubt.profiles?.full_name}</span> • {formatDistanceToNow(new Date(selectedDoubt.created_at), { addSuffix: true })}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="prose prose-blue max-w-none text-gray-700">
+                                    {selectedDoubt.description}
+                                </div>
+                            </div>
+
+                            {/* Comments Section */}
+                            <div className="space-y-4">
+                                <h4 className="font-bold text-gray-900 flex items-center gap-2">
+                                    <Icons.MessageCircle size={18} />
+                                    Replies ({comments.length})
+                                </h4>
+
+                                {isCommentsLoading ? (
+                                    <div className="flex justify-center py-8">
+                                        <Icons.Loader2 className="animate-spin text-blue-500" />
+                                    </div>
+                                ) : comments.length === 0 ? (
+                                    <p className="text-gray-500 text-center py-8 italic">No replies yet. Be the first to help!</p>
+                                ) : (
+                                    comments.map(comment => (
+                                        <div key={comment.id} className={`p-4 rounded-xl border ${comment.is_faculty_reply ? 'bg-blue-50 border-blue-100' : 'bg-white border-gray-100'}`}>
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-sm text-gray-900">
+                                                        {comment.profiles?.full_name || 'User'}
+                                                    </span>
+                                                    {comment.is_faculty_reply && (
+                                                        <span className="bg-blue-100 text-blue-700 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                                                            <Icons.Shield size={10} /> Faculty
+                                                        </span>
+                                                    )}
+                                                    <span className="text-xs text-gray-400">• {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}</span>
+                                                </div>
+                                                {currentUserId === comment.user_id && (
+                                                    <button
+                                                        onClick={() => handleDeleteComment(comment.id)}
+                                                        className="p-1 hover:bg-red-50 rounded transition-colors group/delete"
+                                                        title="Delete comment"
+                                                    >
+                                                        <Icons.Trash2 size={14} className="text-gray-400 group-hover/delete:text-red-600" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <p className="text-gray-700 text-sm whitespace-pre-wrap">{comment.content}</p>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Reply Input */}
+                        <div className="p-4 bg-white border-t border-gray-100 sticky bottom-0 z-10">
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                    placeholder="Write a helpful reply..."
+                                    className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    onKeyDown={(e) => e.key === 'Enter' && handlePostComment()}
+                                />
+                                <button
+                                    onClick={handlePostComment}
+                                    disabled={!newComment.trim()}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                >
+                                    <Icons.Send size={18} />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

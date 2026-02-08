@@ -19,25 +19,25 @@ export default function CommunityPage() {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-gray-100 w-fit mb-8 shadow-sm">
+                <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-gray-100 w-fit mb-6 shadow-sm">
                     <button
                         onClick={() => setActiveTab('doubts')}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'doubts'
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'doubts'
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                             }`}
                     >
-                        <Icons.MessageCircle size={18} />
+                        <Icons.MessageCircle size={16} />
                         Discussion & Doubts
                     </button>
                     <button
                         onClick={() => setActiveTab('whatsapp')}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'whatsapp'
-                                ? 'bg-green-600 text-white shadow-md'
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'whatsapp'
+                            ? 'bg-green-600 text-white shadow-sm'
+                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                             }`}
                     >
-                        <Icons.Users size={18} />
+                        <Icons.Users size={16} />
                         WhatsApp Groups
                     </button>
                 </div>

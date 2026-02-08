@@ -1,8 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from '@/utils/supabase/client';
 import { Icons } from '@/components/shared/Icons';
+import { toast } from 'sonner';
 
 interface WhatsAppGroup {
     id: string;
@@ -14,29 +15,68 @@ interface WhatsAppGroup {
 }
 
 export function WhatsAppGroups() {
-    const supabase = createClientComponentClient();
     const [groups, setGroups] = useState<WhatsAppGroup[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [newGroup, setNewGroup] = useState({
+        name: '',
+        link: '',
+        description: '',
+        category: 'General',
+        icon_url: ''
+    });
+
+    const categories = ['General', 'PBA204', 'PBA205', 'PBA206', 'PBA207', 'PBA208', 'PBA211', 'PBA212', 'PBA213'];
 
     useEffect(() => {
-        const fetchGroups = async () => {
-            setIsLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('whatsapp_groups')
-                    .select('*')
-                    .order('name');
-                if (error) throw error;
-                setGroups(data || []);
-            } catch (error) {
-                console.error('Error fetching groups:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
         fetchGroups();
     }, []);
+
+    const fetchGroups = async () => {
+        setIsLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('whatsapp_groups')
+                .select('*')
+                .order('name');
+            if (error) throw error;
+            setGroups(data || []);
+        } catch (error) {
+            console.error('Error fetching groups:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleAddGroup = async () => {
+        if (!newGroup.name.trim() || !newGroup.link.trim()) {
+            toast.error('Please fill in group name and link');
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from('whatsapp_groups')
+                .insert({
+                    name: newGroup.name,
+                    link: newGroup.link,
+                    description: newGroup.description,
+                    category: newGroup.category,
+                    icon_url: newGroup.icon_url || null
+                });
+
+            if (error) throw error;
+
+            toast.success('WhatsApp Group registered successfully!');
+            setIsAddModalOpen(false);
+            setNewGroup({ name: '', link: '', description: '', category: 'General', icon_url: '' });
+            fetchGroups();
+        } catch (error) {
+            console.error('Error adding group:', error);
+            toast.error('Failed to register group');
+        }
+    };
 
     const filteredGroups = groups.filter(g =>
         g.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,15 +85,24 @@ export function WhatsAppGroups() {
 
     return (
         <div className="space-y-6">
-            <div className="relative">
-                <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                    type="text"
-                    placeholder="Search for your class group..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 shadow-sm transition-all"
-                />
+            <div className="flex gap-4">
+                <div className="relative flex-1">
+                    <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <input
+                        type="text"
+                        placeholder="Search for your class group..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 shadow-sm transition-all"
+                    />
+                </div>
+                <button
+                    onClick={() => setIsAddModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-200 shrink-0"
+                >
+                    <Icons.Plus size={18} />
+                    Register Group
+                </button>
             </div>
 
             {isLoading ? (
@@ -68,7 +117,13 @@ export function WhatsAppGroups() {
                         <Icons.Users className="text-green-500" size={32} />
                     </div>
                     <h3 className="text-lg font-bold text-gray-900">No groups found</h3>
-                    <p className="text-gray-500 text-sm">Try searching for a different keyword.</p>
+                    <p className="text-gray-500 text-sm mb-4">Try searching for a different keyword.</p>
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="px-6 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+                    >
+                        Register a Group
+                    </button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -101,6 +156,86 @@ export function WhatsAppGroups() {
                             </a>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Add Group Modal */}
+            {isAddModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl p-6 animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-bold text-gray-900">Register WhatsApp Group</h3>
+                            <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                <Icons.X size={20} className="text-gray-500" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Group Name</label>
+                                <input
+                                    type="text"
+                                    value={newGroup.name}
+                                    onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none"
+                                    placeholder="e.g., MBA 2nd Sem - General Discussion"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">WhatsApp Group Link</label>
+                                <input
+                                    type="url"
+                                    value={newGroup.link}
+                                    onChange={(e) => setNewGroup({ ...newGroup, link: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none"
+                                    placeholder="https://chat.whatsapp.com/..."
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                                <select
+                                    value={newGroup.category}
+                                    onChange={(e) => setNewGroup({ ...newGroup, category: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none bg-white"
+                                >
+                                    {categories.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Description (Optional)</label>
+                                <textarea
+                                    value={newGroup.description}
+                                    onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none min-h-[80px]"
+                                    placeholder="Brief description of the group"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Icon URL (Optional)</label>
+                                <input
+                                    type="url"
+                                    value={newGroup.icon_url}
+                                    onChange={(e) => setNewGroup({ ...newGroup, icon_url: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none"
+                                    placeholder="https://example.com/icon.png"
+                                />
+                            </div>
+
+                            <button
+                                onClick={handleAddGroup}
+                                disabled={!newGroup.name || !newGroup.link}
+                                className="w-full py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Register Group
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

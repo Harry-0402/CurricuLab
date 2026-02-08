@@ -1,7 +1,7 @@
 -- Create doubts table
 CREATE TABLE IF NOT EXISTS doubts (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     tags TEXT[],
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS doubts (
 CREATE TABLE IF NOT EXISTS doubt_comments (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     doubt_id UUID REFERENCES doubts(id) ON DELETE CASCADE NOT NULL,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     content TEXT NOT NULL,
     is_faculty_reply BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -68,5 +68,14 @@ CREATE POLICY "Users can delete their own comments" ON doubt_comments
 -- Policies for whatsapp_groups
 CREATE POLICY "WhatsApp groups are visible to everyone" ON whatsapp_groups
     FOR SELECT USING (true);
+
+CREATE POLICY "Anyone can register WhatsApp groups" ON whatsapp_groups
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Anyone can update WhatsApp groups" ON whatsapp_groups
+    FOR UPDATE USING (true);
+
+CREATE POLICY "Anyone can delete WhatsApp groups" ON whatsapp_groups
+    FOR DELETE USING (true);
 
 -- Functions to update likes count (Optional, implemented via RPC or Client)
