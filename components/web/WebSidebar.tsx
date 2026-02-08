@@ -37,8 +37,8 @@ const aiTools: NavItem[] = [
 ];
 
 const community: NavItem[] = [
-    { label: 'Community Forum', href: '/community', icon: Icons.MessageCircle },
-    { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.Users },
+    { label: 'Community Forum', href: '/community', icon: Icons.Users },
+    { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.GraduationCap },
     { label: 'Documentation', href: '/docs', icon: Icons.BookOpen },
 ];
 
