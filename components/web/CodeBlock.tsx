@@ -91,27 +91,6 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
         toast.success(`${type === 'notebook' ? 'Notebook' : 'Script'} downloaded`);
     };
 
-    const handleOpenInColab = async () => {
-        // Copy to clipboard first for the fastest experience
-        try {
-            await navigator.clipboard.writeText(code);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Auto-copy failed');
-        }
-
-        // Also trigger notebook download as a backup/alternative
-        handleDownload('notebook');
-
-        // Open fresh Colab notebook
-        window.open('https://colab.research.google.com/notebook#create=true', '_blank');
-
-        toast.info('Code copied! Colab opened—just paste (Ctrl+V) and run! 🚀', {
-            duration: 8000
-        });
-    };
-
     return (
         <div className="group relative my-6 rounded-2xl overflow-hidden border border-gray-200 bg-[#1e1e1e] shadow-xl">
             {/* Header / Tab Bar */}
@@ -145,17 +124,6 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                     >
                         {copied ? <Icons.Check size={14} className="text-green-400" /> : <Icons.Copy size={14} />}
                     </button>
-
-                    {language === 'python' && (
-                        <button
-                            onClick={handleOpenInColab}
-                            className="p-1.5 text-orange-400/80 hover:text-orange-400 hover:bg-orange-400/10 rounded-md transition-all active:scale-90 flex items-center gap-1.5 px-2"
-                            title="Open in Google Colab"
-                        >
-                            <Icons.ExternalLink size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-tighter">Colab</span>
-                        </button>
-                    )}
 
                     <button
                         onClick={() => handleDownload(language === 'python' ? 'notebook' : 'script')}
