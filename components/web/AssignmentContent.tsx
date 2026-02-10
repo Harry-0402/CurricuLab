@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Subject, Assignment, Unit } from '@/types';
 import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
@@ -189,6 +190,31 @@ Format the response in clean, readable markdown. Make sure the code is accurate 
             // Optionally show error in UI
         } finally {
             setGeneratingQuestionIndex(null);
+        }
+    };
+
+    const handleClearAnswer = async (questionIndex: number) => {
+        if (!selectedAssignment) return;
+
+        const updatedQuestions = [...selectedAssignment.questions];
+        updatedQuestions[questionIndex] = {
+            ...updatedQuestions[questionIndex],
+            answer: undefined
+        };
+
+        const updatedAssignment = {
+            ...selectedAssignment,
+            questions: updatedQuestions
+        };
+
+        try {
+            await updateAssignment(updatedAssignment);
+            setSelectedAssignment(updatedAssignment);
+            setAssignments(prev => prev.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
+            toast.success('Answer cleared');
+        } catch (error) {
+            console.error('Failed to clear answer:', error);
+            toast.error('Failed to clear answer');
         }
     };
 
@@ -447,22 +473,44 @@ Format the response in clean, readable markdown. Make sure the code is accurate 
                                                             {q.text}
                                                         </p>
                                                     </div>
-                                                    <button
-                                                        onClick={() => handleGenerateAnswer(idx)}
-                                                        disabled={generatingQuestionIndex !== null}
-                                                        className={cn(
-                                                            "flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0",
-                                                            generatingQuestionIndex === idx
-                                                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                                                : "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-lg hover:scale-[1.02]"
-                                                        )}
-                                                    >
-                                                        {generatingQuestionIndex === idx ? (
-                                                            <><Icons.Loader2 size={12} className="animate-spin" /> Generating...</>
-                                                        ) : (
-                                                            <><Icons.Sparkles size={12} /> {q.answer ? 'Regenerate' : 'Generate Answer'}</>
-                                                        )}
-                                                    </button>
+                                                    <div className="relative group/actions">
+                                                        <button
+                                                            className={cn(
+                                                                "flex items-center gap-2 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 shrink-0",
+                                                                generatingQuestionIndex === idx
+                                                                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                                    : "bg-white text-gray-900 hover:bg-gray-50 border border-gray-100"
+                                                            )}
+                                                            disabled={generatingQuestionIndex !== null}
+                                                        >
+                                                            {generatingQuestionIndex === idx ? (
+                                                                <Icons.Loader2 size={14} className="animate-spin" />
+                                                            ) : (
+                                                                <Icons.Settings size={14} />
+                                                            )}
+                                                            {generatingQuestionIndex === idx ? 'Working...' : 'Action'}
+                                                        </button>
+
+                                                        {/* Simple CSS Dropdown */}
+                                                        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 opacity-0 invisible group-hover/actions:opacity-100 group-hover/actions:visible transition-all z-50 transform origin-top-right scale-95 group-hover/actions:scale-100">
+                                                            <button
+                                                                onClick={() => handleGenerateAnswer(idx)}
+                                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+                                                            >
+                                                                <Icons.Sparkles size={14} className="text-purple-500" />
+                                                                {q.answer ? 'Regenerate AI' : 'Generate AI'}
+                                                            </button>
+                                                            {q.answer && (
+                                                                <button
+                                                                    onClick={() => handleClearAnswer(idx)}
+                                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+                                                                >
+                                                                    <Icons.Trash2 size={14} />
+                                                                    Clear Answer
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 {q.answer ? (
