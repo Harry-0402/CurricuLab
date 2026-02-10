@@ -93,10 +93,12 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
         // First download the notebook
         handleDownload('notebook');
 
-        // Then open colab upload page
-        window.open('https://colab.research.google.com/notebooks/upload.ipynb', '_blank');
+        // Then open colab upload page (using generic gateway as deep link is broken)
+        window.open('https://colab.research.google.com/', '_blank');
 
-        toast.info('Opening Colab. Please upload the downloaded .ipynb file.');
+        toast.info('Colab opened! Click the "Upload" tab and drag your downloaded file there.', {
+            duration: 6000
+        });
     };
 
     return (
