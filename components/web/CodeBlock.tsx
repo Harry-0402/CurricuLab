@@ -29,18 +29,74 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
         }
     };
 
-    const handleDownload = () => {
-        const extension = language === 'python' ? 'py' : language === 'javascript' ? 'js' : 'txt';
-        const blob = new Blob([code], { type: 'text/plain' });
+    const generateNotebookBlob = () => {
+        const notebook = {
+            cells: [
+                {
+                    cell_type: "code",
+                    execution_count: null,
+                    metadata: {},
+                    outputs: [],
+                    source: code.split('\n').map(line => line + '\n')
+                }
+            ],
+            metadata: {
+                kernelspec: {
+                    display_name: "Python 3",
+                    language: "python",
+                    name: "python3"
+                },
+                language_info: {
+                    codemirror_mode: {
+                        name: "ipython",
+                        version: 3
+                    },
+                    file_extension: ".py",
+                    mimetype: "text/x-python",
+                    name: "python",
+                    nbconvert_exporter: "python",
+                    pygments_lexer: "ipython3",
+                    version: "3.8.5"
+                }
+            },
+            nbformat: 4,
+            nbformat_minor: 4
+        };
+        return new Blob([JSON.stringify(notebook, null, 2)], { type: 'application/x-ipynb+json' });
+    };
+
+    const handleDownload = (type: 'script' | 'notebook' = 'script') => {
+        let blob: Blob;
+        let extension: string;
+
+        if (type === 'notebook' && language === 'python') {
+            blob = generateNotebookBlob();
+            extension = 'ipynb';
+        } else {
+            extension = language === 'python' ? 'py' : language === 'javascript' ? 'js' : 'txt';
+            blob = new Blob([code], { type: 'text/plain' });
+        }
+
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = fileName || `script.${extension}`;
+        const name = fileName ? fileName.split('.')[0] : 'script';
+        a.download = `${name}.${extension}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        toast.success('Script downloaded');
+        toast.success(`${type === 'notebook' ? 'Notebook' : 'Script'} downloaded`);
+    };
+
+    const handleOpenInColab = () => {
+        // First download the notebook
+        handleDownload('notebook');
+
+        // Then open colab upload page
+        window.open('https://colab.research.google.com/notebooks/upload.ipynb', '_blank');
+
+        toast.info('Opening Colab. Please upload the downloaded .ipynb file.');
     };
 
     return (
@@ -61,6 +117,11 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                     <span className="text-[10px] font-black text-blue-400/80 uppercase tracking-[0.2em] px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
                         {language}
                     </span>
+                    {language === 'python' && (
+                        <span className="text-[8px] font-black text-purple-400 uppercase tracking-widest px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/20">
+                            Notebook Supported
+                        </span>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -71,8 +132,29 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                     >
                         {copied ? <Icons.Check size={14} className="text-green-400" /> : <Icons.Copy size={14} />}
                     </button>
+
+                    {language === 'python' && (
+                        <>
+                            <button
+                                onClick={() => handleDownload('notebook')}
+                                className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-md transition-all active:scale-90"
+                                title="Download as .ipynb"
+                            >
+                                <Icons.BookOpen size={14} />
+                            </button>
+                            <button
+                                onClick={handleOpenInColab}
+                                className="p-1.5 text-orange-400/80 hover:text-orange-400 hover:bg-orange-400/10 rounded-md transition-all active:scale-90 flex items-center gap-1.5 px-2"
+                                title="Open in Google Colab"
+                            >
+                                <Icons.ExternalLink size={14} />
+                                <span className="text-[10px] font-black uppercase tracking-tighter">Colab</span>
+                            </button>
+                        </>
+                    )}
+
                     <button
-                        onClick={handleDownload}
+                        onClick={() => handleDownload('script')}
                         className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-md transition-all active:scale-90"
                         title="Download script"
                     >
