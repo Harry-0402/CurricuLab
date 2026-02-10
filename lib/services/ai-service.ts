@@ -14,7 +14,7 @@ interface ModelConfig {
 
 // Priority Queue for Auto-Switching
 const FALLBACK_CHAIN: ModelConfig[] = [
-    { id: "gemini-2.0-flash-exp", provider: 'gemini', name: "Gemini 2.0 Flash (Client)" },
+    { id: "gemini-2.5-flash", provider: 'gemini', name: "Gemini 2.5 Flash" },
     { id: "llama-3.3-70b-versatile", provider: 'groq', name: "Llama 3.3 (Groq)" },
     { id: "deepseek/deepseek-r1:free", provider: 'openrouter', name: "DeepSeek R1 (OpenRouter)" },
     { id: "copilot-gpt-4o", provider: 'copilot', name: "GPT-4o (Copilot)" },
@@ -364,8 +364,8 @@ Return ONLY the formatted answer in markdown format.`;
 
         try {
             if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
-            // Use Gemini 2.0 Flash for best multimodal performance
-            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+            // Use Gemini 2.5 Flash for best multimodal performance
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
             const result = await model.generateContent([
                 prompt,
@@ -518,7 +518,7 @@ Return ONLY the formatted answer in markdown format.`;
         if (resumeBase64) {
             try {
                 if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
-                const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
                 const result = await model.generateContent([
                     prompt,
@@ -539,5 +539,51 @@ Return ONLY the formatted answer in markdown format.`;
         }
 
         return this.generateContent(prompt);
+    },
+
+    async parseAssignmentContent(text: string, fileData?: { base64: string, mimeType: string }): Promise<any> {
+        const prompt = `
+        You are an expert Assignment Parser.
+        Extract the structured details from the following ${fileData ? 'attached assignment file' : 'raw assignment text'}.
+        ${text ? `\nAdditional Context/Text: "${text}"` : ''}
+
+        Return ONLY raw JSON (no markdown formatting) with this exact structure:
+        {
+            "title": "Inferred Assignment Title",
+            "date": "YYYY-MM-DD" (or null if not found),
+            "questions": ["Question 1", "Question 2", ...],
+            "description": "Any additional instructions, context, or notes (exclude the questions themselves)"
+        }
+
+        Rules:
+        - If inputs contain a list of questions, generate a suitable title based on the content.
+        - Questions should be cleaned up (remove numbering prefixes).
+        - Description should capture general instructions.
+        `;
+
+        try {
+            if (fileData) {
+                if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+                const result = await model.generateContent([
+                    prompt,
+                    {
+                        inlineData: {
+                            data: fileData.base64,
+                            mimeType: fileData.mimeType
+                        }
+                    }
+                ]);
+                const response = await result.response;
+                return this.extractJson(response.text());
+            } else {
+                const result = await this.generateContent(prompt);
+                return this.extractJson(result);
+            }
+        } catch (e) {
+            console.error("Failed to parse assignment", e);
+            throw new Error("Failed to parse assignment content.");
+        }
     }
 };

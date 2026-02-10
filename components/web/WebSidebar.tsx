@@ -27,7 +27,6 @@ const studyMaterials: NavItem[] = [
     { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
     { label: 'PaperTrail PYQs', href: '/tools/papertrail', icon: Icons.FileText },
     { label: 'Revision Notes', href: '/tools/revision', icon: Icons.Notes },
-    { label: 'MarkWise', href: '/tools/markwise', icon: Icons.CheckSquare },
 ];
 
 const aiTools: NavItem[] = [

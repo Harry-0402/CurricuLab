@@ -135,17 +135,24 @@ export interface TimetableEntry {
   progress: number;
 }
 
+export interface AssignmentQuestion {
+  id: string;
+  text: string;
+  answer?: string;
+}
+
 export interface Assignment {
   id: string;
   subjectId: string;
   unitId?: string;
   title: string;
-  description: string;
+  description?: string;
+  questions: AssignmentQuestion[];
   dueDate: string;
   platform?: 'ERP' | 'GCR' | 'Other';
 }
 
-export type VaultResourceType = 'study_note' | 'case_study' | 'project' | 'other_resources';
+export type VaultResourceType = 'study_note' | 'question_bank' | 'case_study' | 'project' | 'other_resources';
 
 export interface VaultResource {
   id: string;

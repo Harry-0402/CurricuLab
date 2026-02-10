@@ -13,6 +13,7 @@ import remarkGfm from 'remark-gfm';
 
 const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: string; bgColor: string }> = {
     study_note: { label: 'Study Note', icon: Icons.FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+    question_bank: { label: 'Question Bank', icon: Icons.CheckSquare, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
     case_study: { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
     project: { label: 'Project', icon: Icons.FolderKanban, color: 'text-green-600', bgColor: 'bg-green-50' },
     other_resources: { label: 'Other Resources', icon: Icons.Link, color: 'text-orange-600', bgColor: 'bg-orange-50' }
@@ -71,16 +72,15 @@ export function VaultContent() {
             if (isInitialLoad || !activeSubjectId) return;
 
             setLoading(true);
+            // Only filter by subject on server side - type and unit filtering done client-side
             const data = await getVaultResources({
-                subjectId: activeSubjectId,
-                unitId: selectedUnitId === 'all' ? undefined : selectedUnitId,
-                type: selectedType === 'all' ? undefined : selectedType
+                subjectId: activeSubjectId
             });
             setResources(data);
             setLoading(false);
         };
         loadResources();
-    }, [activeSubjectId, selectedType, selectedUnitId, isInitialLoad]);
+    }, [activeSubjectId, isInitialLoad]);
 
 
 
@@ -91,7 +91,8 @@ export function VaultContent() {
         setFormData({
             subjectId: activeSubjectId,
             unitId: '',
-            type: 'study_note',
+            // Default to selected tab type, or 'study_note' if 'all' is selected
+            type: selectedType !== 'all' ? selectedType : 'study_note',
             title: '',
             link: ''
         });
@@ -195,7 +196,12 @@ export function VaultContent() {
         setShowExportMenu(false);
     };
 
-    const filteredResources = resources.filter(r => r.type in TYPE_CONFIG);
+    // Client-side filtering for better performance (no DB reload on type/unit changes)
+    const filteredResources = resources
+        .filter(r => r.type in TYPE_CONFIG)
+        .filter(r => selectedType === 'all' || r.type === selectedType)
+        .filter(r => selectedUnitId === 'all' || r.unitId === selectedUnitId);
+
 
     return (
         <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto">
@@ -299,7 +305,7 @@ export function VaultContent() {
                     >
                         All
                     </button>
-                    {(['study_note', 'case_study', 'project', 'other_resources'] as VaultResourceType[]).map(type => {
+                    {(['study_note', 'question_bank', 'case_study', 'project', 'other_resources'] as VaultResourceType[]).map(type => {
                         const config = TYPE_CONFIG[type];
                         const isActive = selectedType === type;
                         return (
@@ -474,7 +480,7 @@ export function VaultContent() {
                                             onChange={(e) => setFormData({ ...formData, type: e.target.value as VaultResourceType })}
                                             className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
                                         >
-                                            {(['study_note', 'case_study', 'project', 'other_resources'] as VaultResourceType[]).map(type => {
+                                            {(['study_note', 'question_bank', 'case_study', 'project', 'other_resources'] as VaultResourceType[]).map(type => {
                                                 const config = TYPE_CONFIG[type];
                                                 return (
                                                     <option key={type} value={type}>

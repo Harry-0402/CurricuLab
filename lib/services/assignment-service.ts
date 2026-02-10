@@ -9,6 +9,7 @@ const mapAssignment = (a: any): Assignment => ({
     unitId: a.unit_id,
     title: a.title,
     description: a.description,
+    questions: a.questions || [],
     dueDate: a.due_date,
     platform: a.platform
 });
@@ -50,6 +51,7 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
         unit_id: assignment.unitId,
         title: assignment.title,
         description: assignment.description,
+        questions: assignment.questions || [],
         due_date: assignment.dueDate,
         platform: assignment.platform
     };
@@ -90,6 +92,7 @@ export const updateAssignment = async (assignment: Assignment): Promise<Assignme
         unit_id: assignment.unitId,
         title: assignment.title,
         description: assignment.description,
+        questions: assignment.questions || [],
         due_date: assignment.dueDate,
         platform: assignment.platform
     };

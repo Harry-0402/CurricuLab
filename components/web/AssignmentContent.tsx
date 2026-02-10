@@ -29,9 +29,7 @@ export function AssignmentContent() {
 
     // Detail Modal State
     const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
-    const [aiAnswer, setAiAnswer] = useState<string>('');
     const [isGeneratingAnswer, setIsGeneratingAnswer] = useState(false);
-    const [showExportMenu, setShowExportMenu] = useState(false);
 
     // Delete Confirmation State
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -74,8 +72,6 @@ export function AssignmentContent() {
                     const restoredAssignment = fetched.find(a => a.id === storedAssignmentId);
                     if (restoredAssignment) {
                         setSelectedAssignment(restoredAssignment);
-                        const cachedAnswer = localStorage.getItem('aiAnswerCache');
-                        if (cachedAnswer) setAiAnswer(cachedAnswer);
                     }
                 }
 
@@ -101,9 +97,10 @@ export function AssignmentContent() {
             } else {
                 // Create
                 const newAssignment = await createAssignment({
-                    id: crypto.randomUUID(), // Temp ID, or let DB handle it? Supabase usually wants ID if providing, or we omit. Service mapAssignment expects ID. Service createAssignment inserts payload. Let's look at service. Service maps input ID.
+                    id: crypto.randomUUID(),
                     title: data.title || 'Untitled',
                     description: data.description || '',
+                    questions: data.questions || [],
                     subjectId: data.subjectId || activeSubjectId!, // Use selected subject!
                     dueDate: data.dueDate || new Date().toISOString().split('T')[0],
                     unitId: data.unitId || undefined,
@@ -137,77 +134,96 @@ export function AssignmentContent() {
 
     const openDetailModal = (assignment: Assignment) => {
         setSelectedAssignment(assignment);
-        setAiAnswer('');
         localStorage.setItem('openAssignmentId', assignment.id); // Persist open state
-        localStorage.removeItem('aiAnswerCache'); // Clear old answer cache
     };
 
-    const handleGenerateAnswer = async () => {
-        if (!selectedAssignment) return;
+    const handleGenerateAnswer = async (questionIndex: number) => {
+        if (!selectedAssignment || !selectedAssignment.questions[questionIndex]) return;
+
+        const question = selectedAssignment.questions[questionIndex];
         setIsGeneratingAnswer(true);
-        setAiAnswer('');
+
         try {
             const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
             const unit = selectedAssignment.unitId ? units.find(u => u.id === selectedAssignment.unitId) : null;
             const topicsContext = unit?.topics?.length ? `\nRelevant Topics: ${unit.topics.join(', ')}` : '';
 
-            const prompt = `You are a university professor providing a comprehensive answer to a student's assignment.
+            const prompt = `You are a university professor providing a comprehensive answer to a specific assignment question.
 
 Subject: ${subject?.title || 'Business Administration'}
 ${unit ? `Unit: ${unit.title}` : ''}
 ${topicsContext}
 
-Assignment Question: ${selectedAssignment.title}
-${selectedAssignment.description ? `Additional Context: ${selectedAssignment.description}` : ''}
+Assignment Title: ${selectedAssignment.title}
+Question: ${question.text}
 
 Provide a detailed, well-structured answer that:
-1. MUST use a main Heading 1 (#) for the Title of the Answer
-2. MUST use Heading 2 (##) for major sections (Introduction, Key Concepts, etc.) and Heading 3 (###) for subsections
+1. MUST use Heading 2 (##) for the Question Title
+2. MUST use Heading 3 (###) for major sections (Introduction, Analysis, etc.)
 3. Includes relevant examples and practical applications
-4. Uses **bold** for key terms and definitions
-5. Uses bullet points (-) for listing features, characteristics, or steps
-6. Adds a comparison table if comparing concepts (use markdown tables)
-7. Ends with a brief conclusion or summary (under a ## Conclusion heading)
+4. Uses **bold** for key terms
+5. Uses bullet points (-) for listing features or steps
+6. Adds a comparison table if applicable
+7. Ends with a brief summary
 8. Keep paragraphs concise and scannable
 
 Format the response in clean, readable markdown.`;
 
             const answer = await AiService.generateContent(prompt);
-            setAiAnswer(answer);
-            localStorage.setItem('aiAnswerCache', answer); // Persist answer
+
+            // Update local state
+            const updatedQuestions = [...selectedAssignment.questions];
+            updatedQuestions[questionIndex] = { ...question, answer };
+            const updatedAssignment = { ...selectedAssignment, questions: updatedQuestions };
+
+            // Persist to DB
+            const savedAssignment = await updateAssignment(updatedAssignment);
+
+            // Update lists
+            setSelectedAssignment(savedAssignment);
+            setAssignments(prev => prev.map(a => a.id === savedAssignment.id ? savedAssignment : a));
+
         } catch (error: any) {
             console.error('Failed to generate answer:', error);
-            setAiAnswer(`Error: ${error.message || 'Failed to generate answer. Please try again.'}`);
+            // Optionally show error in UI
         } finally {
             setIsGeneratingAnswer(false);
         }
     };
 
     const handleExportWord = async () => {
-        if (!selectedAssignment || !aiAnswer) return;
+        if (!selectedAssignment || selectedAssignment.questions.length === 0) return;
         const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
         const unit = units.find(u => u.id === selectedAssignment.unitId);
 
         const { PlatformExportService } = await import('@/lib/services/export-service');
+        const sections = selectedAssignment.questions.map((q, idx) => ({
+            id: q.id,
+            title: `Question ${idx + 1}: ${q.text.substring(0, 50)}${q.text.length > 50 ? '...' : ''}`,
+            content: q.answer || 'No answer generated.'
+        }));
+
         await PlatformExportService.generateWordDocument(
             subject?.title || 'Assignment',
             unit?.title || selectedAssignment.title,
-            [{ id: selectedAssignment.id, title: selectedAssignment.title, content: aiAnswer }]
+            sections
         );
-        setShowExportMenu(false);
     };
 
     const handleExportHTML = async () => {
-        if (!selectedAssignment || !aiAnswer) return;
+        if (!selectedAssignment || selectedAssignment.questions.length === 0) return;
         const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
+
+        const combinedAnswers = selectedAssignment.questions
+            .map((q, idx) => `## Question ${idx + 1}\n${q.text}\n\n### Answer\n${q.answer || 'No answer generated.'}`)
+            .join('\n\n---\n\n');
 
         const { PlatformExportService } = await import('@/lib/services/export-service');
         await PlatformExportService.generateAssignmentHTMLExport(
             subject?.title || 'Assignment',
             selectedAssignment,
-            aiAnswer
+            combinedAnswers
         );
-        setShowExportMenu(false);
     };
 
     if (loading && subjects.length === 0) {
@@ -221,12 +237,11 @@ Format the response in clean, readable markdown.`;
     return (
         <div className="space-y-10">
             {/* Header Area */}
+            {/* Header Area */}
             <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">Active Tasks</h2>
-                    <p className="text-sm font-bold text-gray-400">
-                        {assignments.length} assignments tracked for {activeSubject?.code}
-                    </p>
+                <div>
+                    <h1 className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-[0.2em]">Academic</h1>
+                    <p className="text-5xl font-black text-gray-900 tracking-tight">Assignments</p>
                 </div>
                 <button
                     onClick={() => { setEditingAssignment(null); setIsModalOpen(true); }}
@@ -299,9 +314,10 @@ Format the response in clean, readable markdown.`;
                                 <h3 className="text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors">
                                     {assignment.title}
                                 </h3>
-                                <p className="text-sm font-bold text-gray-400 line-clamp-2">
-                                    {assignment.description}
-                                </p>
+                                <div className="flex items-center gap-2 text-sm font-bold text-gray-400">
+                                    <Icons.List size={14} className="text-gray-300" />
+                                    <span>{assignment.questions.length} Questions</span>
+                                </div>
                             </div>
 
                             <div className="pt-4 flex items-center justify-between">
@@ -328,19 +344,7 @@ Format the response in clean, readable markdown.`;
                     </div>
                 ))}
 
-                {/* Empty State / Add Card */}
-                <button
-                    onClick={() => { setEditingAssignment(null); setIsModalOpen(true); }}
-                    className="group border-2 border-dashed border-gray-100 rounded-[35px] p-8 flex flex-col items-center justify-center gap-4 hover:border-blue-200 hover:bg-blue-50/10 transition-all duration-500 min-h-[280px]"
-                >
-                    <div className="w-16 h-16 bg-gray-50 group-hover:bg-blue-100 rounded-full flex items-center justify-center text-gray-300 group-hover:text-blue-600 transition-all duration-500 group-hover:scale-110">
-                        <Icons.Plus size={32} />
-                    </div>
-                    <div className="text-center">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-blue-600">New Assignment</p>
-                        <p className="text-xs font-bold text-gray-300 mt-1">Add to {activeSubject?.code}</p>
-                    </div>
-                </button>
+
             </div>
 
             <AssignmentModal
@@ -397,108 +401,83 @@ Format the response in clean, readable markdown.`;
 
                             </div>
 
-                            {/* Question/Description */}
-                            <div className="px-8 pb-4 shrink-0">
-                                <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Question / Description</h4>
-                                    <p className="text-gray-700 font-medium leading-relaxed text-sm line-clamp-3">
-                                        {selectedAssignment.description || 'No description provided.'}
-                                    </p>
-                                </div>
-                            </div>
+                            {/* Questions Section */}
+                            <div className="flex-1 overflow-y-auto px-8 pb-8 custom-scrollbar">
+                                <div className="space-y-8">
+                                    {selectedAssignment.description && (
+                                        <div className="p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">Instructions / Notes</h4>
+                                            <p className="text-gray-700 font-medium leading-relaxed text-sm">
+                                                {selectedAssignment.description}
+                                            </p>
+                                        </div>
+                                    )}
 
-                            {/* AI Answer Section */}
-                            <div className="flex-1 flex flex-col min-h-0 px-8 pb-8">
-                                <div className="flex items-center justify-between gap-4 flex-wrap mb-4 shrink-0">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">AI Generated Answer</h4>
-                                    <div className="flex items-center gap-2">
-                                        {/* Export Button */}
-                                        {aiAnswer && (
-                                            <div className="relative">
-                                                <button
-                                                    onClick={() => setShowExportMenu(!showExportMenu)}
-                                                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
-                                                >
-                                                    <Icons.Download size={14} />
-                                                    Export
-                                                </button>
-                                                {showExportMenu && (
-                                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
-                                                        <button
-                                                            onClick={handleExportWord}
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                                    <div className="space-y-6">
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Questions & Answers</h4>
+                                        {selectedAssignment.questions.length === 0 && (
+                                            <div className="text-center py-10 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+                                                <p className="text-sm font-bold text-gray-400">No questions added to this assignment.</p>
+                                            </div>
+                                        )}
+                                        {selectedAssignment.questions.map((q, idx) => (
+                                            <div key={q.id} className="bg-white border border-gray-100 rounded-[30px] p-6 shadow-sm space-y-4">
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div className="flex gap-4">
+                                                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400 shrink-0 mt-1">
+                                                            {idx + 1}
+                                                        </div>
+                                                        <p className="text-gray-900 font-bold text-base leading-snug pt-1">
+                                                            {q.text}
+                                                        </p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleGenerateAnswer(idx)}
+                                                        disabled={isGeneratingAnswer}
+                                                        className={cn(
+                                                            "flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0",
+                                                            isGeneratingAnswer
+                                                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                                : "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-lg hover:scale-[1.02]"
+                                                        )}
+                                                    >
+                                                        {isGeneratingAnswer ? (
+                                                            <><Icons.Loader2 size={12} className="animate-spin" /> Generating...</>
+                                                        ) : (
+                                                            <><Icons.Sparkles size={12} /> {q.answer ? 'Regenerate' : 'Generate Answer'}</>
+                                                        )}
+                                                    </button>
+                                                </div>
+
+                                                {q.answer ? (
+                                                    <div className="bg-gray-50 rounded-2xl p-6 prose prose-sm max-w-none border border-gray-100">
+                                                        <ReactMarkdown
+                                                            remarkPlugins={[remarkGfm]}
+                                                            components={{
+                                                                h1: ({ ...props }) => <h1 className="text-xl font-black text-gray-900 mt-4 mb-3" {...props} />,
+                                                                h2: ({ ...props }) => <h2 className="text-lg font-black text-gray-900 mt-4 mb-3 border-b border-gray-200 pb-1" {...props} />,
+                                                                h3: ({ ...props }) => <h3 className="text-md font-bold text-gray-800 mt-3 mb-2" {...props} />,
+                                                                p: ({ ...props }) => <p className="text-gray-700 leading-relaxed mb-3 text-sm" {...props} />,
+                                                                ul: ({ ...props }) => <ul className="list-disc pl-5 mb-3 space-y-1 text-sm text-gray-700" {...props} />,
+                                                                ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-3 space-y-1 text-sm text-gray-700" {...props} />,
+                                                                table: ({ ...props }) => <div className="overflow-x-auto mb-4"><table className="w-full text-xs text-left border-collapse border border-gray-200" {...props} /></div>,
+                                                                th: ({ ...props }) => <th className="px-3 py-2 bg-gray-100 border border-gray-200 font-bold" {...props} />,
+                                                                td: ({ ...props }) => <td className="px-3 py-2 border border-gray-100" {...props} />,
+                                                            }}
                                                         >
-                                                            <Icons.FileText size={16} />
-                                                            Export as Word
-                                                        </button>
-                                                        <button
-                                                            onClick={handleExportHTML}
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-3"
-                                                        >
-                                                            <Icons.Globe size={16} />
-                                                            Export as Web Page
-                                                        </button>
+                                                            {q.answer}
+                                                        </ReactMarkdown>
+                                                    </div>
+                                                ) : (
+                                                    <div className="py-4 px-6 border border-dashed border-gray-200 rounded-2xl flex items-center justify-center gap-3">
+                                                        <Icons.Sparkles size={14} className="text-gray-300" />
+                                                        <span className="text-xs font-bold text-gray-300">Click generate to get AI assistance for this question</span>
                                                     </div>
                                                 )}
                                             </div>
-                                        )}
-                                        <button
-                                            onClick={handleGenerateAnswer}
-                                            disabled={isGeneratingAnswer}
-                                            className={cn(
-                                                "flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0",
-                                                isGeneratingAnswer
-                                                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                                    : "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-lg hover:scale-[1.02]"
-                                            )}
-                                        >
-                                            {isGeneratingAnswer ? (
-                                                <><Icons.Loader2 size={14} className="animate-spin" /> Generating...</>
-                                            ) : (
-                                                <><Icons.Sparkles size={14} /> Generate Answer</>
-                                            )}
-                                        </button>
+                                        ))}
                                     </div>
                                 </div>
-
-                                {aiAnswer ? (
-                                    <div className="flex-1 rounded-2xl border border-gray-100 bg-gray-50 overflow-hidden relative">
-                                        <div className="absolute inset-0 overflow-y-auto no-scrollbar p-8">
-                                            <div className="text-gray-900 pb-8">
-                                                <ReactMarkdown
-                                                    remarkPlugins={[remarkGfm]}
-                                                    components={{
-                                                        h1: ({ node, ...props }) => <h1 className="text-2xl font-black text-gray-900 mt-6 mb-4 pb-2 border-b-2 border-gray-200" {...props} />,
-                                                        h2: ({ node, ...props }) => <h2 className="text-xl font-extrabold text-gray-900 mt-6 mb-3" {...props} />,
-                                                        h3: ({ node, ...props }) => <h3 className="text-lg font-bold text-gray-800 mt-5 mb-2" {...props} />,
-                                                        h4: ({ node, ...props }) => <h4 className="text-base font-bold text-gray-700 mt-4 mb-2" {...props} />,
-                                                        p: ({ node, ...props }) => <p className="text-gray-700 leading-relaxed mb-4 text-sm" {...props} />,
-                                                        ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
-                                                        ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
-                                                        li: ({ node, ...props }) => <li className="text-gray-700 text-sm" {...props} />,
-                                                        blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-400 bg-blue-50 pl-4 py-2 italic text-gray-600 mb-4 rounded-r" {...props} />,
-                                                        table: ({ node, ...props }) => <div className="overflow-x-auto mb-6 rounded-lg border border-gray-200"><table className="w-full text-sm text-left border-collapse" {...props} /></div>,
-                                                        thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
-                                                        th: ({ node, ...props }) => <th className="px-4 py-3 font-bold text-gray-700 border-b border-gray-200" {...props} />,
-                                                        td: ({ node, ...props }) => <td className="px-4 py-3 border-b border-gray-100" {...props} />,
-                                                        tr: ({ node, ...props }) => <tr className="even:bg-gray-50 hover:bg-gray-50/50" {...props} />,
-                                                        strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
-                                                        code: ({ node, ...props }) => <code className="bg-gray-100 text-purple-700 px-1 py-0.5 rounded font-mono text-xs" {...props} />
-                                                    }}
-                                                >
-                                                    {aiAnswer}
-                                                </ReactMarkdown>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="flex-1 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-300">
-                                            <Icons.Sparkles size={28} />
-                                        </div>
-                                        <p className="text-sm font-bold text-gray-400">Click "Generate Answer" to get AI assistance</p>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     )}

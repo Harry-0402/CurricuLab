@@ -6,13 +6,13 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { type, title, content, link, recipients } = body;
 
-        console.log(`[Email] Email notification endpoint is disabled - SendGrid functionality has been removed`);
+        console.log(`[Email] Notification simulation: Email would be sent to ${recipients?.length} recipients (Service Disabled)`);
 
         return NextResponse.json({
-            success: false,
-            error: 'Email notifications are currently disabled',
-            message: 'SendGrid functionality has been removed from this application'
-        }, { status: 501 });
+            success: true,
+            warning: 'Email notifications are currently disabled (Simulated Success)',
+            message: 'Notification logged but not sent'
+        }, { status: 200 });
 
     } catch (error: any) {
         console.error('Notification request failed:', error);

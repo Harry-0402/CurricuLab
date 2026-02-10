@@ -1,0 +1,122 @@
+[2026-02-09T16:42:50.869Z] [Material API] POST request received
+[2026-02-09T16:42:51.411Z] [Material API] 1. Starting Fetch: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz
+[2026-02-09T16:42:52.566Z] [Material API] CRITICAL ERROR: File not found: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz.
+[2026-02-09T16:42:52.567Z] Error: File not found: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz.
+    at Gaxios._request (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_ff860150._.js:10512:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async OAuth2Client.requestAsync (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_google-auth-library_3bf37d50._.js:1304:20)
+    at async createAPIRequestAsync (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_ff860150._.js:17037:25)
+    at async Object.getFileContent (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\[root-of-the-server]__7b66e45c._.js:305:26)
+    at async POST (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\[root-of-the-server]__7b66e45c._.js:495:55)
+    at async AppRouteRouteModule.do (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37866)
+    at async AppRouteRouteModule.handle (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45156)
+    at async responseGenerator (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16186:38)
+    at async AppRouteRouteModule.handleResponse (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187713)
+    at async handleResponse (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16249:32)
+    at async Module.handler (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16302:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1524:32)
+    at async DevServer.pipeImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1018:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\next-server.js:395:17)
+    at async DevServer.handleRequestImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:909:17)
+    at async D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\dev\next-dev-server.js:387:20
+    at async Span.traceAsyncFn (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\dev\next-dev-server.js:383:24)
+    at async invokeRender (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:248:21)
+    at async handleRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:447:24)
+    at async requestHandlerImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:496:13)
+    at async Server.requestListener (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\start-server.js:226:13)
+[2026-02-09T16:43:38.977Z] [Material API] POST request received
+[2026-02-09T16:43:40.407Z] [Material API] 1. Starting Fetch: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz
+[2026-02-09T16:43:41.411Z] [Material API] CRITICAL ERROR: File not found: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz.
+[2026-02-09T16:43:41.412Z] Error: File not found: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz.
+    at Gaxios._request (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_ff860150._.js:10512:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async OAuth2Client.requestAsync (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_google-auth-library_3bf37d50._.js:1304:20)
+    at async createAPIRequestAsync (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_ff860150._.js:17037:25)
+    at async Object.getFileContent (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\[root-of-the-server]__7b66e45c._.js:305:26)
+    at async POST (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\[root-of-the-server]__7b66e45c._.js:495:55)
+    at async AppRouteRouteModule.do (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37866)
+    at async AppRouteRouteModule.handle (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45156)
+    at async responseGenerator (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16186:38)
+    at async AppRouteRouteModule.handleResponse (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187713)
+    at async handleResponse (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16249:32)
+    at async Module.handler (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16302:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1524:32)
+    at async DevServer.pipeImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1018:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\next-server.js:395:17)
+    at async DevServer.handleRequestImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:909:17)
+    at async D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\dev\next-dev-server.js:387:20
+    at async Span.traceAsyncFn (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\dev\next-dev-server.js:383:24)
+    at async invokeRender (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:248:21)
+    at async handleRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:447:24)
+    at async requestHandlerImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:496:13)
+    at async Server.requestListener (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\start-server.js:226:13)
+[2026-02-09T16:47:18.858Z] [Material API] POST request received
+[2026-02-09T16:47:19.813Z] [Material API] 1. Starting Fetch: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz
+[2026-02-09T16:47:20.780Z] [Material API] CRITICAL ERROR: File not found: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz.
+[2026-02-09T16:47:20.780Z] Error: File not found: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz.
+    at Gaxios._request (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_ff860150._.js:10512:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async OAuth2Client.requestAsync (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_google-auth-library_3bf37d50._.js:1304:20)
+    at async createAPIRequestAsync (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_ff860150._.js:17037:25)
+    at async Object.getFileContent (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\[root-of-the-server]__7b66e45c._.js:305:26)
+    at async POST (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\[root-of-the-server]__7b66e45c._.js:495:55)
+    at async AppRouteRouteModule.do (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37866)
+    at async AppRouteRouteModule.handle (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45156)
+    at async responseGenerator (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16186:38)
+    at async AppRouteRouteModule.handleResponse (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187713)
+    at async handleResponse (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16249:32)
+    at async Module.handler (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16302:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1524:32)
+    at async DevServer.pipeImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1018:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\next-server.js:395:17)
+    at async DevServer.handleRequestImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:909:17)
+    at async D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\dev\next-dev-server.js:387:20
+    at async Span.traceAsyncFn (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\dev\next-dev-server.js:383:24)
+    at async invokeRender (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:248:21)
+    at async handleRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:447:24)
+    at async requestHandlerImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:496:13)
+    at async Server.requestListener (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\start-server.js:226:13)
+[2026-02-09T16:52:35.122Z] [Material API] POST request received
+[2026-02-09T16:52:35.384Z] [Material API] 1. Starting Fetch: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz
+[2026-02-09T16:52:36.172Z] [Material API] CRITICAL ERROR: File not found: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz.
+[2026-02-09T16:52:36.173Z] Error: File not found: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz.
+    at Gaxios._request (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_ff860150._.js:10512:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async OAuth2Client.requestAsync (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_google-auth-library_3bf37d50._.js:1304:20)
+    at async createAPIRequestAsync (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_ff860150._.js:17037:25)
+    at async Object.getFileContent (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\[root-of-the-server]__7b66e45c._.js:305:26)
+    at async POST (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\[root-of-the-server]__7b66e45c._.js:495:55)
+    at async AppRouteRouteModule.do (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37866)
+    at async AppRouteRouteModule.handle (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45156)
+    at async responseGenerator (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16186:38)
+    at async AppRouteRouteModule.handleResponse (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187713)
+    at async handleResponse (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16249:32)
+    at async Module.handler (D:\Portfolio\Creations\Projects\CurricuLab\.next\dev\server\chunks\node_modules_next_7252d2e1._.js:16302:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1524:32)
+    at async DevServer.pipeImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:1018:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\next-server.js:395:17)
+    at async DevServer.handleRequestImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\base-server.js:909:17)
+    at async D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\dev\next-dev-server.js:387:20
+    at async Span.traceAsyncFn (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\dev\next-dev-server.js:383:24)
+    at async invokeRender (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:248:21)
+    at async handleRequest (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:447:24)
+    at async requestHandlerImpl (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\router-server.js:496:13)
+    at async Server.requestListener (D:\Portfolio\Creations\Projects\CurricuLab\node_modules\next\dist\server\lib\start-server.js:226:13)
+[2026-02-09T16:57:02.098Z] [Material API] POST request received
+[2026-02-09T16:57:02.769Z] [Material API] DEBUG: Token Scopes: https://www.googleapis.com/auth/classroom.courses.readonly https://www.googleapis.com/auth/classroom.student-submissions.me.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/classroom.announcements.readonly
+[2026-02-09T16:57:02.770Z] [Material API] 1. Starting Fetch: 1tl-C3aNviRrkGWBYfSKocBaOc7_XtQFz
+[2026-02-09T16:57:05.060Z] [Material API] 2. Drive Fetch OK. Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document, Content Length: 26780
+[2026-02-09T16:57:05.062Z] [Material API] 3. Starting Extraction for application/vnd.openxmlformats-officedocument.wordprocessingml.document
+[2026-02-09T16:57:05.135Z] [Material API] 4. Extraction Finished. Length: 873
