@@ -151,6 +151,7 @@ export interface Assignment {
   dueDate: string;
   platform?: 'ERP' | 'GCR' | 'Other';
   gcrId?: string;
+  externalLink?: string;
 }
 
 export type VaultResourceType = 'study_note' | 'question_bank' | 'case_study' | 'project' | 'other_resources';

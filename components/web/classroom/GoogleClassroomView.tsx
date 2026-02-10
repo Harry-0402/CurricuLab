@@ -106,6 +106,7 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                     new Date().toISOString(),
                 platform: 'GCR',
                 gcrId: work.id,
+                externalLink: work.alternateLink,
                 unitId: undefined
             };
 

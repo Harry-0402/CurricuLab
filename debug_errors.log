@@ -538,3 +538,19 @@ Response: {
   }
 }
 ----------------------------------------
+
+--- FILE CONTENT ERROR ---
+Timestamp: 2026-02-10T13:12:57.568Z
+FileId: undefined
+Error: {}
+Message: Failed to download file: Missing required parameters: fileId
+Response: {}
+----------------------------------------
+
+--- FILE CONTENT ERROR ---
+Timestamp: 2026-02-10T13:30:54.110Z
+FileId: undefined
+Error: {}
+Message: Failed to download file: Missing required parameters: fileId
+Response: {}
+----------------------------------------

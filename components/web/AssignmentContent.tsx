@@ -373,32 +373,47 @@ Format the response in clean, readable markdown.`;
                             {/* Header Section */}
                             <div className="p-8 pb-4 shrink-0">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black text-gray-900 pr-8">
-                                        {selectedAssignment.title}
-                                    </DialogTitle>
-                                    <DialogDescription asChild>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-                                                <Icons.Calendar size={14} />
-                                                <span>Due: {selectedAssignment.dueDate}</span>
-                                                {selectedAssignment.unitId && (() => {
-                                                    const unitIndex = units.findIndex(u => u.id === selectedAssignment.unitId);
-                                                    return (
-                                                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
-                                                            Unit {unitIndex + 1}
-                                                        </span>
-                                                    );
-                                                })()}
-                                                {selectedAssignment.platform && (
-                                                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
-                                                        {selectedAssignment.platform}
-                                                    </span>
-                                                )}
-                                            </div>
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1">
+                                            <DialogTitle className="text-2xl font-black text-gray-900 pr-8">
+                                                {selectedAssignment.title}
+                                            </DialogTitle>
+                                            <DialogDescription asChild>
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
+                                                        <Icons.Calendar size={14} />
+                                                        <span>Due: {selectedAssignment.dueDate}</span>
+                                                        {selectedAssignment.unitId && (() => {
+                                                            const unitIndex = units.findIndex(u => u.id === selectedAssignment.unitId);
+                                                            return (
+                                                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
+                                                                    Unit {unitIndex + 1}
+                                                                </span>
+                                                            );
+                                                        })()}
+                                                        {selectedAssignment.platform && (
+                                                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
+                                                                {selectedAssignment.platform}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </DialogDescription>
                                         </div>
-                                    </DialogDescription>
-                                </DialogHeader>
 
+                                        {selectedAssignment.externalLink && selectedAssignment.platform === 'GCR' && (
+                                            <a
+                                                href={selectedAssignment.externalLink}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 shrink-0 mr-12"
+                                            >
+                                                <Icons.Google size={14} />
+                                                Open in Classroom
+                                            </a>
+                                        )}
+                                    </div>
+                                </DialogHeader>
                             </div>
 
                             {/* Questions Section */}
@@ -522,7 +537,7 @@ Format the response in clean, readable markdown.`;
                 </DialogContent>
             </Dialog>
 
-        </div>
+        </div >
     );
 }
 
