@@ -37,7 +37,9 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                     execution_count: null,
                     metadata: {},
                     outputs: [],
-                    source: code.split('\n').map(line => line + '\n')
+                    source: code.split('\n').map((line, i, arr) =>
+                        i === arr.length - 1 ? line : line + '\n'
+                    )
                 }
             ],
             metadata: {
@@ -89,15 +91,24 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
         toast.success(`${type === 'notebook' ? 'Notebook' : 'Script'} downloaded`);
     };
 
-    const handleOpenInColab = () => {
-        // First download the notebook
+    const handleOpenInColab = async () => {
+        // Copy to clipboard first for the fastest experience
+        try {
+            await navigator.clipboard.writeText(code);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Auto-copy failed');
+        }
+
+        // Also trigger notebook download as a backup/alternative
         handleDownload('notebook');
 
-        // Then open colab upload page (using generic gateway as deep link is broken)
-        window.open('https://colab.research.google.com/', '_blank');
+        // Open fresh Colab notebook
+        window.open('https://colab.research.google.com/notebook#create=true', '_blank');
 
-        toast.info('Colab opened! Click the "Upload" tab and drag your downloaded file there.', {
-            duration: 6000
+        toast.info('Code copied! Colab opened—just paste (Ctrl+V) and run! 🚀', {
+            duration: 8000
         });
     };
 
