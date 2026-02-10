@@ -542,6 +542,7 @@ Return ONLY the formatted answer in markdown format.`;
     },
 
     async parseAssignmentContent(text: string, fileData?: { base64: string, mimeType: string }): Promise<any> {
+        // Keeping this for broader usage, but cleaning it up
         const prompt = `
         You are an expert Assignment Parser.
         Extract the structured details from the following ${fileData ? 'attached assignment file' : 'raw assignment text'}.
@@ -584,6 +585,57 @@ Return ONLY the formatted answer in markdown format.`;
         } catch (e) {
             console.error("Failed to parse assignment", e);
             throw new Error("Failed to parse assignment content.");
+        }
+    },
+
+    async extractQuestionsFromContent(text: string, fileData?: { base64: string, mimeType: string, text?: string }): Promise<string[]> {
+        // If we have explicit text from a DOCX/PDF extraction, merge it with context
+        const combinedText = fileData?.text ? `${text}\n\n[Extracted from Attachment]:\n${fileData.text}` : text;
+        const hasFile = fileData && !fileData.text; // Only send file if text wasn't already extracted
+        const isDocx = fileData?.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+        const prompt = `
+        You are an expert Assignment Parser.
+        Extract ONLY the list of questions from the following ${hasFile ? 'attached assignment file' : 'raw assignment text'}.
+        ${combinedText ? `\nAdditional Context/Text: "${combinedText}"` : ''}
+
+        Return ONLY a raw JSON array of strings, where each string is a question found in the input. 
+        Example Output Format: ["Question 1 text", "Question 2 text"]
+
+        Rules:
+        - Return strictly a JSON array. 
+        - Clean up numbering prefixes (e.g., "1. " or "Q1: ").
+        - Do NOT include any instructions, descriptions, titles, or dates.
+        - If no specific questions are found, return an empty array [].
+        `;
+
+        try {
+            let resultText = "";
+            // Gemini doesn't support DOCX binary, so if we have it, we MUST rely on the extracted text
+            if (fileData && !isDocx) {
+                if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+                const result = await model.generateContent([
+                    prompt,
+                    {
+                        inlineData: {
+                            data: fileData.base64,
+                            mimeType: fileData.mimeType
+                        }
+                    }
+                ]);
+                const response = await result.response;
+                resultText = response.text();
+            } else {
+                // For DOCX or text-only inputs, we send a standard text prompt
+                resultText = await this.generateContent(prompt);
+            }
+
+            return this.extractJson(resultText);
+        } catch (e) {
+            console.error("Failed to extract questions:", e);
+            return [];
         }
     }
 };

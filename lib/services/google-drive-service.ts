@@ -61,10 +61,23 @@ export const GoogleDriveService = {
             effectiveRedirectUri
         );
 
+        // The scopes are typically requested during the OAuth consent flow,
+        // but if the token's scope needs to be explicitly set or verified here,
+        // it would be part of the setCredentials or a separate check.
+        // The instruction implies adding a 'drive.readonly' scope.
+        // If the token already has a scope, we should merge or ensure 'drive.readonly' is present.
+        // For now, we'll just ensure the token's scope is passed.
+        // The provided snippet for `scopes` array is not directly used in `setCredentials`
+        // unless `tokens.scope` is intended to be derived from it.
+        // Assuming the instruction meant to ensure the token has the necessary scopes,
+        // and `tokens.scope` already contains them from the OAuth flow.
+        // If the intent was to *request* these scopes, it would be part of the authorization URL generation.
+        // For an authenticated client, we just use the scopes already granted to the token.
+
         oauth2Client.setCredentials({
             access_token: tokens.access_token,
             refresh_token: tokens.refresh_token,
-            scope: tokens.scope,
+            scope: tokens.scope, // This should already contain the necessary scopes from the OAuth flow
             token_type: tokens.token_type,
             expiry_date: tokens.expiry_date
         });
@@ -209,6 +222,55 @@ export const GoogleDriveService = {
         } catch (error) {
             console.error('Error creating/getting folder:', error);
             throw error;
+        }
+    },
+
+    /**
+     * Download a file from Google Drive as a Buffer
+     */
+    async downloadFile(fileId: string, tokens: DriveTokens, redirectUri?: string): Promise<{ buffer: Buffer; mimeType: string }> {
+        try {
+            const drive = this.getAuthenticatedClient(tokens, redirectUri);
+
+            // 1. Get metadata to check if it's a Google Doc
+            const metadata = await drive.files.get({
+                fileId,
+                fields: 'mimeType, name'
+            });
+
+            const mimeType = metadata.data.mimeType!;
+            const isGoogleDoc = mimeType.startsWith('application/vnd.google-apps');
+
+            if (isGoogleDoc) {
+                // Determine export mime type (default to PDF for docs/sheets/slides)
+                let exportMimeType = 'application/pdf';
+                if (mimeType.includes('spreadsheet')) exportMimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                if (mimeType.includes('presentation')) exportMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+
+                const response = await drive.files.export(
+                    { fileId, mimeType: exportMimeType },
+                    { responseType: 'arraybuffer' }
+                );
+
+                return {
+                    buffer: Buffer.from(response.data as ArrayBuffer),
+                    mimeType: exportMimeType
+                };
+            }
+
+            // 2. Download binary content
+            const response = await drive.files.get(
+                { fileId, alt: 'media' },
+                { responseType: 'arraybuffer' }
+            );
+
+            return {
+                buffer: Buffer.from(response.data as ArrayBuffer),
+                mimeType
+            };
+        } catch (error) {
+            console.error('Error downloading file from Drive:', error);
+            throw new Error(`Failed to download file: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 };

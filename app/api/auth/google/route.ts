@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
     // Generate a url that asks permissions for the Drive scope and Classroom scopes
     const scopes = [
-        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.readonly',
         'https://www.googleapis.com/auth/classroom.courses.readonly',
         'https://www.googleapis.com/auth/classroom.coursework.me.readonly',
         'https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly',

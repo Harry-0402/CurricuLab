@@ -11,7 +11,8 @@ const mapAssignment = (a: any): Assignment => ({
     description: a.description,
     questions: a.questions || [],
     dueDate: a.due_date,
-    platform: a.platform
+    platform: a.platform,
+    gcrId: a.gcr_id
 });
 
 export const getAssignments = async (subjectId?: string): Promise<Assignment[]> => {
@@ -53,7 +54,8 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
         description: assignment.description,
         questions: assignment.questions || [],
         due_date: assignment.dueDate,
-        platform: assignment.platform
+        platform: assignment.platform,
+        gcr_id: assignment.gcrId
     };
     const { data, error } = await supabase.from('assignments').insert(payload).select().single();
     if (error) throw error;
@@ -94,7 +96,8 @@ export const updateAssignment = async (assignment: Assignment): Promise<Assignme
         description: assignment.description,
         questions: assignment.questions || [],
         due_date: assignment.dueDate,
-        platform: assignment.platform
+        platform: assignment.platform,
+        gcr_id: assignment.gcrId
     };
     const { data, error } = await supabase.from('assignments').update(payload).eq('id', assignment.id).select().single();
     if (error) throw error;

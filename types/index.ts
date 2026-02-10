@@ -150,6 +150,7 @@ export interface Assignment {
   questions: AssignmentQuestion[];
   dueDate: string;
   platform?: 'ERP' | 'GCR' | 'Other';
+  gcrId?: string;
 }
 
 export type VaultResourceType = 'study_note' | 'question_bank' | 'case_study' | 'project' | 'other_resources';

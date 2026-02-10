@@ -3,12 +3,25 @@ import { Icons } from '@/components/shared/Icons';
 import { ClassroomCourse, ClassroomCourseWork, ClassroomAnnouncement } from '@/lib/services/google-classroom-service';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { createAssignment, getSubjects, getAssignments } from '@/lib/services/app.service';
+import { Subject, Assignment } from '@/types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/shared/Dialog";
+import { cn } from "@/lib/utils";
 
 interface GoogleClassroomViewProps {
     isDriveConnected: boolean | null;
     connectGoogleDrive: () => void;
     selectedCourse: ClassroomCourse | null;
 }
+
+// Mapping Configuration
+const CLASSROOM_TO_SUBJECT_MAP: { [key: string]: string } = {
+    "MBA-BA-2 - DA using Python": "PBA211",
+    "MBA 2027- BA/ Production and Operations Management": "PBA204",
+    "MBA BA SEM-II 2026": "PBA208", // Assuming this maps to Business Analytics code if not exact match, checking Subject codes is safer
+    "Data Analysis using Power BI PBA313": "PBA212",
+    "Data Visualization & Story Telling": "PBA207"
+};
 
 export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, selectedCourse }: GoogleClassroomViewProps) {
     const [courseWork, setCourseWork] = useState<ClassroomCourseWork[]>([]);
@@ -17,18 +30,153 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<'assignments' | 'materials' | 'announcements'>('assignments');
 
-    // Modal State
+    // Feature State
+    const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [sendingAssignmentId, setSendingAssignmentId] = useState<string | null>(null);
+    const [importedAssignments, setImportedAssignments] = useState<Assignment[]>([]);
+
+    // ... existing modal state ...
     const [selectedAssignment, setSelectedAssignment] = useState<ClassroomCourseWork | null>(null);
     const [submission, setSubmission] = useState<any>(null);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewTitle, setPreviewTitle] = useState<string | null>(null);
 
+    // Import Modal State
+    const [importModal, setImportModal] = useState<{ isOpen: boolean; work: ClassroomCourseWork | null }>({
+        isOpen: false,
+        work: null
+    });
+    const [isParsing, setIsParsing] = useState(false);
+
+    useEffect(() => {
+        const fetchSubjects = async () => {
+            const fetched = await getSubjects();
+            setSubjects(fetched);
+        };
+        fetchSubjects();
+    }, []);
+
     useEffect(() => {
         if (selectedCourse?.id) {
             loadCourseDetails(selectedCourse.id);
         }
     }, [selectedCourse?.id]);
+
+    // ... existing loadCourseDetails ...
+
+    const handleSendToAssignments = (e: React.MouseEvent, work: ClassroomCourseWork) => {
+        e.stopPropagation();
+        setImportModal({ isOpen: true, work });
+    };
+
+    const handleConfirmImport = async (parseAttachments: boolean) => {
+        const work = importModal.work;
+        if (!work || !selectedCourse) return;
+
+        setImportModal({ ...importModal, isOpen: false });
+        setSendingAssignmentId(work.id);
+
+        try {
+            // 1. Identify Subject Code from Map
+            const subjectCode = CLASSROOM_TO_SUBJECT_MAP[selectedCourse.name] ||
+                Object.keys(CLASSROOM_TO_SUBJECT_MAP).find(k => selectedCourse.name.includes(k));
+
+            if (!subjectCode) {
+                toast.error(`No subject mapping found for "${selectedCourse.name}"`);
+                return;
+            }
+
+            const targetSubjectCode = typeof subjectCode === 'string' ? subjectCode : CLASSROOM_TO_SUBJECT_MAP[subjectCode];
+            const subject = subjects.find(s => s.code === targetSubjectCode);
+
+            if (!subject) {
+                toast.error(`Subject code ${targetSubjectCode} not found in database.`);
+                return;
+            }
+
+            let assignmentData: any = {
+                id: crypto.randomUUID(),
+                subjectId: subject.id,
+                title: work.title || 'Untitled Assignment',
+                description: work.description || '',
+                questions: [],
+                dueDate: work.dueDate ?
+                    `${work.dueDate.year}-${String(work.dueDate.month).padStart(2, '0')}-${String(work.dueDate.day).padStart(2, '0')}` :
+                    new Date().toISOString(),
+                platform: 'GCR',
+                gcrId: work.id,
+                unitId: undefined
+            };
+
+            // 2. Optional AI Parsing from attachment
+            if (parseAttachments) {
+                const firstAttachment = work.materials?.find(m => m.driveFile || m.link);
+                if (firstAttachment) {
+                    setIsParsing(true);
+                    try {
+                        let fileData: { base64: string, mimeType: string, text?: string } | undefined = undefined;
+                        if (firstAttachment.driveFile) {
+                            const driveFileId = firstAttachment.driveFile.driveFile?.id || firstAttachment.driveFile.id;
+                            const res = await fetch(`/api/classroom/google/file/${driveFileId}/content`);
+                            if (res.ok) {
+                                const data = await res.json();
+                                fileData = {
+                                    base64: data.base64,
+                                    mimeType: data.mimeType,
+                                    text: data.text
+                                };
+                            } else {
+                                const errorData = await res.json();
+                                if (res.status === 403 || res.status === 401 || errorData.details?.toLowerCase().includes('scope')) {
+                                    toast.error("Drive access denied. Please re-connect Google Drive to grant permissions.", {
+                                        duration: 6000,
+                                        action: {
+                                            label: "Re-connect",
+                                            onClick: () => connectGoogleDrive()
+                                        }
+                                    });
+                                    setIsParsing(false);
+                                    setSendingAssignmentId(null);
+                                    return; // Stop processing
+                                }
+                                throw new Error(errorData.details || errorData.error || "Failed to fetch file content");
+                            }
+                        }
+
+                        const { AiService } = await import('@/lib/services/ai-service');
+                        const extractedQuestions = await AiService.extractQuestionsFromContent(work.description || '', fileData);
+
+                        assignmentData = {
+                            ...assignmentData,
+                            questions: (extractedQuestions || []).map((q: string) => ({ id: crypto.randomUUID(), text: q }))
+                        };
+                        toast.success("AI extracted questions from attachment!");
+                    } catch (err) {
+                        console.error("AI parsing failed:", err);
+                        toast.error("AI parsing failed, proceeding with basic import.");
+                    } finally {
+                        setIsParsing(false);
+                    }
+                } else {
+                    toast.info("No attachments found to parse, proceeding with basic import.");
+                }
+            }
+
+            // 3. Create Assignment
+            const createdAssignment = await createAssignment(assignmentData);
+            setImportedAssignments(prev => [...prev, createdAssignment]);
+            toast.success("Assignment sent to tracker!");
+
+        } catch (error: any) {
+            console.error("Failed to send assignment:", error);
+            toast.error(`Failed to send assignment: ${error?.message || 'Unknown error'}`);
+        } finally {
+            setSendingAssignmentId(null);
+            setImportModal({ isOpen: false, work: null });
+        }
+    };
+
 
     const loadCourseDetails = async (courseId: string) => {
         setIsLoading(true);
@@ -38,6 +186,10 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
             if (data.courseWork) setCourseWork(data.courseWork);
             if (data.courseMaterials) setCourseMaterials(data.courseMaterials);
             if (data.announcements) setAnnouncements(data.announcements);
+
+            // Also fetch internal assignments to track imports
+            const internalAssignments = await getAssignments();
+            setImportedAssignments(internalAssignments.filter(a => a.platform === 'GCR'));
         } catch (error) {
             console.error('Error loading course details:', error);
             toast.error('Failed to load course details');
@@ -192,8 +344,41 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                     {work.maxPoints && <span>Points: {work.maxPoints}</span>}
                                                     {work.state && <span className="capitalize px-2 py-0.5 bg-gray-100 rounded text-gray-600">{work.state.toLowerCase()}</span>}
                                                 </div>
-                                                <div className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 group-hover:translate-x-1 transition-transform">
-                                                    Open Assignment <Icons.ChevronRight size={14} />
+                                                <div className="flex items-center gap-3">
+                                                    {(() => {
+                                                        const isImported = importedAssignments.some(a => a.gcrId === work.id);
+
+                                                        if (isImported) {
+                                                            return (
+                                                                <a
+                                                                    href="/assignments"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-all border border-blue-100"
+                                                                >
+                                                                    <Icons.ExternalLink size={12} />
+                                                                    See in Assignments
+                                                                </a>
+                                                            );
+                                                        }
+
+                                                        return (
+                                                            <button
+                                                                onClick={(e) => handleSendToAssignments(e, work)}
+                                                                disabled={sendingAssignmentId === work.id}
+                                                                className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-all border border-transparent hover:border-blue-100"
+                                                            >
+                                                                {sendingAssignmentId === work.id ? (
+                                                                    <Icons.Loader2 size={12} className="animate-spin" />
+                                                                ) : (
+                                                                    <Icons.Send size={12} />
+                                                                )}
+                                                                Send to Assignments
+                                                            </button>
+                                                        );
+                                                    })()}
+                                                    <div className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 group-hover:translate-x-1 transition-transform">
+                                                        Open Assignment <Icons.ChevronRight size={14} />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -495,6 +680,67 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                     </div>
                 </div>
             )}
+
+            {/* Import Confirmation Dialog */}
+            <Dialog open={importModal.isOpen} onOpenChange={(open) => !open && setImportModal({ ...importModal, isOpen: false })}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
+                            <Icons.Sparkles className="text-blue-600" size={24} />
+                        </div>
+                        <DialogTitle className="text-xl font-black">AI Assignment Import</DialogTitle>
+                        <DialogDescription className="font-medium text-gray-500">
+                            Would you like CurricuLab AI to analyze the assignment attachments to extract questions and details?
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="py-4 space-y-4">
+                        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Assignment</h5>
+                            <p className="text-sm font-bold text-gray-900">{importModal.work?.title}</p>
+                            {importModal.work?.materials && importModal.work.materials.length > 0 && (
+                                <p className="text-[10px] font-bold text-blue-600 mt-2 flex items-center gap-1">
+                                    <Icons.Paperclip size={10} /> {importModal.work.materials.length} attachment(s) found
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => handleConfirmImport(false)}
+                                className="flex-1 px-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 hover:bg-gray-100 hover:text-gray-900 transition-all border border-gray-100"
+                            >
+                                No, Import Only Text
+                            </button>
+                            <button
+                                onClick={() => handleConfirmImport(true)}
+                                className="flex-[1.5] px-4 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 group"
+                            >
+                                <Icons.Wand2 size={14} className="group-hover:rotate-12 transition-transform" />
+                                Yes, Parse with AI
+                            </button>
+                        </div>
+                    </div>
+
+                    <p className="text-[10px] text-gray-400 font-medium text-center">
+                        AI analysis might take a few seconds depending on the attachment size.
+                    </p>
+                </DialogContent>
+            </Dialog>
+
+            {/* Parsing Overlay */}
+            {isParsing && (
+                <div className="fixed inset-0 z-[100] bg-black/20 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-300">
+                    <div className="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center gap-4 animate-in zoom-in-95 duration-300">
+                        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="text-center">
+                            <p className="font-black text-gray-900">AI is Analyzing...</p>
+                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Reading attachments</p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
