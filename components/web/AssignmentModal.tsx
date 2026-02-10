@@ -11,15 +11,18 @@ interface AssignmentModalProps {
     onSave: (assignment: Partial<Assignment>) => void;
     assignment?: Assignment | null;
     subjects: Subject[];
+    activeSubjectId?: string | null;
 }
 
-export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects }: AssignmentModalProps) {
+export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects, activeSubjectId }: AssignmentModalProps) {
     const [units, setUnits] = useState<Unit[]>([]);
+    const [subjectSearch, setSubjectSearch] = useState('');
+    const [isSubjectPickerOpen, setIsSubjectPickerOpen] = useState(false);
     const [formData, setFormData] = useState<Partial<Assignment>>({
         title: '',
         description: '',
         questions: [],
-        subjectId: subjects[0]?.id || '',
+        subjectId: activeSubjectId || subjects[0]?.id || '',
         unitId: '',
         platform: 'ERP',
         dueDate: new Date().toISOString().split('T')[0],
@@ -37,13 +40,13 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects 
                 title: '',
                 description: '',
                 questions: [],
-                subjectId: subjects[0]?.id || '',
+                subjectId: activeSubjectId || subjects[0]?.id || '',
                 unitId: '',
                 platform: 'ERP',
                 dueDate: new Date().toISOString().split('T')[0],
             });
         }
-    }, [assignment, subjects, isOpen]);
+    }, [assignment, subjects, isOpen, activeSubjectId]);
 
     // Fetch units when subject changes
     useEffect(() => {
@@ -177,17 +180,79 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects 
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
+                                <div className="space-y-2 relative">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Subject</label>
-                                    <select
-                                        value={formData.subjectId}
-                                        onChange={(e) => setFormData({ ...formData, subjectId: e.target.value, unitId: '' })}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all appearance-none cursor-pointer"
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsSubjectPickerOpen(!isSubjectPickerOpen)}
+                                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 flex items-center justify-between hover:bg-white hover:border-blue-500/30 transition-all active:scale-[0.98]"
                                     >
-                                        {subjects.map(s => (
-                                            <option key={s.id} value={s.id}>{s.code} - {s.title}</option>
-                                        ))}
-                                    </select>
+                                        <div className="flex items-center gap-3">
+                                            {subjects.find(s => s.id === formData.subjectId) && (
+                                                <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded-md text-[10px] uppercase">
+                                                    {subjects.find(s => s.id === formData.subjectId)?.code}
+                                                </span>
+                                            )}
+                                            <span className="truncate max-w-[120px]">
+                                                {subjects.find(s => s.id === formData.subjectId)?.title || 'Select Subject'}
+                                            </span>
+                                        </div>
+                                        <Icons.ChevronDown className={cn("text-gray-400 transition-transform", isSubjectPickerOpen && "rotate-180")} size={16} />
+                                    </button>
+
+                                    {/* Subject Picker Dropdown */}
+                                    {isSubjectPickerOpen && (
+                                        <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-3xl shadow-2xl border border-gray-100 p-4 z-50 transform origin-top transition-all animate-in fade-in zoom-in-95 duration-200">
+                                            <div className="relative mb-4">
+                                                <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                                                <input
+                                                    autoFocus
+                                                    value={subjectSearch}
+                                                    onChange={(e) => setSubjectSearch(e.target.value)}
+                                                    placeholder="Search code or title..."
+                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                                />
+                                            </div>
+                                            <div className="max-h-[200px] overflow-y-auto custom-scrollbar space-y-1">
+                                                {subjects
+                                                    .filter(s =>
+                                                        s.code.toLowerCase().includes(subjectSearch.toLowerCase()) ||
+                                                        s.title.toLowerCase().includes(subjectSearch.toLowerCase())
+                                                    )
+                                                    .map(s => (
+                                                        <button
+                                                            key={s.id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setFormData({ ...formData, subjectId: s.id, unitId: '' });
+                                                                setIsSubjectPickerOpen(false);
+                                                                setSubjectSearch('');
+                                                            }}
+                                                            className={cn(
+                                                                "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left group",
+                                                                formData.subjectId === s.id
+                                                                    ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                                                                    : "hover:bg-blue-50 text-gray-700 font-bold"
+                                                            )}
+                                                        >
+                                                            <span className={cn(
+                                                                "px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider",
+                                                                formData.subjectId === s.id
+                                                                    ? "bg-white/20 text-white"
+                                                                    : "bg-gray-100 text-gray-400 group-hover:bg-blue-200 group-hover:text-blue-600"
+                                                            )}>
+                                                                {s.code}
+                                                            </span>
+                                                            <span className="text-xs truncate">{s.title}</span>
+                                                            {formData.subjectId === s.id && (
+                                                                <Icons.Check className="ml-auto" size={14} />
+                                                            )}
+                                                        </button>
+                                                    ))
+                                                }
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Unit</label>

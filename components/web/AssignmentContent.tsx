@@ -376,10 +376,14 @@ Format the response in clean, readable markdown. Make sure the code is accurate 
 
             <AssignmentModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingAssignment(null);
+                }}
                 onSave={handleSaveAssignment}
                 assignment={editingAssignment}
                 subjects={subjects}
+                activeSubjectId={activeSubjectId}
             />
 
             {/* Detail Modal with AI Answer */}
