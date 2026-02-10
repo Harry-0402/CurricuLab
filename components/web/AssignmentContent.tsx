@@ -29,7 +29,7 @@ export function AssignmentContent() {
 
     // Detail Modal State
     const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
-    const [isGeneratingAnswer, setIsGeneratingAnswer] = useState(false);
+    const [generatingQuestionIndex, setGeneratingQuestionIndex] = useState<number | null>(null);
 
     // Delete Confirmation State
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -141,7 +141,7 @@ export function AssignmentContent() {
         if (!selectedAssignment || !selectedAssignment.questions[questionIndex]) return;
 
         const question = selectedAssignment.questions[questionIndex];
-        setIsGeneratingAnswer(true);
+        setGeneratingQuestionIndex(questionIndex);
 
         try {
             const subject = subjects.find(s => s.id === selectedAssignment.subjectId);
@@ -187,7 +187,7 @@ Format the response in clean, readable markdown.`;
             console.error('Failed to generate answer:', error);
             // Optionally show error in UI
         } finally {
-            setIsGeneratingAnswer(false);
+            setGeneratingQuestionIndex(null);
         }
     };
 
@@ -448,15 +448,15 @@ Format the response in clean, readable markdown.`;
                                                     </div>
                                                     <button
                                                         onClick={() => handleGenerateAnswer(idx)}
-                                                        disabled={isGeneratingAnswer}
+                                                        disabled={generatingQuestionIndex !== null}
                                                         className={cn(
                                                             "flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0",
-                                                            isGeneratingAnswer
+                                                            generatingQuestionIndex === idx
                                                                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                                                 : "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-lg hover:scale-[1.02]"
                                                         )}
                                                     >
-                                                        {isGeneratingAnswer ? (
+                                                        {generatingQuestionIndex === idx ? (
                                                             <><Icons.Loader2 size={12} className="animate-spin" /> Generating...</>
                                                         ) : (
                                                             <><Icons.Sparkles size={12} /> {q.answer ? 'Regenerate' : 'Generate Answer'}</>
