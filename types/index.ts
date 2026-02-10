@@ -107,6 +107,9 @@ export interface Announcement {
   resourceLink?: string;
   date: string;
   type: 'info' | 'warning' | 'success';
+  attachmentUrl?: string;
+  attachmentName?: string;
+  attachmentType?: string;
 }
 
 export interface KPIStats {

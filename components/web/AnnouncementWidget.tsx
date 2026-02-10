@@ -107,15 +107,20 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                             <p className="text-sm text-gray-600 leading-relaxed mb-6 font-medium flex-grow">{ann.content}</p>
 
                             <div className="flex items-center justify-between mt-auto">
-                                <div className="flex -space-x-2">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
-                                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${ann.id + i}`} alt="Faculty" />
-                                        </div>
-                                    ))}
-                                    <div className="w-6 h-6 rounded-full border-2 border-white bg-gray-50 flex items-center justify-center text-[8px] font-black text-gray-400 shadow-sm">
-                                        +2
+                                <div className="flex items-center gap-4">
+                                    <div className="flex -space-x-2">
+                                        {[1, 2, 3].map(i => (
+                                            <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
+                                                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${ann.id + i}`} alt="Faculty" />
+                                            </div>
+                                        ))}
                                     </div>
+                                    {ann.attachmentUrl && (
+                                        <div className="flex items-center gap-1 text-blue-500 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100">
+                                            <Icons.Paperclip size={10} />
+                                            <span className="text-[9px] font-black uppercase">Attach</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <span className={cn(
                                     "text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-sm",
@@ -165,8 +170,41 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                                 </DialogDescription>
                             </DialogHeader>
 
-                            <div className="mt-4 space-y-4">
+                            <div className="mt-4 space-y-6">
                                 <p className="text-gray-600 leading-relaxed font-medium">{selectedAnnouncement.content}</p>
+
+                                {selectedAnnouncement.attachmentUrl && (
+                                    <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                                                    {selectedAnnouncement.attachmentType?.startsWith('image/') ? <Icons.Image size={20} /> : <Icons.FileText size={20} />}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black text-gray-900 truncate max-w-[200px]">{selectedAnnouncement.attachmentName}</p>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase">Attachment</p>
+                                                </div>
+                                            </div>
+                                            <a
+                                                href={selectedAnnouncement.attachmentUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-black text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+                                            >
+                                                View / Download
+                                            </a>
+                                        </div>
+                                        {selectedAnnouncement.attachmentType?.startsWith('image/') && (
+                                            <div className="rounded-xl overflow-hidden border border-gray-200">
+                                                <img
+                                                    src={selectedAnnouncement.attachmentUrl}
+                                                    alt="Attachment Preview"
+                                                    className="w-full h-auto max-h-[300px] object-contain bg-white"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 {selectedAnnouncement.resourceLink && (
                                     <a
@@ -176,7 +214,7 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                                         className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm transition-colors hover:underline"
                                     >
                                         <Icons.Link size={16} />
-                                        View Resource
+                                        View External Resource
                                     </a>
                                 )}
                             </div>

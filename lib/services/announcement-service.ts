@@ -9,8 +9,33 @@ const mapAnnouncement = (a: any): Announcement => ({
     content: a.content || a.message,
     resourceLink: a.resource_link,
     date: a.date || (a.created_at ? new Date(a.created_at).toISOString().split('T')[0] : ''),
-    type: a.type
+    type: a.type,
+    attachmentUrl: a.attachment_url,
+    attachmentName: a.attachment_name,
+    attachmentType: a.attachment_type
 });
+
+export const uploadAnnouncementAttachment = async (file: File): Promise<{ url: string; name: string; type: string }> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+        .from('announcement-attachments')
+        .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+        .from('announcement-attachments')
+        .getPublicUrl(filePath);
+
+    return {
+        url: publicUrl,
+        name: file.name,
+        type: file.type
+    };
+};
 
 export const getAnnouncements = async (): Promise<Announcement[]> => {
     const { data, error } = await supabase
@@ -34,6 +59,9 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
         title: announcement.title,
         content: announcement.content,
         resource_link: announcement.resourceLink,
+        attachment_url: announcement.attachmentUrl,
+        attachment_name: announcement.attachmentName,
+        attachment_type: announcement.attachmentType,
         is_active: true
     };
 
@@ -47,6 +75,9 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
                 headline: announcement.title,
                 message: announcement.content,
                 resource_link: announcement.resourceLink,
+                attachment_url: announcement.attachmentUrl,
+                attachment_name: announcement.attachmentName,
+                attachment_type: announcement.attachmentType,
                 is_active: true
             };
             const { data: fallbackData, error: fallbackError } = await supabase.from('announcements').insert(fallbackPayload).select().single();
@@ -66,7 +97,6 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
     }
 
     const newAnnouncement = mapAnnouncement(data);
-    // Log Change
     // Log Change
     await ChangelogService.logChange({
         entity_type: 'Announcement',
@@ -100,7 +130,10 @@ export const updateAnnouncement = async (announcement: Announcement): Promise<An
         type: announcement.type,
         title: announcement.title,
         content: announcement.content,
-        resource_link: announcement.resourceLink
+        resource_link: announcement.resourceLink,
+        attachment_url: announcement.attachmentUrl,
+        attachment_name: announcement.attachmentName,
+        attachment_type: announcement.attachmentType
     };
 
     const { data, error } = await supabase
@@ -116,7 +149,10 @@ export const updateAnnouncement = async (announcement: Announcement): Promise<An
                 type: announcement.type,
                 headline: announcement.title,
                 message: announcement.content,
-                resource_link: announcement.resourceLink
+                resource_link: announcement.resourceLink,
+                attachment_url: announcement.attachmentUrl,
+                attachment_name: announcement.attachmentName,
+                attachment_type: announcement.attachmentType
             };
             const { data: fallbackData, error: fallbackError } = await supabase
                 .from('announcements')
