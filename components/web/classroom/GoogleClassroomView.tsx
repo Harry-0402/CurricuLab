@@ -346,12 +346,6 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                         {work.maxPoints && <span>Points: {work.maxPoints}</span>}
                                                         {work.state && <span className="capitalize px-2 py-0.5 bg-gray-100 rounded text-gray-600">{work.state.toLowerCase()}</span>}
                                                     </div>
-                                                    {work.materials && work.materials.length > 0 && (
-                                                        <div className="flex items-center gap-1.5 text-[10px] font-black text-blue-500 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                                            <Icons.Eye size={10} />
-                                                            {work.materials.length} Attachments
-                                                        </div>
-                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     {(() => {
