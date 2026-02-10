@@ -123,7 +123,7 @@ export function TracksTab() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 flex-1 flex flex-col h-full">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -166,69 +166,71 @@ export function TracksTab() {
 
             {/* Tracks Grid */}
             {filteredTracks.length === 0 ? (
-                <div className="text-center py-16 bg-gray-50 rounded-2xl">
+                <div className="flex-1 flex flex-col items-center justify-center py-16 bg-gray-50 rounded-2xl">
                     <Icons.LayoutDashboard size={48} className="mx-auto text-gray-300 mb-4" />
                     <h3 className="text-lg font-semibold text-gray-600">No tracks yet</h3>
                     <p className="text-gray-400 text-sm mt-1">Create your first learning track to get started</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredTracks.map(track => {
-                        const statusInfo = statusOptions.find(s => s.value === track.status);
-                        return (
-                            <div
-                                key={track.id}
-                                className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg transition-all group"
-                                style={{ borderLeftColor: track.color, borderLeftWidth: '4px' }}
-                            >
-                                <div className="flex items-start justify-between mb-3">
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-2xl">{track.icon}</span>
-                                        <div>
-                                            <h3 className="font-bold text-gray-900 line-clamp-1">{track.title}</h3>
-                                            <span className="text-xs text-gray-400">{track.category}</span>
+                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+                        {filteredTracks.map(track => {
+                            const statusInfo = statusOptions.find(s => s.value === track.status);
+                            return (
+                                <div
+                                    key={track.id}
+                                    className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg transition-all group"
+                                    style={{ borderLeftColor: track.color, borderLeftWidth: '4px' }}
+                                >
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-2xl">{track.icon}</span>
+                                            <div>
+                                                <h3 className="font-bold text-gray-900 line-clamp-1">{track.title}</h3>
+                                                <span className="text-xs text-gray-400">{track.category}</span>
+                                            </div>
+                                        </div>
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                            <button onClick={() => handleEdit(track)} className="p-1.5 hover:bg-gray-100 rounded-lg">
+                                                <Icons.Edit size={14} className="text-gray-400" />
+                                            </button>
+                                            <button onClick={() => handleDelete(track.id)} className="p-1.5 hover:bg-red-50 rounded-lg">
+                                                <Icons.Trash2 size={14} className="text-red-400" />
+                                            </button>
                                         </div>
                                     </div>
-                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                        <button onClick={() => handleEdit(track)} className="p-1.5 hover:bg-gray-100 rounded-lg">
-                                            <Icons.Edit size={14} className="text-gray-400" />
-                                        </button>
-                                        <button onClick={() => handleDelete(track.id)} className="p-1.5 hover:bg-red-50 rounded-lg">
-                                            <Icons.Trash2 size={14} className="text-red-400" />
-                                        </button>
-                                    </div>
-                                </div>
 
-                                <p className="text-sm text-gray-500 line-clamp-2 mb-4">{track.description || 'No description'}</p>
+                                    <p className="text-sm text-gray-500 line-clamp-2 mb-4">{track.description || 'No description'}</p>
 
-                                {/* Progress Bar */}
-                                <div className="mb-3">
-                                    <div className="flex justify-between text-xs mb-1">
-                                        <span className="text-gray-500">Progress</span>
-                                        <span className="font-semibold" style={{ color: track.color }}>{track.progress}%</span>
+                                    {/* Progress Bar */}
+                                    <div className="mb-3">
+                                        <div className="flex justify-between text-xs mb-1">
+                                            <span className="text-gray-500">Progress</span>
+                                            <span className="font-semibold" style={{ color: track.color }}>{track.progress}%</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full rounded-full transition-all"
+                                                style={{ width: `${track.progress}%`, backgroundColor: track.color }}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full rounded-full transition-all"
-                                            style={{ width: `${track.progress}%`, backgroundColor: track.color }}
-                                        />
-                                    </div>
-                                </div>
 
-                                <div className="flex items-center justify-between">
-                                    <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full", statusInfo?.color)}>
-                                        {statusInfo?.label}
-                                    </span>
-                                    {track.targetDate && (
-                                        <span className="text-xs text-gray-400 flex items-center gap-1">
-                                            <Icons.Calendar size={12} />
-                                            {new Date(track.targetDate).toLocaleDateString()}
+                                    <div className="flex items-center justify-between">
+                                        <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full", statusInfo?.color)}>
+                                            {statusInfo?.label}
                                         </span>
-                                    )}
+                                        {track.targetDate && (
+                                            <span className="text-xs text-gray-400 flex items-center gap-1">
+                                                <Icons.Calendar size={12} />
+                                                {new Date(track.targetDate).toLocaleDateString()}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
             )}
 

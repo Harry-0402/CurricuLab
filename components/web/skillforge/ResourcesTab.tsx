@@ -166,7 +166,7 @@ export function ResourcesTab() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 flex-1 flex flex-col h-full">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -224,81 +224,83 @@ export function ResourcesTab() {
 
             {/* Resources by Platform */}
             {filteredResources.length === 0 ? (
-                <div className="text-center py-16 bg-gray-50 rounded-2xl">
+                <div className="flex-1 flex flex-col items-center justify-center py-16 bg-gray-50 rounded-2xl">
                     <Icons.BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
                     <h3 className="text-lg font-semibold text-gray-600">No resources yet</h3>
                     <p className="text-gray-400 text-sm mt-1">Add your first learning resource</p>
                 </div>
             ) : (
-                <div className="space-y-6">
-                    {Object.entries(groupedByPlatform).map(([platform, items]) => (
-                        <div key={platform}>
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">{platform}</h3>
-                            <div className="space-y-2">
-                                {items.map(resource => {
-                                    const statusInfo = statusOptions.find(s => s.value === resource.status);
-                                    const typeInfo = typeOptions.find(t => t.value === resource.type);
-                                    const TypeIcon = typeInfo?.icon || Icons.Link;
-                                    const track = tracks.find(t => t.id === resource.trackId);
+                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="space-y-6 pb-4">
+                        {Object.entries(groupedByPlatform).map(([platform, items]) => (
+                            <div key={platform}>
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">{platform}</h3>
+                                <div className="space-y-2">
+                                    {items.map(resource => {
+                                        const statusInfo = statusOptions.find(s => s.value === resource.status);
+                                        const typeInfo = typeOptions.find(t => t.value === resource.type);
+                                        const TypeIcon = typeInfo?.icon || Icons.Link;
+                                        const track = tracks.find(t => t.id === resource.trackId);
 
-                                    return (
-                                        <div
-                                            key={resource.id}
-                                            className="bg-white border border-gray-100 rounded-xl p-4 hover:shadow-md transition-all group flex items-center gap-4"
-                                        >
-                                            <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center shrink-0">
-                                                <TypeIcon size={20} className="text-orange-600" />
-                                            </div>
+                                        return (
+                                            <div
+                                                key={resource.id}
+                                                className="bg-white border border-gray-100 rounded-xl p-4 hover:shadow-md transition-all group flex items-center gap-4"
+                                            >
+                                                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center shrink-0">
+                                                    <TypeIcon size={20} className="text-orange-600" />
+                                                </div>
 
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2">
-                                                    <h4 className="font-semibold text-gray-900 truncate">{resource.title}</h4>
-                                                    {track && (
-                                                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full shrink-0">
-                                                            {track.icon} {track.title}
-                                                        </span>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-semibold text-gray-900 truncate">{resource.title}</h4>
+                                                        {track && (
+                                                            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full shrink-0">
+                                                                {track.icon} {track.title}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {resource.url && (
+                                                        <a href={resource.url} target="_blank" rel="noopener noreferrer" className="text-xs text-orange-600 hover:underline truncate block">
+                                                            {resource.url}
+                                                        </a>
                                                     )}
                                                 </div>
-                                                {resource.url && (
-                                                    <a href={resource.url} target="_blank" rel="noopener noreferrer" className="text-xs text-orange-600 hover:underline truncate block">
-                                                        {resource.url}
-                                                    </a>
-                                                )}
-                                            </div>
 
-                                            {/* Priority Stars */}
-                                            <div className="flex gap-0.5 shrink-0">
-                                                {[1, 2, 3, 4, 5].map(i => (
-                                                    <Icons.Zap key={i} size={12} className={i <= resource.priority ? "text-yellow-400 fill-yellow-400" : "text-gray-200"} />
-                                                ))}
-                                            </div>
+                                                {/* Priority Stars */}
+                                                <div className="flex gap-0.5 shrink-0">
+                                                    {[1, 2, 3, 4, 5].map(i => (
+                                                        <Icons.Zap key={i} size={12} className={i <= resource.priority ? "text-yellow-400 fill-yellow-400" : "text-gray-200"} />
+                                                    ))}
+                                                </div>
 
-                                            {/* Status Dropdown */}
-                                            <select
-                                                value={resource.status}
-                                                onChange={(e) => handleStatusChange(resource, e.target.value as SkillForgeResourceStatus)}
-                                                className={cn("text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer", statusInfo?.color)}
-                                            >
-                                                {statusOptions.map(opt => (
-                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                                ))}
-                                            </select>
+                                                {/* Status Dropdown */}
+                                                <select
+                                                    value={resource.status}
+                                                    onChange={(e) => handleStatusChange(resource, e.target.value as SkillForgeResourceStatus)}
+                                                    className={cn("text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer", statusInfo?.color)}
+                                                >
+                                                    {statusOptions.map(opt => (
+                                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                    ))}
+                                                </select>
 
-                                            {/* Actions */}
-                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 shrink-0">
-                                                <button onClick={() => handleEdit(resource)} className="p-1.5 hover:bg-gray-100 rounded-lg">
-                                                    <Icons.Edit size={14} className="text-gray-400" />
-                                                </button>
-                                                <button onClick={() => handleDelete(resource.id)} className="p-1.5 hover:bg-red-50 rounded-lg">
-                                                    <Icons.Trash2 size={14} className="text-red-400" />
-                                                </button>
+                                                {/* Actions */}
+                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 shrink-0">
+                                                    <button onClick={() => handleEdit(resource)} className="p-1.5 hover:bg-gray-100 rounded-lg">
+                                                        <Icons.Edit size={14} className="text-gray-400" />
+                                                    </button>
+                                                    <button onClick={() => handleDelete(resource.id)} className="p-1.5 hover:bg-red-50 rounded-lg">
+                                                        <Icons.Trash2 size={14} className="text-red-400" />
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
 

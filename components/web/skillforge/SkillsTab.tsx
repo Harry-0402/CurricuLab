@@ -80,7 +80,7 @@ export function SkillsTab() {
     if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div>;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 flex-1 flex flex-col h-full">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div><h2 className="text-2xl font-bold text-gray-900">Skills Tracker</h2><p className="text-gray-500 text-sm">Track and level up your skills</p></div>
                 <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700"><Icons.Plus size={18} />Add Skill</button>
@@ -94,43 +94,48 @@ export function SkillsTab() {
             </div>
 
             {filteredSkills.length === 0 ? (
-                <div className="text-center py-16 bg-gray-50 rounded-2xl"><Icons.Trophy size={48} className="mx-auto text-gray-300 mb-4" /><h3 className="text-lg font-semibold text-gray-600">No skills tracked yet</h3></div>
+                <div className="flex-1 flex flex-col items-center justify-center py-16 bg-gray-50 rounded-2xl">
+                    <Icons.Trophy size={48} className="mx-auto text-gray-300 mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-600">No skills tracked yet</h3>
+                </div>
             ) : (
-                <div className="space-y-6">
-                    {Object.entries(groupedByCategory).map(([category, items]) => (
-                        <div key={category}>
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">{category}</h3>
-                            <div className="grid gap-3 md:grid-cols-2">
-                                {items.map(skill => {
-                                    const profInfo = proficiencyOptions.find(p => p.value === skill.proficiencyLevel);
-                                    return (
-                                        <div key={skill.id} className="bg-white border border-gray-100 rounded-xl p-4 hover:shadow-md transition-all group">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div>
-                                                    <h4 className="font-bold text-gray-900">{skill.name}</h4>
-                                                    <span className={cn("text-xs px-2 py-0.5 rounded-full inline-block mt-1", profInfo?.color)}>{profInfo?.label}</span>
+                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="space-y-6 pb-4">
+                        {Object.entries(groupedByCategory).map(([category, items]) => (
+                            <div key={category}>
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">{category}</h3>
+                                <div className="grid gap-3 md:grid-cols-2">
+                                    {items.map(skill => {
+                                        const profInfo = proficiencyOptions.find(p => p.value === skill.proficiencyLevel);
+                                        return (
+                                            <div key={skill.id} className="bg-white border border-gray-100 rounded-xl p-4 hover:shadow-md transition-all group">
+                                                <div className="flex items-start justify-between mb-3">
+                                                    <div>
+                                                        <h4 className="font-bold text-gray-900">{skill.name}</h4>
+                                                        <span className={cn("text-xs px-2 py-0.5 rounded-full inline-block mt-1", profInfo?.color)}>{profInfo?.label}</span>
+                                                    </div>
+                                                    <div className="opacity-0 group-hover:opacity-100 flex gap-1">
+                                                        <button onClick={() => handleEdit(skill)} className="p-1.5 hover:bg-gray-100 rounded-lg"><Icons.Edit size={14} className="text-gray-400" /></button>
+                                                        <button onClick={() => handleDelete(skill.id)} className="p-1.5 hover:bg-red-50 rounded-lg"><Icons.Trash2 size={14} className="text-red-400" /></button>
+                                                    </div>
                                                 </div>
-                                                <div className="opacity-0 group-hover:opacity-100 flex gap-1">
-                                                    <button onClick={() => handleEdit(skill)} className="p-1.5 hover:bg-gray-100 rounded-lg"><Icons.Edit size={14} className="text-gray-400" /></button>
-                                                    <button onClick={() => handleDelete(skill.id)} className="p-1.5 hover:bg-red-50 rounded-lg"><Icons.Trash2 size={14} className="text-red-400" /></button>
-                                                </div>
-                                            </div>
 
-                                            <div className="mb-2">
-                                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-purple-600 transition-all" style={{ width: `${profInfo?.percent}%` }}></div>
+                                                <div className="mb-2">
+                                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                                        <div className="h-full bg-purple-600 transition-all" style={{ width: `${profInfo?.percent}%` }}></div>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <select value={skill.proficiencyLevel} onChange={(e) => handleProficiencyChange(skill, e.target.value as SkillForgeProficiency)} className="w-full text-xs px-2 py-1 border border-gray-200 rounded-lg">
-                                                {proficiencyOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                                            </select>
-                                        </div>
-                                    );
-                                })}
+                                                <select value={skill.proficiencyLevel} onChange={(e) => handleProficiencyChange(skill, e.target.value as SkillForgeProficiency)} className="w-full text-xs px-2 py-1 border border-gray-200 rounded-lg">
+                                                    {proficiencyOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                                </select>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
 

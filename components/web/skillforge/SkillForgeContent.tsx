@@ -93,7 +93,7 @@ export function SkillForgeContent() {
                 </div>
 
                 {/* Content Area */}
-                <div className="rounded-[32px] border border-gray-100 bg-white shadow-sm p-6 md:p-8">
+                <div className="flex-1 flex flex-col rounded-[32px] border border-gray-100 bg-white shadow-sm p-6 md:p-8 overflow-hidden">
                     {activeTab === 'tracks' && <TracksTab />}
                     {activeTab === 'resources' && <ResourcesTab />}
                     {activeTab === 'journal' && <JournalTab />}
