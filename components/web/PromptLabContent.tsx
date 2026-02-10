@@ -95,13 +95,6 @@ export function PromptLabContent() {
                         <p className="text-5xl font-black text-gray-900 tracking-tight">Prompt Lab</p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => setShowAddModal(true)}
-                            className="flex items-center gap-2 px-5 py-3 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-colors"
-                        >
-                            <Icons.Plus size={18} />
-                            <span>Add Template</span>
-                        </button>
 
                         <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-gray-100 shadow-sm">
                             {[
@@ -256,18 +249,45 @@ export function PromptLabContent() {
                     >
                         <div className={cn(
                             "flex flex-col border-b border-gray-50 bg-gray-50/30 transition-all",
-                            isLibraryExpanded ? "p-6 gap-4" : "p-2 items-center"
+                            isLibraryExpanded ? "p-6 gap-4" : "p-4 items-center gap-4"
                         )}>
-                            <div className={cn("flex items-center", isLibraryExpanded ? "justify-between" : "justify-center")}>
-                                {isLibraryExpanded && (
-                                    <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Template Library</h2>
+                            <div className={cn("flex items-center w-full", isLibraryExpanded ? "justify-between" : "flex-col gap-3")}>
+                                {isLibraryExpanded ? (
+                                    <>
+                                        <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Template Library</h2>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => setShowAddModal(true)}
+                                                className="w-9 h-9 flex items-center justify-center bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-all shadow-sm border border-blue-100"
+                                                title="Add Template"
+                                            >
+                                                <Icons.Plus size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => setIsLibraryExpanded(!isLibraryExpanded)}
+                                                className="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-all shrink-0"
+                                            >
+                                                <Icons.Layout size={18} />
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => setShowAddModal(true)}
+                                            className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-md active:scale-95"
+                                            title="Add Template"
+                                        >
+                                            <Icons.Plus size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => setIsLibraryExpanded(!isLibraryExpanded)}
+                                            className="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-all shrink-0"
+                                        >
+                                            <Icons.Layout size={20} />
+                                        </button>
+                                    </>
                                 )}
-                                <button
-                                    onClick={() => setIsLibraryExpanded(!isLibraryExpanded)}
-                                    className="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-all shrink-0"
-                                >
-                                    <Icons.Layout size={20} />
-                                </button>
                             </div>
 
                             {/* Search Input - Only when expanded */}
