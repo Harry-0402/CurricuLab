@@ -134,29 +134,20 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                     </button>
 
                     {language === 'python' && (
-                        <>
-                            <button
-                                onClick={() => handleDownload('notebook')}
-                                className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-md transition-all active:scale-90"
-                                title="Download as .ipynb"
-                            >
-                                <Icons.BookOpen size={14} />
-                            </button>
-                            <button
-                                onClick={handleOpenInColab}
-                                className="p-1.5 text-orange-400/80 hover:text-orange-400 hover:bg-orange-400/10 rounded-md transition-all active:scale-90 flex items-center gap-1.5 px-2"
-                                title="Open in Google Colab"
-                            >
-                                <Icons.ExternalLink size={14} />
-                                <span className="text-[10px] font-black uppercase tracking-tighter">Colab</span>
-                            </button>
-                        </>
+                        <button
+                            onClick={handleOpenInColab}
+                            className="p-1.5 text-orange-400/80 hover:text-orange-400 hover:bg-orange-400/10 rounded-md transition-all active:scale-90 flex items-center gap-1.5 px-2"
+                            title="Open in Google Colab"
+                        >
+                            <Icons.ExternalLink size={14} />
+                            <span className="text-[10px] font-black uppercase tracking-tighter">Colab</span>
+                        </button>
                     )}
 
                     <button
-                        onClick={() => handleDownload('script')}
+                        onClick={() => handleDownload(language === 'python' ? 'notebook' : 'script')}
                         className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-md transition-all active:scale-90"
-                        title="Download script"
+                        title={language === 'python' ? "Download as .ipynb" : "Download script"}
                     >
                         <Icons.Download size={14} />
                     </button>
