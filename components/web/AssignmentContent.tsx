@@ -15,8 +15,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/shared/Dialog";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { AnswerDisplay } from './AnswerDisplay';
 
 export function AssignmentContent() {
     const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -160,14 +159,16 @@ Question: ${question.text}
 Provide a detailed, well-structured answer that:
 1. MUST use Heading 2 (##) for the Question Title
 2. MUST use Heading 3 (###) for major sections (Introduction, Analysis, etc.)
-3. Includes relevant examples and practical applications
-4. Uses **bold** for key terms
-5. Uses bullet points (-) for listing features or steps
-6. Adds a comparison table if applicable
-7. Ends with a brief summary
-8. Keep paragraphs concise and scannable
+3. If code is requested, provide it in a standard Markdown code block with language identifier (e.g., \`\`\`python)
+4. Separate the theoretical explanation and the code implementation clearly.
+5. Includes relevant examples and practical applications
+6. Uses **bold** for key terms
+7. Uses bullet points (-) for listing features or steps
+8. Adds a comparison table if applicable
+9. Ends with a brief summary
+10. Keep paragraphs concise and scannable
 
-Format the response in clean, readable markdown.`;
+Format the response in clean, readable markdown. Make sure the code is accurate and well-commented.`;
 
             const answer = await AiService.generateContent(prompt);
 
@@ -465,24 +466,7 @@ Format the response in clean, readable markdown.`;
                                                 </div>
 
                                                 {q.answer ? (
-                                                    <div className="bg-gray-50 rounded-2xl p-6 prose prose-sm max-w-none border border-gray-100">
-                                                        <ReactMarkdown
-                                                            remarkPlugins={[remarkGfm]}
-                                                            components={{
-                                                                h1: ({ ...props }) => <h1 className="text-xl font-black text-gray-900 mt-4 mb-3" {...props} />,
-                                                                h2: ({ ...props }) => <h2 className="text-lg font-black text-gray-900 mt-4 mb-3 border-b border-gray-200 pb-1" {...props} />,
-                                                                h3: ({ ...props }) => <h3 className="text-md font-bold text-gray-800 mt-3 mb-2" {...props} />,
-                                                                p: ({ ...props }) => <p className="text-gray-700 leading-relaxed mb-3 text-sm" {...props} />,
-                                                                ul: ({ ...props }) => <ul className="list-disc pl-5 mb-3 space-y-1 text-sm text-gray-700" {...props} />,
-                                                                ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-3 space-y-1 text-sm text-gray-700" {...props} />,
-                                                                table: ({ ...props }) => <div className="overflow-x-auto mb-4"><table className="w-full text-xs text-left border-collapse border border-gray-200" {...props} /></div>,
-                                                                th: ({ ...props }) => <th className="px-3 py-2 bg-gray-100 border border-gray-200 font-bold" {...props} />,
-                                                                td: ({ ...props }) => <td className="px-3 py-2 border border-gray-100" {...props} />,
-                                                            }}
-                                                        >
-                                                            {q.answer}
-                                                        </ReactMarkdown>
-                                                    </div>
+                                                    <AnswerDisplay content={q.answer} />
                                                 ) : (
                                                     <div className="py-4 px-6 border border-dashed border-gray-200 rounded-2xl flex items-center justify-center gap-3">
                                                         <Icons.Sparkles size={14} className="text-gray-300" />
