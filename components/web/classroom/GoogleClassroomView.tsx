@@ -340,9 +340,17 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                             </div>
                                             <p className="text-gray-600 mb-4 line-clamp-2">{work.description}</p>
                                             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
-                                                <div className="flex gap-3 text-xs font-medium text-gray-400">
-                                                    {work.maxPoints && <span>Points: {work.maxPoints}</span>}
-                                                    {work.state && <span className="capitalize px-2 py-0.5 bg-gray-100 rounded text-gray-600">{work.state.toLowerCase()}</span>}
+                                                <div className="flex items-center gap-4">
+                                                    <div className="flex gap-3 text-xs font-medium text-gray-400">
+                                                        {work.maxPoints && <span>Points: {work.maxPoints}</span>}
+                                                        {work.state && <span className="capitalize px-2 py-0.5 bg-gray-100 rounded text-gray-600">{work.state.toLowerCase()}</span>}
+                                                    </div>
+                                                    {work.materials && work.materials.length > 0 && (
+                                                        <div className="flex items-center gap-1.5 text-[10px] font-black text-blue-500 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                                            <Icons.Eye size={10} />
+                                                            {work.materials.length} Attachments
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     {(() => {
@@ -543,11 +551,14 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                             <p className="text-sm font-bold text-gray-900 truncate">
                                                                 {item.driveFile?.driveFile?.title || item.link?.title || item.youtubeVideo?.title || 'View Resource'}
                                                             </p>
-                                                            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tight">
-                                                                {item.driveFile ? 'Drive File' : item.youtubeVideo ? 'YouTube' : 'Link'}
-                                                            </p>
+                                                            <div className="flex items-center gap-2">
+                                                                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tight">
+                                                                    {item.driveFile ? 'Drive File' : item.youtubeVideo ? 'YouTube' : 'Link'}
+                                                                </p>
+                                                                <span className="text-[8px] bg-blue-600 text-white px-1 rounded font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">Preview</span>
+                                                            </div>
                                                         </div>
-                                                        <Icons.ExternalLink size={14} className="text-gray-300 group-hover:text-blue-500" />
+                                                        <Icons.Eye size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
                                                     </button>
                                                 ))}
                                             </div>
@@ -598,12 +609,15 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                                 <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-gray-400 shadow-sm whitespace-nowrap">
                                                                     {item.driveFile ? <Icons.FileText size={16} /> : <Icons.Link size={16} />}
                                                                 </div>
-                                                                <p className="text-sm font-bold text-gray-700 truncate">
-                                                                    {title}
-                                                                </p>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-sm font-bold text-gray-700 truncate">
+                                                                        {title}
+                                                                    </p>
+                                                                    <span className="text-[8px] text-blue-600 font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">Preview Attachment</span>
+                                                                </div>
                                                             </button>
 
-                                                            <Icons.ExternalLink size={14} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
+                                                            <Icons.Eye size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
                                                         </div>
                                                     );
                                                 })
