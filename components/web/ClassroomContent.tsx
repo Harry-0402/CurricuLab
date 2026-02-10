@@ -111,6 +111,28 @@ export function ClassroomContent() {
         window.location.href = '/api/auth/google';
     };
 
+    const handleResetPermission = async () => {
+        if (!confirm('Are you sure you want to disconnect Google Classroom? This will clear your current connection.')) return;
+
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/auth/google/reset', { method: 'POST' });
+            if (res.ok) {
+                setIsDriveConnected(false);
+                setCourses([]);
+                setSelectedCourse(null);
+                toast.success('Connection reset successfully');
+            } else {
+                toast.error('Failed to reset connection');
+            }
+        } catch (error) {
+            console.error('Reset error:', error);
+            toast.error('An error occurred during reset');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <WebAppShell>
             <div className="max-w-[1400px] mx-auto p-4 animate-in fade-in duration-500">
@@ -120,12 +142,14 @@ export function ClassroomContent() {
                         <h1 className="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-[0.2em]">
                             {selectedCourse ? 'Classroom' : 'Resources'}
                         </h1>
-                        <h1 className={cn(
-                            "font-black text-gray-900 tracking-tight",
-                            selectedCourse ? "text-3xl" : "text-4xl md:text-5xl"
-                        )}>
-                            {selectedCourse ? selectedCourse.name : 'Classroom'}
-                        </h1>
+                        <div className="flex items-center gap-4">
+                            <h1 className={cn(
+                                "font-black text-gray-900 tracking-tight",
+                                selectedCourse ? "text-3xl" : "text-4xl md:text-5xl"
+                            )}>
+                                {selectedCourse ? selectedCourse.name : 'Classroom'}
+                            </h1>
+                        </div>
                         {!selectedCourse && (
                             <p className="text-gray-400 font-medium max-w-xl">
                                 Access your synced Google Classroom courses, assignments, and study materials in one place.
@@ -134,6 +158,16 @@ export function ClassroomContent() {
                     </div>
 
                     <div className="flex items-center gap-4">
+                        {!selectedCourse && isDriveConnected && (
+                            <button
+                                onClick={handleResetPermission}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-sm font-bold hover:bg-red-100 transition-all active:scale-95 shadow-sm border border-red-100"
+                            >
+                                <Icons.RotateCcw size={18} />
+                                <span>Reset Connection</span>
+                            </button>
+                        )}
+
                         {isDriveConnected && selectedCourse && (
                             <>
                                 <button
