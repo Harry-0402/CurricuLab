@@ -26,11 +26,24 @@ export function FaceVerificationModal({
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [detectionStatus, setDetectionStatus] = useState<'searching' | 'locked' | 'verifying'>('searching');
+    const detectionInterval = useRef<NodeJS.Timeout | null>(null);
+    const stabilityCounter = useRef<number>(0);
 
     useEffect(() => {
+        let isActive = true;
+
         if (isOpen) {
-            startCamera();
-            // Pre-load models for faster capture response
+            startCamera().then(() => {
+                const runDetection = async () => {
+                    if (!isActive || !isOpen) return;
+                    await detectFace();
+                    if (isActive && isOpen) {
+                        setTimeout(runDetection, 100); // More responsive than 500ms
+                    }
+                };
+                runDetection();
+            });
             import('@/lib/services/face-recognition-service').then(({ FaceRecognitionService }) => {
                 FaceRecognitionService.loadModels().catch(console.error);
             });
@@ -38,9 +51,65 @@ export function FaceVerificationModal({
             stopCamera();
             setCapturedImage(null);
             setError(null);
+            setDetectionStatus('searching');
+            stabilityCounter.current = 0;
         }
-        return () => stopCamera();
+
+        return () => {
+            isActive = false;
+            stopCamera();
+        };
     }, [isOpen]);
+
+    const detectFace = async () => {
+        // Use refs for video and canvas, but state for isProcessing/capturedImage might be stale in intervals
+        // However, since we are now calling this from a fresh scope in runDetection it should be better
+        // But to be 100% sure we handle it carefully:
+        if (!videoRef.current || isProcessing || capturedImage) return;
+
+        try {
+            const faceapi = await import('face-api.js');
+            const detection = await faceapi.detectSingleFace(
+                videoRef.current,
+                new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 })
+            );
+
+            if (detection) {
+                stabilityCounter.current += 1;
+                if (stabilityCounter.current >= 2) {
+                    setDetectionStatus('locked');
+                    handleAutoCapture();
+                }
+            } else {
+                stabilityCounter.current = 0;
+                setDetectionStatus('searching');
+            }
+        } catch (err) {
+            console.error("Detection error:", err);
+        }
+    };
+
+    const handleAutoCapture = () => {
+        if (videoRef.current && canvasRef.current) {
+            const context = canvasRef.current.getContext('2d');
+            if (context) {
+                canvasRef.current.width = videoRef.current.videoWidth;
+                canvasRef.current.height = videoRef.current.videoHeight;
+                context.drawImage(videoRef.current, 0, 0, videoRef.current.videoWidth, videoRef.current.videoHeight);
+
+                const dataUrl = canvasRef.current.toDataURL('image/jpeg');
+                setCapturedImage(dataUrl);
+                setDetectionStatus('verifying');
+
+                // Trigger confirmation automatically
+                canvasRef.current.toBlob((blob) => {
+                    if (blob) {
+                        onCapture(blob);
+                    }
+                }, 'image/jpeg', 0.95);
+            }
+        }
+    };
 
     const startCamera = async () => {
         try {
@@ -147,9 +216,25 @@ export function FaceVerificationModal({
                                 />
                             )}
 
+                            {/* Status Indicator */}
+                            {!capturedImage && !error && (
+                                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/10">
+                                    <div className={cn(
+                                        "w-2 h-2 rounded-full animate-pulse",
+                                        detectionStatus === 'searching' ? "bg-amber-400" : "bg-green-400"
+                                    )} />
+                                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                                        {detectionStatus === 'searching' ? 'Searching for face...' : 'Face Locked!'}
+                                    </span>
+                                </div>
+                            )}
+
                             {/* Face Overlay Guide */}
                             {!capturedImage && (
-                                <div className="absolute inset-0 border-[3px] border-white/30 rounded-[50%] w-48 h-64 m-auto pointer-events-none" />
+                                <div className={cn(
+                                    "absolute inset-0 border-[3px] rounded-[50%] w-48 h-64 m-auto pointer-events-none transition-all duration-300",
+                                    detectionStatus === 'searching' ? "border-white/30" : "border-green-400 scale-105 shadow-[0_0_20px_rgba(74,222,128,0.5)]"
+                                )} />
                             )}
 
                             {/* Processing Overlay */}
@@ -166,33 +251,22 @@ export function FaceVerificationModal({
                 {/* Hidden Canvas */}
                 <canvas ref={canvasRef} className="hidden" />
 
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3">
                     {!capturedImage ? (
-                        <Button
-                            onClick={handleCapture}
-                            disabled={!!error || isProcessing}
-                            className="w-full rounded-xl h-12 text-base"
-                        >
-                            Capture Photo
-                        </Button>
+                        <p className="text-center text-[10px] text-gray-400 font-medium uppercase tracking-widest">
+                            Verification will start automatically once your face is detected
+                        </p>
                     ) : (
-                        <>
+                        <div className="flex gap-3">
                             <Button
                                 onClick={handleRetake}
                                 variant="outline"
                                 disabled={isProcessing}
-                                className="flex-1 rounded-xl h-12 border-gray-200"
+                                className="w-full rounded-xl h-12 border-gray-200"
                             >
-                                Retake
+                                Try Again
                             </Button>
-                            <Button
-                                onClick={handleConfirm}
-                                disabled={isProcessing}
-                                className="flex-1 rounded-xl h-12"
-                            >
-                                {isProcessing ? "Processing..." : "Use Photo"}
-                            </Button>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>

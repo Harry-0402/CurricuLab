@@ -48,6 +48,14 @@ export function MarkAttendanceForm({
             const result = await FaceRecognitionService.verifyFace(blob);
 
             if (result.verified) {
+                // Play "Attendance Marked" audio
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance("Attendance Marked");
+                    utterance.rate = 1.1;
+                    utterance.pitch = 1.1;
+                    window.speechSynthesis.speak(utterance);
+                }
+
                 toast.success("Identity Verified", { description: result.message });
 
                 // For the Daily tab, we trigger the callback immediately
