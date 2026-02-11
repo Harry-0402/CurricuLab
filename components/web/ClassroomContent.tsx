@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 // Custom Components
 import { GoogleClassroomView } from './classroom/GoogleClassroomView';
 import CourseCard from './classroom/CourseCard';
+import { ConfirmationModal } from '@/components/shared/ConfirmationModal';
 
 export function ClassroomContent() {
     // State
@@ -19,6 +20,8 @@ export function ClassroomContent() {
     const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
     const [isCoursesLoading, setIsCoursesLoading] = useState(false);
     const [user, setUser] = useState<any>(null);
+    const [showResetConfirm, setShowResetConfirm] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
 
     // Initial Load - Parallel Fetching
     useEffect(() => {
@@ -57,7 +60,6 @@ export function ClassroomContent() {
                     setIsLoading(false);
                 } else {
                     // 2. Parallel Fetch: Status & Courses
-                    // We optimistically fetch courses assuming they might be connected
                     const [statusRes, coursesRes] = await Promise.all([
                         fetch('/api/auth/google/status'),
                         fetch('/api/classroom/google/courses')
@@ -71,7 +73,7 @@ export function ClassroomContent() {
                         setIsDriveConnected(false);
                     }
 
-                    // Handle Courses (only if status was essentially ok, but we check response)
+                    // Handle Courses
                     if (coursesRes.ok) {
                         const coursesData = await coursesRes.json();
                         if (coursesData.courses && coursesData.courses.length > 0) {
@@ -90,7 +92,7 @@ export function ClassroomContent() {
         initializeClassroom();
     }, []);
 
-    // Helper to reload courses manually if needed (e.g. after reconnect)
+    // Helper to reload courses manually
     const loadCourses = async () => {
         setIsCoursesLoading(true);
         try {
@@ -112,8 +114,7 @@ export function ClassroomContent() {
     };
 
     const handleResetPermission = async () => {
-        if (!confirm('Are you sure you want to disconnect Google Classroom? This will clear your current connection.')) return;
-
+        setIsResetting(true);
         setIsLoading(true);
         try {
             const res = await fetch('/api/auth/google/reset', { method: 'POST' });
@@ -130,6 +131,8 @@ export function ClassroomContent() {
             toast.error('An error occurred during reset');
         } finally {
             setIsLoading(false);
+            setIsResetting(false);
+            setShowResetConfirm(false);
         }
     };
 
@@ -160,7 +163,7 @@ export function ClassroomContent() {
                     <div className="flex items-center gap-4">
                         {!selectedCourse && isDriveConnected && (
                             <button
-                                onClick={handleResetPermission}
+                                onClick={() => setShowResetConfirm(true)}
                                 className="flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-sm font-bold hover:bg-red-100 transition-all active:scale-95 shadow-sm border border-red-100"
                             >
                                 <Icons.RotateCcw size={18} />
@@ -201,25 +204,38 @@ export function ClassroomContent() {
                         </div>
                     </div>
                 ) : (
-                    <div className="pb-20">
-                        {!selectedCourse ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-                                {courses.map(course => (
-                                    <CourseCard
-                                        key={course.id}
-                                        course={course}
-                                        onSelect={setSelectedCourse}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <GoogleClassroomView
-                                isDriveConnected={isDriveConnected}
-                                connectGoogleDrive={connectGoogleDrive}
-                                selectedCourse={selectedCourse}
-                            />
-                        )}
-                    </div>
+                    <>
+                        <ConfirmationModal
+                            isOpen={showResetConfirm}
+                            onClose={() => setShowResetConfirm(false)}
+                            onConfirm={handleResetPermission}
+                            title="Disconnect Classroom?"
+                            description="This will clear your current connection with Google Classroom. You'll need to re-authenticate to access your courses and materials."
+                            confirmText="Disconnect"
+                            variant="danger"
+                            isLoading={isResetting}
+                            icon="RotateCcw"
+                        />
+                        <div className="pb-20">
+                            {!selectedCourse ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+                                    {courses.map(course => (
+                                        <CourseCard
+                                            key={course.id}
+                                            course={course}
+                                            onSelect={setSelectedCourse}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <GoogleClassroomView
+                                    isDriveConnected={isDriveConnected}
+                                    connectGoogleDrive={connectGoogleDrive}
+                                    selectedCourse={selectedCourse}
+                                />
+                            )}
+                        </div>
+                    </>
                 )}
             </div>
         </WebAppShell>

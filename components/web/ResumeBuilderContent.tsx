@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/shared/Button';
 import { Icons } from '@/components/shared/Icons';
+import { ConfirmationModal } from '@/components/shared/ConfirmationModal';
+import { toast } from 'sonner';
 import { ResumeData } from '@/types';
 import { AiService } from '@/lib/services/ai-service';
 import { cn } from '@/lib/utils';
@@ -76,6 +78,7 @@ const Card = ({ children, className }: any) => (
 
 export function ResumeBuilderContent() {
     const [data, setData] = useState<ResumeData>(INITIAL_DATA);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
 
     // Persistence: Load on mount
     useEffect(() => {
@@ -95,10 +98,10 @@ export function ResumeBuilderContent() {
     }, [data]);
 
     const handleClear = () => {
-        if (window.confirm("Are you sure you want to clear all data? This cannot be undone.")) {
-            setData(INITIAL_DATA);
-            localStorage.removeItem(STORAGE_KEY);
-        }
+        setData(INITIAL_DATA);
+        localStorage.removeItem(STORAGE_KEY);
+        setShowClearConfirm(false);
+        toast.success("Resume data cleared");
     };
 
     const [isPolishing, setIsPolishing] = useState<string | null>(null);
@@ -118,7 +121,7 @@ export function ResumeBuilderContent() {
 
     const handleAiAnalysis = async () => {
         if (!data.targetDomain) {
-            alert("Please select a Target Domain in Personal Information first.");
+            toast.error("Please select a Target Domain in Personal Information first.");
             return;
         }
         setIsAnalyzing(true);
@@ -127,7 +130,7 @@ export function ResumeBuilderContent() {
             setAiSuggestions(suggestions);
         } catch (e) {
             console.error(e);
-            alert("Failed to analyze resume. Please try again.");
+            toast.error("Failed to analyze resume. Please try again.");
         } finally {
             setIsAnalyzing(false);
         }
@@ -268,7 +271,17 @@ export function ResumeBuilderContent() {
                     <p className="text-sm font-medium text-gray-500">ATS-Friendly • machine parsable</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" onClick={handleClear} className="text-gray-400 hover:text-red-600">
+                    <ConfirmationModal
+                        isOpen={showClearConfirm}
+                        onClose={() => setShowClearConfirm(false)}
+                        onConfirm={handleClear}
+                        title="Clear Resume Data?"
+                        description="Are you sure you want to clear all your resume data? This action cannot be undone."
+                        confirmText="Clear All"
+                        variant="danger"
+                        icon="RefreshCw"
+                    />
+                    <Button variant="ghost" size="sm" onClick={() => setShowClearConfirm(true)} className="text-gray-400 hover:text-red-600">
                         <Icons.RefreshCw className="mr-2 h-4 w-4" />
                         Clear All
                     </Button>

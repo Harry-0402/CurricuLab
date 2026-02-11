@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { format, isSameDay, getDay } from 'date-fns';
+import { toast } from 'sonner';
 import { AttendanceService, AttendanceLog, MissingRecord } from '@/lib/services/attendance-service';
 import { ReminderService, Reminder } from '@/lib/services/reminder-service';
 import { getUpcomingAssignments } from '@/lib/services/app.service';
@@ -158,9 +159,7 @@ export function AttendanceWidget() {
             await loadData();
         } catch (error: any) {
             console.error('Failed daily check-in', error);
-            // Keeping error notification as it's important, but maybe the user wants it gone too? 
-            // Usually "this pop-up" means the specific one in the screenshot.
-            alert("Check-in failed: " + error.message);
+            toast.error("Check-in failed: " + error.message);
         } finally {
             setIsSubmitting(false);
         }

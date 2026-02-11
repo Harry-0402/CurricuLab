@@ -9,6 +9,7 @@ import { SubjectService } from '@/lib/data/subject-service';
 import { UnitService } from '@/lib/data/unit-service';
 import { ProgressBar } from '@/components/shared/ProgressBar';
 import * as Icons from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
     Dialog,
@@ -104,7 +105,7 @@ export default function WebSubjectDetailContent() {
             setEditingUnit(null);
         } catch (error) {
             console.error("Failed to update topics", error);
-            alert("Failed to save changes.");
+            toast.error("Failed to save changes.");
         }
     };
 

@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Icons } from '@/components/shared/Icons';
 import { ProgressBar } from '@/components/shared/ProgressBar';
+import { toast } from 'sonner';
 import { Subject } from '@/types';
 import { cn } from '@/lib/utils';
 
@@ -60,7 +61,7 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
         } else {
             // Placeholder for other actions
             console.log(`${action} subject ${subject.id}`);
-            alert(`${action} feature coming soon for ${subject.title}!`);
+            toast.error(`${action} feature coming soon for ${subject.title}!`);
         }
     };
 

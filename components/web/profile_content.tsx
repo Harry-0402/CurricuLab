@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { AttendanceWidget } from './AttendanceWidget';
 import { FaceVerificationModal } from './attendance/FaceVerificationModal';
 import { FaceRecognitionService } from '@/lib/services/face-recognition-service';
+import { toast } from 'sonner';
 
 type Tab = 'Overview' | 'Settings';
 type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & Security' | 'Data & Storage' | 'Change History';

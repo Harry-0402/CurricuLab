@@ -8,6 +8,7 @@ import { Announcement } from '@/types';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { Icons } from '@/components/shared/Icons';
 import { createAnnouncement, updateAnnouncement, deleteAnnouncement as apiDeleteAnnouncement, getAnnouncements, uploadAnnouncementAttachment } from '@/lib/services/announcement-service';
+import { toast } from 'sonner';
 
 interface AnnouncementModalProps {
     isOpen: boolean;
@@ -137,7 +138,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
             onClose();
         } catch (error: any) {
             console.error('Failed to save announcement:', error);
-            alert(`Failed to save announcement. ${error.message || 'Please check your connection.'}`);
+            toast.error(`Failed to save announcement. ${error.message || 'Please check your connection.'}`);
         } finally {
             setIsSubmitting(false);
         }
@@ -162,7 +163,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                 onClose();
             } catch (error: any) {
                 console.error('Failed to delete announcement:', error);
-                alert(`Failed to delete announcement. ${error.message || ''}`);
+                toast.error(`Failed to delete announcement. ${error.message || ''}`);
             } finally {
                 setIsSubmitting(false);
             }

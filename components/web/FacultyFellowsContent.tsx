@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
+import { ConfirmationModal } from '@/components/shared/ConfirmationModal';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
     Dialog,
@@ -21,6 +23,11 @@ export function FacultyFellowsContent() {
     const [fellows, setFellows] = useState<Person[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [showSeedConfirm, setShowSeedConfirm] = useState(false);
+    const [personToDelete, setPersonToDelete] = useState<number | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isSeeding, setIsSeeding] = useState(false);
 
     // Form State
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -37,7 +44,7 @@ export function FacultyFellowsContent() {
             setFellows(allMembers.filter(p => p.category === 'fellows'));
         } catch (error) {
             console.error("Failed to fetch faculty:", error);
-            alert("Failed to load data. Please check your connection.");
+            toast.error("Failed to load data. Please check your connection.");
         } finally {
             setIsLoading(false);
         }
@@ -52,8 +59,7 @@ export function FacultyFellowsContent() {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm("Are you sure you want to delete this member?")) return;
-
+        setIsDeleting(true);
         try {
             await FacultyService.delete(id);
             if (activeTab === 'faculty') {
@@ -61,10 +67,15 @@ export function FacultyFellowsContent() {
             } else {
                 setFellows(prev => prev.filter(p => p.id !== id));
             }
+            toast.success("Member deleted successfully");
             setOpenMenuId(null);
+            setShowDeleteConfirm(false);
+            setPersonToDelete(null);
         } catch (error) {
             console.error("Delete failed:", error);
-            alert("Failed to delete member.");
+            toast.error("Failed to delete member.");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -87,7 +98,7 @@ export function FacultyFellowsContent() {
 
     const handleSave = async () => {
         if (!formData.name) {
-            alert("Please fill in the required field (Name)");
+            toast.error("Please fill in the required field (Name)");
             return;
         }
 
@@ -118,24 +129,24 @@ export function FacultyFellowsContent() {
             setFormData({});
         } catch (error) {
             console.error("Save failed:", error);
-            alert("Failed to save member. Please try again.");
+            toast.error("Failed to save member. Please try again.");
         }
     };
 
     const handleSeedData = async () => {
-        if (!confirm("This will add default mock data to the database. Continue?")) return;
-        setIsLoading(true);
+        setIsSeeding(true);
         try {
             for (const person of INITIAL_DATA) {
                 await FacultyService.add(person);
             }
             await fetchData();
-            alert("Data seeded successfully!");
+            toast.success("Data seeded successfully!");
+            setShowSeedConfirm(false);
         } catch (error) {
             console.error("Seeding failed:", error);
-            alert("Failed to seed data. Check console for details.");
+            toast.error("Failed to seed data. Check console for details.");
         } finally {
-            setIsLoading(false);
+            setIsSeeding(false);
         }
     };
 
@@ -175,7 +186,7 @@ export function FacultyFellowsContent() {
                         {/* Seed Data Button (Dev helper, shows only if list is empty) */}
                         {faculty.length === 0 && fellows.length === 0 && !isLoading && (
                             <button
-                                onClick={handleSeedData}
+                                onClick={() => setShowSeedConfirm(true)}
                                 className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-2xl font-bold hover:bg-gray-200 transition-all text-sm"
                             >
                                 <Icons.Database size={18} />
@@ -227,6 +238,31 @@ export function FacultyFellowsContent() {
                 ) : (
                     /* Content Grid */
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <ConfirmationModal
+                            isOpen={showDeleteConfirm}
+                            onClose={() => {
+                                setShowDeleteConfirm(false);
+                                setPersonToDelete(null);
+                            }}
+                            onConfirm={() => personToDelete && handleDelete(personToDelete)}
+                            title="Delete Member?"
+                            description="Are you sure you want to remove this member from the list? This action cannot be undone."
+                            confirmText="Delete"
+                            variant="danger"
+                            isLoading={isDeleting}
+                            icon="Trash2"
+                        />
+                        <ConfirmationModal
+                            isOpen={showSeedConfirm}
+                            onClose={() => setShowSeedConfirm(false)}
+                            onConfirm={handleSeedData}
+                            title="Seed Default Data?"
+                            description="This will add the default mock faculty data to the database. This is typically used for development or initial setup."
+                            confirmText="Seed Data"
+                            variant="primary"
+                            isLoading={isSeeding}
+                            icon="Database"
+                        />
                         {currentList.length === 0 ? (
                             <div className="col-span-full py-12 text-center text-gray-400">
                                 <p>No members found. Add a member or seed data to get started.</p>
@@ -271,7 +307,8 @@ export function FacultyFellowsContent() {
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        handleDelete(person.id);
+                                                        setPersonToDelete(person.id);
+                                                        setShowDeleteConfirm(true);
                                                     }}
                                                     className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors"
                                                 >
