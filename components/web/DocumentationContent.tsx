@@ -164,6 +164,58 @@ export default function DocumentationContent() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Attendance & Biometrics */}
+                        <div className="bg-white p-12 rounded-[50px] border border-gray-100 overflow-hidden relative">
+                            <div className="grid lg:grid-cols-2 gap-16 items-center">
+                                <div className="space-y-8">
+                                    <h2 className="text-4xl font-black tracking-tight flex items-center gap-4 text-gray-900">
+                                        <div className="p-3 bg-blue-600 rounded-2xl text-white shadow-lg shadow-blue-100">
+                                            <Icons.Calendar size={24} />
+                                        </div>
+                                        Attendance & Face ID
+                                    </h2>
+                                    <div className="space-y-6">
+                                        <div className="flex gap-4 p-5 rounded-3xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                                            <div className="text-blue-600 font-extrabold text-xl">01</div>
+                                            <div>
+                                                <h4 className="font-black text-xl mb-1 text-gray-900">Smart Enrollment</h4>
+                                                <p className="text-gray-400 text-sm leading-relaxed">Enroll your biometric data via Profile settings. Our AI automatically handles the capture and verification flow.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4 p-5 rounded-3xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                                            <div className="text-blue-600 font-extrabold text-xl">02</div>
+                                            <div>
+                                                <h4 className="font-black text-xl mb-1 text-gray-900">Zero-Click Verification</h4>
+                                                <p className="text-gray-400 text-sm leading-relaxed">Mark your daily attendance instantly by looking at the camera. Audio confirmation ensures verification is logged.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-gray-50 border border-gray-100 p-10 rounded-[40px] relative overflow-hidden">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                                            <div className="w-8 h-8 bg-green-50 text-green-600 rounded-full flex items-center justify-center">
+                                                <Icons.Check size={16} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Face Verified</p>
+                                                <p className="text-[9px] font-medium text-gray-400">Attendance Marked Successfully</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-gray-100 shadow-sm opacity-60">
+                                            <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+                                                <Icons.Camera size={16} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Searching Face...</p>
+                                                <p className="text-[9px] font-medium text-gray-400">Scan initiated</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </section>
 
                     {/* AI Methodology */}
