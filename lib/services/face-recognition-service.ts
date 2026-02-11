@@ -102,8 +102,9 @@ export const FaceRecognitionService = {
             // Calculate Euclidean Distance
             const distance = faceapi.euclideanDistance(currentDescriptor, storedDescriptor);
 
-            // Lower distance = higher similarity. Threshold is typically 0.6
-            const threshold = 0.6;
+            // Lower distance = higher similarity. 
+            // Standard is 0.6. Changed to 0.8 to be much more lenient (requires approx 20% similarity).
+            const threshold = 0.8;
             const verified = distance < threshold;
             const similarity = Math.max(0, (1 - distance) * 100);
 

@@ -18,7 +18,7 @@ export function FaceVerificationModal({
     onClose,
     onCapture,
     title = "Verify Identity",
-    description = "Position your face in the center of the frame.",
+    description = "Position your face within the scanning area.",
     isProcessing = false
 }: FaceVerificationModalProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -229,11 +229,13 @@ export function FaceVerificationModal({
                                 </div>
                             )}
 
-                            {/* Face Overlay Guide */}
+                            {/* Rectangular Scanning Frame */}
                             {!capturedImage && (
                                 <div className={cn(
-                                    "absolute inset-0 border-[3px] rounded-[50%] w-48 h-64 m-auto pointer-events-none transition-all duration-300",
-                                    detectionStatus === 'searching' ? "border-white/30" : "border-green-400 scale-105 shadow-[0_0_20px_rgba(74,222,128,0.5)]"
+                                    "absolute inset-6 border-2 rounded-2xl pointer-events-none transition-all duration-500",
+                                    detectionStatus === 'searching'
+                                        ? "border-white/20 shadow-[0_0_0_1000px_rgba(0,0,0,0.3)]"
+                                        : "border-green-400 shadow-[0_0_0_1000px_rgba(0,0,0,0.2),0_0_30px_rgba(74,222,128,0.3)]"
                                 )} />
                             )}
 
