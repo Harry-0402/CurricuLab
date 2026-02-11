@@ -206,6 +206,15 @@ export function AttendanceWidget() {
         }
     };
 
+    const handleUpdateLogStatus = async (id: string, newStatus: 'Present' | 'Absent' | 'Canceled') => {
+        try {
+            await AttendanceService.updateLogStatus(id, newStatus);
+            await loadData();
+        } catch (error) {
+            console.error('Failed to update log status', error);
+        }
+    };
+
     const handleBulkDelete = async () => {
         if (!confirm(`Are you sure you want to delete ${selectedLogs.size} logs?`)) return;
         try {
@@ -310,6 +319,7 @@ export function AttendanceWidget() {
                 onToggleSelectAll={handleToggleSelectAll}
                 onDeleteLog={handleDeleteLog}
                 onBulkDelete={handleBulkDelete}
+                onUpdateStatus={handleUpdateLogStatus}
             />
         </>
     );

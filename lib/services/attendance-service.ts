@@ -186,6 +186,29 @@ export const AttendanceService = {
         if (error) throw error;
     },
 
+    async updateLogStatus(logId: string, newStatus: 'Present' | 'Absent' | 'Canceled'): Promise<void> {
+        const { data: currentLog, error: fetchError } = await supabase
+            .from('attendance_logs')
+            .select('subject_name, date')
+            .eq('id', logId)
+            .single();
+
+        if (fetchError) throw fetchError;
+
+        const { error } = await supabase
+            .from('attendance_logs')
+            .update({ status: newStatus })
+            .eq('id', logId);
+
+        if (error) throw error;
+
+        await ChangelogService.logChange(
+            'Attendance',
+            `Updated status to ${newStatus} for ${currentLog.date} (${currentLog.subject_name})`,
+            'UPDATE'
+        );
+    },
+
     async bulkDeleteLogs(logIds: string[]): Promise<void> {
         const { error } = await supabase
             .from('attendance_logs')

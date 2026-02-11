@@ -19,6 +19,7 @@ interface AttendanceLogsTableProps {
     onToggleSelectAll: () => void;
     onDeleteLog: (id: string) => void;
     onBulkDelete: () => void;
+    onUpdateStatus: (id: string, newStatus: 'Present' | 'Absent' | 'Canceled') => void;
 }
 
 export function AttendanceLogsTable({
@@ -34,8 +35,10 @@ export function AttendanceLogsTable({
     onToggleSelectLog,
     onToggleSelectAll,
     onDeleteLog,
-    onBulkDelete
+    onBulkDelete,
+    onUpdateStatus
 }: AttendanceLogsTableProps) {
+    const [editingLogId, setEditingLogId] = React.useState<string | null>(null);
 
     // Filter logs based on criteria
     const filteredLogs = logs.filter(log => {
@@ -189,11 +192,11 @@ export function AttendanceLogsTable({
                                     onChange={onToggleSelectAll}
                                 />
                             </th>
-                            <th className="px-3 py-2 font-medium text-gray-400 w-[140px]">Date</th>
+                            <th className="px-3 py-2 font-medium text-gray-400 w-[110px]">Date</th>
                             <th className="px-3 py-2 font-medium text-gray-400 w-auto">Subject</th>
-                            <th className="px-3 py-2 font-medium text-gray-400 w-[90px]">Status</th>
+                            <th className="px-3 py-2 font-medium text-gray-400 w-[100px]">Status</th>
                             <th className="px-3 py-2 font-medium text-gray-400 w-[80px]">Time</th>
-                            <th className="px-3 py-2 font-medium text-gray-400 text-right w-[40px]">Act.</th>
+                            <th className="px-3 py-2 font-medium text-gray-400 text-right w-[70px]">Act.</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
@@ -219,34 +222,61 @@ export function AttendanceLogsTable({
                                     </td>
                                     <td className="px-3 py-2 font-medium text-gray-900 truncate">
                                         {format(new Date(log.date), 'MMM d, yyyy')}
-                                        <span className="text-xs text-gray-400 font-normal ml-1 hidden sm:inline">({format(new Date(log.date), 'EEE')})</span>
-                                        <span className="text-xs text-gray-400 font-normal ml-1 sm:hidden">({format(new Date(log.date), 'EE')})</span>
                                     </td>
                                     <td className="px-3 py-2 font-medium text-gray-700 truncate max-w-[150px]" title={log.subjectName}>
                                         {log.subjectName}
                                     </td>
                                     <td className="px-3 py-2">
-                                        <span className={cn(
-                                            "px-2 py-0.5 rounded-md text-[10px] uppercase font-bold tracking-wide",
-                                            log.status === 'Present' ? "bg-green-50 text-green-700" :
-                                                log.status === 'Absent' ? "bg-red-50 text-red-700" :
-                                                    "bg-gray-100 text-gray-600"
-                                        )}>
-                                            {log.status === 'Present' ? 'P' : log.status === 'Absent' ? 'A' : 'C'}
-                                            <span className="hidden sm:inline lowercase ml-0.5">{log.status.substring(1)}</span>
-                                        </span>
+                                        {editingLogId === log.id ? (
+                                            <select
+                                                autoFocus
+                                                value={log.status}
+                                                onChange={(e) => {
+                                                    onUpdateStatus(log.id, e.target.value as any);
+                                                    setEditingLogId(null);
+                                                }}
+                                                onBlur={() => setEditingLogId(null)}
+                                                className="w-full bg-white border border-blue-200 rounded-lg px-1.5 py-0.5 text-[10px] font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                            >
+                                                <option value="Present">Present</option>
+                                                <option value="Absent">Absent</option>
+                                                <option value="Canceled">Canceled</option>
+                                            </select>
+                                        ) : (
+                                            <span className={cn(
+                                                "px-2 py-0.5 rounded-md text-[10px] uppercase font-bold tracking-wide",
+                                                log.status === 'Present' ? "bg-green-50 text-green-700" :
+                                                    log.status === 'Absent' ? "bg-red-50 text-red-700" :
+                                                        "bg-gray-100 text-gray-600"
+                                            )}>
+                                                {log.status === 'Present' ? 'P' : log.status === 'Absent' ? 'A' : 'C'}
+                                                <span className="hidden sm:inline lowercase ml-0.5">{log.status.substring(1)}</span>
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-3 py-2 text-gray-400 text-xs truncate">
                                         {format(new Date(log.createdAt), 'h:mm a')}
                                     </td>
                                     <td className="px-3 py-2 text-right">
-                                        <button
-                                            onClick={() => onDeleteLog(log.id)}
-                                            className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            title="Delete Log"
-                                        >
-                                            <Icons.Trash2 size={14} />
-                                        </button>
+                                        <div className="flex items-center justify-end gap-1">
+                                            <button
+                                                onClick={() => setEditingLogId(editingLogId === log.id ? null : log.id)}
+                                                className={cn(
+                                                    "p-1 rounded-lg transition-colors",
+                                                    editingLogId === log.id ? "text-blue-600 bg-blue-50" : "text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                                                )}
+                                                title="Edit Status"
+                                            >
+                                                <Icons.Edit size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => onDeleteLog(log.id)}
+                                                className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Delete Log"
+                                            >
+                                                <Icons.Trash2 size={14} />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
