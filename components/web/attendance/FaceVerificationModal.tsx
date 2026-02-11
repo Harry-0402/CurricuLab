@@ -61,20 +61,31 @@ export function FaceVerificationModal({
         };
     }, [isOpen]);
 
+    const isDetecting = useRef(false);
+    const faceapiRef = useRef<any>(null);
+
     const detectFace = async () => {
-        // Use refs for video and canvas, but state for isProcessing/capturedImage might be stale in intervals
-        // However, since we are now calling this from a fresh scope in runDetection it should be better
-        // But to be 100% sure we handle it carefully:
-        if (!videoRef.current || isProcessing || capturedImage) return;
+        if (!videoRef.current || isProcessing || capturedImage || isDetecting.current) return;
+
+        // Ensure video is ready to be processed
+        if (videoRef.current.readyState !== 4) return;
 
         try {
-            const faceapi = await import('face-api.js');
+            isDetecting.current = true;
+
+            // Load faceapi once
+            if (!faceapiRef.current) {
+                faceapiRef.current = await import('face-api.js');
+            }
+
+            const faceapi = faceapiRef.current;
             const detection = await faceapi.detectSingleFace(
                 videoRef.current,
-                new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 })
+                new faceapi.SsdMobilenetv1Options({ minConfidence: 0.3 }) // Even more lenient for poor lighting
             );
 
             if (detection) {
+                console.log("Face detected with confidence:", detection.score);
                 stabilityCounter.current += 1;
                 if (stabilityCounter.current >= 2) {
                     setDetectionStatus('locked');
@@ -85,6 +96,8 @@ export function FaceVerificationModal({
             }
         } catch (err) {
             console.error("Detection error:", err);
+        } finally {
+            isDetecting.current = false;
         }
     };
 
