@@ -1,42 +1,44 @@
-# How to Log Attendance & Setup Face ID
+# How to Log Attendance & Setup Face ID in CurricuLab
 
-Welcome to the CurricuLab Attendance System. This guide will help you set up biometric Face ID and manage your attendance logs efficiently.
+Master the CurricuLab attendance system with our automated biometric verification and condensed log management.
 
-## 1. Setting up Face ID
-Biometric Face ID allows you to verify your identity instantly for daily check-ins.
+## 1. Setting up Face ID (Biometric Enrollment)
+Enroll your facial data to enable zero-click attendance marking.
 
 ### Step-by-Step Enrollment:
-1. Navigate to **My Profile** from the top right menu.
-2. Look for the **Face ID Enrollment** section.
-3. Click **Enroll Face** and allow camera permissions when prompted.
-4. Position your face in the frame. The system will automatically detect and capture your facial data.
-5. Once "Face Locked!" appears, the system will verify and save your biometric signature.
-6. You will hear an audio confirmation once enrollment is successful.
+1. Navigate to your **Profile** (click your avatar/name in the shell).
+2. Switch to the **Settings** tab at the top.
+3. Select the **Privacy & Security** category from the sidebar.
+4. Locate the **Face ID** section (marked with a BETA tag).
+5. Click **Set up** to open the enrollment portal.
+6. Position your face in the frame. The system recognizes you automatically ("Searching for face..." -> "Face Locked!").
+7. Look for the **Face ID Enrolled Successfully!** confirmation.
 
-## 2. Logging Attendance
-There are two ways to mark your attendance in CurricuLab.
+## 2. Marking Attendance
+CurricuLab provides two distinct methods for logging your presence.
 
-### Method A: Automated Daily Check-in (Recommended)
-1. Go to the **Dashboard** or **Attendance** section.
-2. Click on the **Face ID (Daily)** tab.
-3. Simply look at the camera. The system will automatically:
-   - Detect your face.
-   - Verify your biometrics.
-   - Mark **all scheduled classes** for the day as "Present".
-4. You'll hear "Attendance Marked" once confirmed.
+### Method A: Face ID (Daily) — Recommended
+Use this for a quick, all-in-one check-in for the entire day.
+1. Open the **Attendance Widget** on your dashboard.
+2. Select the **Face ID (Daily)** tab.
+3. Verify the date and click **Log Attendance (Daily)**.
+4. Simply look at the camera. Verification is automatic.
+5. You will hear an audio confirmation: **"Attendance Marked"**.
 
 ### Method B: Manual Quick Log
-1. In the **Attendance** section, use the **Missing Records** suggestions.
-2. Click **Mark Present** or **Mark Absent** for specific individual classes.
-3. You can also use the calendar picker to select a specific date and subject.
+Use this for individual class records or backdating.
+1. Switch to the **Manual** tab in the Attendance Widget.
+2. Select the **Date**, **Subject**, and **Status** (Present, Absent, or Canceled).
+3. Click **Log Attendance** to save the record.
 
 ## 3. Managing Attendance Logs
-The **Attendance Logs** table at the bottom of the dashboard provides a full history of your records.
+Track and correct your history using the **Attendance Logs** table.
 
-- **Condensed View**: Dates are displayed in a short format (e.g., "Feb 11, 2026") for better readability.
-- **Manual Corrections**: If you made a mistake or want to update an entry, click the **Pencil Icon** in the "Act." column. This allows you to toggle the status (Present/Absent/Canceled) inline.
-- **Bulk Actions**: Select multiple logs using the checkboxes to perform bulk deletions.
-- **Exporting**: Click the **Download Icon** to export your logs as a CSV file for your own records.
+- **Condensed Layout**: Dates are displayed clearly (e.g., "Feb 11, 2026") without day-name suffixes to maximize space.
+- **Manual Corrections**: Click the **Pencil Icon (Edit)** in the "Act." column to toggle a log's status inline.
+- **Bulk Cleanup**: Check multiple rows and click **Delete (X)** to remove errors in batches.
+- **Data Export**: Click the **Download Icon** to get a CSV version of your monthly logs.
 
 ---
-*Note: Face ID data is processed locally on your device for maximum privacy. Only a mathematical descriptor is saved securely in our database.*
+> [!TIP]
+> **Privacy First**: CurricuLab never stores your actual photo. We only save an encrypted mathematical "descriptor" of your face locally for secure matching.

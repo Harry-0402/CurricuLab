@@ -179,15 +179,15 @@ export default function DocumentationContent() {
                                         <div className="flex gap-4 p-5 rounded-3xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
                                             <div className="text-blue-600 font-extrabold text-xl">01</div>
                                             <div>
-                                                <h4 className="font-black text-xl mb-1 text-gray-900">Smart Enrollment</h4>
-                                                <p className="text-gray-400 text-sm leading-relaxed">Enroll your biometric data via Profile settings. Our AI automatically handles the capture and verification flow.</p>
+                                                <h4 className="font-black text-xl mb-1 text-gray-900">Biometric Enrollment</h4>
+                                                <p className="text-gray-400 text-sm leading-relaxed">Enroll your data via **Settings &gt; Privacy &amp; Security**. CurricuLab uses secure client-side descriptors for instant recognition.</p>
                                             </div>
                                         </div>
                                         <div className="flex gap-4 p-5 rounded-3xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
                                             <div className="text-blue-600 font-extrabold text-xl">02</div>
                                             <div>
-                                                <h4 className="font-black text-xl mb-1 text-gray-900">Zero-Click Verification</h4>
-                                                <p className="text-gray-400 text-sm leading-relaxed">Mark your daily attendance instantly by looking at the camera. Audio confirmation ensures verification is logged.</p>
+                                                <h4 className="font-black text-xl mb-1 text-gray-900">Zero-Click Daily Sync</h4>
+                                                <p className="text-gray-400 text-sm leading-relaxed">Use the **Face ID (Daily)** tab to mark all today&apos;s classes instantly. Look for the &quot;Face Locked!&quot; status and keep your speakers on for audio confirmation.</p>
                                             </div>
                                         </div>
                                     </div>
