@@ -10,6 +10,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { GoogleGenerativeAI, FinishReason } from "@google/generative-ai";
+import { CodeBlock } from './CodeBlock';
 
 // --- CONFIG ---
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
@@ -36,52 +37,7 @@ interface Message {
 }
 
 // Helper to extract text from React nodes for the copy button
-const getCodeString = (children: any): string => {
-    if (typeof children === 'string') return children;
-    if (Array.isArray(children)) return children.map(getCodeString).join('');
-    if (children?.props?.children) return getCodeString(children.props.children);
-    return String(children || '');
-};
-
-const ChatCodeBlock = ({ children }: { children?: any }) => {
-    const [copied, setCopied] = useState(false);
-    const codeString = getCodeString(children);
-
-    const handleCopy = () => {
-        if (!codeString) return;
-        navigator.clipboard.writeText(codeString);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    return (
-        <div className="group relative my-4 overflow-hidden rounded-xl border border-white/5 bg-gray-950 shadow-2xl">
-            <div className="absolute right-3 top-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                    onClick={handleCopy}
-                    className="flex h-8 items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-gray-400 hover:bg-white/10 hover:text-white transition-all backdrop-blur-md border border-white/10 shadow-lg"
-                >
-                    {copied ? (
-                        <>
-                            <Icons.CheckCircle size={12} className="text-emerald-400" />
-                            <span className="text-emerald-400">Copied</span>
-                        </>
-                    ) : (
-                        <>
-                            <Icons.Copy size={12} />
-                            <span>Copy</span>
-                        </>
-                    )}
-                </button>
-            </div>
-            <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                <pre className="p-5 text-[13px] font-mono text-gray-300 leading-relaxed selection:bg-blue-500/30">
-                    {children}
-                </pre>
-            </div>
-        </div>
-    );
-};
+// Removed local ChatCodeBlock in favor of global CodeBlock
 
 // Regex to fix common spacing issues in math blocks
 const preprocessContent = (content: string) => {
@@ -391,35 +347,31 @@ export function AiTutorContent() {
                                                     rehypePlugins={[rehypeKatex]}
                                                     components={{
                                                         // Custom styling for markdown elements
-                                                        table: ({ node, ...props }) => <div className="overflow-x-auto my-4 rounded-lg border border-gray-200"><table className="w-full text-left text-sm" {...props} /></div>,
-                                                        thead: ({ node, ...props }) => <thead className="bg-gray-50 text-gray-700 font-bold" {...props} />,
-                                                        th: ({ node, ...props }) => <th className="px-4 py-3 border-b border-gray-200" {...props} />,
-                                                        td: ({ node, ...props }) => <td className="px-4 py-3 border-b border-gray-100" {...props} />,
-                                                        pre: ({ node, ...props }) => <ChatCodeBlock {...props} />,
-                                                        code: ({ node, className, children, ...props }) => {
-                                                            // Check if it's inline code by looking for absence of newline or parent tag analysis
-                                                            // Ideally, react-markdown distinguishes inline code. 
-                                                            // Usually, block code is inside 'pre'. Inline is not.
-                                                            // We can leave block styling to 'pre' and just styling text here.
-                                                            // But simpler check: if we are inside a pre, we don't need background.
-                                                            // Since we can't easily check parent here without complexity,
-                                                            // we will rely on the fact that `pre` renders its own bg.
-                                                            // So we just style inline code if it doesn't look like a block?
-                                                            // Actually, standard react-markdown:
-                                                            // Inline: <code>...</code>
-                                                            // Block: <pre><code>...</code></pre>
-
-                                                            // If we assume the generic code props:
+                                                        h1: ({ node, ...props }) => <h1 className="text-xl font-black text-gray-900 mt-6 mb-3" {...props} />,
+                                                        h2: ({ node, ...props }) => <h2 className="text-lg font-black text-gray-900 mt-6 mb-3 border-b border-gray-100 pb-1" {...props} />,
+                                                        h3: ({ node, ...props }) => <h3 className="text-md font-bold text-gray-800 mt-4 mb-2" {...props} />,
+                                                        p: ({ node, ...props }) => <p className="text-gray-700 leading-relaxed mb-4 text-sm font-medium" {...props} />,
+                                                        table: ({ node, ...props }) => <div className="overflow-x-auto my-4 rounded-xl border border-gray-100"><table className="w-full text-left text-sm" {...props} /></div>,
+                                                        thead: ({ node, ...props }) => <thead className="bg-gray-50 text-gray-600 font-bold" {...props} />,
+                                                        th: ({ node, ...props }) => <th className="px-4 py-3 border-b border-gray-100" {...props} />,
+                                                        td: ({ node, ...props }) => <td className="px-4 py-3 border-b border-gray-50" {...props} />,
+                                                        code: ({ node, inline, className, children, ...props }: any) => {
                                                             const match = /language-(\w+)/.exec(className || '');
-                                                            const isBlock = !!match || String(children).includes('\n');
+                                                            const lang = match ? match[1] : '';
+                                                            const codeContent = String(children).replace(/\n$/, '');
 
-                                                            return isBlock
-                                                                ? <code className={cn("font-mono text-inherit", className)} {...props}>{children}</code>
-                                                                : <code className="bg-gray-100 text-pink-600 rounded px-1.5 py-0.5 text-xs font-mono font-bold" {...props}>{children}</code>
+                                                            if (!inline && lang) {
+                                                                return <CodeBlock code={codeContent} language={lang} />;
+                                                            }
+                                                            return (
+                                                                <code className="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-md font-mono text-xs font-bold" {...props}>
+                                                                    {children}
+                                                                </code>
+                                                            );
                                                         },
                                                         strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
-                                                        ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-2 space-y-1" {...props} />,
-                                                        ol: ({ node, ...props }) => <ol className="list-decimal pl-5 my-2 space-y-1" {...props} />
+                                                        ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-3 space-y-2 text-gray-700 text-sm font-medium" {...props} />,
+                                                        ol: ({ node, ...props }) => <ol className="list-decimal pl-5 my-3 space-y-2 text-gray-700 text-sm font-medium" {...props} />
                                                     }}
                                                 >
                                                     {preprocessContent(m.content)}
