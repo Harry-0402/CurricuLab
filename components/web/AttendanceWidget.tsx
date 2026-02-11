@@ -27,6 +27,7 @@ export function AttendanceWidget() {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedSubject, setSelectedSubject] = useState('');
     const [status, setStatus] = useState<'Present' | 'Absent' | 'Canceled'>('Absent');
+    const [verificationImage, setVerificationImage] = useState<Blob | null>(null);
 
     // Logs Table State
     const [logs, setLogs] = useState<AttendanceLog[]>([]);
@@ -137,12 +138,30 @@ export function AttendanceWidget() {
             await AttendanceService.logAttendance(
                 selectedDate,
                 selectedSubject,
-                status
+                status,
+                verificationImage || undefined
             );
             await loadData();
-            // Reset to defaults for next entry if needed, but keeping date/subject allows quick repeated entry
+            // Reset verification image after success
+            setVerificationImage(null);
         } catch (error) {
             console.error('Failed to log attendance', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDailyCheckIn = async (blob: Blob) => {
+        if (!confirm("Confirm daily check-in? This will mark all today's classes as Present.")) return;
+
+        setIsSubmitting(true);
+        try {
+            await AttendanceService.markDailyAttendance(selectedDate, blob);
+            await loadData();
+            alert("Daily check-in successful! All classes marked present.");
+        } catch (error: any) {
+            console.error('Failed daily check-in', error);
+            alert("Check-in failed: " + error.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -245,6 +264,9 @@ export function AttendanceWidget() {
                         onStatusChange={setStatus}
                         isSubmitting={isSubmitting}
                         onSubmit={handleSubmit}
+                        verificationImage={verificationImage}
+                        onVerificationComplete={setVerificationImage}
+                        onDailyCheckIn={handleDailyCheckIn}
                     />
 
                     <AttendanceStatsCard stats={stats} loading={loading} />

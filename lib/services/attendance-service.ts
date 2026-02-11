@@ -31,14 +31,35 @@ export interface MissingRecord {
 }
 
 export const AttendanceService = {
-    async logAttendance(date: string, subjectId: string, status: 'Present' | 'Absent' | 'Canceled') {
+    async logAttendance(date: string, subjectId: string, status: 'Present' | 'Absent' | 'Canceled', verificationImage?: Blob) {
         const user = await AuthService.getCurrentUser();
         if (!user) throw new Error("User not authenticated");
 
-        // Get subject name for denormalization
         const subjects = await getSubjects();
         const subject = subjects.find(s => s.id === subjectId);
         const subjectName = subject ? subject.title : 'Unknown Subject';
+
+        let verificationImageUrl = null;
+        if (verificationImage) {
+            const fileName = `${user.id}/${date}_${subjectId}_${Date.now()}.jpg`;
+            const { error: uploadError } = await supabase.storage
+                .from('attendance_proofs')
+                .upload(fileName, verificationImage, {
+                    contentType: 'image/jpeg',
+                    upsert: true
+                });
+
+            if (uploadError) {
+                console.error('Failed to upload verification image:', uploadError);
+                throw new Error('Failed to upload verification proof');
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('attendance_proofs')
+                .getPublicUrl(fileName);
+
+            verificationImageUrl = publicUrl;
+        }
 
         const { data, error } = await supabase
             .from('attendance_logs')
@@ -47,159 +68,90 @@ export const AttendanceService = {
                 subject_id: subjectId,
                 subject_name: subjectName,
                 date: date,
-                status: status
+                status: status,
+                verification_image_url: verificationImageUrl
             }, { onConflict: 'user_id, subject_id, date' })
             .select()
             .single();
 
         if (error) throw error;
 
-        // Log to system changelog (optional, keeping it lightweight)
-        // await ChangelogService.logChange({
-        //     entity_type: 'Attendance',
-        //     entity_id: data.id,
-        //     action: 'CREATE',
-        //     changes: { status, date, subject: subjectName }
-        // });
+        await ChangelogService.logChange(
+            'Attendance',
+            `Marked ${status} for ${date} (${subjectName})`,
+            'CREATE'
+        );
 
         return data;
     },
 
-    async getAttendanceLogs(): Promise<AttendanceLog[]> {
-        const user = await AuthService.getCurrentUser();
-        if (!user) return [];
-
-        const { data, error } = await supabase
-            .from('attendance_logs')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('date', { ascending: false });
-
-        if (error) {
-            console.error('Failed to fetch attendance logs:', error);
-            return [];
-        }
-
-        return data.map(log => ({
-            id: log.id,
-            userId: log.user_id,
-            subjectId: log.subject_id,
-            subjectName: log.subject_name,
-            date: log.date,
-            status: log.status,
-            createdAt: log.created_at
-        }));
-    },
-
-    async getAttendanceStats(): Promise<SubjectAttendanceStats[]> {
-        const logs = await this.getAttendanceLogs();
-        const subjects = await getSubjects();
-
-        // Filter out canceled classes for calculation
-        const validLogs = logs.filter(l => l.status !== 'Canceled');
-
-        const statsMap = new Map<string, { total: number, present: number, name: string }>();
-
-        // Initialize with all subjects
-        subjects.forEach(s => {
-            statsMap.set(s.id, { total: 0, present: 0, name: s.title });
-        });
-
-        // Tally logs
-        validLogs.forEach(log => {
-            const current = statsMap.get(log.subjectId) || { total: 0, present: 0, name: log.subjectName || 'Unknown' };
-            current.total++;
-            if (log.status === 'Present') {
-                current.present++;
-            }
-            statsMap.set(log.subjectId, current);
-        });
-
-        // Convert to array
-        return Array.from(statsMap.entries()).map(([id, stat]) => ({
-            subjectId: id,
-            subjectName: stat.name,
-            totalClasses: stat.total,
-            presentClasses: stat.present,
-            percentage: stat.total > 0 ? Math.round((stat.present / stat.total) * 100) : 0
-        }));
-    },
-
-    // Optimized method to fetch all dashboard data in parallel/batched to reduce network requests
-    async getDashboardData(daysToCheckMissing = 5): Promise<{
-        stats: SubjectAttendanceStats[];
-        subjects: Subject[];
-        missingRecords: MissingRecord[];
-    }> {
+    async markDailyAttendance(date: string, verificationImage: Blob) {
         const user = await AuthService.getCurrentUser();
         if (!user) throw new Error("User not authenticated");
 
-        // Fetch logs and subjects in parallel
-        const [logs, subjects] = await Promise.all([
-            this.getAttendanceLogs(),
+        // 1. Upload Verification Proof once
+        const fileName = `${user.id}/${date}_daily_${Date.now()}.jpg`;
+        const { error: uploadError } = await supabase.storage
+            .from('attendance_proofs')
+            .upload(fileName, verificationImage, {
+                contentType: 'image/jpeg',
+                upsert: true
+            });
+
+        if (uploadError) {
+            console.error('Failed to upload daily verification:', uploadError);
+            throw new Error('Failed to upload verification proof');
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('attendance_proofs')
+            .getPublicUrl(fileName);
+
+        // 2. Get Scheduled Subjects for the Day
+        const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
+        const [timetable, subjects] = await Promise.all([
+            getTimetable(),
             getSubjects()
         ]);
 
-        // Calculate Stats
-        const statsMap = new Map<string, { total: number, present: number, name: string }>();
-        subjects.forEach(s => {
-            statsMap.set(s.id, { total: 0, present: 0, name: s.title });
-        });
-
-        const validLogs = logs.filter(l => l.status !== 'Canceled');
-        validLogs.forEach(log => {
-            const current = statsMap.get(log.subjectId) || { total: 0, present: 0, name: log.subjectName || 'Unknown' };
-            current.total++;
-            if (log.status === 'Present') {
-                current.present++;
-            }
-            statsMap.set(log.subjectId, current);
-        });
-
-        const stats = Array.from(statsMap.entries()).map(([id, stat]) => ({
-            subjectId: id,
-            subjectName: stat.name,
-            totalClasses: stat.total,
-            presentClasses: stat.present,
-            percentage: stat.total > 0 ? Math.round((stat.present / stat.total) * 100) : 0
-        }));
-
-        // Calculate Missing Records
-        // Use the ALREADY FETCHED logs and subjects
-        const today = new Date();
-        const timetable = await getTimetable(); // This might still fetch, but it's separate. Could pass in if needed. 
-        // Assuming getTimetable is fast or also cached.
-
-        const missingRecords: { date: Date, subjectId: string, subjectName: string, dayName: string }[] = [];
-
-        for (let i = 1; i <= daysToCheckMissing; i++) {
-            const date = new Date(today);
-            date.setDate(date.getDate() - i);
-            const dateString = date.toISOString().split('T')[0];
-            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-
-            const scheduledClasses = timetable.filter(t => t.day === dayName);
-
-            for (const cls of scheduledClasses) {
-                const subject = subjects.find(s => s.code === cls.subjectCode || s.title === cls.subjectTitle);
-                if (subject) {
-                    const hasLog = logs.some(log =>
-                        log.date === dateString && log.subjectId === subject.id
-                    );
-
-                    if (!hasLog) {
-                        missingRecords.push({
-                            date: new Date(dateString),
-                            subjectId: subject.id,
-                            subjectName: subject.title,
-                            dayName: dayName
-                        });
-                    }
-                }
-            }
+        const scheduledClasses = timetable.filter(t => t.day === dayName);
+        if (scheduledClasses.length === 0) {
+            throw new Error(`No classes scheduled for ${dayName}`);
         }
 
-        return { stats, subjects, missingRecords };
+        const subjectsToLog = new Map<string, string>();
+        scheduledClasses.forEach(cls => {
+            const subject = subjects.find(s => s.code === cls.subjectCode || s.title === cls.subjectTitle);
+            if (subject) {
+                subjectsToLog.set(subject.id, subject.title);
+            }
+        });
+
+        if (subjectsToLog.size === 0) {
+            throw new Error("Could not match scheduled classes to valid subjects.");
+        }
+
+        // 3. Create Bulk Log Data
+        const logsToInsert = Array.from(subjectsToLog.entries()).map(([subId, subName]) => ({
+            user_id: user.id,
+            subject_id: subId,
+            subject_name: subName,
+            date: date,
+            status: 'Present',
+            verification_image_url: publicUrl
+        }));
+
+        const { error } = await supabase
+            .from('attendance_logs')
+            .upsert(logsToInsert, { onConflict: 'user_id, subject_id, date' });
+
+        if (error) throw error;
+
+        await ChangelogService.logChange(
+            'Attendance',
+            `Daily Check-in for ${date}: Marked ${logsToInsert.length} classes Present`,
+            'CREATE'
+        );
     },
 
     async getAllLogs(): Promise<AttendanceLog[]> {
@@ -243,7 +195,107 @@ export const AttendanceService = {
         if (error) throw error;
     },
 
-    async getKPICounts(): Promise<{ totalSubjects: number, totalAssignments: number, totalAnnouncements: number }> {
+    async getAttendanceLogs(): Promise<AttendanceLog[]> {
+        return this.getAllLogs();
+    },
+
+    async getAttendanceStats(): Promise<SubjectAttendanceStats[]> {
+        const logs = await this.getAttendanceLogs();
+        const subjects = await getSubjects();
+
+        const validLogs = logs.filter(l => l.status !== 'Canceled');
+        const statsMap = new Map<string, { total: number, present: number, name: string }>();
+
+        subjects.forEach(s => {
+            statsMap.set(s.id, { total: 0, present: 0, name: s.title });
+        });
+
+        validLogs.forEach(log => {
+            const current = statsMap.get(log.subjectId) || { total: 0, present: 0, name: log.subjectName || 'Unknown' };
+            current.total++;
+            if (log.status === 'Present') {
+                current.present++;
+            }
+            statsMap.set(log.subjectId, current);
+        });
+
+        return Array.from(statsMap.entries()).map(([id, stat]) => ({
+            subjectId: id,
+            subjectName: stat.name,
+            totalClasses: stat.total,
+            presentClasses: stat.present,
+            percentage: stat.total > 0 ? Math.round((stat.present / stat.total) * 100) : 0
+        }));
+    },
+
+    async getDashboardData(daysToCheckMissing = 5): Promise<{
+        stats: SubjectAttendanceStats[];
+        subjects: Subject[];
+        missingRecords: MissingRecord[];
+    }> {
+        const [logs, subjects, timetable] = await Promise.all([
+            this.getAttendanceLogs(),
+            getSubjects(),
+            getTimetable()
+        ]);
+
+        const statsMap = new Map<string, { total: number, present: number, name: string }>();
+        subjects.forEach(s => {
+            statsMap.set(s.id, { total: 0, present: 0, name: s.title });
+        });
+
+        const validLogs = logs.filter(l => l.status !== 'Canceled');
+        validLogs.forEach(log => {
+            const current = statsMap.get(log.subjectId) || { total: 0, present: 0, name: log.subjectName || 'Unknown' };
+            current.total++;
+            if (log.status === 'Present') {
+                current.present++;
+            }
+            statsMap.set(log.subjectId, current);
+        });
+
+        const stats = Array.from(statsMap.entries()).map(([id, stat]) => ({
+            subjectId: id,
+            subjectName: stat.name,
+            totalClasses: stat.total,
+            presentClasses: stat.present,
+            percentage: stat.total > 0 ? Math.round((stat.present / stat.total) * 100) : 0
+        }));
+
+        const today = new Date();
+        const missingRecords: MissingRecord[] = [];
+
+        for (let i = 1; i <= daysToCheckMissing; i++) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const dateString = date.toISOString().split('T')[0];
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+
+            const scheduledClasses = timetable.filter(t => t.day === dayName);
+
+            for (const cls of scheduledClasses) {
+                const subject = subjects.find(s => s.code === cls.subjectCode || s.title === cls.subjectTitle);
+                if (subject) {
+                    const hasLog = logs.some(log =>
+                        log.date === dateString && log.subjectId === subject.id
+                    );
+
+                    if (!hasLog) {
+                        missingRecords.push({
+                            date: new Date(dateString),
+                            subjectId: subject.id,
+                            subjectName: subject.title,
+                            dayName: dayName
+                        });
+                    }
+                }
+            }
+        }
+
+        return { stats, subjects, missingRecords };
+    },
+
+    async getKPICounts() {
         const user = await AuthService.getCurrentUser();
         if (!user) throw new Error("User not authenticated");
 
@@ -260,9 +312,8 @@ export const AttendanceService = {
         };
     },
 
-    async getAttendanceAlerts(): Promise<{ subject: string, current: number, classesNeeded: number }[]> {
+    async getAttendanceAlerts() {
         const stats = await this.getAttendanceStats();
-
         return stats
             .filter(s => s.percentage < 80)
             .map(s => {
@@ -274,10 +325,10 @@ export const AttendanceService = {
                     classesNeeded: Math.max(0, classesNeeded)
                 };
             })
-            .sort((a, b) => a.current - b.current); // Most critical first
+            .sort((a, b) => a.current - b.current);
     },
 
-    async getStudyStreak(): Promise<{ currentStreak: number, longestStreak: number }> {
+    async getStudyStreak() {
         const user = await AuthService.getCurrentUser();
         if (!user) throw new Error("User not authenticated");
 
@@ -289,7 +340,6 @@ export const AttendanceService = {
 
         if (error || !data) return { currentStreak: 0, longestStreak: 0 };
 
-        // Group by date and check if has at least 1 Present
         const uniqueDates = [...new Set(data.map(log => log.date))];
         const datesWithPresent = uniqueDates.filter(date =>
             data.some(log => log.date === date && log.status === 'Present')
@@ -307,13 +357,12 @@ export const AttendanceService = {
             logDate.setHours(0, 0, 0, 0);
 
             if (i === 0) {
-                // Check if today or yesterday
                 const diffDays = Math.floor((today.getTime() - logDate.getTime()) / (1000 * 60 * 60 * 24));
                 if (diffDays <= 1) {
                     currentStreak = 1;
                     tempStreak = 1;
                 } else {
-                    break; // Streak broken
+                    break;
                 }
             } else {
                 const prevDate = new Date(datesWithPresent[i - 1]);
@@ -322,7 +371,7 @@ export const AttendanceService = {
 
                 if (dayDiff === 1) {
                     tempStreak++;
-                    if (i < 10) currentStreak = tempStreak; // Only count recent
+                    if (i < 10) currentStreak = tempStreak;
                 } else {
                     if (tempStreak > longestStreak) longestStreak = tempStreak;
                     tempStreak = 1;
@@ -331,7 +380,6 @@ export const AttendanceService = {
         }
 
         if (tempStreak > longestStreak) longestStreak = tempStreak;
-
         return { currentStreak, longestStreak };
     }
 };
