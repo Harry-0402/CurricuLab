@@ -30,6 +30,8 @@ export function AssignmentContent() {
     // Detail Modal State
     const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
     const [generatingQuestionIndex, setGeneratingQuestionIndex] = useState<number | null>(null);
+    const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+    const menuRef = React.useRef<HTMLDivElement>(null);
 
     // Delete Confirmation State
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -37,6 +39,27 @@ export function AssignmentContent() {
 
 
 
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            const isToggle = target.closest(`[data-menu-toggle="action-toggle-${openMenuIndex}"]`);
+
+            if (menuRef.current && !menuRef.current.contains(target) && !isToggle) {
+                setOpenMenuIndex(null);
+            }
+        };
+
+        if (openMenuIndex !== null) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [openMenuIndex]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -477,13 +500,20 @@ Format the response in clean, readable markdown. Make sure the code is accurate 
                                                             {q.text}
                                                         </p>
                                                     </div>
-                                                    <div className="relative group/actions">
+                                                    <div className="relative">
                                                         <button
+                                                            data-menu-toggle={`action-toggle-${idx}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setOpenMenuIndex(openMenuIndex === idx ? null : idx);
+                                                            }}
                                                             className={cn(
                                                                 "flex items-center gap-2 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 shrink-0",
                                                                 generatingQuestionIndex === idx
                                                                     ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                                                    : "bg-white text-gray-900 hover:bg-gray-50 border border-gray-100"
+                                                                    : openMenuIndex === idx
+                                                                        ? "bg-gray-900 text-white shadow-xl"
+                                                                        : "bg-white text-gray-900 hover:bg-gray-50 border border-gray-100"
                                                             )}
                                                             disabled={generatingQuestionIndex !== null}
                                                         >
@@ -495,25 +525,38 @@ Format the response in clean, readable markdown. Make sure the code is accurate 
                                                             {generatingQuestionIndex === idx ? 'Working...' : 'Action'}
                                                         </button>
 
-                                                        {/* Simple CSS Dropdown */}
-                                                        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 opacity-0 invisible group-hover/actions:opacity-100 group-hover/actions:visible transition-all z-50 transform origin-top-right scale-95 group-hover/actions:scale-100">
-                                                            <button
-                                                                onClick={() => handleGenerateAnswer(idx)}
-                                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+                                                        {/* State-based Dropdown */}
+                                                        {openMenuIndex === idx && (
+                                                            <div
+                                                                ref={menuRef}
+                                                                className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 transition-all z-50 transform origin-top-right animate-in fade-in slide-in-from-top-1 duration-200"
                                                             >
-                                                                <Icons.Sparkles size={14} className="text-purple-500" />
-                                                                {q.answer ? 'Regenerate AI' : 'Generate AI'}
-                                                            </button>
-                                                            {q.answer && (
                                                                 <button
-                                                                    onClick={() => handleClearAnswer(idx)}
-                                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleGenerateAnswer(idx);
+                                                                        setOpenMenuIndex(null);
+                                                                    }}
+                                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                                                                 >
-                                                                    <Icons.Trash2 size={14} />
-                                                                    Clear Answer
+                                                                    <Icons.Sparkles size={14} className="text-purple-500" />
+                                                                    {q.answer ? 'Regenerate AI' : 'Generate AI'}
                                                                 </button>
-                                                            )}
-                                                        </div>
+                                                                {q.answer && (
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleClearAnswer(idx);
+                                                                            setOpenMenuIndex(null);
+                                                                        }}
+                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+                                                                    >
+                                                                        <Icons.Trash2 size={14} />
+                                                                        Clear Answer
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
 
