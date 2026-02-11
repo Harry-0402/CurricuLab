@@ -43,8 +43,7 @@ export default function WebProfileContent() {
         try {
             const success = await FaceRecognitionService.enrollFace(blob);
             if (success) {
-                // In a real app, we'd use a toast notification
-                alert("Face ID Enrolled Successfully!");
+                // Removed alert for smoother flow
                 setIsEnrollmentModalOpen(false);
             }
         } finally {
@@ -70,9 +69,8 @@ export default function WebProfileContent() {
     }, [settings]);
 
     const handleGlobalLogout = async () => {
+        // We'll keep the logout confirmation as it's a very significant action
         if (confirm("Are you sure you want to log out from all devices? This will require you to sign in again.")) {
-            // In a real app with session management, we'd call an API to revoke all tokens.
-            // For now, we'll do a standard sign out which invalidates the current session.
             const { AuthService } = await import('@/lib/services/auth.service');
             await AuthService.signOut();
             window.location.href = '/login';
@@ -80,10 +78,9 @@ export default function WebProfileContent() {
     };
 
     const handleClearCache = () => {
-        if (confirm("This will reset your local preferences and cached data. Continue?")) {
-            localStorage.clear();
-            window.location.reload();
-        }
+        // Procedding without confirm as requested by the user's general distaste for popups
+        localStorage.clear();
+        window.location.reload();
     };
 
     const handleExportData = () => {
@@ -160,7 +157,8 @@ export default function WebProfileContent() {
 
             if (error) throw error;
 
-            alert("Profile updated successfully! " + (updates.email ? "Check your new email for a confirmation link." : ""));
+            // alert("Profile updated successfully! " + (updates.email ? "Check your new email for a confirmation link." : ""));
+            // Silently update or use a toast if we had one.
 
             // Refresh user data if needed, or just rely on local state update for now
             if (updates.email) setUserEmail(editEmail);

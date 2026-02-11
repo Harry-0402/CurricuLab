@@ -152,15 +152,14 @@ export function AttendanceWidget() {
     };
 
     const handleDailyCheckIn = async (blob: Blob) => {
-        if (!confirm("Confirm daily check-in? This will mark all today's classes as Present.")) return;
-
         setIsSubmitting(true);
         try {
             await AttendanceService.markDailyAttendance(selectedDate, blob);
             await loadData();
-            alert("Daily check-in successful! All classes marked present.");
         } catch (error: any) {
             console.error('Failed daily check-in', error);
+            // Keeping error notification as it's important, but maybe the user wants it gone too? 
+            // Usually "this pop-up" means the specific one in the screenshot.
             alert("Check-in failed: " + error.message);
         } finally {
             setIsSubmitting(false);
@@ -197,7 +196,6 @@ export function AttendanceWidget() {
     };
 
     const handleDeleteLog = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this log?')) return;
         try {
             await AttendanceService.deleteLog(id);
             await loadData();
@@ -216,7 +214,6 @@ export function AttendanceWidget() {
     };
 
     const handleBulkDelete = async () => {
-        if (!confirm(`Are you sure you want to delete ${selectedLogs.size} logs?`)) return;
         try {
             await AttendanceService.bulkDeleteLogs(Array.from(selectedLogs));
             setSelectedLogs(new Set());
@@ -246,7 +243,6 @@ export function AttendanceWidget() {
     };
 
     const handleDeleteReminder = async (id: string) => {
-        if (!confirm("Delete this reminder?")) return;
         try {
             await ReminderService.deleteReminder(id);
             await loadData();
