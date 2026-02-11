@@ -120,7 +120,7 @@ export function MarkAttendanceForm({
                         <div className="bg-blue-50/50 p-5 rounded-[20px] border border-blue-100/50">
                             <p className="text-xs text-blue-600 font-medium mb-4 flex items-center gap-2">
                                 <Icons.Info size={14} />
-                                Automated attendance for all today's classes.
+                                One-click sync for all today's classes after verification.
                             </p>
                             <div>
                                 <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest ml-1 mb-1 block">Date for Check-in</label>

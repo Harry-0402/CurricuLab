@@ -78,7 +78,6 @@ export function FaceVerificationModal({
                 stabilityCounter.current += 1;
                 if (stabilityCounter.current >= 2) {
                     setDetectionStatus('locked');
-                    handleAutoCapture();
                 }
             } else {
                 stabilityCounter.current = 0;
@@ -255,9 +254,13 @@ export function FaceVerificationModal({
 
                 <div className="flex flex-col gap-3">
                     {!capturedImage ? (
-                        <p className="text-center text-[10px] text-gray-400 font-medium uppercase tracking-widest">
-                            Verification will start automatically once your face is detected
-                        </p>
+                        <Button
+                            onClick={handleCapture}
+                            disabled={detectionStatus !== 'locked' || isProcessing}
+                            className="w-full rounded-xl py-6 text-base shadow-lg shadow-blue-500/10"
+                        >
+                            Capture Photo
+                        </Button>
                     ) : (
                         <div className="flex gap-3">
                             <Button
@@ -266,7 +269,14 @@ export function FaceVerificationModal({
                                 disabled={isProcessing}
                                 className="w-full rounded-xl h-12 border-gray-200"
                             >
-                                Try Again
+                                Retake
+                            </Button>
+                            <Button
+                                onClick={handleConfirm}
+                                disabled={isProcessing}
+                                className="w-full rounded-xl h-12 bg-blue-600 text-white"
+                            >
+                                {isProcessing ? 'Verifying...' : 'Verify Now'}
                             </Button>
                         </div>
                     )}

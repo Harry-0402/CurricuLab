@@ -11,8 +11,10 @@ Enroll your facial data to enable zero-click attendance marking.
 3. Select the **Privacy & Security** category from the sidebar.
 4. Locate the **Face ID** section (marked with a BETA tag).
 5. Click **Set up** to open the enrollment portal.
-6. Position your face in the frame. The system recognizes you automatically ("Searching for face..." -> "Face Locked!").
-7. Look for the **Face ID Enrolled Successfully!** confirmation.
+6. Position your face in the frame. The system will detect your face ("Searching for face..." -> "Face Locked!").
+7. Click **Capture Photo** once your face is locked.
+8. Preview the capture and click **Verify Now** (or **Retake** if needed).
+9. Look for the **Face ID Enrolled Successfully!** confirmation.
 
 ## 2. Marking Attendance
 CurricuLab provides two distinct methods for logging your presence.
@@ -22,8 +24,9 @@ Use this for a quick, all-in-one check-in for the entire day.
 1. Open the **Attendance Widget** on your dashboard.
 2. Select the **Face ID (Daily)** tab.
 3. Verify the date and click **Log Attendance (Daily)**.
-4. Simply look at the camera. Verification is automatic.
-5. You will hear an audio confirmation: **"Attendance Marked"**.
+4. Position your face. Once "Face Locked!" appears, click **Capture Photo**.
+5. Click **Verify Now**.
+6. You will hear an audio confirmation: **"Attendance Marked"**.
 
 ### Method B: Manual Quick Log
 Use this for individual class records or backdating.
