@@ -350,12 +350,12 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     {(() => {
-                                                        const isImported = importedAssignments.some(a => a.gcrId === work.id);
+                                                        const importedAssignment = importedAssignments.find(a => a.gcrId === work.id);
 
-                                                        if (isImported) {
+                                                        if (importedAssignment) {
                                                             return (
                                                                 <a
-                                                                    href="/assignments"
+                                                                    href={`/assignments?subjectId=${importedAssignment.subjectId}&assignmentId=${importedAssignment.id}`}
                                                                     onClick={(e) => e.stopPropagation()}
                                                                     className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-all border border-blue-100"
                                                                 >

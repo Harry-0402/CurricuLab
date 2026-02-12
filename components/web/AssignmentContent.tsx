@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { Subject, Assignment, Unit } from '@/types';
 import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
+import { useSearchParams } from 'next/navigation';
 
 import { AssignmentModal } from './AssignmentModal';
 import {
@@ -19,6 +20,10 @@ import {
 import { AnswerDisplay } from './AnswerDisplay';
 
 export function AssignmentContent() {
+    const searchParams = useSearchParams();
+    const querySubjectId = searchParams.get('subjectId');
+    const queryAssignmentId = searchParams.get('assignmentId');
+
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [activeSubjectId, setActiveSubjectId] = useState<string | null>(null);
     const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -66,15 +71,21 @@ export function AssignmentContent() {
             const fetchedSubjects = await getSubjects();
             setSubjects(fetchedSubjects);
             if (fetchedSubjects.length > 0) {
-                // Restore active subject from storage or default to first
+                // Priority: Query Param > Storage > Default
+                const validQuerySubject = fetchedSubjects.find(s => s.id === querySubjectId);
                 const storedSubjectId = localStorage.getItem('activeSubjectId');
-                const validSubject = fetchedSubjects.find(s => s.id === storedSubjectId);
-                setActiveSubjectId(validSubject ? validSubject.id : fetchedSubjects[0].id);
+                const validStoredSubject = fetchedSubjects.find(s => s.id === storedSubjectId);
+
+                if (validQuerySubject) {
+                    setActiveSubjectId(validQuerySubject.id);
+                } else {
+                    setActiveSubjectId(validStoredSubject ? validStoredSubject.id : fetchedSubjects[0].id);
+                }
             }
             setLoading(false);
         };
         loadData();
-    }, []);
+    }, [querySubjectId]);
 
     useEffect(() => {
         const loadAssignments = async () => {
@@ -89,10 +100,10 @@ export function AssignmentContent() {
                 setAssignments(fetched);
                 setUnits(fetchedUnits);
 
-                // Restore Modal State if applicable
-                const storedAssignmentId = localStorage.getItem('openAssignmentId');
-                if (storedAssignmentId && !selectedAssignment) {
-                    const restoredAssignment = fetched.find(a => a.id === storedAssignmentId);
+                // Priority: Query Param > Storage
+                const targetAssignmentId = queryAssignmentId || localStorage.getItem('openAssignmentId');
+                if (targetAssignmentId) {
+                    const restoredAssignment = fetched.find(a => a.id === targetAssignmentId);
                     if (restoredAssignment) {
                         setSelectedAssignment(restoredAssignment);
                     }
@@ -102,7 +113,7 @@ export function AssignmentContent() {
             }
         };
         loadAssignments();
-    }, [activeSubjectId]);
+    }, [activeSubjectId, queryAssignmentId]);
 
     const activeSubject = subjects.find(s => s.id === activeSubjectId);
 
