@@ -267,7 +267,7 @@ export function ResumeBuilderContent() {
         <div className="flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
                 <div>
-                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">Resume Architect</h2>
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">ResumeStudio</h2>
                     <p className="text-sm font-medium text-gray-500">ATS-Friendly • machine parsable</p>
                 </div>
                 <div className="flex gap-2">
