@@ -197,10 +197,10 @@ export function ClassroomContent() {
 
                 {/* Main Content Area */}
                 {isLoading || isCoursesLoading ? (
-                    <div className="flex-1 flex items-center justify-center">
+                    <div className="flex-1 flex items-center justify-center py-20">
                         <div className="flex flex-col items-center gap-3">
                             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                            <p className="text-sm font-medium text-gray-500">Loading Classroom...</p>
+                            <p className="text-sm font-medium text-gray-500 font-bold uppercase tracking-widest">Loading Classroom...</p>
                         </div>
                     </div>
                 ) : (
@@ -218,15 +218,51 @@ export function ClassroomContent() {
                         />
                         <div className="pb-20">
                             {!selectedCourse ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-                                    {courses.map(course => (
-                                        <CourseCard
-                                            key={course.id}
-                                            course={course}
-                                            onSelect={setSelectedCourse}
-                                        />
-                                    ))}
-                                </div>
+                                !isDriveConnected ? (
+                                    <div className="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-[40px] border border-dashed border-gray-200">
+                                        <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-sm">
+                                            <Icons.Google size={40} className="text-gray-400" />
+                                        </div>
+                                        <h3 className="text-2xl font-black text-gray-900 mb-3">Connect Google Classroom</h3>
+                                        <p className="text-gray-500 mb-8 max-w-md mx-auto font-medium">
+                                            Sync your Google Classroom to access all your courses, assignments, and study materials in one place.
+                                        </p>
+                                        <button
+                                            onClick={connectGoogleDrive}
+                                            className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-2xl font-black hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-100"
+                                        >
+                                            <Icons.Link size={20} />
+                                            <span>Connect Google Account</span>
+                                        </button>
+                                    </div>
+                                ) : courses.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-[40px] border border-dashed border-gray-200">
+                                        <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-sm">
+                                            <Icons.Subjects size={40} className="text-gray-300" />
+                                        </div>
+                                        <h3 className="text-2xl font-black text-gray-900 mb-3">No Courses Found</h3>
+                                        <p className="text-gray-500 mb-8 max-w-md mx-auto font-medium">
+                                            We couldn't find any active courses in your Google Classroom. Make sure you're enrolled in at least one class.
+                                        </p>
+                                        <button
+                                            onClick={loadCourses}
+                                            className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all"
+                                        >
+                                            <Icons.RotateCcw size={18} />
+                                            <span>Refresh Courses</span>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+                                        {courses.map(course => (
+                                            <CourseCard
+                                                key={course.id}
+                                                course={course}
+                                                onSelect={setSelectedCourse}
+                                            />
+                                        ))}
+                                    </div>
+                                )
                             ) : (
                                 <GoogleClassroomView
                                     isDriveConnected={isDriveConnected}
