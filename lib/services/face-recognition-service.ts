@@ -33,9 +33,17 @@ export const FaceRecognitionService = {
         const url = URL.createObjectURL(blob);
         try {
             const img = await faceapi.fetchImage(url);
+            console.log("Image fetched for face detection, size:", blob.size);
+
             const detection = await faceapi.detectSingleFace(img)
                 .withFaceLandmarks()
                 .withFaceDescriptor();
+
+            if (!detection) {
+                console.warn("Face detection failed: No face found in the image.");
+            } else {
+                console.log("Face detected with confidence:", (detection as any).detection?.score || 'N/A');
+            }
 
             return detection ? detection.descriptor : null;
         } finally {
@@ -59,10 +67,12 @@ export const FaceRecognitionService = {
 
             const { error } = await supabase
                 .from('profiles')
-                .update({
+                .upsert({
+                    id: user.id,
                     face_descriptor: descriptorArray,
-                    has_face_id: true
-                } as any) // Type cast if has_face_id not yet in types
+                    has_face_id: true,
+                    updated_at: new Date().toISOString()
+                } as any)
                 .eq('id', user.id);
 
             if (error) throw error;
