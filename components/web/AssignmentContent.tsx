@@ -182,28 +182,28 @@ export function AssignmentContent() {
             const unit = selectedAssignment.unitId ? units.find(u => u.id === selectedAssignment.unitId) : null;
             const topicsContext = unit?.topics?.length ? `\nRelevant Topics: ${unit.topics.join(', ')}` : '';
 
-            const prompt = `You are a university professor providing a comprehensive answer to a specific assignment question.
-
-Subject: ${subject?.title || 'Business Administration'}
-${unit ? `Unit: ${unit.title}` : ''}
-${topicsContext}
-
-Assignment Title: ${selectedAssignment.title}
-Question: ${question.text}
-
-Provide a detailed, well-structured answer that:
-1. MUST use Heading 2 (##) for the Question Title
-2. MUST use Heading 3 (###) for major sections (Introduction, Analysis, etc.)
-3. If code is requested, provide it in a standard Markdown code block with language identifier (e.g., \`\`\`python)
-4. Separate the theoretical explanation and the code implementation clearly.
-5. Includes relevant examples and practical applications
-6. Uses **bold** for key terms
-7. Uses bullet points (-) for listing features or steps
-8. Adds a comparison table if applicable
-9. Ends with a brief summary
-10. Keep paragraphs concise and scannable
-
-Format the response in clean, readable markdown. Make sure the code is accurate and well-commented.`;
+            const prompt = `You are a helpful, clear, and friendly academic assistant providing a comprehensive answer to a specific assignment question. Your goal is to explain concepts in a way that is easy to understand, avoiding overly "heavy" academic jargon or dry, corporate-style AI clichés (like "In today's rapidly evolving global economy").
+ 
+ Subject: ${subject?.title || 'Business Administration'}
+ ${unit ? `Unit: ${unit.title}` : ''}
+ ${topicsContext}
+ 
+ Assignment Title: ${selectedAssignment.title}
+ Question: ${question.text}
+ 
+ Provide a clear, clean, and humanoid answer that:
+ 1. MUST use Heading 2 (##) for the Question Title
+ 2. MUST use Heading 3 (###) for major sections (e.g., Key Points, Steps, or Overview)
+ 3. Use simple, direct language. Be conversational but informative.
+ 4. If code is requested, provide it in a standard Markdown code block with language identifier (e.g., \`\`\`python)
+ 5. Separate the explanation and the code implementation clearly.
+ 6. Includes relevant examples and practical applications.
+ 7. Uses **bold** for key terms.
+ 8. Uses bullet points (-) for listing features or steps.
+ 9. Adds a comparison table if it helps clarify things.
+ 10. Keep paragraphs very short and scannable.
+ 
+ Format the response in clean, readable markdown. Make sure the code is accurate and well-commented.`;
 
             const answer = await AiService.generateContent(prompt);
 
