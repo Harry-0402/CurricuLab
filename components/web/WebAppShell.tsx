@@ -8,22 +8,13 @@ import { getUpcomingAssignments } from '@/lib/services/app.service';
 import { Assignment } from '@/types';
 import { Icons } from '../shared/Icons';
 import { AutoLogout } from '../shared/AutoLogout';
+import { KeepAlive } from '../shared/KeepAlive';
 
 export function WebAppShell({ children }: { children: React.ReactNode }) {
     // Alert State
     const [dueAlerts, setDueAlerts] = useState<Assignment[]>([]);
     const [showDueAlert, setShowDueAlert] = useState(false);
 
-    // Auto-reload every 14 minutes (14 * 60 * 1000 ms)
-    useEffect(() => {
-        const AUTO_RELOAD_INTERVAL = 14 * 60 * 1000;
-
-        const intervalId = setInterval(() => {
-            window.location.reload();
-        }, AUTO_RELOAD_INTERVAL);
-
-        return () => clearInterval(intervalId);
-    }, []);
 
     // Check for due assignments globally
     useEffect(() => {
@@ -51,6 +42,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
 
     return (
         <div className="flex h-full w-full bg-[#fafbfc] overflow-hidden pb-[env(safe-area-inset-bottom)] print:h-auto print:!overflow-visible print:bg-white">
+            <KeepAlive />
             <WebSidebar />
             <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden print:h-auto print:!overflow-visible print:block">
                 <WebHeader />
