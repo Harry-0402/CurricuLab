@@ -21,7 +21,8 @@ const CLASSROOM_TO_SUBJECT_MAP: { [key: string]: string } = {
     "MBA BA SEM-II 2026": "PBA208", // Assuming this maps to Business Analytics code if not exact match, checking Subject codes is safer
     "Data Analysis using Power BI PBA313": "PBA212",
     "Data Visualization & Story Telling": "PBA207",
-    "MBA-BA-2- Digital Transformation": "PBA205"
+    "MBA-BA-2- Digital Transformation": "PBA205",
+    "MBA (BA) and (BFS)": "PBA206"
 };
 
 export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, selectedCourse }: GoogleClassroomViewProps) {
