@@ -471,7 +471,7 @@ export function AssignmentContent() {
                                                 href={selectedAssignment.externalLink}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 shrink-0 mr-12"
+                                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 shrink-0"
                                             >
                                                 <Icons.Google size={14} />
                                                 Open in Classroom
@@ -494,7 +494,46 @@ export function AssignmentContent() {
                                     )}
 
                                     <div className="space-y-6">
-                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Questions & Answers</h4>
+                                        <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100 flex gap-3 items-start">
+                                            <div className="mt-0.5 relative flex-shrink-0">
+                                                <Icons.Sparkles size={16} className="text-purple-600" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-bold text-gray-900">How to use Custom GPT</p>
+                                                <p className="text-xs font-medium text-purple-700/80 leading-relaxed">
+                                                    Click the button below to automatically copy all questions and instructions to your clipboard. You will be redirected to the Exam Ready Analytics Coach. Just paste the prompt in the chat box!
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Questions & Answers</h4>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (!selectedAssignment || selectedAssignment.questions.length === 0) {
+                                                        toast.error("No questions to copy");
+                                                        return;
+                                                    }
+                                                    const questionList = selectedAssignment.questions
+                                                        .map((q, idx) => `${idx + 1}. ${q.text}`)
+                                                        .join('\n');
+                                                    const targetSubject = subjects.find(s => s.id === selectedAssignment.subjectId);
+                                                    const subjectName = targetSubject?.title || 'the subject';
+                                                    const prompt = `Here is a list of questions for my assignment:\n\n${questionList}\n\n\nPlease help me answer them based on ${subjectName}.\n\nInstructions:\n- The language should be simple, clear, and humanoid.\n- The word count should be between 300 to 400 words per answer.`;
+
+                                                    navigator.clipboard.writeText(prompt).then(() => {
+                                                        toast.success("Questions & instructions copied! Paste them in the chat.");
+                                                    }).catch(() => {
+                                                        toast.error("Failed to copy. Please allow clipboard permissions.");
+                                                    });
+                                                    window.open("https://chatgpt.com/g/g-696a4f4a8f708191bc92fa570a0dd7ea-exam-ready-analytics-coach", "_blank");
+                                                }}
+                                                className="flex items-center gap-2 px-4 py-2 bg-white text-gray-900 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+                                            >
+                                                <Icons.Sparkles size={14} className="text-purple-500" />
+                                                Custom GPT
+                                            </button>
+                                        </div>
                                         {selectedAssignment.questions.length === 0 && (
                                             <div className="text-center py-10 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
                                                 <p className="text-sm font-bold text-gray-400">No questions added to this assignment.</p>
