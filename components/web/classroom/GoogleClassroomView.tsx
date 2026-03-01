@@ -15,7 +15,7 @@ interface GoogleClassroomViewProps {
 }
 
 // Mapping Configuration
-const CLASSROOM_TO_SUBJECT_MAP: { [key: string]: string } = {
+export const CLASSROOM_TO_SUBJECT_MAP: { [key: string]: string } = {
     "MBA-BA-2 - DA using Python": "PBA211",
     "MBA 2027- BA/ Production and Operations Management": "PBA204",
     "MBA BA SEM-II 2026": "PBA208", // Assuming this maps to Business Analytics code if not exact match, checking Subject codes is safer
