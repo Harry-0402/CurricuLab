@@ -341,71 +341,84 @@ export function AssignmentContent() {
 
             {/* Assignments Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {assignments.map((assignment) => (
-                    <div
-                        key={assignment.id}
-                        onClick={() => openDetailModal(assignment)}
-                        className="group bg-white border border-gray-100 rounded-[35px] p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer"
-                    >
+                {loading && subjects.length > 0 ? (
+                    <div className="col-span-full py-20 flex flex-col items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
+                        <p className="text-sm font-bold text-gray-400">Loading assignments...</p>
+                    </div>
+                ) : assignments.length === 0 ? (
+                    <div className="col-span-full py-20 bg-gray-50 rounded-[35px] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
+                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-gray-300 mb-4 shadow-sm">
+                            <Icons.Calendar size={28} />
+                        </div>
+                        <h3 className="text-xl font-black text-gray-900 mb-2">No Assignments Yet</h3>
+                        <p className="text-sm font-bold text-gray-400">Assignments are not Uploaded yet</p>
+                    </div>
+                ) : (
+                    assignments.map((assignment) => (
+                        <div
+                            key={assignment.id}
+                            onClick={() => openDetailModal(assignment)}
+                            className="group bg-white border border-gray-100 rounded-[35px] p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer"
+                        >
 
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-start">
-                                <div className="w-12 h-12 bg-gray-50 group-hover:bg-blue-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-blue-600 transition-colors duration-500">
-                                    <Icons.Calendar size={22} />
-                                </div>
-                                {/* Badges */}
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    {assignment.unitId && (() => {
-                                        const unitIndex = units.findIndex(u => u.id === assignment.unitId);
-                                        return (
-                                            <span className="h-12 px-4 bg-purple-100 text-purple-700 rounded-2xl text-xs font-bold flex items-center justify-center">
-                                                Unit {unitIndex + 1}
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-start">
+                                    <div className="w-12 h-12 bg-gray-50 group-hover:bg-blue-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-blue-600 transition-colors duration-500">
+                                        <Icons.Calendar size={22} />
+                                    </div>
+                                    {/* Badges */}
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        {assignment.unitId && (() => {
+                                            const unitIndex = units.findIndex(u => u.id === assignment.unitId);
+                                            return (
+                                                <span className="h-12 px-4 bg-purple-100 text-purple-700 rounded-2xl text-xs font-bold flex items-center justify-center">
+                                                    Unit {unitIndex + 1}
+                                                </span>
+                                            );
+                                        })()}
+                                        {assignment.platform && (
+                                            <span className="h-12 px-4 bg-blue-100 text-blue-700 rounded-2xl text-xs font-bold flex items-center justify-center">
+                                                {assignment.platform}
                                             </span>
-                                        );
-                                    })()}
-                                    {assignment.platform && (
-                                        <span className="h-12 px-4 bg-blue-100 text-blue-700 rounded-2xl text-xs font-bold flex items-center justify-center">
-                                            {assignment.platform}
-                                        </span>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="space-y-2">
-                                <h3 className="text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors">
-                                    {assignment.title}
-                                </h3>
-                                <div className="flex items-center gap-2 text-sm font-bold text-gray-400">
-                                    <Icons.List size={14} className="text-gray-300" />
-                                    <span>{assignment.questions.length} Questions</span>
+                                <div className="space-y-2">
+                                    <h3 className="text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors">
+                                        {assignment.title}
+                                    </h3>
+                                    <div className="flex items-center gap-2 text-sm font-bold text-gray-400">
+                                        <Icons.List size={14} className="text-gray-300" />
+                                        <span>{assignment.questions.length} Questions</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="pt-4 flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Due Date</span>
-                                    <span className="text-sm font-black text-gray-900">{assignment.dueDate}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); openEditModal(assignment); }}
-                                        className="p-3 bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
-                                    >
-                                        <Icons.Edit size={16} />
-                                    </button>
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(assignment.id); }}
-                                        className="p-3 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
-                                    >
-                                        <Icons.Delete size={16} />
-                                    </button>
+                                <div className="pt-4 flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Due Date</span>
+                                        <span className="text-sm font-black text-gray-900">{assignment.dueDate || 'No due date'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); openEditModal(assignment); }}
+                                            className="p-3 bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
+                                        >
+                                            <Icons.Edit size={16} />
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(assignment.id); }}
+                                            className="p-3 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
+                                        >
+                                            <Icons.Delete size={16} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-
-
+                    ))
+                )}
             </div>
 
             <AssignmentModal
@@ -439,15 +452,15 @@ export function AssignmentContent() {
                             <div className="p-8 pb-4 shrink-0">
                                 <DialogHeader>
                                     <div className="flex items-start justify-between gap-4">
-                                        <div className="flex-1">
+                                        <div className="flex-1 pr-12">
                                             <DialogTitle className="text-2xl font-black text-gray-900 pr-8">
                                                 {selectedAssignment.title}
                                             </DialogTitle>
                                             <DialogDescription asChild>
-                                                <div className="space-y-2">
+                                                <div className="space-y-2 mt-2">
                                                     <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
                                                         <Icons.Calendar size={14} />
-                                                        <span>Due: {selectedAssignment.dueDate}</span>
+                                                        <span>Due: {selectedAssignment.dueDate || 'No due date'}</span>
                                                         {selectedAssignment.unitId && (() => {
                                                             const unitIndex = units.findIndex(u => u.id === selectedAssignment.unitId);
                                                             return (
@@ -471,7 +484,7 @@ export function AssignmentContent() {
                                                 href={selectedAssignment.externalLink}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 shrink-0"
+                                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 shrink-0 mr-12"
                                             >
                                                 <Icons.Google size={14} />
                                                 Open in Classroom

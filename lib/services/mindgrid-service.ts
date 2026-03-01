@@ -28,8 +28,24 @@ export const MindGridService = {
             .single();
 
         if (error) {
-            console.error('Error creating agent:', error);
-            throw error;
+            console.error('Error creating agent:', error.message, error.details, error.hint);
+            throw new Error(error.message || 'Error creating agent');
+        }
+
+        return data as Agent;
+    },
+
+    async update(id: string, agent: Partial<Omit<Agent, 'id'>>): Promise<Agent | null> {
+        const { data, error } = await supabase
+            .from('mindgrid_agents')
+            .update(agent)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error updating agent:', error.message, error.details, error.hint);
+            throw new Error(error.message || 'Error updating agent');
         }
 
         return data as Agent;

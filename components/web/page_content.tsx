@@ -44,6 +44,30 @@ export default function WebHomePage() {
     return (
         <WebAppShell>
             <div className="flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* ERP Attendance Guide */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-[24px] p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+                    <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm shrink-0">
+                            <Icons.Info size={24} />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-black text-gray-900 mb-1">Check Your Attendance on Sandip ERP</h3>
+                            <p className="text-sm font-medium text-gray-600">
+                                To view your official attendance records, please visit the <strong>Sandip ERP</strong> portal. Navigate to the <strong>Main Menu &gt; View Subject</strong> section.
+                            </p>
+                        </div>
+                    </div>
+                    <a
+                        href="https://www.sandipuniversity.edu.in/erp-login.php"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-blue-200"
+                    >
+                        <span>Open Sandip ERP</span>
+                        <Icons.ExternalLink size={16} />
+                    </a>
+                </div>
+
                 <TimetableWidget entries={timetable} />
 
                 <AnnouncementWidget announcements={announcements} />

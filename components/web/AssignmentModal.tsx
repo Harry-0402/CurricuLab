@@ -274,8 +274,7 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Due Date</label>
                                     <input
                                         type="date"
-                                        required
-                                        value={formData.dueDate}
+                                        value={formData.dueDate || ''}
                                         onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                                         className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all cursor-pointer"
                                     />

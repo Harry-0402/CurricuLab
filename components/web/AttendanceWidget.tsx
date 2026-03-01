@@ -41,7 +41,6 @@ export function AttendanceWidget() {
     const [kpiCounts, setKpiCounts] = useState({ totalSubjects: 0, totalAssignments: 0 });
 
     // Feature Data
-    const [streak, setStreak] = useState({ currentStreak: 0, longestStreak: 0 });
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [upcomingDeadlines, setUpcomingDeadlines] = useState<Assignment[]>([]);
     const [attendanceAlerts, setAttendanceAlerts] = useState<{ subject: string, current: number, classesNeeded: number }[]>([]);
@@ -63,9 +62,6 @@ export function AttendanceWidget() {
 
             const kpis = await AttendanceService.getKPICounts();
             setKpiCounts(kpis);
-
-            const currentStreak = await AttendanceService.getStudyStreak();
-            setStreak(currentStreak);
 
             const myReminders = await ReminderService.getAllReminders();
             setReminders(myReminders);
@@ -254,39 +250,11 @@ export function AttendanceWidget() {
 
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left Column - Mark Attendance + Stats */}
-                <div className="space-y-6">
-                    <MarkAttendanceForm
-                        selectedDate={selectedDate}
-                        onDateChange={handleDateChange}
-                        selectedSubject={selectedSubject}
-                        onSubjectChange={setSelectedSubject}
-                        availableSubjects={availableSubjects}
-                        dayName={dayName}
-                        status={status}
-                        onStatusChange={setStatus}
-                        isSubmitting={isSubmitting}
-                        onSubmit={handleSubmit}
-                        verificationImage={verificationImage}
-                        onVerificationComplete={setVerificationImage}
-                        onDailyCheckIn={handleDailyCheckIn}
-                    />
+            <div className="space-y-8">
+                <KPICards counts={kpiCounts} />
 
-                    <AttendanceStatsCard stats={stats} loading={loading} />
-
-                    <MissingRecordsSuggestions
-                        missingRecords={missingRecords}
-                        onQuickLog={handleQuickLog}
-                    />
-                </div>
-
-                {/* Right Column - KPI Cards + Actions */}
-                <div className="space-y-6">
-                    <KPICards counts={kpiCounts} />
-
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <ProgressSection
-                        streak={streak}
                         reminders={reminders}
                         onAddReminder={handleAddReminder}
                         onToggleReminder={handleToggleReminder}
@@ -295,27 +263,11 @@ export function AttendanceWidget() {
 
                     <AlertsSection
                         upcomingDeadlines={upcomingDeadlines}
-                        attendanceAlerts={attendanceAlerts}
                     />
                 </div>
             </div>
 
-            <AttendanceLogsTable
-                logs={logs}
-                currentMonth={currentMonth}
-                onMonthChange={setCurrentMonth}
-                filterSubject={filterSubject}
-                onFilterSubjectChange={setFilterSubject}
-                filterStatus={filterStatus}
-                onFilterStatusChange={setFilterStatus}
-                subjects={subjects}
-                selectedLogs={selectedLogs}
-                onToggleSelectLog={handleToggleSelectLog}
-                onToggleSelectAll={handleToggleSelectAll}
-                onDeleteLog={handleDeleteLog}
-                onBulkDelete={handleBulkDelete}
-                onUpdateStatus={handleUpdateLogStatus}
-            />
+            {/* Attendance Logs Table removed */}
         </>
     );
 }

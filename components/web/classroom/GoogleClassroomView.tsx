@@ -71,7 +71,7 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
         setImportModal({ isOpen: true, work });
     };
 
-    const handleConfirmImport = async (parseAttachments: boolean) => {
+    const handleConfirmImport = async (importMode: 'text' | 'instructions' | 'attachments') => {
         const work = importModal.work;
         if (!work || !selectedCourse) return;
 
@@ -104,15 +104,15 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                 questions: [],
                 dueDate: work.dueDate ?
                     `${work.dueDate.year}-${String(work.dueDate.month).padStart(2, '0')}-${String(work.dueDate.day).padStart(2, '0')}` :
-                    new Date().toISOString(),
+                    null,
                 platform: 'GCR',
                 gcrId: work.id,
                 externalLink: work.alternateLink,
                 unitId: undefined
             };
 
-            // 2. Optional AI Parsing from attachment
-            if (parseAttachments) {
+            // 2. Optional AI Parsing
+            if (importMode === 'attachments') {
                 const firstAttachment = work.materials?.find(m => m.driveFile || m.link);
                 if (firstAttachment) {
                     setIsParsing(true);
@@ -162,6 +162,27 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                     }
                 } else {
                     toast.info("No attachments found to parse, proceeding with basic import.");
+                }
+            } else if (importMode === 'instructions') {
+                if (work.description) {
+                    setIsParsing(true);
+                    try {
+                        const { AiService } = await import('@/lib/services/ai-service');
+                        const extractedQuestions = await AiService.extractQuestionsFromContent(work.description, undefined);
+
+                        assignmentData = {
+                            ...assignmentData,
+                            questions: (extractedQuestions || []).map((q: string) => ({ id: crypto.randomUUID(), text: q }))
+                        };
+                        toast.success("AI extracted questions from instructions!");
+                    } catch (err) {
+                        console.error("AI parsing failed:", err);
+                        toast.error("AI parsing failed, proceeding with basic import.");
+                    } finally {
+                        setIsParsing(false);
+                    }
+                } else {
+                    toast.info("No instructions found to parse, proceeding with basic import.");
                 }
             }
 
@@ -715,20 +736,29 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                             )}
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex flex-col gap-3">
                             <button
-                                onClick={() => handleConfirmImport(false)}
-                                className="flex-1 px-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 hover:bg-gray-100 hover:text-gray-900 transition-all border border-gray-100"
+                                onClick={() => handleConfirmImport('text')}
+                                className="w-full px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 hover:bg-gray-100 hover:text-gray-900 transition-all border border-gray-100"
                             >
-                                No, Import Only Text
+                                No, Import Only Title & Text
                             </button>
-                            <button
-                                onClick={() => handleConfirmImport(true)}
-                                className="flex-[1.5] px-4 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 group"
-                            >
-                                <Icons.Wand2 size={14} className="group-hover:rotate-12 transition-transform" />
-                                Yes, Parse with AI
-                            </button>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => handleConfirmImport('instructions')}
+                                    className="flex-1 px-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all border border-blue-200 flex items-center justify-center gap-2 group"
+                                >
+                                    <Icons.FileText size={14} className="group-hover:scale-110 transition-transform" />
+                                    Parse Instructions
+                                </button>
+                                <button
+                                    onClick={() => handleConfirmImport('attachments')}
+                                    className="flex-[1.2] px-4 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 group"
+                                >
+                                    <Icons.Wand2 size={14} className="group-hover:rotate-12 transition-transform" />
+                                    Parse Attachments
+                                </button>
+                            </div>
                         </div>
                     </div>
 

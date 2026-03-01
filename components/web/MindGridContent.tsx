@@ -16,7 +16,7 @@ export interface Agent {
     description: string;
     url: string;
     platform: 'openai' | 'google' | 'other';
-    category: 'General' | 'Research' | 'Coding' | 'Creative';
+    category: 'General' | 'Writing' | 'Productivity' | 'Research & Analysis' | 'Education' | 'Lifestyle' | 'DALL·E' | 'Programming';
     is_default?: boolean;
 }
 
@@ -24,6 +24,7 @@ export default function MindGridContent() {
     const [agents, setAgents] = useState<Agent[]>([]);
     const [activeFilter, setActiveFilter] = useState<'All' | Agent['platform']>('All');
     const [showAddModal, setShowAddModal] = useState(false);
+    const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<any>(null);
 
@@ -63,13 +64,18 @@ export default function MindGridContent() {
         loadAgents(true);
     }, []);
 
-    const handleAddAgent = async (newAgent: Omit<Agent, 'id'>) => {
+    const handleSaveAgent = async (agentData: Omit<Agent, 'id'>, id?: string) => {
         try {
-            await MindGridService.create(newAgent);
+            if (id) {
+                await MindGridService.update(id, agentData);
+            } else {
+                await MindGridService.create(agentData);
+            }
             await loadAgents();
             setShowAddModal(false);
+            setEditingAgent(null);
         } catch (error) {
-            console.error('Failed to add agent:', error);
+            console.error('Failed to save agent:', error);
         }
     };
 
@@ -127,8 +133,12 @@ export default function MindGridContent() {
         <WebAppShell>
             <AddAgentModal
                 isOpen={showAddModal}
-                onClose={() => setShowAddModal(false)}
-                onAdd={handleAddAgent}
+                onClose={() => {
+                    setShowAddModal(false);
+                    setEditingAgent(null);
+                }}
+                onSave={handleSaveAgent}
+                initialData={editingAgent}
             />
 
             <div className="max-w-[1400px] mx-auto p-4 animate-in fade-in duration-500">
@@ -144,7 +154,10 @@ export default function MindGridContent() {
                     </div>
 
                     <button
-                        onClick={() => setShowAddModal(true)}
+                        onClick={() => {
+                            setEditingAgent(null);
+                            setShowAddModal(true);
+                        }}
                         className="flex items-center gap-3 px-6 py-4 bg-gray-900 text-white rounded-[24px] font-black uppercase tracking-widest text-xs shadow-xl shadow-gray-200 hover:scale-[1.02] transition-all active:scale-95"
                     >
                         <Icons.Plus size={18} />
@@ -214,13 +227,25 @@ export default function MindGridContent() {
                                     </a>
 
                                     {!agent.is_default && agent.user_id === currentUser?.id && (
-                                        <button
-                                            onClick={() => handleDeleteAgent(agent.id)}
-                                            className="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50"
-                                            title="Unregister Unit"
-                                        >
-                                            <Icons.Trash2 size={18} />
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setEditingAgent(agent);
+                                                    setShowAddModal(true);
+                                                }}
+                                                className="p-3 text-gray-300 hover:text-indigo-500 transition-colors rounded-xl hover:bg-indigo-50"
+                                                title="Edit Unit"
+                                            >
+                                                <Icons.PenLine size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteAgent(agent.id)}
+                                                className="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50"
+                                                title="Unregister Unit"
+                                            >
+                                                <Icons.Trash2 size={18} />
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
 
