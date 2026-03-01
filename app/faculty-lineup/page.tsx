@@ -6,6 +6,8 @@ import { FacultyLineup } from '@/components/web/FacultyLineup';
 import { getTimetable } from '@/lib/services/timetable-service';
 import { FacultyService, Person } from '@/lib/data/faculty-service';
 import { TimetableEntry } from '@/types';
+import Link from 'next/link';
+import { Icons } from '@/components/shared/Icons';
 
 export default function FacultyLineupPage() {
     const [entries, setEntries] = useState<TimetableEntry[]>([]);
@@ -35,12 +37,19 @@ export default function FacultyLineupPage() {
         <WebAppShell>
             <div className="flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1800px] mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between shrink-0">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between shrink-0 gap-4">
                     <div>
                         <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Instructors</h1>
                         <p className="text-4xl font-black text-gray-900 tracking-tight">Faculty Lineup</p>
                         <p className="text-sm text-gray-500 mt-1">Meet your professors and fellows</p>
                     </div>
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm w-fit"
+                    >
+                        <Icons.ArrowLeft size={16} />
+                        <span>Back to Dashboard</span>
+                    </Link>
                 </div>
 
                 {isLoading ? (
