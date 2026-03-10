@@ -22,7 +22,8 @@ export const CLASSROOM_TO_SUBJECT_MAP: { [key: string]: string } = {
     "Data Analysis using Power BI PBA313": "PBA212",
     "Data Visualization & Story Telling": "PBA207",
     "MBA-BA-2- Digital Transformation": "PBA205",
-    "MBA (BA) and (BFS)": "PBA206"
+    "MBA (BA) and (BFS)": "PBA206",
+    "Sandeep Uni - MBA 2nd year Business Communications Skills II": "PBA213"
 };
 
 export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, selectedCourse }: GoogleClassroomViewProps) {
