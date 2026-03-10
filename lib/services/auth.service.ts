@@ -101,5 +101,13 @@ export const AuthService = {
             },
         });
         return { data, error };
+    },
+
+    async signInWithGoogleIdToken(token: string) {
+        const { data, error } = await supabase.auth.signInWithIdToken({
+            provider: 'google',
+            token,
+        })
+        return { data, error };
     }
 };

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/lib/services/auth.service';
 import { Icons } from '@/components/shared/Icons';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -11,6 +12,28 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+        setLoading(true);
+        setError(null);
+        try {
+            if (!credentialResponse.credential) throw new Error("No credential received from Google");
+
+            // Pass the ID token directly to Supabase
+            const { error: supaError } = await AuthService.signInWithGoogleIdToken(credentialResponse.credential);
+            if (supaError) throw supaError;
+
+            router.push('/');
+            router.refresh();
+        } catch (err: any) {
+            setError(err.message || "Failed to sign in with Google");
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleError = () => {
+        setError('Google Sign-In failed or was cancelled.');
+    };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -121,15 +144,17 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                        <button
-                            type="button"
-                            onClick={() => AuthService.signInWithOAuth('google')}
-                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-[20px] hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
-                        >
-                            <Icons.Google size={20} className="text-gray-900 group-hover:scale-110 transition-transform" />
-                            <span className="text-xs font-bold text-gray-700 group-hover:text-blue-600">Google</span>
-                        </button>
+                    <div className="flex flex-col gap-3">
+                        <div className="w-full flex justify-center bg-white border border-gray-200 rounded-[20px] p-1.5 hover:shadow-lg hover:shadow-blue-500/5 transition-all">
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleError}
+                                theme="outline"
+                                text="continue_with"
+                                shape="pill"
+                                width="100%"
+                            />
+                        </div>
                         <button
                             type="button"
                             onClick={() => AuthService.signInWithOAuth('github')}
