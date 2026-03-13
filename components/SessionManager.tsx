@@ -35,7 +35,7 @@ export function SessionManager() {
             checkInterval = setInterval(async () => {
                 const inactiveTime = Date.now() - lastActivity;
 
-                // Show warning 2 minutes before logout
+                // Show warning only if we are approaching the end of the 30-day window (within the last hour)
                 if (inactiveTime >= AUTH_CONFIG.SESSION_TIMEOUT_MS - AUTH_CONFIG.WARNING_TIME_MS && !warningShown) {
                     setShowWarning(true);
                     warningShown = true;
@@ -47,11 +47,11 @@ export function SessionManager() {
                     }, 1000);
                 }
 
-                // Logout after timeout
+                // Sign out only if we've actually hit the 30-day limit
                 if (inactiveTime >= AUTH_CONFIG.SESSION_TIMEOUT_MS) {
                     clearInterval(warningCountdown);
                     await supabase.auth.signOut();
-                    router.push('/'); // Redirect to guest mode (Dashboard)
+                    router.push('/');
                 }
             }, AUTH_CONFIG.CHECK_INTERVAL_MS);
 

@@ -9,6 +9,7 @@ import { Assignment } from '@/types';
 import { Icons } from '../shared/Icons';
 import { KeepAlive } from '../shared/KeepAlive';
 import { RestrictedAccess } from '../shared/RestrictedAccess';
+import { LastVisitManager } from '../shared/LastVisitManager';
 import { usePathname } from 'next/navigation';
 
 export function WebAppShell({ children }: { children: React.ReactNode }) {

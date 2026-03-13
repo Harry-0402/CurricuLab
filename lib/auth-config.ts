@@ -1,12 +1,12 @@
 export const AUTH_CONFIG = {
-    // Session timeout in milliseconds (15 minutes)
-    SESSION_TIMEOUT_MS: 15 * 60 * 1000,
+    // Session timeout in milliseconds (30 days)
+    SESSION_TIMEOUT_MS: 30 * 24 * 60 * 60 * 1000,
 
-    // Warning time before logout (2 minutes)
-    WARNING_TIME_MS: 2 * 60 * 1000,
+    // Warning time before logout (1 hour)
+    WARNING_TIME_MS: 60 * 60 * 1000,
 
-    // How often to check for timeout (30 seconds)
-    CHECK_INTERVAL_MS: 30 * 1000,
+    // How often to check for timeout (1 hour)
+    CHECK_INTERVAL_MS: 60 * 60 * 1000,
 } as const;
 
 // Get timeout from environment or use defaults
