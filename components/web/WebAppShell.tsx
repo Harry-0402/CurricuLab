@@ -14,6 +14,30 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
     // Alert State
     const [dueAlerts, setDueAlerts] = useState<Assignment[]>([]);
     const [showDueAlert, setShowDueAlert] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+    // Track Auth State
+    useEffect(() => {
+        let subscription: any;
+
+        const setupAuth = async () => {
+            const { supabase } = await import('@/utils/supabase/client');
+            const { data: { session } } = await supabase.auth.getSession();
+            setUser(session?.user ?? null);
+            setIsAuthLoading(false);
+
+            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null);
+            });
+            subscription = data.subscription;
+        };
+
+        setupAuth();
+        return () => {
+            if (subscription) subscription.unsubscribe();
+        };
+    }, []);
 
 
     // Check for due assignments globally
@@ -42,7 +66,8 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
 
     return (
         <div className="flex h-full w-full bg-[#fafbfc] overflow-hidden pb-[env(safe-area-inset-bottom)] print:h-auto print:!overflow-visible print:bg-white">
-            <KeepAlive />
+            {user && <KeepAlive />}
+            {user && <AutoLogout />}
             <WebSidebar />
             <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden print:h-auto print:!overflow-visible print:block">
                 <WebHeader />

@@ -36,15 +36,29 @@ export async function middleware(req: NextRequest) {
         data: { session },
     } = await supabase.auth.getSession();
 
+    // List of public paths and prefixes
+    const publicPaths = [
+        '/', '/subjects', '/unauthorized',
+        '/tools/mindgrid', '/tools/prompts',
+        '/tools/resume',
+        '/skillforge', '/focus',
+        '/community', '/faculty-fellows', '/docs'
+    ];
+    const publicPrefixes = ['/subject/', '/unit/'];
+
+    const isPublicPath = publicPaths.includes(req.nextUrl.pathname) || 
+                         publicPrefixes.some(prefix => req.nextUrl.pathname.startsWith(prefix));
+
     // Secure Dashboard Protection
     // If no session and trying to access protected routes
     if (!session &&
+        !isPublicPath &&
         req.nextUrl.pathname !== '/login' &&
         req.nextUrl.pathname !== '/forgot-password' &&
         !req.nextUrl.pathname.startsWith('/auth')
     ) {
         const redirectUrl = req.nextUrl.clone();
-        redirectUrl.pathname = '/login';
+        redirectUrl.pathname = '/';
         return NextResponse.redirect(redirectUrl);
     }
 
@@ -56,7 +70,7 @@ export async function middleware(req: NextRequest) {
     }
 
     // CHECK AUTHORIZATION (Whitelist) - Only for authenticated users
-    if (session) {
+    if (session && !isPublicPath) {
         // Query authorized_users table to verify this email is allowed (Case-insensitive)
         const { data: isAuthorized, error } = await supabase
             .from('authorized_users')
@@ -86,6 +100,6 @@ export const config = {
          * - api (API routes, except likely auth)
          * - assets (public assets)
          */
-        '/((?!_next/static|_next/image|favicon.ico|api|assets).*)',
+        '/((?!_next/static|_next/image|favicon.ico|api|assets|.*\\..*).*)',
     ],
 };

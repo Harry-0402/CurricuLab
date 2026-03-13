@@ -16,7 +16,7 @@ export function AutoLogout() {
         try {
             await AuthService.signOut();
             showToast("Session Expired: You have been logged out due to inactivity.", "error");
-            router.push('/login');
+            router.push('/');
         } catch (error) {
             console.error("Auto logout failed", error);
         }

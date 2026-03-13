@@ -50,12 +50,32 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const [initialDay, setInitialDay] = useState<string | undefined>(undefined);
     const [initialTime, setInitialTime] = useState<string | undefined>(undefined);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
+
+    React.useEffect(() => {
+        let subscription: any;
+        const setupAuth = async () => {
+            const { supabase } = await import('@/utils/supabase/client');
+            const { data: { session } } = await supabase.auth.getSession();
+            setUser(session?.user ?? null);
+
+            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null);
+            });
+            subscription = data.subscription;
+        };
+        setupAuth();
+        return () => {
+            if (subscription) subscription.unsubscribe();
+        };
+    }, []);
 
     const getEntry = (day: string, time: string) => {
         return entries.find(e => e.day === day && e.startTime === time);
     };
 
     const handleAdd = (day?: string, time?: string) => {
+        if (!user) return;
         setInitialDay(day || 'Monday');
         setInitialTime(time || '09:00 AM');
         setSelectedEntry(undefined);
@@ -63,6 +83,7 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     };
 
     const handleEdit = (entry: TimetableEntry) => {
+        if (!user) return;
         setSelectedEntry(entry);
         setIsModalOpen(true);
     };
@@ -102,20 +123,24 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                         <Icons.Users size={18} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
                         <span>Faculty Lineup</span>
                     </button>
-                    <button
-                        onClick={() => handleAdd()}
-                        className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gray-200 group"
-                    >
-                        <Icons.Plus size={18} className="group-hover:rotate-90 transition-transform" />
-                        <span>New Entry</span>
-                    </button>
-                    <button
-                        onClick={() => setIsSettingsOpen(true)}
-                        aria-label="Open widget settings"
-                        className="p-3 text-gray-400 hover:text-gray-900 hover:bg-white border border-transparent hover:border-gray-100 rounded-2xl transition-all shadow-none hover:shadow-sm"
-                    >
-                        <Icons.Settings size={22} />
-                    </button>
+                    {user && (
+                        <>
+                            <button
+                                onClick={() => handleAdd()}
+                                className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gray-200 group"
+                            >
+                                <Icons.Plus size={18} className="group-hover:rotate-90 transition-transform" />
+                                <span>New Entry</span>
+                            </button>
+                            <button
+                                onClick={() => setIsSettingsOpen(true)}
+                                aria-label="Open widget settings"
+                                className="p-3 text-gray-400 hover:text-gray-900 hover:bg-white border border-transparent hover:border-gray-100 rounded-2xl transition-all shadow-none hover:shadow-sm"
+                            >
+                                <Icons.Settings size={22} />
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -154,14 +179,17 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                                             <div key={`${day}-${time}`} className="relative h-full min-h-[100px]">
                                                 {entry ? (
                                                     <div
-                                                        onClick={() => handleEdit(entry)}
+                                                        onClick={() => user && handleEdit(entry)}
                                                         className={cn(
-                                                            "h-full p-2 md:p-4 rounded-2xl md:rounded-3xl border-2 border-transparent transition-all hover:scale-[1.03] hover:shadow-2xl cursor-pointer group/item relative overflow-hidden flex flex-col justify-between shadow-lg ring-4 ring-transparent hover:ring-white",
+                                                            "h-full p-2 md:p-4 rounded-2xl md:rounded-3xl border-2 border-transparent transition-all relative overflow-hidden flex flex-col justify-between shadow-lg",
+                                                            user ? "hover:scale-[1.03] hover:shadow-2xl cursor-pointer group/item ring-4 ring-transparent hover:ring-white" : "cursor-default ring-0",
                                                             getEntryStyles(entry.subjectCode)
                                                         )}
                                                     >
                                                         {/* Glow effect on hover */}
-                                                        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                                                        {user && (
+                                                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                                                        )}
 
                                                         <div className="space-y-0.5 md:space-y-1 relative z-10">
                                                             <div className="flex items-center justify-between">
@@ -189,12 +217,17 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                                                     </div>
                                                 ) : (
                                                     <div
-                                                        onClick={() => handleAdd(day, time)}
-                                                        className="h-full rounded-2xl md:rounded-3xl border-2 border-dashed border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all flex flex-col items-center justify-center group/empty gap-1 md:gap-2 cursor-pointer"
+                                                        onClick={() => user && handleAdd(day, time)}
+                                                        className={cn(
+                                                            "h-full rounded-2xl md:rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-1 md:gap-2",
+                                                            user ? "border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 group/empty cursor-pointer" : "border-gray-50 bg-gray-50/20 cursor-default"
+                                                        )}
                                                     >
-                                                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover/empty:scale-110 group-hover/empty:bg-white group-hover/empty:shadow-sm transition-all">
-                                                            <Icons.Plus size={16} className="text-gray-300 group-hover/empty:text-blue-500 transition-colors" />
-                                                        </div>
+                                                        {user && (
+                                                            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover/empty:scale-110 group-hover/empty:bg-white group-hover/empty:shadow-sm transition-all">
+                                                                <Icons.Plus size={16} className="text-gray-300 group-hover/empty:text-blue-500 transition-colors" />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>

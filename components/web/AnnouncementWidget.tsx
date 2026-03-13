@@ -17,6 +17,25 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | undefined>(undefined);
+    const [user, setUser] = useState<any>(null);
+
+    React.useEffect(() => {
+        let subscription: any;
+        const setupAuth = async () => {
+            const { supabase } = await import('@/utils/supabase/client');
+            const { data: { session } } = await supabase.auth.getSession();
+            setUser(session?.user ?? null);
+
+            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null);
+            });
+            subscription = data.subscription;
+        };
+        setupAuth();
+        return () => {
+            if (subscription) subscription.unsubscribe();
+        };
+    }, []);
 
     const handleAdd = () => {
         setSelectedAnnouncement(undefined);
@@ -46,94 +65,114 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Latest updates from faculty</p>
                     </div>
                 </div>
-                <div className="flex gap-3">
-                    <button
-                        onClick={handleAdd}
-                        className="p-3 text-gray-400 hover:text-blue-600 hover:bg-white border border-transparent hover:border-blue-100 rounded-2xl transition-all shadow-none hover:shadow-sm group"
-                    >
-                        <Icons.Plus size={22} className="group-hover:rotate-90 transition-transform" />
-                    </button>
-                    <button
-                        onClick={() => setIsSettingsOpen(true)}
-                        className="p-3 text-gray-400 hover:text-gray-900 hover:bg-white border border-transparent hover:border-gray-100 rounded-2xl transition-all shadow-none hover:shadow-sm"
-                    >
-                        <Icons.Settings size={22} />
-                    </button>
-                </div>
+                {user && (
+                    <div className="flex gap-3">
+                        <button
+                            onClick={handleAdd}
+                            className="p-3 text-gray-400 hover:text-blue-600 hover:bg-white border border-transparent hover:border-blue-100 rounded-2xl transition-all shadow-none hover:shadow-sm group"
+                        >
+                            <Icons.Plus size={22} className="group-hover:rotate-90 transition-transform" />
+                        </button>
+                        <button
+                            onClick={() => setIsSettingsOpen(true)}
+                            className="p-3 text-gray-400 hover:text-gray-900 hover:bg-white border border-transparent hover:border-gray-100 rounded-2xl transition-all shadow-none hover:shadow-sm"
+                        >
+                            <Icons.Settings size={22} />
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Content Section - Professional Card Grid within an integrated Card */}
-            <div className="bg-white p-8 md:p-10 rounded-[32px] border border-gray-100 shadow-sm space-y-10 overflow-hidden relative">
+            <div className="bg-white p-8 md:p-10 rounded-[32px] border border-gray-100 shadow-sm space-y-10 overflow-hidden relative min-h-[200px] flex flex-col justify-center">
                 <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
                     <Icons.Analytics size={120} className="text-blue-500" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                    {announcements.map((ann) => (
-                        <div
-                            key={ann.id}
-                            onClick={() => handleView(ann)}
-                            className={cn(
-                                "p-8 rounded-[32px] border-2 relative group transition-all hover:scale-[1.02] cursor-pointer shadow-sm hover:shadow-xl flex flex-col h-full",
-                                ann.type === 'warning' ? "bg-gradient-to-br from-orange-50 to-white border-orange-100" :
-                                    ann.type === 'success' ? "bg-gradient-to-br from-green-50 to-white border-green-100" :
-                                        "bg-gradient-to-br from-blue-50 to-white border-blue-100"
-                            )}
-                        >
-                            <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); handleEdit(ann); }}
-                                    className="p-2 bg-white/80 backdrop-blur-md text-gray-400 hover:text-blue-600 rounded-xl shadow-sm border border-gray-100"
-                                >
-                                    <Icons.Edit size={14} />
-                                </button>
-                            </div>
-
-                            <div className="flex items-start gap-4 mb-4">
-                                <div className={cn(
-                                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                                    ann.type === 'warning' ? "bg-orange-100 text-orange-600" :
-                                        ann.type === 'success' ? "bg-green-100 text-green-600" :
-                                            "bg-blue-100 text-blue-600"
-                                )}>
-                                    {ann.type === 'warning' ? <Icons.Trend size={20} /> : <Icons.Subjects size={20} />}
+                {user ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                        {announcements.map((ann) => (
+                            <div
+                                key={ann.id}
+                                onClick={() => handleView(ann)}
+                                className={cn(
+                                    "p-8 rounded-[32px] border-2 relative group transition-all hover:scale-[1.02] cursor-pointer shadow-sm hover:shadow-xl flex flex-col h-full",
+                                    ann.type === 'warning' ? "bg-gradient-to-br from-orange-50 to-white border-orange-100" :
+                                        ann.type === 'success' ? "bg-gradient-to-br from-green-50 to-white border-green-100" :
+                                            "bg-gradient-to-br from-blue-50 to-white border-blue-100"
+                                )}
+                            >
+                                <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); handleEdit(ann); }}
+                                        className="p-2 bg-white/80 backdrop-blur-md text-gray-400 hover:text-blue-600 rounded-xl shadow-sm border border-gray-100"
+                                    >
+                                        <Icons.Edit size={14} />
+                                    </button>
                                 </div>
-                                <div>
-                                    <h4 className="font-black text-gray-900 leading-snug pr-8">{ann.title}</h4>
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{ann.date}</span>
-                                </div>
-                            </div>
 
-                            <p className="text-sm text-gray-600 leading-relaxed mb-6 font-medium flex-grow">{ann.content}</p>
-
-                            <div className="flex items-center justify-between mt-auto">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex -space-x-2">
-                                        {[1, 2, 3].map(i => (
-                                            <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
-                                                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${ann.id + i}`} alt="Faculty" />
-                                            </div>
-                                        ))}
+                                <div className="flex items-start gap-4 mb-4">
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                                        ann.type === 'warning' ? "bg-orange-100 text-orange-600" :
+                                            ann.type === 'success' ? "bg-green-100 text-green-600" :
+                                                "bg-blue-100 text-blue-600"
+                                    )}>
+                                        {ann.type === 'warning' ? <Icons.Trend size={20} /> : <Icons.Subjects size={20} />}
                                     </div>
-                                    {ann.attachmentUrl && (
-                                        <div className="flex items-center gap-1 text-blue-500 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100">
-                                            <Icons.Paperclip size={10} />
-                                            <span className="text-[9px] font-black uppercase">Attach</span>
-                                        </div>
-                                    )}
+                                    <div>
+                                        <h4 className="font-black text-gray-900 leading-snug pr-8">{ann.title}</h4>
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{ann.date}</span>
+                                    </div>
                                 </div>
-                                <span className={cn(
-                                    "text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-sm",
-                                    ann.type === 'warning' ? "text-orange-600 bg-white border border-orange-100" :
-                                        ann.type === 'success' ? "text-green-600 bg-white border border-green-100" :
-                                            "text-blue-600 bg-white border border-blue-100"
-                                )}>
-                                    {ann.type}
-                                </span>
+
+                                <p className="text-sm text-gray-600 leading-relaxed mb-6 font-medium flex-grow">{ann.content}</p>
+
+                                <div className="flex items-center justify-between mt-auto">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex -space-x-2">
+                                            {[1, 2, 3].map(i => (
+                                                <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
+                                                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${ann.id + i}`} alt="Faculty" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                        {ann.attachmentUrl && (
+                                            <div className="flex items-center gap-1 text-blue-500 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100">
+                                                <Icons.Paperclip size={10} />
+                                                <span className="text-[9px] font-black uppercase">Attach</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <span className={cn(
+                                        "text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-sm",
+                                        ann.type === 'warning' ? "text-orange-600 bg-white border border-orange-100" :
+                                            ann.type === 'success' ? "text-green-600 bg-white border border-green-100" :
+                                                "text-blue-600 bg-white border border-blue-100"
+                                    )}>
+                                        {ann.type}
+                                    </span>
+                                </div>
                             </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center text-center py-10 space-y-6 relative z-10">
+                        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-3xl flex items-center justify-center shadow-inner">
+                            <Icons.Lock size={32} />
                         </div>
-                    ))}
-                </div>
+                        <div className="max-w-xs">
+                            <h3 className="text-xl font-black text-gray-900 mb-2">Restricted Access</h3>
+                            <p className="text-sm font-medium text-gray-500">Sign in to view the latest announcements and updates from faculty members.</p>
+                        </div>
+                        <a
+                            href={`/login?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '/')}`}
+                            className="px-8 py-3 bg-gray-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gray-200"
+                        >
+                            Log In to View
+                        </a>
+                    </div>
+                )}
             </div>
 
             <AnnouncementModal
@@ -157,7 +196,7 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                                     {selectedAnnouncement.type === 'warning' ? <Icons.Trend size={24} /> : <Icons.Subjects size={24} />}
                                 </div>
                                 <DialogTitle className="text-xl font-black text-gray-900">{selectedAnnouncement.title}</DialogTitle>
-                                <DialogDescription className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 mt-1">
                                     <span className="text-xs font-bold text-gray-400">{selectedAnnouncement.date}</span>
                                     <span className={cn(
                                         "text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full",
@@ -167,7 +206,7 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                                     )}>
                                         {selectedAnnouncement.type}
                                     </span>
-                                </DialogDescription>
+                                </div>
                             </DialogHeader>
 
                             <div className="mt-4 space-y-6">
@@ -237,6 +276,6 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                 onClose={() => setIsSettingsOpen(false)}
                 widgetName="Board Announcements"
             />
-        </div >
+        </div>
     );
 }

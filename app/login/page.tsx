@@ -1,12 +1,15 @@
 "use client"
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthService } from '@/lib/services/auth.service';
 import { Icons } from '@/components/shared/Icons';
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/';
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -20,7 +23,7 @@ export default function LoginPage() {
         try {
             const { error } = await AuthService.signIn(email, password);
             if (error) throw error;
-            router.push('/');
+            router.push(callbackUrl);
             router.refresh(); // Refresh to ensure middleware/client state updates
         } catch (err: any) {
             setError(err.message || "Failed to sign in");
@@ -124,7 +127,7 @@ export default function LoginPage() {
                     <div className="grid grid-cols-2 gap-3">
                         <button
                             type="button"
-                            onClick={() => AuthService.signInWithOAuth('google')}
+                            onClick={() => AuthService.signInWithOAuth('google', callbackUrl)}
                             className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-[20px] hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
                         >
                             <Icons.Google size={20} className="text-gray-900 group-hover:scale-110 transition-transform" />
@@ -132,7 +135,7 @@ export default function LoginPage() {
                         </button>
                         <button
                             type="button"
-                            onClick={() => AuthService.signInWithOAuth('github')}
+                            onClick={() => AuthService.signInWithOAuth('github', callbackUrl)}
                             className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-[20px] hover:border-gray-300 hover:bg-gray-50 hover:shadow-lg hover:shadow-gray-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
                         >
                             <Icons.Github size={20} className="text-gray-900 group-hover:scale-110 transition-transform" />

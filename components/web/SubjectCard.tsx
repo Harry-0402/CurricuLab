@@ -39,7 +39,26 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
     }
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [user, setUser] = React.useState<any>(null);
     const menuRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        let subscription: any;
+        const setupAuth = async () => {
+            const { supabase } = await import('@/utils/supabase/client');
+            const { data: { session } } = await supabase.auth.getSession();
+            setUser(session?.user ?? null);
+
+            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null);
+            });
+            subscription = data.subscription;
+        };
+        setupAuth();
+        return () => {
+            if (subscription) subscription.unsubscribe();
+        };
+    }, []);
 
     React.useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -89,40 +108,42 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
                         )}
                     </div>
 
-                    <div className="relative" ref={menuRef}>
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setIsMenuOpen(!isMenuOpen);
-                            }}
-                            className={cn(
-                                "p-2 rounded-xl transition-all active:scale-95",
-                                isMenuOpen ? "text-blue-600 bg-blue-50" : "text-gray-300 hover:text-blue-600 hover:bg-blue-50"
-                            )}
-                        >
-                            <Icons.MoreVertical size={20} />
-                        </button>
+                    {user && (
+                        <div className="relative" ref={menuRef}>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setIsMenuOpen(!isMenuOpen);
+                                }}
+                                className={cn(
+                                    "p-2 rounded-xl transition-all active:scale-95",
+                                    isMenuOpen ? "text-blue-600 bg-blue-50" : "text-gray-300 hover:text-blue-600 hover:bg-blue-50"
+                                )}
+                            >
+                                <Icons.MoreVertical size={20} />
+                            </button>
 
-                        {isMenuOpen && (
-                            <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 animate-in fade-in zoom-in-95 z-20">
-                                {[
-                                    { label: 'Add Unit', icon: Icons.PlusCircle, color: 'text-blue-600' },
-                                    { label: 'Edit', icon: Icons.Edit, color: 'text-gray-600' },
-                                    { label: 'Remove', icon: Icons.Trash2, color: 'text-red-500' }
-                                ].map((opt, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={(e) => handleAction(e, opt.label)}
-                                        className="w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 transition-colors"
-                                    >
-                                        <opt.icon size={14} className={opt.color} />
-                                        <span className={opt.color}>{opt.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                            {isMenuOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 animate-in fade-in zoom-in-95 z-20">
+                                    {[
+                                        { label: 'Add Unit', icon: Icons.PlusCircle, color: 'text-blue-600' },
+                                        { label: 'Edit', icon: Icons.Edit, color: 'text-gray-600' },
+                                        { label: 'Remove', icon: Icons.Trash2, color: 'text-red-500' }
+                                    ].map((opt, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={(e) => handleAction(e, opt.label)}
+                                            className="w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                                        >
+                                            <opt.icon size={14} className={opt.color} />
+                                            <span className={opt.color}>{opt.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex-1">

@@ -15,7 +15,7 @@ export function WebHeader() {
     const handleLogout = async () => {
         try {
             await import('@/lib/services/auth.service').then(mod => mod.AuthService.signOut());
-            window.location.href = '/login';
+            window.location.href = '/';
         } catch (error) {
             console.error('Logout failed', error);
         }
@@ -63,12 +63,10 @@ export function WebHeader() {
         <header className="h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-8 flex items-center justify-between print:hidden">
             <div>
                 <h1 className="text-sm font-medium text-gray-500 mb-0.5">Hello,</h1>
-                <p className="text-lg font-bold text-gray-900 capitalize">{displayName}</p>
+                <p className="text-lg font-bold text-gray-900 capitalize">{user ? displayName : 'Guest'}</p>
             </div>
 
             <div className="flex items-center gap-2">
-
-
                 <Link
                     href="/tools/resume"
                     className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
@@ -77,23 +75,35 @@ export function WebHeader() {
                     <span className="text-xs font-bold text-gray-600 group-hover:text-indigo-600 transition-colors">ResumeStudio</span>
                 </Link>
 
-                <Link
-                    href="/profile"
-                    className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
-                    title="My Profile"
-                >
-                    <Icons.User size={16} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
-                    <span className="text-xs font-bold text-gray-600 group-hover:text-indigo-600 transition-colors">Profile</span>
-                </Link>
+                {user ? (
+                    <>
+                        <Link
+                            href="/profile"
+                            className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
+                            title="My Profile"
+                        >
+                            <Icons.User size={16} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
+                            <span className="text-xs font-bold text-gray-600 group-hover:text-indigo-600 transition-colors">Profile</span>
+                        </Link>
 
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-red-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
-                    title="Sign Out"
-                >
-                    <Icons.LogOut size={16} className="text-gray-400 group-hover:text-red-600 transition-colors" />
-                    <span className="text-xs font-bold text-gray-600 group-hover:text-red-600 transition-colors">Logout</span>
-                </button>
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-red-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
+                            title="Sign Out"
+                        >
+                            <Icons.LogOut size={16} className="text-gray-400 group-hover:text-red-600 transition-colors" />
+                            <span className="text-xs font-bold text-gray-600 group-hover:text-red-600 transition-colors">Logout</span>
+                        </button>
+                    </>
+                ) : (
+                    <Link
+                        href={`/login?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '/')}`}
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-100 active:scale-95 group"
+                    >
+                        <Icons.LogIn size={16} className="text-white/80 group-hover:text-white transition-colors" />
+                        <span className="text-xs font-black uppercase tracking-wider">Sign In</span>
+                    </Link>
+                )}
             </div>
 
 
