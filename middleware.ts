@@ -42,9 +42,10 @@ export async function middleware(req: NextRequest) {
         '/tools/mindgrid', '/tools/prompts',
         '/tools/resume',
         '/skillforge', '/focus',
-        '/community', '/faculty-fellows', '/docs'
+        '/community', '/faculty-fellows', '/docs',
+        '/auth/callback'
     ];
-    const publicPrefixes = ['/subject/', '/unit/'];
+    const publicPrefixes = ['/subject/', '/unit/', '/auth/'];
 
     const isPublicPath = publicPaths.includes(req.nextUrl.pathname) || 
                          publicPrefixes.some(prefix => req.nextUrl.pathname.startsWith(prefix));
