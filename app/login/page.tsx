@@ -142,6 +142,17 @@ function LoginContent() {
                             <span className="text-xs font-bold text-gray-700 group-hover:text-black">GitHub</span>
                         </button>
                     </div>
+
+                    <div className="mt-6">
+                        <button
+                            type="button"
+                            onClick={() => router.push(callbackUrl)}
+                            className="w-full py-4 bg-white border-2 border-dashed border-gray-100 text-gray-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50/30 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group"
+                        >
+                            <Icons.Users size={18} className="group-hover:scale-110 transition-transform" />
+                            <span>Continue with Guest Mode</span>
+                        </button>
+                    </div>
                 </form>
 
                 <div className="mt-10 pt-8 border-t border-gray-100">
