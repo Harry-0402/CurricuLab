@@ -44,24 +44,22 @@ export async function middleware(req: NextRequest) {
         '/skillforge', '/focus',
         '/community', '/faculty-fellows', '/docs'
     ];
-    const publicPrefixes = ['/subject/', '/unit/'];
+    const publicPrefixes = ['/subject/', '/unit/', '/auth/'];
 
     const isPublicPath = publicPaths.includes(req.nextUrl.pathname) || 
                          publicPrefixes.some(prefix => req.nextUrl.pathname.startsWith(prefix));
 
-    // Secure Dashboard Protection - REMOVED to allow feature-aware restricted access at page level
-    /* 
-    if (!session &&
-        !isPublicPath &&
-        req.nextUrl.pathname !== '/login' &&
-        req.nextUrl.pathname !== '/forgot-password' &&
-        !req.nextUrl.pathname.startsWith('/auth')
-    ) {
-        const redirectUrl = req.nextUrl.clone();
-        redirectUrl.pathname = '/';
-        return NextResponse.redirect(redirectUrl);
+    // FAILSAFE: If code is in URL but we are NOT on auth/callback, redirect to auth/callback
+    // This handles cases where Supabase redirects to Site URL instead of Redirect URL
+    const code = req.nextUrl.searchParams.get('code');
+    if (code && !req.nextUrl.pathname.startsWith('/auth')) {
+        const callbackUrl = new URL('/auth/callback', req.url);
+        callbackUrl.searchParams.set('code', code);
+        // Preserve 'next' if it was there, or use current path
+        const next = req.nextUrl.searchParams.get('next') || req.nextUrl.pathname;
+        if (next) callbackUrl.searchParams.set('next', next);
+        return NextResponse.redirect(callbackUrl);
     }
-    */
 
     // If session exists and user is on login page, redirect to Dashboard
     if (session && req.nextUrl.pathname === '/login') {
