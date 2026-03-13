@@ -20,9 +20,9 @@ function LoginContent() {
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-100/40 rounded-full blur-3xl -z-10" />
             <div className="absolute top-1/2 -left-24 w-72 h-72 bg-purple-100/30 rounded-full blur-3xl -z-10" />
 
-            <div className="w-full max-w-[420px] bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-[40px] border border-white/50 shadow-2xl shadow-blue-500/5">
-                <div className="text-center mb-10">
-                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[28px] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20 transform rotate-3">
+            <div className="w-full max-w-[420px] bg-white/80 backdrop-blur-xl p-6 md:p-8 rounded-[40px] border border-white/50 shadow-2xl shadow-blue-500/5">
+                <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[24px] flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20 transform rotate-3">
                         <Icons.LayoutGrid size={36} />
                     </div>
                     <h1 className="text-3xl font-black text-[#0f172a] tracking-tight">Welcome Back</h1>
@@ -31,7 +31,7 @@ function LoginContent() {
                     </p>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <button
                             type="button"
@@ -44,7 +44,7 @@ function LoginContent() {
                                 }
                             }}
                             disabled={loading}
-                            className="flex items-center justify-center gap-3 px-4 py-4 bg-white border border-gray-100 rounded-[24px] hover:border-blue-200 hover:bg-blue-50/30 hover:shadow-xl hover:shadow-blue-500/5 transition-all group disabled:opacity-50"
+                            className="flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-100 rounded-[20px] hover:border-blue-200 hover:bg-blue-50/30 hover:shadow-xl hover:shadow-blue-500/5 transition-all group disabled:opacity-50"
                         >
                             <Icons.Google size={20} className="text-[#0f172a]" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-[#0f172a]">Google</span>
@@ -61,14 +61,14 @@ function LoginContent() {
                                 }
                             }}
                             disabled={loading}
-                            className="flex items-center justify-center gap-3 px-4 py-4 bg-white border border-gray-100 rounded-[24px] hover:border-gray-300 hover:bg-gray-50 hover:shadow-xl hover:shadow-gray-500/5 transition-all group disabled:opacity-50"
+                            className="flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-100 rounded-[20px] hover:border-gray-300 hover:bg-gray-50 hover:shadow-xl hover:shadow-gray-500/5 transition-all group disabled:opacity-50"
                         >
                             <Icons.Github size={20} className="text-[#0f172a]" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-[#0f172a]">GitHub</span>
                         </button>
                     </div>
 
-                    <div className="relative py-4">
+                    <div className="relative py-2">
                         <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t border-gray-100" />
                         </div>
@@ -81,16 +81,16 @@ function LoginContent() {
                         type="button"
                         onClick={() => router.push(callbackUrl)}
                         disabled={loading}
-                        className="w-full h-20 bg-white border-2 border-dashed border-gray-100 text-gray-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50/30 rounded-[24px] transition-all flex items-center justify-center gap-4 group disabled:opacity-50"
+                        className="w-full h-16 bg-white border-2 border-dashed border-blue-100 text-blue-600 hover:text-blue-700 hover:border-blue-200 hover:bg-blue-50/30 rounded-[24px] transition-all flex items-center justify-center gap-4 group disabled:opacity-50"
                     >
-                        <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                            <Icons.Users size={20} className="text-gray-400 group-hover:text-blue-500" />
+                        <div className="w-10 h-10 bg-blue-50/50 rounded-xl flex items-center justify-center group-hover:bg-blue-100/50 transition-colors">
+                            <Icons.Users size={20} className="text-blue-600 group-hover:text-blue-700" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em]">Continue with Guest Mode</span>
                     </button>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-gray-50">
+                <div className="mt-4 pt-4 border-t border-gray-50">
                     <p className="text-center text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">
                         Protected System • CurricuLab IO
                     </p>
