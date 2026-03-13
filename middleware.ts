@@ -36,7 +36,6 @@ export async function middleware(req: NextRequest) {
         data: { session },
     } = await supabase.auth.getSession();
 
-    // List of public paths and prefixes
     const publicPaths = [
         '/', '/subjects', '/unauthorized',
         '/tools/mindgrid', '/tools/prompts',
@@ -50,14 +49,17 @@ export async function middleware(req: NextRequest) {
                          publicPrefixes.some(prefix => req.nextUrl.pathname.startsWith(prefix));
 
     // FAILSAFE: If code is in URL but we are NOT on auth/callback, redirect to auth/callback
-    // This handles cases where Supabase redirects to Site URL instead of Redirect URL
     const code = req.nextUrl.searchParams.get('code');
     if (code && !req.nextUrl.pathname.startsWith('/auth')) {
-        const callbackUrl = new URL('/auth/callback', req.url);
+        const host = req.headers.get('host');
+        const protocol = req.headers.get('x-forwarded-proto') ?? (host?.includes('localhost') ? 'http' : 'https');
+        const origin = host ? `${protocol}://${host}` : req.nextUrl.origin;
+        
+        const callbackUrl = new URL('/auth/callback', origin);
         callbackUrl.searchParams.set('code', code);
-        // Preserve 'next' if it was there, or use current path
         const next = req.nextUrl.searchParams.get('next') || req.nextUrl.pathname;
         if (next) callbackUrl.searchParams.set('next', next);
+        
         return NextResponse.redirect(callbackUrl);
     }
 
@@ -96,9 +98,8 @@ export const config = {
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * - api (API routes, except likely auth)
-         * - assets (public assets)
+         * - .svg, .png, etc (static assets)
          */
-        '/((?!_next/static|_next/image|favicon.ico|api|assets|.*\\..*).*)',
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 };
