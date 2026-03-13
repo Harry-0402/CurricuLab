@@ -10,28 +10,6 @@ function LoginContent() {
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-
-        try {
-            const { error } = await AuthService.signIn(email, password);
-            if (error) throw error;
-            router.push(callbackUrl);
-            router.refresh(); // Refresh to ensure middleware/client state updates
-        } catch (err: any) {
-            setError(err.message || "Failed to sign in");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     return (
         <div className="min-h-screen w-full bg-[#fafbfc] flex items-center justify-center p-4 relative overflow-hidden">
             {/* Decorative Background Elements */}
@@ -45,115 +23,51 @@ function LoginContent() {
                         <Icons.LayoutGrid size={36} />
                     </div>
                     <h1 className="text-3xl font-black text-gray-900 tracking-tight">Welcome Back</h1>
-                    <p className="text-gray-500 font-medium mt-3 text-sm">Enter your credentials to access the workspace</p>
+                    <p className="text-gray-500 font-medium mt-3 text-sm">Choose your preferred method to access the workspace</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-5">
-                    {error && (
-                        <div className="p-4 bg-red-50/50 text-red-600 text-xs font-bold rounded-2xl border border-red-100 flex items-center gap-3 animate-in slide-in-from-top-2">
-                            <Icons.AlertTriangle size={16} className="shrink-0" />
-                            {error}
-                        </div>
-                    )}
-
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Email Address</label>
-                        <div className="relative group">
-                            <div className="absolute left-5 top-4 text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                                <Icons.Mail size={18} />
-                            </div>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-bold text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-300 placeholder:font-medium"
-                                placeholder="name@curriculab.com"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between pl-4 pr-1">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Password</label>
-                            <a href="/forgot-password" className="text-[10px] font-bold text-blue-500 hover:text-blue-700 transition-colors">
-                                Forgot Password?
-                            </a>
-                        </div>
-                        <div className="relative group">
-                            <div className="absolute left-5 top-4 text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                                <Icons.Lock size={18} />
-                            </div>
-                            <input
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-bold text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-300 placeholder:font-medium"
-                                placeholder="••••••••"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="pt-2">
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-4 bg-gray-900 text-white rounded-[24px] font-black text-sm uppercase tracking-wider hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-gray-200 disabled:opacity-70 disabled:pointer-events-none disabled:scale-100 flex items-center justify-center gap-2 group"
-                        >
-                            {loading ? (
-                                <>
-                                    <Icons.Loader2 size={18} className="animate-spin" />
-                                    <span>Verifying...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span>Sign In</span>
-                                    <Icons.ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                                </>
-                            )}
-                        </button>
-                    </div>
-
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-gray-200" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-[#fafbfc] px-2 text-gray-400 font-bold tracking-wider">Or continue with</span>
-                        </div>
-                    </div>
-
+                <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-3">
                         <button
                             type="button"
                             onClick={() => AuthService.signInWithOAuth('google', callbackUrl)}
-                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-[20px] hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
+                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-100 rounded-[20px] hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
                         >
                             <Icons.Google size={20} className="text-gray-900 group-hover:scale-110 transition-transform" />
-                            <span className="text-xs font-bold text-gray-700 group-hover:text-blue-600">Google</span>
+                            <span className="text-xs font-bold text-gray-700 group-hover:text-blue-600 font-black uppercase tracking-wider">Google</span>
                         </button>
                         <button
                             type="button"
                             onClick={() => AuthService.signInWithOAuth('github', callbackUrl)}
-                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-[20px] hover:border-gray-300 hover:bg-gray-50 hover:shadow-lg hover:shadow-gray-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
+                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-100 rounded-[20px] hover:border-gray-300 hover:bg-gray-50 hover:shadow-lg hover:shadow-gray-500/5 hover:-translate-y-0.5 active:translate-y-0 transition-all group"
                         >
                             <Icons.Github size={20} className="text-gray-900 group-hover:scale-110 transition-transform" />
-                            <span className="text-xs font-bold text-gray-700 group-hover:text-black">GitHub</span>
+                            <span className="text-xs font-bold text-gray-700 group-hover:text-black font-black uppercase tracking-wider">GitHub</span>
                         </button>
                     </div>
 
-                    <div className="mt-6">
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-gray-100" />
+                        </div>
+                        <div className="relative flex justify-center text-[10px] uppercase">
+                            <span className="bg-[#fafbfc] px-4 text-gray-300 font-black tracking-[0.2em]">Or exploration first</span>
+                        </div>
+                    </div>
+
+                    <div>
                         <button
                             type="button"
                             onClick={() => router.push(callbackUrl)}
-                            className="w-full py-4 bg-white border-2 border-dashed border-gray-100 text-gray-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50/30 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group"
+                            className="w-full py-4 bg-white border-2 border-dashed border-gray-100 text-gray-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50/30 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 group shadow-sm hover:shadow-lg hover:-translate-y-0.5"
                         >
-                            <Icons.Users size={18} className="group-hover:scale-110 transition-transform" />
+                            <div className="w-8 h-8 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                                <Icons.Users size={16} className="group-hover:scale-110 transition-transform" />
+                            </div>
                             <span>Continue with Guest Mode</span>
                         </button>
                     </div>
-                </form>
+                </div>
 
                 <div className="mt-10 pt-8 border-t border-gray-100">
                     <p className="text-center text-[10px] font-bold text-gray-300 uppercase tracking-widest">
