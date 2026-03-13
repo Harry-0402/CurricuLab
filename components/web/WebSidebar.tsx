@@ -68,22 +68,6 @@ export function WebSidebar() {
         };
     }, []);
 
-    const publicPaths = [
-        '/', '/subjects', '/unauthorized',
-        '/tools/mindgrid', '/tools/prompts',
-        '/skillforge', '/focus',
-        '/community', '/faculty-fellows', '/docs'
-    ];
-    const publicPrefixes = ['/subject/', '/unit/'];
-
-    const isPathPublic = (href: string) => {
-        return publicPaths.includes(href) || publicPrefixes.some(p => href.startsWith(p));
-    };
-
-    const filterItems = (items: NavItem[]) => {
-        if (user) return items; // Show all if logged in
-        return items.filter(item => isPathPublic(item.href));
-    };
 
     const renderNavGroup = (title: string, items: NavItem[], className?: string) => (
         <nav className={cn("space-y-0.5 mb-4", className)}>
@@ -126,11 +110,11 @@ export function WebSidebar() {
             </div>
 
             <div className="px-3 py-3">
-                {filterItems(academicSuite).length > 0 && renderNavGroup("Academic Suite", filterItems(academicSuite))}
-                {filterItems(studyMaterials).length > 0 && renderNavGroup("Study Materials", filterItems(studyMaterials))}
-                {filterItems(aiTools).length > 0 && renderNavGroup("AI Tools", filterItems(aiTools))}
-                {filterItems(personalGrowth).length > 0 && renderNavGroup("Personal Growth", filterItems(personalGrowth))}
-                {filterItems(community).length > 0 && renderNavGroup("Community", filterItems(community))}
+                {academicSuite.length > 0 && renderNavGroup("Academic Suite", academicSuite)}
+                {studyMaterials.length > 0 && renderNavGroup("Study Materials", studyMaterials)}
+                {aiTools.length > 0 && renderNavGroup("AI Tools", aiTools)}
+                {personalGrowth.length > 0 && renderNavGroup("Personal Growth", personalGrowth)}
+                {community.length > 0 && renderNavGroup("Community", community)}
             </div>
 
             <div className="mt-auto py-1 border-t border-gray-100 italic text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">

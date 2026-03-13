@@ -49,8 +49,8 @@ export async function middleware(req: NextRequest) {
     const isPublicPath = publicPaths.includes(req.nextUrl.pathname) || 
                          publicPrefixes.some(prefix => req.nextUrl.pathname.startsWith(prefix));
 
-    // Secure Dashboard Protection
-    // If no session and trying to access protected routes
+    // Secure Dashboard Protection - REMOVED to allow feature-aware restricted access at page level
+    /* 
     if (!session &&
         !isPublicPath &&
         req.nextUrl.pathname !== '/login' &&
@@ -61,6 +61,7 @@ export async function middleware(req: NextRequest) {
         redirectUrl.pathname = '/';
         return NextResponse.redirect(redirectUrl);
     }
+    */
 
     // If session exists and user is on login page, redirect to Dashboard
     if (session && req.nextUrl.pathname === '/login') {

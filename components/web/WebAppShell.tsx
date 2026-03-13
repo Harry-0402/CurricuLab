@@ -8,8 +8,11 @@ import { getUpcomingAssignments } from '@/lib/services/app.service';
 import { Assignment } from '@/types';
 import { Icons } from '../shared/Icons';
 import { KeepAlive } from '../shared/KeepAlive';
+import { RestrictedAccess } from '../shared/RestrictedAccess';
+import { usePathname } from 'next/navigation';
 
 export function WebAppShell({ children }: { children: React.ReactNode }) {
+    const pathname = usePathname();
     // Alert State
     const [dueAlerts, setDueAlerts] = useState<Assignment[]>([]);
     const [showDueAlert, setShowDueAlert] = useState(false);
@@ -63,6 +66,59 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
         return () => clearInterval(interval);
     }, []);
 
+    // --- Restricted Access Logic ---
+    const publicPaths = [
+        '/', '/subjects', '/unauthorized', '/login', '/forgot-password',
+        '/tools/mindgrid', '/tools/prompts', '/tools/resume',
+        '/skillforge', '/focus',
+        '/community', '/faculty-fellows', '/docs'
+    ];
+    const publicPrefixes = ['/subject/', '/unit/', '/auth/'];
+
+    const isPublic = publicPaths.includes(pathname) || 
+                     publicPrefixes.some(prefix => pathname.startsWith(prefix));
+
+    const isRestricted = !user && !isPublic && !isAuthLoading;
+
+    // Context-aware messages
+    const getRestrictedContent = () => {
+        if (pathname === '/classroom') return {
+            title: "Unlock Your Classroom",
+            description: "Sign in to access your Google Classroom courses, synchronized assignments, and shared resources."
+        };
+        if (pathname === '/assignments') return {
+            title: "Manage Your Tasks",
+            description: "Sign in to track your assignments, set deadlines, and sync with your academic calendar."
+        };
+        if (pathname === '/ai-tutor') return {
+            title: "LearnPilot AI",
+            description: "Our advanced AI tutor is reserved for registered students. Sign in to start your personalized learning journey."
+        };
+        if (pathname === '/tools/career') return {
+            title: "Career Gateway",
+            description: "Access internship listings, career roadmaps, and professional networking tools by signing in."
+        };
+        if (pathname === '/vault') return {
+            title: "Knowledge Vault",
+            description: "Your personal repository of study materials and notes is just a sign-in away."
+        };
+        if (pathname === '/tools/resources') return {
+            title: "Digital Library",
+            description: "Explore our vast collection of academic resources and research papers. Sign in to access the full library."
+        };
+        if (pathname === '/tools/revision') return {
+            title: "Revision Notes",
+            description: "Access curated revision notes and study guides for your subjects by signing in."
+        };
+        if (pathname === '/tools/papertrail') return {
+            title: "PaperTrail PYQs",
+            description: "Solve previous years' question papers and track your progress. Sign in to unlock all papers."
+        };
+        return {}; // Use defaults
+    };
+
+    const restrictedInfo = getRestrictedContent();
+
     return (
         <div className="flex h-full w-full bg-[#fafbfc] overflow-hidden pb-[env(safe-area-inset-bottom)] print:h-auto print:!overflow-visible print:bg-white">
             {user && <KeepAlive />}
@@ -71,8 +127,15 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                 <WebHeader />
                 <div className="flex-1 flex overflow-hidden min-h-0 print:h-auto print:!overflow-visible print:block">
                     <main className="flex-1 p-8 overflow-y-auto no-scrollbar scroll-smooth min-w-0 print:p-0 print:!overflow-visible print:block">
-                        <div className="max-w-7xl mx-auto print:max-w-none print:m-0">
-                            {children}
+                        <div className="max-w-7xl mx-auto print:max-w-none print:m-0 h-full">
+                            {isRestricted ? (
+                                <RestrictedAccess 
+                                    {...restrictedInfo}
+                                    callbackUrl={pathname}
+                                />
+                            ) : (
+                                children
+                            )}
                         </div>
                     </main>
 

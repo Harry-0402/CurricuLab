@@ -92,6 +92,7 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                 {user ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                         {announcements.map((ann) => (
+                            // ... existing map content
                             <div
                                 key={ann.id}
                                 onClick={() => handleView(ann)}
@@ -157,17 +158,18 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center text-center py-10 space-y-6 relative z-10">
-                        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-3xl flex items-center justify-center shadow-inner">
-                            <Icons.Lock size={32} />
+                    <div className="flex flex-col items-center text-center py-6 space-y-6 relative z-10 animate-in fade-in slide-in-from-bottom-2">
+                        <div className="w-20 h-20 bg-blue-50 rounded-[24px] flex items-center justify-center relative">
+                            <div className="absolute inset-0 bg-blue-100/30 rounded-[24px] blur-lg -z-10 animate-pulse" />
+                            <Icons.Lock size={32} className="text-blue-500" />
                         </div>
                         <div className="max-w-xs">
-                            <h3 className="text-xl font-black text-gray-900 mb-2">Restricted Access</h3>
-                            <p className="text-sm font-medium text-gray-500">Sign in to view the latest announcements and updates from faculty members.</p>
+                            <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Restricted Access</h3>
+                            <p className="text-sm font-medium text-gray-500 leading-relaxed">Sign in to view the latest announcements and updates from faculty members.</p>
                         </div>
                         <a
-                            href={`/login?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '/')}`}
-                            className="px-8 py-3 bg-gray-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gray-200"
+                            href={`/login?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname+window.location.search : '/')}`}
+                            className="h-12 flex items-center px-8 bg-[#0f172a] hover:bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-blue-500/10"
                         >
                             Log In to View
                         </a>
