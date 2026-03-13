@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthService } from '@/lib/services/auth.service';
 import { Icons } from '@/components/shared/Icons';
 
-export default function LoginPage() {
+function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -151,5 +151,20 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen w-full bg-[#fafbfc] flex items-center justify-center p-4">
+                <div className="flex flex-col items-center gap-4">
+                    <Icons.Loader2 size={40} className="animate-spin text-blue-500" />
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-[0.2em]">CurricuLab</p>
+                </div>
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }

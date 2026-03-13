@@ -7,7 +7,6 @@ import { WebHeader } from './WebHeader';
 import { getUpcomingAssignments } from '@/lib/services/app.service';
 import { Assignment } from '@/types';
 import { Icons } from '../shared/Icons';
-import { AutoLogout } from '../shared/AutoLogout';
 import { KeepAlive } from '../shared/KeepAlive';
 
 export function WebAppShell({ children }: { children: React.ReactNode }) {
@@ -67,7 +66,6 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex h-full w-full bg-[#fafbfc] overflow-hidden pb-[env(safe-area-inset-bottom)] print:h-auto print:!overflow-visible print:bg-white">
             {user && <KeepAlive />}
-            {user && <AutoLogout />}
             <WebSidebar />
             <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden print:h-auto print:!overflow-visible print:block">
                 <WebHeader />

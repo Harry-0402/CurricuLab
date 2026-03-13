@@ -16,45 +16,55 @@ export function SessionManager() {
         let checkInterval: NodeJS.Timeout;
         let warningCountdown: NodeJS.Timeout;
 
-        // Track user activity
-        const updateActivity = () => {
-            lastActivity = Date.now();
-            warningShown = false;
-            setShowWarning(false);
+        const setupAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return; // Only track activity for logged-in users
+
+            // Track user activity
+            const updateActivity = () => {
+                lastActivity = Date.now();
+                warningShown = false;
+                setShowWarning(false);
+            };
+
+            // Activity events that reset the timer
+            const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+            events.forEach(e => window.addEventListener(e, updateActivity, { passive: true }));
+
+            // Check session periodically
+            checkInterval = setInterval(async () => {
+                const inactiveTime = Date.now() - lastActivity;
+
+                // Show warning 2 minutes before logout
+                if (inactiveTime >= AUTH_CONFIG.SESSION_TIMEOUT_MS - AUTH_CONFIG.WARNING_TIME_MS && !warningShown) {
+                    setShowWarning(true);
+                    warningShown = true;
+
+                    // Update countdown every second
+                    warningCountdown = setInterval(() => {
+                        const remaining = AUTH_CONFIG.SESSION_TIMEOUT_MS - (Date.now() - lastActivity);
+                        setTimeLeft(Math.max(0, Math.floor(remaining / 1000)));
+                    }, 1000);
+                }
+
+                // Logout after timeout
+                if (inactiveTime >= AUTH_CONFIG.SESSION_TIMEOUT_MS) {
+                    clearInterval(warningCountdown);
+                    await supabase.auth.signOut();
+                    router.push('/'); // Redirect to guest mode (Dashboard)
+                }
+            }, AUTH_CONFIG.CHECK_INTERVAL_MS);
+
+            return () => {
+                clearInterval(checkInterval);
+                clearInterval(warningCountdown);
+                events.forEach(e => window.removeEventListener(e, updateActivity));
+            };
         };
 
-        // Activity events that reset the timer
-        const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
-        events.forEach(e => window.addEventListener(e, updateActivity, { passive: true }));
-
-        // Check session periodically
-        checkInterval = setInterval(async () => {
-            const inactiveTime = Date.now() - lastActivity;
-
-            // Show warning 2 minutes before logout
-            if (inactiveTime >= AUTH_CONFIG.SESSION_TIMEOUT_MS - AUTH_CONFIG.WARNING_TIME_MS && !warningShown) {
-                setShowWarning(true);
-                warningShown = true;
-
-                // Update countdown every second
-                warningCountdown = setInterval(() => {
-                    const remaining = AUTH_CONFIG.SESSION_TIMEOUT_MS - (Date.now() - lastActivity);
-                    setTimeLeft(Math.max(0, Math.floor(remaining / 1000)));
-                }, 1000);
-            }
-
-            // Logout after timeout
-            if (inactiveTime >= AUTH_CONFIG.SESSION_TIMEOUT_MS) {
-                clearInterval(warningCountdown);
-                await supabase.auth.signOut();
-                router.push('/login?reason=timeout');
-            }
-        }, AUTH_CONFIG.CHECK_INTERVAL_MS);
-
+        const cleanup = setupAuth();
         return () => {
-            clearInterval(checkInterval);
-            clearInterval(warningCountdown);
-            events.forEach(e => window.removeEventListener(e, updateActivity));
+            if (typeof cleanup === 'function') (cleanup as any)();
         };
     }, [router, supabase]);
 

@@ -20,7 +20,7 @@ export default function UnauthorizedPage() {
 
     const handleSignOut = async () => {
         await AuthService.signOut();
-        router.push('/login');
+        router.push('/');
         router.refresh();
     };
 

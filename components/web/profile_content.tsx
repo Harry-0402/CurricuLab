@@ -74,7 +74,7 @@ export default function WebProfileContent() {
         if (confirm("Are you sure you want to log out from all devices? This will require you to sign in again.")) {
             const { AuthService } = await import('@/lib/services/auth.service');
             await AuthService.signOut();
-            window.location.href = '/login';
+            window.location.href = '/';
         }
     };
 
