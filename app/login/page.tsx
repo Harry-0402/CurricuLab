@@ -25,12 +25,14 @@ function LoginContent() {
                     <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[28px] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20 transform rotate-3">
                         <Icons.LayoutGrid size={36} />
                     </div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">Sign In</h1>
-                    <p className="text-gray-500 font-medium mt-3 text-sm">Choose your preferred method to access the workspace</p>
+                    <h1 className="text-3xl font-black text-[#0f172a] tracking-tight">Welcome Back</h1>
+                    <p className="text-gray-500 font-medium mt-3 text-sm max-w-[280px] mx-auto leading-relaxed">
+                        Choose your preferred method to access the workspace
+                    </p>
                 </div>
 
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-3">
+                <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
                         <button
                             type="button"
                             onClick={async () => {
@@ -42,10 +44,10 @@ function LoginContent() {
                                 }
                             }}
                             disabled={loading}
-                            className="flex items-center justify-center gap-3 px-6 py-4 bg-white border border-gray-100 rounded-[24px] hover:border-blue-200 hover:bg-blue-50/30 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 active:translate-y-0 transition-all group disabled:opacity-50 disabled:pointer-events-none"
+                            className="flex items-center justify-center gap-3 px-4 py-4 bg-white border border-gray-100 rounded-[24px] hover:border-blue-200 hover:bg-blue-50/30 hover:shadow-xl hover:shadow-blue-500/5 transition-all group disabled:opacity-50"
                         >
-                            <Icons.Google size={24} className="text-gray-900 group-hover:scale-110 transition-transform" />
-                            <span className="text-sm font-bold text-gray-700 group-hover:text-blue-600">Continue with Google</span>
+                            <Icons.Google size={20} className="text-[#0f172a]" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#0f172a]">Google</span>
                         </button>
 
                         <button
@@ -59,19 +61,19 @@ function LoginContent() {
                                 }
                             }}
                             disabled={loading}
-                            className="flex items-center justify-center gap-3 px-6 py-4 bg-white border border-gray-100 rounded-[24px] hover:border-gray-300 hover:bg-gray-50 hover:shadow-xl hover:shadow-gray-500/5 hover:-translate-y-1 active:translate-y-0 transition-all group disabled:opacity-50 disabled:pointer-events-none"
+                            className="flex items-center justify-center gap-3 px-4 py-4 bg-white border border-gray-100 rounded-[24px] hover:border-gray-300 hover:bg-gray-50 hover:shadow-xl hover:shadow-gray-500/5 transition-all group disabled:opacity-50"
                         >
-                            <Icons.Github size={24} className="text-gray-900 group-hover:scale-110 transition-transform" />
-                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">Continue with GitHub</span>
+                            <Icons.Github size={20} className="text-[#0f172a]" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#0f172a]">GitHub</span>
                         </button>
                     </div>
 
-                    <div className="relative my-6">
+                    <div className="relative py-4">
                         <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t border-gray-100" />
                         </div>
-                        <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest text-gray-300">
-                            <span className="bg-[#fafbfc] px-4">Or explore as guest</span>
+                        <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em] text-gray-300">
+                            <span className="bg-white px-4">Or exploration first</span>
                         </div>
                     </div>
 
@@ -79,19 +81,19 @@ function LoginContent() {
                         type="button"
                         onClick={() => router.push(callbackUrl)}
                         disabled={loading}
-                        className="w-full py-4 bg-white border-2 border-dashed border-gray-100 text-gray-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50/30 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:pointer-events-none"
+                        className="w-full h-20 bg-white border-2 border-dashed border-gray-100 text-gray-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50/30 rounded-[24px] transition-all flex items-center justify-center gap-4 group disabled:opacity-50"
                     >
-                        <Icons.Users size={18} className="group-hover:scale-110 transition-transform" />
-                        <span>Continue with Guest Mode</span>
+                        <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                            <Icons.Users size={20} className="text-gray-400 group-hover:text-blue-500" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Continue with Guest Mode</span>
                     </button>
                 </div>
 
-                <div className="mt-10 pt-8 border-t border-gray-50">
-                    <div className="flex flex-col items-center gap-2">
-                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                            Protected System • CurricuLab IO
-                        </p>
-                    </div>
+                <div className="mt-12 pt-8 border-t border-gray-50">
+                    <p className="text-center text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">
+                        Protected System • CurricuLab IO
+                    </p>
                 </div>
             </div>
         </div>
