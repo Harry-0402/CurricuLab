@@ -13,7 +13,11 @@ import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import { SubjectService } from '@/lib/data/subject-service';
+import { useSemester } from '@/components/providers/SemesterProvider';
+
 export function RevisionGeneratorContent() {
+    const { activeSemesterId } = useSemester();
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [units, setUnits] = useState<Unit[]>([]);
     const [selectedSubject, setSelectedSubject] = useState<string>('');
@@ -27,8 +31,8 @@ export function RevisionGeneratorContent() {
     const [isRegenerating, setIsRegenerating] = useState(false);
 
     useEffect(() => {
-        getSubjects().then(setSubjects);
-    }, []);
+        SubjectService.getAll(activeSemesterId ?? undefined).then(setSubjects);
+    }, [activeSemesterId]);
 
     useEffect(() => {
         if (selectedSubject) {

@@ -12,7 +12,11 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useToast } from '@/components/shared/Toast';
 
+import { SubjectService } from '@/lib/data/subject-service';
+import { useSemester } from '@/components/providers/SemesterProvider';
+
 export function PaperTrailContent() {
+    const { activeSemesterId } = useSemester();
     const { showToast } = useToast();
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [units, setUnits] = useState<Unit[]>([]);
@@ -44,8 +48,8 @@ export function PaperTrailContent() {
 
     // Initial Load
     useEffect(() => {
-        getSubjects().then(setSubjects);
-    }, []);
+        SubjectService.getAll(activeSemesterId ?? undefined).then(setSubjects);
+    }, [activeSemesterId]);
 
     // Load Units when Subject changes
     useEffect(() => {

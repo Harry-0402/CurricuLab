@@ -19,7 +19,11 @@ import {
 } from "@/components/shared/Dialog";
 import { AnswerDisplay } from './AnswerDisplay';
 
+import { useSemester } from '@/components/providers/SemesterProvider';
+import { SubjectService } from '@/lib/data/subject-service';
+
 export function AssignmentContent() {
+    const { activeSemesterId } = useSemester();
     const searchParams = useSearchParams();
     const querySubjectId = searchParams.get('subjectId');
     const queryAssignmentId = searchParams.get('assignmentId');
@@ -40,10 +44,6 @@ export function AssignmentContent() {
 
     // Delete Confirmation State
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-
-
-
-
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -68,7 +68,7 @@ export function AssignmentContent() {
 
     useEffect(() => {
         const loadData = async () => {
-            const fetchedSubjects = await getSubjects();
+            const fetchedSubjects = await SubjectService.getAll(activeSemesterId ?? undefined);
             setSubjects(fetchedSubjects);
             if (fetchedSubjects.length > 0) {
                 // Priority: Query Param > Storage > Default
@@ -85,7 +85,7 @@ export function AssignmentContent() {
             setLoading(false);
         };
         loadData();
-    }, [querySubjectId]);
+    }, [querySubjectId, activeSemesterId]);
 
     useEffect(() => {
         const loadAssignments = async () => {

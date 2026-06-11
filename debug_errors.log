@@ -554,3 +554,171 @@ Error: {}
 Message: Failed to download file: Missing required parameters: fileId
 Response: {}
 ----------------------------------------
+
+Timestamp: 2026-06-11T16:00:41.120Z
+Error: {
+  "config": {
+    "retry": true,
+    "retryConfig": {
+      "httpMethodsToRetry": [
+        "GET",
+        "PUT",
+        "POST",
+        "HEAD",
+        "OPTIONS",
+        "DELETE"
+      ],
+      "currentRetryAttempt": 0,
+      "retry": 3,
+      "noResponseRetries": 2,
+      "retryDelayMultiplier": 2,
+      "timeOfFirstRequest": 1781193640904,
+      "totalTimeout": 9007199254740991,
+      "maxRetryDelay": 9007199254740991,
+      "statusCodesToRetry": [
+        [
+          100,
+          199
+        ],
+        [
+          408,
+          408
+        ],
+        [
+          429,
+          429
+        ],
+        [
+          500,
+          599
+        ]
+      ]
+    },
+    "method": "POST",
+    "url": "https://oauth2.googleapis.com/token",
+    "data": {},
+    "body": {},
+    "responseType": "unknown",
+    "duplex": "half",
+    "headers": {}
+  },
+  "response": {
+    "size": 0,
+    "data": {
+      "error": "invalid_grant",
+      "error_description": "Bad Request"
+    },
+    "config": {
+      "retry": true,
+      "retryConfig": {
+        "httpMethodsToRetry": [
+          "GET",
+          "PUT",
+          "POST",
+          "HEAD",
+          "OPTIONS",
+          "DELETE"
+        ]
+      },
+      "method": "POST",
+      "url": "https://oauth2.googleapis.com/token",
+      "data": {},
+      "body": {},
+      "responseType": "unknown",
+      "duplex": "half",
+      "headers": {}
+    }
+  },
+  "code": 400,
+  "status": 400
+}
+Message: invalid_grant
+Response: {
+  "error": "invalid_grant",
+  "error_description": "Bad Request"
+}
+----------------------------------------
+
+Timestamp: 2026-06-11T16:00:41.297Z
+Error: {
+  "config": {
+    "retry": true,
+    "retryConfig": {
+      "httpMethodsToRetry": [
+        "GET",
+        "PUT",
+        "POST",
+        "HEAD",
+        "OPTIONS",
+        "DELETE"
+      ],
+      "currentRetryAttempt": 0,
+      "retry": 3,
+      "noResponseRetries": 2,
+      "retryDelayMultiplier": 2,
+      "timeOfFirstRequest": 1781193641170,
+      "totalTimeout": 9007199254740991,
+      "maxRetryDelay": 9007199254740991,
+      "statusCodesToRetry": [
+        [
+          100,
+          199
+        ],
+        [
+          408,
+          408
+        ],
+        [
+          429,
+          429
+        ],
+        [
+          500,
+          599
+        ]
+      ]
+    },
+    "method": "POST",
+    "url": "https://oauth2.googleapis.com/token",
+    "data": {},
+    "body": {},
+    "responseType": "unknown",
+    "duplex": "half",
+    "headers": {}
+  },
+  "response": {
+    "size": 0,
+    "data": {
+      "error": "invalid_grant",
+      "error_description": "Bad Request"
+    },
+    "config": {
+      "retry": true,
+      "retryConfig": {
+        "httpMethodsToRetry": [
+          "GET",
+          "PUT",
+          "POST",
+          "HEAD",
+          "OPTIONS",
+          "DELETE"
+        ]
+      },
+      "method": "POST",
+      "url": "https://oauth2.googleapis.com/token",
+      "data": {},
+      "body": {},
+      "responseType": "unknown",
+      "duplex": "half",
+      "headers": {}
+    }
+  },
+  "code": 400,
+  "status": 400
+}
+Message: invalid_grant
+Response: {
+  "error": "invalid_grant",
+  "error_description": "Bad Request"
+}
+----------------------------------------

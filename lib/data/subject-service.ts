@@ -15,22 +15,31 @@ export const INITIAL_SUBJECTS: Subject[] = [
 ];
 
 export const SubjectService = {
-    async getAll(): Promise<Subject[]> {
+    async getAll(semesterId?: string): Promise<Subject[]> {
         const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
         const now = Date.now();
+        const cacheKey = semesterId ?? '__all__';
 
-        if (this.cachedSubjects && (now - this.lastFetch < CACHE_DURATION)) {
-            return this.cachedSubjects;
+        if (
+            this.cache[cacheKey] &&
+            (now - (this.cacheTimestamps[cacheKey] ?? 0) < CACHE_DURATION)
+        ) {
+            return this.cache[cacheKey];
         }
 
-        const { data, error } = await supabase
+        let query = supabase
             .from('subjects')
             .select('*')
             .order('code', { ascending: true });
 
+        if (semesterId) {
+            query = query.eq('semester_id', semesterId);
+        }
+
+        const { data, error } = await query;
+
         if (error) {
             console.error('Error fetching subjects:', error);
-            // Return empty array instead of hardcoded fallback
             return [];
         }
 
@@ -38,28 +47,37 @@ export const SubjectService = {
             return [];
         }
 
-        this.cachedSubjects = data.map((item: any) => {
-            return {
-                id: item.id,
-                code: item.code,
-                title: item.title,
-                icon: item.icon,
-                color: item.color,
-                description: item.description,
-                progress: item.progress,
-                unitCount: item.unit_count,
-                lastStudied: item.last_studied,
-                syllabusPdfUrl: item.syllabus_pdf_url
-            };
-        }) as Subject[];
-        this.lastFetch = now;
+        const mapped = data.map((item: any) => ({
+            id: item.id,
+            code: item.code,
+            title: item.title,
+            icon: item.icon,
+            color: item.color,
+            description: item.description,
+            progress: item.progress,
+            unitCount: item.unit_count,
+            lastStudied: item.last_studied,
+            syllabusPdfUrl: item.syllabus_pdf_url,
+            semesterId: item.semester_id,
+        })) as Subject[];
 
-        return this.cachedSubjects;
+        this.cache[cacheKey] = mapped;
+        this.cacheTimestamps[cacheKey] = now;
+
+        return mapped;
     },
 
-    // Cache variables attached to the object
+    // Cache variables
+    cache: {} as Record<string, Subject[]>,
+    cacheTimestamps: {} as Record<string, number>,
+    // legacy alias kept for backwards compat
     cachedSubjects: null as Subject[] | null,
     lastFetch: 0,
+
+    invalidateCache() {
+        this.cache = {};
+        this.cacheTimestamps = {};
+    },
 
     async update(subject: Subject): Promise<Subject | null> {
         const payload = {

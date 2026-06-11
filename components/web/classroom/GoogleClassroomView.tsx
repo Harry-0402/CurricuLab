@@ -26,7 +26,11 @@ export const CLASSROOM_TO_SUBJECT_MAP: { [key: string]: string } = {
     "Sandeep Uni - MBA 2nd year Business Communications Skills II": "PBA213"
 };
 
+import { SubjectService } from '@/lib/data/subject-service';
+import { useSemester } from '@/components/providers/SemesterProvider';
+
 export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, selectedCourse }: GoogleClassroomViewProps) {
+    const { activeSemesterId } = useSemester();
     const [courseWork, setCourseWork] = useState<ClassroomCourseWork[]>([]);
     const [courseMaterials, setCourseMaterials] = useState<any[]>([]);
     const [announcements, setAnnouncements] = useState<ClassroomAnnouncement[]>([]);
@@ -54,11 +58,11 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
 
     useEffect(() => {
         const fetchSubjects = async () => {
-            const fetched = await getSubjects();
+            const fetched = await SubjectService.getAll(activeSemesterId ?? undefined);
             setSubjects(fetched);
         };
         fetchSubjects();
-    }, []);
+    }, [activeSemesterId]);
 
     useEffect(() => {
         if (selectedCourse?.id) {

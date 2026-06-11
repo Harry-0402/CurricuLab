@@ -8,8 +8,8 @@ import { getSubjects, getVaultResources, createVaultResource, updateVaultResourc
 import { AiService } from '@/lib/services/ai-service';
 import { toast } from 'sonner';
 
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { SubjectService } from '@/lib/data/subject-service';
+import { useSemester } from '@/components/providers/SemesterProvider';
 
 const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: string; bgColor: string }> = {
     study_note: { label: 'Study Note', icon: Icons.FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
@@ -20,6 +20,7 @@ const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: 
 };
 
 export function VaultContent() {
+    const { activeSemesterId } = useSemester();
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [activeSubjectId, setActiveSubjectId] = useState<string>('');
     const [resources, setResources] = useState<VaultResource[]>([]);
@@ -48,7 +49,7 @@ export function VaultContent() {
     useEffect(() => {
         const loadInitialData = async () => {
             setLoading(true);
-            const fetchedSubjects = await getSubjects();
+            const fetchedSubjects = await SubjectService.getAll(activeSemesterId ?? undefined);
             setSubjects(fetchedSubjects);
 
             // Load resources for first subject immediately (parallel with subject load)
@@ -59,12 +60,15 @@ export function VaultContent() {
                 // Fetch resources immediately without waiting
                 const data = await getVaultResources({ subjectId: firstSubjectId });
                 setResources(data);
+            } else {
+                setActiveSubjectId('');
+                setResources([]);
             }
             setLoading(false);
             setIsInitialLoad(false);
         };
         loadInitialData();
-    }, []);
+    }, [activeSemesterId]);
 
     useEffect(() => {
         const loadResources = async () => {

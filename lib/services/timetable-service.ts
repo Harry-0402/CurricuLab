@@ -11,11 +11,14 @@ const mapTimetable = (t: any): TimetableEntry => ({
     startTime: t.start_time,
     endTime: t.end_time,
     teacher: t.teacher,
-    progress: t.progress
+    progress: t.progress,
+    semesterId: t.semester_id,
 });
 
-export const getTimetable = async (): Promise<TimetableEntry[]> => {
-    const { data, error } = await supabase.from('timetable').select('*');
+export const getTimetable = async (semesterId?: string): Promise<TimetableEntry[]> => {
+    let query = supabase.from('timetable').select('*');
+    if (semesterId) query = query.eq('semester_id', semesterId);
+    const { data, error } = await query;
     if (error || !data) return [];
     return data.map(mapTimetable);
 };
@@ -30,7 +33,8 @@ export const addTimetableEntry = async (entry: TimetableEntry): Promise<Timetabl
         start_time: entry.startTime,
         end_time: entry.endTime,
         teacher: entry.teacher,
-        progress: entry.progress
+        progress: entry.progress,
+        semester_id: entry.semesterId ?? null,
     };
     const { data, error } = await supabase.from('timetable').insert(payload).select().single();
     if (error) throw error;

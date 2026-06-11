@@ -11,9 +11,16 @@ import { AnnouncementWidget } from './AnnouncementWidget';
 import { cn } from '@/lib/utils';
 import { getAnnouncements } from '@/lib/services/announcement-service';
 import { getTimetable } from '@/lib/services/timetable-service';
+import { useSemester } from '@/components/providers/SemesterProvider';
+
 
 export default function WebHomePage() {
-    const { timetable, announcements, setAnnouncements, setTimetable } = useAppStore();
+    const timetable = useAppStore(state => state.timetable);
+    const announcements = useAppStore(state => state.announcements);
+    const setAnnouncements = useAppStore(state => state.setAnnouncements);
+    const setTimetable = useAppStore(state => state.setTimetable);
+    const { activeSemesterId } = useSemester();
+
 
     useEffect(() => {
         const fetchAnnouncements = async () => {
@@ -30,16 +37,15 @@ export default function WebHomePage() {
     useEffect(() => {
         const fetchTimetable = async () => {
             try {
-                const entries = await getTimetable();
-                if (entries && entries.length) {
-                    setTimetable(entries);
-                }
+                const entries = await getTimetable(activeSemesterId ?? undefined);
+                setTimetable(entries || []);
             } catch (error) {
                 console.error('Failed to fetch timetable:', error);
             }
         };
         fetchTimetable();
-    }, [setTimetable]);
+    }, [setTimetable, activeSemesterId]);
+
 
     return (
         <WebAppShell>

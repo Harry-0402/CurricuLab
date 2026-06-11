@@ -5,6 +5,7 @@ export const Icons = {
     Bell,
     Printer,
     Home,
+
     Bot,
     Send,
     Subjects: BookOpen,

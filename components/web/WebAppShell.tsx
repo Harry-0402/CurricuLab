@@ -11,6 +11,9 @@ import { KeepAlive } from '../shared/KeepAlive';
 import { RestrictedAccess } from '../shared/RestrictedAccess';
 import { LastVisitManager } from '../shared/LastVisitManager';
 import { usePathname } from 'next/navigation';
+import { EnrollmentModal } from './EnrollmentModal';
+import { useSemester } from '../providers/SemesterProvider';
+
 
 export function WebAppShell({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -19,6 +22,8 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
     const [showDueAlert, setShowDueAlert] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [isAuthLoading, setIsAuthLoading] = useState(true);
+    const [showEnrollment, setShowEnrollment] = useState(false);
+    const { enrolledSemesterId, isLoading: isSemesterLoading, refreshEnrollment } = useSemester();
 
     // Track Auth State
     useEffect(() => {
@@ -42,6 +47,14 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
         };
     }, []);
 
+    // Show enrollment modal if logged in but no class_id
+    useEffect(() => {
+        if (!isAuthLoading && !isSemesterLoading && user && enrolledSemesterId === null) {
+            setShowEnrollment(true);
+        } else {
+            setShowEnrollment(false);
+        }
+    }, [user, isAuthLoading, isSemesterLoading, enrolledSemesterId]);
 
     // Check for due assignments globally
     useEffect(() => {
@@ -143,7 +156,17 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                 </div>
             </div>
 
-            {/* Global Due Date Alert Popup */}
+            {/* Enrollment Modal — shown to authenticated users with no class assigned */}
+            {showEnrollment && user && (
+                <EnrollmentModal
+                    userId={user.id}
+                    onComplete={() => {
+                        setShowEnrollment(false);
+                        refreshEnrollment();
+                    }}
+                />
+            )}
+
             {showDueAlert && dueAlerts.length > 0 && (
                 <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-right-10 fade-in duration-300">
                     <div className="bg-white rounded-2xl shadow-2xl border border-red-100 p-5 max-w-sm w-full relative overflow-hidden">

@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { TimetableModal } from './TimetableModal';
 import { WidgetSettingsModal } from './WidgetSettingsModal';
 
+import { useSemester } from '@/components/providers/SemesterProvider';
+
 interface TimetableWidgetProps {
     entries: TimetableEntry[];
 }
@@ -45,6 +47,7 @@ const getProgressWidthClass = (progress: number) => {
 };
 
 export function TimetableWidget({ entries }: TimetableWidgetProps) {
+    const { activeSemester } = useSemester();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEntry, setSelectedEntry] = useState<TimetableEntry | undefined>(undefined);
     const [initialDay, setInitialDay] = useState<string | undefined>(undefined);
@@ -110,8 +113,8 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                     <div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight">Academic Roadmap</h2>
                         <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded-md uppercase tracking-wider">Semester II</span>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">AY 2025-26</span>
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded-md uppercase tracking-wider">{activeSemester?.name ?? 'Loading...'}</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{activeSemester?.academicYear ?? ''}</span>
                         </div>
                     </div>
                 </div>

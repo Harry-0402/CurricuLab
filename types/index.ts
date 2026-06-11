@@ -1,5 +1,35 @@
 export type MarksType = 2 | 7 | 8 | 10 | 15;
 
+// ============================================
+// PROGRAM & SEMESTER TYPES
+// ============================================
+
+export interface Program {
+  id: string;
+  name: string;          // "MBA Business Analytics"
+  code: string;          // "MBA-BA"
+  description?: string;
+}
+
+export interface Semester {
+  id: string;
+  programId: string;
+  programName?: string;  // joined for display
+  name: string;          // "Semester 2 (Jan–May 2025)"
+  shortName: string;     // "Sem 2"
+  number: number;
+  academicYear?: string; // "2024-25"
+  isActive: boolean;
+  subjectCount?: number; // computed
+}
+
+export interface UserEnrollment {
+  userId: string;
+  semesterId: string | null;
+  semesterName?: string;
+  programName?: string;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -18,6 +48,7 @@ export interface Subject {
   progress: number;
   unitCount: number;
   syllabusPdfUrl?: string;
+  semesterId?: string;   // which semester this subject belongs to
 }
 
 export interface Unit {
@@ -136,6 +167,7 @@ export interface TimetableEntry {
   endTime: string;
   teacher?: string;
   progress: number;
+  semesterId?: string; // which semester this slot belongs to
 }
 
 export interface AssignmentQuestion {

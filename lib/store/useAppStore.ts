@@ -48,6 +48,7 @@ interface AppState {
     timetable: TimetableEntry[];
     announcements: Announcement[];
     isRightPanelMinimized: boolean;
+    activeSemesterId: string | null; // which semester is currently being viewed
 
     // Actions
     addBookmark: (itemId: string, type: Bookmark['type']) => void;
@@ -56,6 +57,7 @@ interface AppState {
     addStudySession: (session: StudySession) => void;
     markUnitComplete: (unitId: string, completed: boolean) => void;
     addToRecent: (id: string) => void;
+    setActiveSemester: (semesterId: string | null) => void;
 
     // Timetable hydrate/replace
     setTimetable: (entries: TimetableEntry[]) => void;
@@ -84,6 +86,7 @@ export const useAppStore = create<AppState>()(
             timetable: TIMETABLE_PRESET,
             announcements: [],
             isRightPanelMinimized: true,
+            activeSemesterId: null,
 
             addBookmark: (itemId, type) => set((state) => ({
                 bookmarks: [...state.bookmarks, { id: Math.random().toString(36).substr(2, 9), itemId, type, addedAt: new Date().toISOString() }]
@@ -106,6 +109,8 @@ export const useAppStore = create<AppState>()(
             addToRecent: (id) => set((state) => ({
                 recentlyOpened: [id, ...state.recentlyOpened.filter((item) => item !== id)].slice(0, 10)
             })),
+
+            setActiveSemester: (semesterId) => set({ activeSemesterId: semesterId }),
 
             setTimetable: (entries) => set({ timetable: entries }),
 
