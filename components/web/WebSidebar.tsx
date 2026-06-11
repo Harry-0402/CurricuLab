@@ -20,6 +20,8 @@ const academicSuite: NavItem[] = [
     { label: 'Classroom', href: '/classroom', icon: Icons.FolderOpen },
     { label: 'Assignments', href: '/assignments', icon: Icons.Questions },
     { label: 'Career Gateway', href: '/tools/career', icon: Icons.Briefcase },
+    { label: 'ResumeStudio', href: '/tools/resume', icon: Icons.FileText },
+    { label: 'MindGrid', href: '/tools/mindgrid', icon: Icons.LayoutGrid },
 ];
 
 const studyMaterials: NavItem[] = [
@@ -29,21 +31,10 @@ const studyMaterials: NavItem[] = [
     { label: 'Revision Notes', href: '/tools/revision', icon: Icons.Notes },
 ];
 
-const aiTools: NavItem[] = [
-    { label: 'LearnPilot AI', href: '/ai-tutor', icon: Icons.Bot },
-    { label: 'MindGrid', href: '/tools/mindgrid', icon: Icons.LayoutGrid },
-    { label: 'Prompt Lab', href: '/tools/prompts', icon: Icons.Lightbulb },
-];
-
 const community: NavItem[] = [
     { label: 'Community Forum', href: '/community', icon: Icons.Users },
     { label: 'The Faculty & Fellows', href: '/faculty-fellows', icon: Icons.GraduationCap },
     { label: 'Documentation', href: '/docs', icon: Icons.BookOpen },
-];
-
-const personalGrowth: NavItem[] = [
-    { label: 'SkillForge', href: '/skillforge', icon: Icons.Zap },
-    { label: 'Focus Zone', href: '/focus', icon: Icons.Clock },
 ];
 
 export function WebSidebar() {
@@ -88,12 +79,10 @@ export function WebSidebar() {
         };
     }, []);
 
-    // Track collapsed state per section; Personal Growth & Community start collapsed
+    // Track collapsed state per section
     const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({
         'Academic Suite': true,
         'Study Materials': true,
-        'AI Tools': true,
-        'Personal Growth': false,
         'Community': false,
     });
 
@@ -178,8 +167,6 @@ export function WebSidebar() {
             <div className="px-3 py-3">
                 {academicSuite.length > 0 && renderNavGroup("Academic Suite", academicSuite)}
                 {studyMaterials.length > 0 && renderNavGroup("Study Materials", studyMaterials)}
-                {aiTools.length > 0 && renderNavGroup("AI Tools", aiTools)}
-                {personalGrowth.length > 0 && renderNavGroup("Personal Growth", personalGrowth)}
                 {community.length > 0 && renderNavGroup("Community", community)}
             </div>
 
@@ -203,7 +190,7 @@ export function WebSidebar() {
             )}
 
             <div className="mt-auto py-1 border-t border-gray-100 italic text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
-                CurricuLab v1.2 Beta
+                CurricuLab v2.1
             </div>
         </aside>
     );

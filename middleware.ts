@@ -71,16 +71,33 @@ export async function middleware(req: NextRequest) {
 
     // CHECK AUTHORIZATION (Whitelist) - Only for authenticated users
     if (session && !isPublicPath) {
-        // Query authorized_users table to verify this email is allowed (Case-insensitive)
-        const { data: isAuthorized, error } = await supabase
-            .from('authorized_users')
-            .select('email')
-            .ilike('email', session.user.email!)
-            .single();
+        let isAuthorized = req.cookies.get('app_is_authorized')?.value === 'true';
+
+        if (!isAuthorized) {
+            // Query authorized_users table to verify this email is allowed (Case-insensitive)
+            const { data, error } = await supabase
+                .from('authorized_users')
+                .select('email')
+                .ilike('email', session.user.email!)
+                .single();
+
+            isAuthorized = !!data && !error;
+
+            if (isAuthorized) {
+                // Cache the authorization status in a cookie to prevent DB hits on every request
+                res.cookies.set('app_is_authorized', 'true', {
+                    path: '/',
+                    maxAge: 60 * 60 * 24 * 365, // 1 year cache
+                    httpOnly: true,
+                    sameSite: 'lax',
+                    secure: process.env.NODE_ENV === 'production'
+                });
+            }
+        }
 
         // If not found in whitelist, redirect to Unauthorized page
         // (Excluding the unauthorized page itself to avoid loops)
-        if ((!isAuthorized || error) && req.nextUrl.pathname !== '/unauthorized') {
+        if (!isAuthorized && req.nextUrl.pathname !== '/unauthorized') {
             const redirectUrl = req.nextUrl.clone();
             redirectUrl.pathname = '/unauthorized';
             return NextResponse.redirect(redirectUrl);

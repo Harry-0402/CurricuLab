@@ -159,13 +159,7 @@ export function WebHeader() {
                     )}
                 </div>
 
-                <Link
-                    href="/tools/resume"
-                    className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
-                >
-                    <Icons.Briefcase size={16} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
-                    <span className="text-xs font-bold text-gray-600 group-hover:text-indigo-600 transition-colors">ResumeStudio</span>
-                </Link>
+
 
                 {user ? (
                     <>
