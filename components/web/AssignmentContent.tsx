@@ -509,19 +509,9 @@ export function AssignmentContent() {
                                     )}
 
                                     <div className="space-y-6">
-                                        <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100 flex gap-3 items-start">
-                                            <div className="mt-0.5 relative flex-shrink-0">
-                                                <Icons.Sparkles size={16} className="text-purple-600" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-xs font-bold text-gray-900">How to use Custom GPT</p>
-                                                <p className="text-xs font-medium text-purple-700/80 leading-relaxed">
-                                                    Click the button below to automatically copy all questions and instructions to your clipboard. You will be redirected to the Exam Ready Analytics Coach. Just paste the prompt in the chat box!
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Questions & Answers</h4>
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Assignment Questions</h4>
+                                            
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -534,19 +524,19 @@ export function AssignmentContent() {
                                                         .join('\n');
                                                     const targetSubject = subjects.find(s => s.id === selectedAssignment.subjectId);
                                                     const subjectName = targetSubject?.title || 'the subject';
-                                                    const prompt = `Here is a list of questions for my assignment:\n\n${questionList}\n\n\nPlease help me answer them based on ${subjectName}.\n\nInstructions:\n- The language should be simple, clear, and humanoid.\n- The word count should be between 300 to 400 words per answer.`;
+                                                    
+                                                    const prompt = `Here is a list of questions for my assignment:\n\n${questionList}\n\n\nPlease help me answer them based on ${subjectName}.\n\nInstructions:\n- The language should be simple, clear, and humanoid.\n- The word limit should be in 110-120 words for each question.`;
 
                                                     navigator.clipboard.writeText(prompt).then(() => {
-                                                        toast.success("Questions & instructions copied! Paste them in the chat.");
+                                                        toast.success("Questions copied! Paste them into ChatGPT or Gemini to get solutions.");
                                                     }).catch(() => {
                                                         toast.error("Failed to copy. Please allow clipboard permissions.");
                                                     });
-                                                    window.open("https://chatgpt.com/g/g-696a4f4a8f708191bc92fa570a0dd7ea-exam-ready-analytics-coach", "_blank");
                                                 }}
-                                                className="flex items-center gap-2 px-4 py-2 bg-white text-gray-900 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+                                                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-none rounded-2xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-all shadow-sm active:scale-95 shrink-0"
                                             >
-                                                <Icons.Sparkles size={14} className="text-purple-500" />
-                                                Custom GPT
+                                                <Icons.Sparkles size={14} className="text-white" />
+                                                Solve via AI (Copy Prompt)
                                             </button>
                                         </div>
                                         {selectedAssignment.questions.length === 0 && (
@@ -556,83 +546,14 @@ export function AssignmentContent() {
                                         )}
                                         {selectedAssignment.questions.map((q, idx) => (
                                             <div key={q.id} className="bg-white border border-gray-100 rounded-[30px] p-6 shadow-sm space-y-4">
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div className="flex gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400 shrink-0 mt-1">
-                                                            {idx + 1}
-                                                        </div>
-                                                        <p className="text-gray-900 font-bold text-base leading-snug pt-1">
-                                                            {q.text}
-                                                        </p>
+                                                <div className="flex gap-4">
+                                                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400 shrink-0 mt-1">
+                                                        {idx + 1}
                                                     </div>
-                                                    <div className="relative">
-                                                        <button
-                                                            data-menu-toggle={`action-toggle-${idx}`}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setOpenMenuIndex(openMenuIndex === idx ? null : idx);
-                                                            }}
-                                                            className={cn(
-                                                                "flex items-center gap-2 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 shrink-0",
-                                                                generatingQuestionIndex === idx
-                                                                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                                                    : openMenuIndex === idx
-                                                                        ? "bg-gray-900 text-white shadow-xl"
-                                                                        : "bg-white text-gray-900 hover:bg-gray-50 border border-gray-100"
-                                                            )}
-                                                            disabled={generatingQuestionIndex !== null}
-                                                        >
-                                                            {generatingQuestionIndex === idx ? (
-                                                                <Icons.Loader2 size={14} className="animate-spin" />
-                                                            ) : (
-                                                                <Icons.Settings size={14} />
-                                                            )}
-                                                            {generatingQuestionIndex === idx ? 'Working...' : 'Action'}
-                                                        </button>
-
-                                                        {/* State-based Dropdown */}
-                                                        {openMenuIndex === idx && (
-                                                            <div
-                                                                ref={menuRef}
-                                                                className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 transition-all z-50 transform origin-top-right animate-in fade-in slide-in-from-top-1 duration-200"
-                                                            >
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        handleGenerateAnswer(idx);
-                                                                        setOpenMenuIndex(null);
-                                                                    }}
-                                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
-                                                                >
-                                                                    <Icons.Sparkles size={14} className="text-purple-500" />
-                                                                    {q.answer ? 'Regenerate AI' : 'Generate AI'}
-                                                                </button>
-                                                                {q.answer && (
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleClearAnswer(idx);
-                                                                            setOpenMenuIndex(null);
-                                                                        }}
-                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
-                                                                    >
-                                                                        <Icons.Trash2 size={14} />
-                                                                        Clear Answer
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                                    <p className="text-gray-900 font-bold text-base leading-snug pt-1">
+                                                        {q.text}
+                                                    </p>
                                                 </div>
-
-                                                {q.answer ? (
-                                                    <AnswerDisplay content={q.answer} />
-                                                ) : (
-                                                    <div className="py-4 px-6 border border-dashed border-gray-200 rounded-2xl flex items-center justify-center gap-3">
-                                                        <Icons.Sparkles size={14} className="text-gray-300" />
-                                                        <span className="text-xs font-bold text-gray-300">Click generate to get AI assistance for this question</span>
-                                                    </div>
-                                                )}
                                             </div>
                                         ))}
                                     </div>

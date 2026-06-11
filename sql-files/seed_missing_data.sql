@@ -74,6 +74,11 @@ INSERT INTO public.resources (id, title, description, type, url, category, topic
 ('gpt-5', 'NoteSmith', 'Smart note-taking and summarization assistant.', 'Link', 'https://chatgpt.com/g/g-6962605ee32481918f2c0ee70c521b90-notesmith', 'Gems GPTs', 'AI Tools', NULL),
 ('gpt-6', 'HumanForge', 'AI-powered human resource and team building assistant.', 'Link', 'https://chatgpt.com/g/g-696e0b31d42081918957b4e6855c006b-humanforge', 'Gems GPTs', 'AI Tools', NULL),
 
+INSERT INTO semesters (id, program_id, name, short_name, number, academic_year, is_active) VALUES
+('b2c3d4e5-0001-0000-0000-000000000001', 'a1b2c3d4-0001-0000-0000-000000000001', 'Semester 1 (Jul-Nov)', 'Sem 1', 1, NULL, false),
+('c3d4e5f6-0002-0000-0000-000000000002', 'a1b2c3d4-0001-0000-0000-000000000001', 'Semester 2 (Jan-May)', 'Sem 2', 2, NULL, true),
+('d4e5f6a7-0003-0000-0000-000000000003', 'a1b2c3d4-0001-0000-0000-000000000001', 'Semester 3 (Jul-Nov)', 'Sem 3', 3, NULL, false);
+
 -- From INTERVIEW_RESOURCES (interview-resources.ts)
 ('int-1', '100 Excel Interview Questions And Answers', 'Comprehensive guide for Excel interview preparation.', 'PDF', 'https://drive.google.com/file/d/1lIUt2lUcjGKbbEYtTM4RiRdty-J7RZg1/preview', 'Interview Prep', 'Excel', NULL),
 ('int-2', '100 Python Interview Questions - Part 1', 'Foundational Python interview questions.', 'PDF', 'https://drive.google.com/file/d/1qIBWFzWq2rD4z_kiF05_helUfraStbc7/preview', 'Interview Prep', 'Python', NULL),

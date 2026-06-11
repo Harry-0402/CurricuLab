@@ -25,7 +25,7 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
         subjectId: activeSubjectId || subjects[0]?.id || '',
         unitId: '',
         platform: 'ERP',
-        dueDate: new Date().toISOString().split('T')[0],
+        dueDate: '',
     });
 
     useEffect(() => {

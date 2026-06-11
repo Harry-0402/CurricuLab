@@ -40,15 +40,26 @@ export function VaultContent() {
         link: ''
     });
     const [isSaving, setIsSaving] = useState(false);
+    const [uploadMode, setUploadMode] = useState<'link' | 'file'>('link');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     // Delete confirmation state
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const loadInitialData = async () => {
             setLoading(true);
+
+            // Check admin status
+            const { supabase } = await import('@/utils/supabase/client');
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+                setIsAdmin(profile?.role === 'admin');
+            }
             const fetchedSubjects = await SubjectService.getAll(activeSemesterId ?? undefined);
             setSubjects(fetchedSubjects);
 
@@ -100,6 +111,8 @@ export function VaultContent() {
             title: '',
             link: ''
         });
+        setUploadMode('link');
+        setSelectedFile(null);
         setIsModalOpen(true);
     };
 
@@ -107,27 +120,43 @@ export function VaultContent() {
         e.stopPropagation();
         setEditingId(resource.id);
         setFormData({
-            subjectId: resource.subjectId,
+            subjectId: resource.subjectId || '',
             unitId: resource.unitId || '',
-            type: resource.type,
-            title: resource.title,
+            type: resource.type || 'study_note',
+            title: resource.title || '',
             link: resource.link || ''
         });
+        setUploadMode('link');
+        setSelectedFile(null);
         setIsModalOpen(true);
     };
 
     const handleSave = async () => {
-        if (!formData.subjectId || !formData.title || !formData.link) return;
+        if (!formData.subjectId || !formData.title) return;
+        if (uploadMode === 'link' && !formData.link) return;
+        if (uploadMode === 'file' && !selectedFile && !editingId) return;
 
         setIsSaving(true);
         let saved: VaultResource | null = null;
+        let finalLink = formData.link;
+
+        if (uploadMode === 'file' && selectedFile) {
+            const { uploadVaultFile } = await import('@/lib/services/app.service');
+            const uploadedUrl = await uploadVaultFile(selectedFile);
+            if (!uploadedUrl) {
+                toast.error("Failed to upload file");
+                setIsSaving(false);
+                return;
+            }
+            finalLink = uploadedUrl;
+        }
 
         const resourceData = {
             subjectId: formData.subjectId,
             unitId: formData.unitId,
             type: formData.type,
             title: formData.title,
-            link: formData.link,
+            link: finalLink,
             tags: selectedResource?.tags || []
         };
 
@@ -257,13 +286,15 @@ export function VaultContent() {
                         )}
                     </div>
 
+                    {isAdmin && (
                     <button
                         onClick={handleOpenAddModal}
-                        className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
+                        className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold text-sm hover:bg-black hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 ml-auto"
                     >
                         <Icons.Plus size={18} />
-                        <span>Add Resource</span>
+                        Add Resource
                     </button>
+                )}
                 </div>
             </div>
 
@@ -379,22 +410,24 @@ export function VaultContent() {
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={(e) => handleOpenEditModal(e, resource)}
-                                                className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-colors"
-                                                title="Edit"
-                                            >
-                                                <Icons.Edit size={16} />
-                                            </button>
-                                            <button
-                                                onClick={(e) => handleDeleteClick(e, resource.id)}
-                                                className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Icons.Trash2 size={16} />
-                                            </button>
-                                        </div>
+                                        {isAdmin && (
+                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={(e) => handleOpenEditModal(e, resource)}
+                                                    className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-colors"
+                                                    title="Edit"
+                                                >
+                                                    <Icons.Edit size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDeleteClick(e, resource.id)}
+                                                    className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-colors"
+                                                    title="Delete"
+                                                >
+                                                    <Icons.Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="flex-grow flex flex-col">
@@ -510,23 +543,73 @@ export function VaultContent() {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Resource Link</label>
-                                <div className="relative">
-                                    <input
-                                        type="url"
-                                        value={formData.link || ''}
-                                        onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                        placeholder="https://..."
-                                        className="w-full p-4 pl-10 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
-                                    />
-                                    <Icons.Link className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider pl-1">Resource Source</label>
+                                    <div className="bg-gray-100 p-0.5 rounded-lg flex items-center">
+                                        <button
+                                            type="button"
+                                            onClick={() => setUploadMode('link')}
+                                            className={cn(
+                                                "px-3 py-1 rounded-md text-[10px] font-bold uppercase transition-all",
+                                                uploadMode === 'link' ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                                            )}
+                                        >
+                                            Link
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setUploadMode('file')}
+                                            className={cn(
+                                                "px-3 py-1 rounded-md text-[10px] font-bold uppercase transition-all",
+                                                uploadMode === 'file' ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                                            )}
+                                        >
+                                            Upload
+                                        </button>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-gray-400 mt-2 pl-1">Paste the deployed HTML file URL here.</p>
+
+                                {uploadMode === 'link' ? (
+                                    <div className="relative">
+                                        <input
+                                            type="url"
+                                            value={formData.link || ''}
+                                            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                                            placeholder="https://..."
+                                            className="w-full p-4 pl-10 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
+                                        />
+                                        <Icons.Link className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                    </div>
+                                ) : (
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            accept=".pdf,.doc,.docx,.html"
+                                            onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                                            className="w-full p-3.5 pl-10 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 transition-all hover:bg-gray-100 cursor-pointer"
+                                        />
+                                        <Icons.Upload className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                        {editingId && !selectedFile && formData.link && (
+                                            <p className="text-xs text-amber-600 mt-2 font-medium">Leave blank to keep existing file: {formData.link.split('/').pop()}</p>
+                                        )}
+                                    </div>
+                                )}
+                                <p className="text-xs text-gray-400 mt-2 pl-1">
+                                    {uploadMode === 'link' ? "Paste the deployed HTML/PDF/Drive URL here." : (
+                                        <>
+                                            Upload a PDF, Word, or HTML file directly.<br />
+                                            <span className="text-[10px] text-amber-500 font-medium mt-1 inline-block">
+                                                <Icons.AlertCircle size={10} className="inline mr-1 mb-[2px]" />
+                                                Tip: For HTML files, ensure all images and CSS are embedded within the file itself.
+                                            </span>
+                                        </>
+                                    )}
+                                </p>
                             </div>
 
                             <button
                                 onClick={handleSave}
-                                disabled={isSaving || !formData.title || !formData.subjectId}
+                                disabled={isSaving || !formData.title || !formData.subjectId || (uploadMode === 'link' ? !formData.link : (!selectedFile && !editingId))}
                                 className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-[22px] text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 active:scale-[0.98]"
                             >
                                 {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Save size={18} /> : <Icons.Plus size={18} />)}

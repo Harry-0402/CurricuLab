@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/shared/Icons';
 import { useSemester } from '@/components/providers/SemesterProvider';
 import { cn } from '@/lib/utils';
@@ -11,6 +12,7 @@ export function WebHeader() {
     const [user, setUser] = React.useState<any>(null);
     const [showSemesterMenu, setShowSemesterMenu] = useState(false);
     const semesterMenuRef = useRef<HTMLDivElement>(null);
+    const pathname = usePathname();
     const { activeSemester, activeSemesterId, enrolledSemesterId, allSemesters, setActiveSemester, isBrowsing } = useSemester();
 
     // Close menu on outside click
@@ -183,7 +185,7 @@ export function WebHeader() {
                     </>
                 ) : (
                     <Link
-                        href={`/login?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '/')}`}
+                        href={`/login?callbackUrl=${encodeURIComponent(pathname || '/')}`}
                         className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-100 active:scale-95 group"
                     >
                         <Icons.LogIn size={16} className="text-white/80 group-hover:text-white transition-colors" />

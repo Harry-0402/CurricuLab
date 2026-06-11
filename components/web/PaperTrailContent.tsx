@@ -4,593 +4,406 @@ import React, { useState, useEffect } from 'react';
 import { WebAppShell } from '@/components/web/WebAppShell';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-import { getSubjects, getUnits, getQuestions, createQuestion, updateQuestion, deleteQuestion } from '@/lib/services/app.service';
-import { AiService } from '@/lib/services/ai-service';
-
-import { Subject, Unit, Question, MarksType } from '@/types';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { useToast } from '@/components/shared/Toast';
-
+import { toast } from 'sonner';
+import { PYQService, PYQFile } from '@/lib/services/pyq-service';
 import { SubjectService } from '@/lib/data/subject-service';
+import { Subject } from '@/types';
 import { useSemester } from '@/components/providers/SemesterProvider';
+import { supabase } from '@/utils/supabase/client';
+
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/shared/Dialog";
 
 export function PaperTrailContent() {
     const { activeSemesterId } = useSemester();
-    const { showToast } = useToast();
+    const [isAdmin, setIsAdmin] = useState(false);
+    
+    // Data State
     const [subjects, setSubjects] = useState<Subject[]>([]);
-    const [units, setUnits] = useState<Unit[]>([]);
-    const [questions, setQuestions] = useState<Question[]>([]);
+    const [pyqs, setPyqs] = useState<PYQFile[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    
+    // Filters & Search
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const [selectedSubject, setSelectedSubject] = useState<string>('');
-    const [selectedUnit, setSelectedUnit] = useState<string>('');
-    const [activeQuestion, setActiveQuestion] = useState<Question | null>(null);
-
-    const [isLoading, setIsLoading] = useState(false);
-    const [aiAnswer, setAiAnswer] = useState<string>('');
-
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [selectedYear, setSelectedYear] = useState<string>('');
-    const [showExportMenu, setShowExportMenu] = useState(false);
-
-    // Add Question Modal State
+    // Modals
+    const [previewFile, setPreviewFile] = useState<PYQFile | null>(null);
+    const [shareFile, setShareFile] = useState<PYQFile | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [newQuestion, setNewQuestion] = useState({
-        subjectId: '',
-        unitId: '',
-        year: '',
-        marksType: 10 as MarksType,
-        question: '',
-        difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard'
-    });
+    const [uploadMode, setUploadMode] = useState<'link' | 'file'>('link');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    
+    // Form State for Add/Edit
     const [isSaving, setIsSaving] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [formData, setFormData] = useState({
+        subjectId: '',
+        title: '',
+        year: '',
+        type: 'pdf' as 'pdf' | 'word',
+        url: ''
+    });
 
-    // Initial Load
+    useEffect(() => {
+        const initAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+                setIsAdmin(profile?.role === 'admin');
+            }
+        };
+        initAuth();
+    }, []);
+
     useEffect(() => {
         SubjectService.getAll(activeSemesterId ?? undefined).then(setSubjects);
     }, [activeSemesterId]);
 
-    // Load Units when Subject changes
+    const loadPYQs = async () => {
+        setIsLoading(true);
+        const data = await PYQService.getAll(searchQuery);
+        setPyqs(data);
+        setIsLoading(false);
+    };
+
     useEffect(() => {
-        if (selectedSubject) {
-            getUnits(selectedSubject).then(setUnits);
-            setSelectedUnit('');
-            setActiveQuestion(null);
-            setQuestions([]);
+        const timeoutId = setTimeout(() => {
+            loadPYQs();
+        }, 300);
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery, activeSemesterId]);
+
+    const handlePreview = (pyq: PYQFile) => {
+        if (pyq.type === 'word') {
+            toast.info("Word documents cannot be previewed directly. Downloading instead.");
+            handleDownload(pyq);
+            return;
         }
-    }, [selectedSubject]);
-
-    // Load Questions when Unit changes
-    useEffect(() => {
-        const loadQuestions = async () => {
-            if (selectedSubject) {
-                setIsLoading(true);
-                const data = await getQuestions({
-                    subjectId: selectedSubject,
-                    unitId: selectedUnit || undefined,
-                    year: selectedYear || undefined
-                });
-                setQuestions(data);
-                setIsLoading(false);
-            }
-        };
-        loadQuestions();
-    }, [selectedSubject, selectedUnit, selectedYear]);
-
-    // Generate AI Answer
-    const handleGenerateAnswer = async () => {
-        if (!activeQuestion || !selectedSubject) return;
-
-        setIsGenerating(true);
-        setAiAnswer('');
-
-        try {
-            const subject = subjects.find(s => s.id === selectedSubject);
-            const unit = units.find(u => u.id === activeQuestion.unitId);
-
-            const answer = await AiService.generateAnswer(
-                subject?.title || '',
-                unit?.title || '',
-                unit?.topics || [],
-                activeQuestion.question,
-                activeQuestion.marksType,
-                activeQuestion.difficulty || 'Medium'
-            );
-            setAiAnswer(answer);
-
-        } catch (error) {
-            console.error("Failed to generate answer:", error);
-            setAiAnswer("Sorry, I couldn't generate an answer at this time. Please check your connection or API key.");
-        } finally {
-            setIsGenerating(false);
-        }
+        setPreviewFile(pyq);
     };
 
-    const handleExportHTML = async () => {
-        if (!activeQuestion || !selectedSubject || !aiAnswer) return;
-        const subject = subjects.find(s => s.id === selectedSubject);
-        const { PlatformExportService } = await import('@/lib/services/export-service');
-        await PlatformExportService.generatePaperTrailHTMLExport(
-            subject?.title || 'PaperTrail',
-            activeQuestion,
-            aiAnswer
-        );
-        setShowExportMenu(false);
+    const handleDownload = (pyq: PYQFile) => {
+        const link = document.createElement('a');
+        link.href = pyq.url;
+        link.download = `${pyq.title} - ${pyq.year}`;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
-    const handleExportWord = async () => {
-        if (!activeQuestion || !selectedSubject || !aiAnswer) return;
-        const subject = subjects.find(s => s.id === selectedSubject);
-
-        // Prepare data for Word export (adapting to available methods)
-        const notes = [{
-            id: activeQuestion.id,
-            title: activeQuestion.question,
-            content: aiAnswer
-        }];
-
-        const { PlatformExportService } = await import('@/lib/services/export-service');
-        await PlatformExportService.generateWordDocument(
-            subject?.title || 'PaperTrail',
-            `PYQ Solution (${activeQuestion.marksType} Marks)`,
-            notes
-        );
-        setShowExportMenu(false);
+    const handleShareToAI = (pyq: PYQFile, platform: 'chatgpt' | 'gemini') => {
+        handleDownload(pyq);
+        const subjectTitle = pyq.subjectTitle || 'the subject';
+        const prompt = `I am preparing for an exam. Please find the attached PYQ (Previous Year Question) paper for "${subjectTitle}". \n\nInstructions:\n1. Solve the questions step-by-step.\n2. Explain the core concepts clearly.\n3. Format the answers beautifully using Markdown.`;
+        
+        navigator.clipboard.writeText(prompt);
+        const url = platform === 'chatgpt' ? 'https://chatgpt.com/' : 'https://gemini.google.com/';
+        window.open(url, '_blank');
+        
+        toast.success(`File downloaded and prompt copied! Please upload the file to ${platform === 'chatgpt' ? 'ChatGPT' : 'Gemini'} and paste the prompt.`);
+        setShareFile(null);
     };
 
-    const handleSaveQuestion = async () => {
-        if (!newQuestion.subjectId || !newQuestion.question) return;
-
+    const handleSavePYQ = async (e: React.FormEvent) => {
+        e.preventDefault();
         setIsSaving(true);
-        let saved: Question | null = null;
+        
+        let finalUrl = formData.url;
+        if (uploadMode === 'file' && selectedFile) {
+            const url = await PYQService.uploadFile(selectedFile);
+            if (url) finalUrl = url;
+            else {
+                toast.error("File upload failed");
+                setIsSaving(false);
+                return;
+            }
+        }
+
+        const payload = { ...formData, url: finalUrl };
 
         if (editingId) {
-            saved = await updateQuestion({
-                id: editingId,
-                unitId: newQuestion.unitId,
-                subjectId: newQuestion.subjectId,
-                question: newQuestion.question,
-                answer: activeQuestion?.answer || '',
-                marksType: newQuestion.marksType,
-                tags: activeQuestion?.tags || [],
-                difficulty: newQuestion.difficulty,
-                year: newQuestion.year,
-                isBookmarked: activeQuestion?.isBookmarked || false,
-            });
-        } else {
-            saved = await createQuestion({
-                subjectId: newQuestion.subjectId,
-                unitId: newQuestion.unitId,
-                question: newQuestion.question,
-                answer: '',
-                marksType: newQuestion.marksType,
-                tags: [],
-                difficulty: newQuestion.difficulty,
-                year: newQuestion.year,
-                isBookmarked: false,
-            });
-        }
-
-        if (saved) {
-            // For new questions, keep modal open but clear form
-            // For edits, close the modal
-            if (editingId) {
+            const success = await PYQService.update(editingId, payload);
+            if (success) {
+                toast.success('PYQ updated successfully');
+                loadPYQs();
                 setIsAddModalOpen(false);
-                showToast('Question updated successfully!', 'success');
             } else {
-                showToast('Question added successfully!', 'success');
+                toast.error('Failed to update PYQ');
             }
-
-            setNewQuestion({
-                subjectId: newQuestion.subjectId, // Keep subject selected
-                unitId: newQuestion.unitId, // Keep unit selected
-                year: '',
-                marksType: 10,
-                question: '',
-                difficulty: 'Medium'
-            });
-            setEditingId(null);
-
-            // Refresh list if added to currently viewed context
-            if (saved.subjectId === selectedSubject) {
-                // Trigger refresh by reloading questions
-                const data = await getQuestions({
-                    subjectId: selectedSubject,
-                    unitId: selectedUnit || undefined
-                });
-                setQuestions(data);
-                // Also update active question if we just edited it
-                if (editingId && activeQuestion?.id === editingId) {
-                    setActiveQuestion(saved);
-                }
+        } else {
+            const newPYQ = await PYQService.create(payload);
+            if (newPYQ) {
+                toast.success('PYQ added successfully');
+                loadPYQs();
+                setIsAddModalOpen(false);
+            } else {
+                toast.error('Failed to add PYQ');
             }
         }
         setIsSaving(false);
     };
 
-    const handleEditClick = (e: React.MouseEvent, q: Question) => {
-        e.stopPropagation();
-        setEditingId(q.id);
-        setNewQuestion({
-            subjectId: q.subjectId,
-            unitId: q.unitId,
-            year: q.year || '',
-            marksType: q.marksType,
-            question: q.question,
-            difficulty: q.difficulty
+    const handleEditClick = (pyq: PYQFile) => {
+        setFormData({
+            subjectId: pyq.subjectId,
+            title: pyq.title,
+            year: pyq.year,
+            type: pyq.type,
+            url: pyq.url
         });
+        setEditingId(pyq.id);
         setIsAddModalOpen(true);
     };
 
-    const handleDeleteClick = async (e: React.MouseEvent, id: string) => {
-        e.stopPropagation();
-        if (confirm('Are you sure you want to delete this question?')) {
-            const success = await deleteQuestion(id);
+    const handleDeleteClick = async (id: string) => {
+        if (confirm("Are you sure you want to delete this PYQ?")) {
+            const success = await PYQService.delete(id);
             if (success) {
-                setQuestions(prev => prev.filter(q => q.id !== id));
-                if (activeQuestion?.id === id) {
-                    setActiveQuestion(null);
-                }
+                toast.success('PYQ deleted');
+                loadPYQs();
+            } else {
+                toast.error('Failed to delete PYQ');
             }
         }
+    };
+
+    const openAddModal = () => {
+        setFormData({ subjectId: subjects[0]?.id || '', title: '', year: new Date().getFullYear().toString(), type: 'pdf', url: '' });
+        setEditingId(null);
+        setUploadMode('link');
+        setSelectedFile(null);
+        setIsAddModalOpen(true);
     };
 
     return (
         <WebAppShell>
             <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto">
-
-                {/* Header */}
-                <div className="flex items-center justify-between shrink-0">
+                {/* Header & Search */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
                     <div>
                         <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
-                        <p className="text-4xl font-black text-gray-900 tracking-tight">PaperTrail</p>
+                        <p className="text-4xl font-black text-gray-900 tracking-tight">PaperTrail PYQs</p>
                     </div>
-                    <button
-                        onClick={() => {
-                            setEditingId(null);
-                            setNewQuestion({
-                                subjectId: selectedSubject || '',
-                                unitId: selectedUnit || '',
-                                year: '',
-                                marksType: 10,
-                                question: '',
-                                difficulty: 'Medium'
-                            });
-                            setIsAddModalOpen(true);
-                        }}
-                        className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
-                    >
-                        <Icons.Plus size={18} />
-                        <span>New Question</span>
-                    </button>
+                    {isAdmin && (
+                        <button 
+                            onClick={openAddModal}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm active:scale-95 whitespace-nowrap self-start md:self-auto"
+                        >
+                            <Icons.Plus size={16} /> Add PYQ
+                        </button>
+                    )}
                 </div>
 
-                {/* Filters */}
-                <div className="grid grid-cols-3 gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm shrink-0">
-                    <div className="relative">
-                        <select
-                            value={selectedSubject}
-                            onChange={(e) => setSelectedSubject(e.target.value)}
-                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
-                        >
-                            <option value="">Select Subject...</option>
-                            {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
-                        </select>
-                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                    </div>
+                <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center shrink-0 z-10 relative">
+                    <Icons.Search size={20} className="text-gray-400 absolute left-6" />
+                    <input 
+                        type="text"
+                        placeholder="Search PYQs by subject, title, or year..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-14 pr-4 py-3 bg-gray-50 hover:bg-gray-100 border-none rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                    />
+                </div>
 
-                    <div className="relative">
-                        <select
-                            value={selectedUnit}
-                            onChange={(e) => setSelectedUnit(e.target.value)}
-                            disabled={!selectedSubject}
-                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 appearance-none pr-10"
-                        >
-                            <option value="">All Units</option>
-                            {units.map(u => <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>)}
-                        </select>
-                    </div>
-
-                    <div className="relative">
-                        <select
-                            value={selectedYear}
-                            onChange={(e) => setSelectedYear(e.target.value)}
-                            disabled={!selectedSubject}
-                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 appearance-none pr-10"
-                        >
-                            <option value="">All Years</option>
-                            {Array.from({ length: 12 }, (_, i) => 2024 - i).map(year => (
-                                <option key={year} value={year.toString()}>{year}</option>
+                {/* Grid Content */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar pb-6 pr-2">
+                    {isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {[...Array(8)].map((_, i) => (
+                                <div key={i} className="bg-gray-100 animate-pulse h-48 rounded-3xl" />
                             ))}
-                        </select>
-                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                    </div>
-                </div>
-
-                {/* Main Content - Split Pane */}
-                <div className="flex-1 flex gap-6 min-h-0">
-
-                    {/* Left Panel: Question List */}
-                    <div className="w-5/12 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">
-                        <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">
-                                Questions ({questions.length})
-                            </h3>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
-                            {isLoading ? (
-                                <div className="flex justify-center p-8"><Icons.Loader2 className="animate-spin text-blue-500" /></div>
-                            ) : questions.length === 0 ? (
-                                <div className="text-center p-8 text-gray-400 text-sm">No questions found.</div>
-                            ) : (
-                                questions.map(q => (
-                                    <div
-                                        key={q.id}
-                                        onClick={() => { setActiveQuestion(q); setAiAnswer(''); }}
-                                        className={cn(
-                                            "p-4 rounded-2xl border cursor-pointer transition-all hover:shadow-md group relative",
-                                            activeQuestion?.id === q.id
-                                                ? "bg-blue-50 border-blue-200 shadow-sm"
-                                                : "bg-white border-gray-100 hover:border-blue-100"
-                                        )}
-                                    >
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <span className={cn(
-                                                    "px-2 py-1 rounded-md text-[10px] font-bold uppercase",
-                                                    q.difficulty === 'Easy' ? "bg-green-100 text-green-700" :
-                                                        q.difficulty === 'Medium' ? "bg-yellow-100 text-yellow-700" :
-                                                            "bg-red-100 text-red-700"
-                                                )}>
-                                                    {q.difficulty}
-                                                </span>
-                                                {q.year && <span className="text-[10px] font-black text-gray-300 uppercase tracking-tighter">{q.year}</span>}
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-[10px] font-bold text-gray-400 shrink-0">{q.marksType} Marks</span>
-                                                <div className="flex items-center gap-1">
-                                                    <button
-                                                        onClick={(e) => handleEditClick(e, q)}
-                                                        className="p-1.5 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
-                                                        title="Edit"
-                                                    >
-                                                        <Icons.Edit size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => handleDeleteClick(e, q.id)}
-                                                        className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
-                                                        title="Delete"
-                                                    >
-                                                        <Icons.Trash2 size={14} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p className="text-sm font-semibold text-gray-800 line-clamp-3 mb-2">{q.question}</p>
-                                    </div>
-                                ))
-                            )}
+                    ) : pyqs.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-100 rounded-3xl bg-gray-50/50">
+                            <Icons.FileText size={48} className="mb-4 opacity-20" />
+                            <p className="font-bold">{searchQuery ? "No PYQs match your search." : "No PYQs available."}</p>
                         </div>
-                    </div>
-
-                    {/* Right Panel: AI Answer */}
-                    <div className="w-7/12 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative">
-                        {activeQuestion ? (
-                            <div className="flex flex-col h-full">
-                                {/* Question Header */}
-                                <div className="p-6 border-b border-gray-100 bg-gray-50/30 shrink-0">
-                                    <h2 className="text-lg font-black text-gray-900 leading-tight mb-4">
-                                        {activeQuestion.question}
-                                    </h2>
-                                    <div className="flex items-center gap-4">
-                                        <button
-                                            onClick={handleGenerateAnswer}
-                                            disabled={isGenerating}
-                                            className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
-                                        >
-                                            {isGenerating ? <Icons.Loader2 className="animate-spin" size={16} /> : <Icons.Sparkles size={16} />}
-                                            {isGenerating ? 'Drafting Answer...' : 'Generate Answer'}
-                                        </button>
-
-                                        {aiAnswer && (
-                                            <div className="relative">
-                                                <button
-                                                    onClick={() => setShowExportMenu(!showExportMenu)}
-                                                    className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-gray-200"
-                                                >
-                                                    <Icons.Download size={16} />
-                                                    <span className="text-[10px] font-bold uppercase tracking-wide">Export</span>
-                                                    <Icons.ChevronDown size={14} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
-                                                </button>
-
-                                                {showExportMenu && (
-                                                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
-                                                        <button
-                                                            onClick={handleExportWord}
-                                                            className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group"
-                                                        >
-                                                            <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                                                <Icons.FileText size={16} />
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-sm font-bold text-gray-900">Word Document</p>
-                                                                <p className="text-[10px] font-medium text-gray-500">Editable .docx file</p>
-                                                            </div>
-                                                        </button>
-                                                        <button
-                                                            onClick={handleExportHTML}
-                                                            className="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl transition-colors text-left group"
-                                                        >
-                                                            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                                                                <Icons.Globe size={16} />
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-sm font-bold text-gray-900">Web Page</p>
-                                                                <p className="text-[10px] font-medium text-gray-500">Standalone .html file</p>
-                                                            </div>
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Answer Area */}
-                                <div className="flex-1 overflow-y-auto p-8 bg-white no-scrollbar">
-                                    {aiAnswer ? (
-                                        <div className="w-full">
-                                            <ReactMarkdown
-                                                remarkPlugins={[remarkGfm]}
-                                                components={{
-                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold text-gray-900 mt-6 mb-4" {...props} />,
-                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold text-gray-800 mt-5 mb-3" {...props} />,
-                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2" {...props} />,
-                                                    p: ({ node, ...props }) => <p className="text-gray-600 leading-relaxed mb-4" {...props} />,
-                                                    ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-2 mb-4 text-gray-600" {...props} />,
-                                                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-2 mb-4 text-gray-600" {...props} />,
-                                                    li: ({ node, ...props }) => <li className="pl-2" {...props} />,
-                                                    strong: ({ node, ...props }) => <span className="font-bold text-gray-900" {...props} />,
-                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-500 my-4" {...props} />,
-                                                    code: ({ node, ...props }) => <code className="bg-gray-100 text-blue-600 px-1 py-0.5 rounded text-sm font-mono" {...props} />
-                                                }}
-                                            >
-                                                {aiAnswer}
-                                            </ReactMarkdown>
-                                        </div>
-                                    ) : (
-                                        <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
-                                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
-                                                <Icons.Bot size={32} />
-                                            </div>
-                                            <p className="font-bold text-xs uppercase tracking-widest">AI Tutor is ready to help</p>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {pyqs.map(pyq => (
+                                <div key={pyq.id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all group flex flex-col relative">
+                                    {isAdmin && (
+                                        <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                            <button onClick={() => handleEditClick(pyq)} className="p-1.5 text-gray-400 hover:text-blue-600 bg-white shadow-sm rounded-lg border border-gray-100">
+                                                <Icons.Edit size={14} />
+                                            </button>
+                                            <button onClick={() => handleDeleteClick(pyq.id)} className="p-1.5 text-gray-400 hover:text-red-600 bg-white shadow-sm rounded-lg border border-gray-100">
+                                                <Icons.Trash2 size={14} />
+                                            </button>
                                         </div>
                                     )}
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600 shrink-0">
+                                            <Icons.FileText size={24} />
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-0.5">{pyq.subjectCode}</div>
+                                            <div className="text-xs font-bold text-gray-500 line-clamp-1">{pyq.subjectTitle}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 flex-1">
+                                        {pyq.title}
+                                    </h3>
+                                    
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest rounded-md">
+                                            {pyq.year}
+                                        </span>
+                                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest rounded-md">
+                                            {pyq.type.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between gap-2 pt-4 border-t border-gray-50">
+                                        <button 
+                                            onClick={() => handlePreview(pyq)}
+                                            className="flex-1 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Icons.Eye size={14} /> Preview
+                                        </button>
+                                        <button 
+                                            onClick={() => setShareFile(pyq)}
+                                            className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-purple-500 to-indigo-600 text-white hover:shadow-lg hover:shadow-purple-200 rounded-xl transition-all shrink-0"
+                                            title="Share to AI"
+                                        >
+                                            <Icons.Sparkles size={14} />
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
-                                <Icons.ArrowLeft size={32} />
-                                <p className="font-bold text-xs uppercase tracking-widest">Select a question to view details</p>
-                            </div>
-                        )}
-                    </div>
-
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-                {/* Add Question Modal */}
-                {isAddModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 animate-in zoom-in-95 duration-200 border border-gray-100">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-black text-gray-900">{editingId ? 'Edit Question' : 'Add New Question'}</h2>
-                                <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                                    <Icons.X size={24} />
+                {/* Add/Edit Modal */}
+                <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>{editingId ? 'Edit PYQ' : 'Add PYQ'}</DialogTitle>
+                            <DialogDescription>Add a Previous Year Question paper using a file link.</DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleSavePYQ} className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-gray-400">Subject</label>
+                                <select required value={formData.subjectId} onChange={e => setFormData({...formData, subjectId: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20">
+                                    <option value="">Select Subject</option>
+                                    {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-gray-400">Title</label>
+                                <input required type="text" placeholder="e.g. End Semester Exam" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-gray-400">Year</label>
+                                    <input required type="text" placeholder="e.g. 2023" value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-gray-400">File Type</label>
+                                    <select required value={formData.type} onChange={e => setFormData({...formData, type: e.target.value as any})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20">
+                                        <option value="pdf">PDF</option>
+                                        <option value="word">Word</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="flex gap-2 p-1 bg-gray-100 rounded-lg w-fit">
+                                <button type="button" onClick={() => setUploadMode('link')} className={cn("px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-md transition-all", uploadMode === 'link' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Link</button>
+                                <button type="button" onClick={() => setUploadMode('file')} className={cn("px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-md transition-all", uploadMode === 'file' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Upload</button>
+                            </div>
+                            {uploadMode === 'link' ? (
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-gray-400">File URL (Google Drive, etc.)</label>
+                                    <input required={uploadMode === 'link'} type="url" placeholder="https://..." value={formData.url} onChange={e => setFormData({...formData, url: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20" />
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-gray-400">Upload File</label>
+                                    <input required={uploadMode === 'file' && !editingId} type="file" accept=".pdf,.doc,.docx" onChange={e => setSelectedFile(e.target.files?.[0] || null)} className="w-full bg-gray-50 border border-dashed border-gray-300 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20" />
+                                </div>
+                            )}
+                            <div className="pt-4 flex items-center justify-end gap-3">
+                                <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-4 py-2 text-gray-500 text-sm font-bold hover:bg-gray-50 rounded-xl">Cancel</button>
+                                <button type="submit" disabled={isSaving} className="px-6 py-2 bg-blue-600 text-white text-sm font-black rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm active:scale-95">
+                                    {isSaving ? 'Saving...' : 'Save PYQ'}
                                 </button>
                             </div>
+                        </form>
+                    </DialogContent>
+                </Dialog>
 
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subject</label>
-                                    <div className="relative">
-                                        <select
-                                            value={newQuestion.subjectId}
-                                            onChange={(e) => {
-                                                setNewQuestion({ ...newQuestion, subjectId: e.target.value, unitId: '' });
-                                                getUnits(e.target.value).then(setUnits);
-                                            }}
-                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
-                                        >
-                                            <option value="">Select Subject...</option>
-                                            {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
-                                        </select>
-                                        <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Unit</label>
-                                        <div className="relative">
-                                            <select
-                                                value={newQuestion.unitId}
-                                                onChange={(e) => setNewQuestion({ ...newQuestion, unitId: e.target.value })}
-                                                disabled={!newQuestion.subjectId}
-                                                className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none disabled:opacity-50"
-                                            >
-                                                <option value="">Select Unit...</option>
-                                                {(newQuestion.subjectId ? units : []).map(u => <option key={u.id} value={u.id}>Unit {u.order}</option>)}
-                                            </select>
-                                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Year</label>
-                                        <input
-                                            type="text"
-                                            placeholder="e.g. 2023"
-                                            value={newQuestion.year}
-                                            onChange={(e) => setNewQuestion({ ...newQuestion, year: e.target.value })}
-                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Marks</label>
-                                        <div className="relative">
-                                            <select
-                                                value={newQuestion.marksType}
-                                                onChange={(e) => setNewQuestion({ ...newQuestion, marksType: Number(e.target.value) as MarksType })}
-                                                className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
-                                            >
-                                                {[2, 7, 8, 10, 15].map(m => <option key={m} value={m}>{m} Marks</option>)}
-                                            </select>
-                                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Difficulty</label>
-                                        <div className="relative">
-                                            <select
-                                                value={newQuestion.difficulty}
-                                                onChange={(e) => setNewQuestion({ ...newQuestion, difficulty: e.target.value as any })}
-                                                className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
-                                            >
-                                                <option value="Easy">Easy</option>
-                                                <option value="Medium">Medium</option>
-                                                <option value="Hard">Hard</option>
-                                            </select>
-                                            <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Question</label>
-                                    <textarea
-                                        rows={4}
-                                        value={newQuestion.question}
-                                        onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
-                                        placeholder="Enter the full question text..."
-                                        className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium resize-none"
-                                    />
-                                </div>
-
-                                <button
-                                    onClick={handleSaveQuestion}
-                                    disabled={isSaving || !newQuestion.question || !newQuestion.subjectId}
-                                    className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
-                                >
-                                    {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Edit size={16} /> : <Icons.PlusCircle size={16} />)}
-                                    {isSaving ? (editingId ? 'Updating...' : 'Saving...') : (editingId ? 'Update Question' : 'Add Question')}
+                {/* Preview Modal */}
+                <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
+                    <DialogContent className="sm:max-w-5xl h-[90vh] flex flex-col p-0 overflow-hidden">
+                        <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white z-10 shrink-0">
+                            <div>
+                                <DialogTitle className="text-xl font-black text-gray-900">PYQ Preview</DialogTitle>
+                                <DialogDescription className="text-xs font-bold text-gray-500 mt-1">
+                                    {previewFile?.title} ({previewFile?.year}) - {previewFile?.subjectTitle}
+                                </DialogDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => previewFile && handleDownload(previewFile)} className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-sm active:scale-95 text-xs font-bold">
+                                    <Icons.Download size={16} />
+                                    <span className="hidden sm:inline">Download</span>
+                                </button>
+                                <button onClick={() => setPreviewFile(null)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all">
+                                    <Icons.X size={20} />
                                 </button>
                             </div>
                         </div>
-                    </div>
-                )}
+
+                        <div className="flex-1 w-full bg-gray-100 overflow-hidden relative">
+                            {previewFile?.url ? (
+                                <iframe src={previewFile.url} className="w-full h-full border-0 absolute inset-0" title="PYQ Preview" />
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-gray-400 font-bold">No file available for preview.</div>
+                            )}
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Share to AI Modal */}
+                <Dialog open={!!shareFile} onOpenChange={(open) => !open && setShareFile(null)}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <Icons.Sparkles className="text-purple-500" size={20} /> 
+                                Ask AI for Solutions
+                            </DialogTitle>
+                            <DialogDescription>
+                                Choose an AI assistant. We will download the PYQ file to your device and copy the instructions to your clipboard. You can then upload the file to the AI and paste the instructions.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="grid grid-cols-2 gap-4 py-4">
+                            <button onClick={() => shareFile && handleShareToAI(shareFile, 'chatgpt')} className="flex flex-col items-center justify-center gap-3 p-6 bg-gray-50 border border-gray-100 hover:bg-white hover:border-green-500 hover:shadow-md rounded-2xl transition-all group">
+                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 group-hover:border-green-200 group-hover:scale-110 transition-all">
+                                    <Icons.Bot size={24} className="text-green-600" />
+                                </div>
+                                <span className="font-bold text-gray-900">ChatGPT</span>
+                            </button>
+                            
+                            <button onClick={() => shareFile && handleShareToAI(shareFile, 'gemini')} className="flex flex-col items-center justify-center gap-3 p-6 bg-gray-50 border border-gray-100 hover:bg-white hover:border-blue-500 hover:shadow-md rounded-2xl transition-all group">
+                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 group-hover:border-blue-200 group-hover:scale-110 transition-all">
+                                    <Icons.Sparkles size={24} className="text-blue-600" />
+                                </div>
+                                <span className="font-bold text-gray-900">Gemini</span>
+                            </button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
         </WebAppShell>
     );

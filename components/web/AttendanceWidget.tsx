@@ -25,7 +25,7 @@ export function AttendanceWidget() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Form State
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectedDate, setSelectedDate] = useState<string>('');
     const [selectedSubject, setSelectedSubject] = useState('');
     const [status, setStatus] = useState<'Present' | 'Absent' | 'Canceled'>('Absent');
     const [verificationImage, setVerificationImage] = useState<Blob | null>(null);
@@ -35,7 +35,13 @@ export function AttendanceWidget() {
     const [filterSubject, setFilterSubject] = useState<string>('All');
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [selectedLogs, setSelectedLogs] = useState<Set<string>>(new Set());
-    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [currentMonth, setCurrentMonth] = useState<Date | null>(null);
+
+    useEffect(() => {
+        // Hydration fix: Set initial dates only after component mounts on client
+        setSelectedDate(new Date().toISOString().split('T')[0]);
+        setCurrentMonth(new Date());
+    }, []);
 
     // KPI Counts
     const [kpiCounts, setKpiCounts] = useState({ totalSubjects: 0, totalAssignments: 0 });
@@ -245,8 +251,7 @@ export function AttendanceWidget() {
             console.error('Failed to delete reminder', error);
         }
     };
-
-    const dayName = format(new Date(selectedDate), 'EEEE');
+    const dayName = selectedDate ? format(new Date(selectedDate), 'EEEE') : '';
 
     return (
         <>

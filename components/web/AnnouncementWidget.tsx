@@ -18,8 +18,10 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | undefined>(undefined);
     const [user, setUser] = useState<any>(null);
+    const [currentUrl, setCurrentUrl] = useState('/');
 
     React.useEffect(() => {
+        setCurrentUrl(window.location.pathname + window.location.search);
         let subscription: any;
         const setupAuth = async () => {
             const { supabase } = await import('@/utils/supabase/client');
@@ -168,7 +170,7 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                             <p className="text-sm font-medium text-gray-500 leading-relaxed">Sign in to view the latest announcements and updates from faculty members.</p>
                         </div>
                         <a
-                            href={`/login?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname+window.location.search : '/')}`}
+                            href={`/login?callbackUrl=${encodeURIComponent(currentUrl)}`}
                             className="h-12 flex items-center px-8 bg-[#0f172a] hover:bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-blue-500/10"
                         >
                             Log In to View

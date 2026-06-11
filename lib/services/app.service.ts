@@ -451,7 +451,38 @@ export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): 
     return newResource;
 };
 
+export const uploadVaultFile = async (file: File): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+        .from('vault')
+        .upload(filePath, file);
+
+    if (uploadError) {
+        console.error('Error uploading file:', uploadError);
+        return null;
+    }
+
+    const { data } = supabase.storage
+        .from('vault')
+        .getPublicUrl(filePath);
+
+    return data.publicUrl;
+};
+
 export const updateVaultResource = async (resource: VaultResource): Promise<VaultResource | null> => {
+    // Clean up old storage file if replacing it
+    const { data: oldRes } = await supabase.from('vault_resources').select('link').eq('id', resource.id).single();
+    if (oldRes?.link && oldRes.link !== resource.link && oldRes.link.includes('/storage/v1/object/public/vault/')) {
+        const urlParts = oldRes.link.split('/storage/v1/object/public/vault/');
+        if (urlParts.length > 1) {
+            const filePath = urlParts[1];
+            await supabase.storage.from('vault').remove([filePath]);
+        }
+    }
+
     const { data, error } = await supabase
         .from('vault_resources')
         .update({
@@ -484,6 +515,16 @@ export const updateVaultResource = async (resource: VaultResource): Promise<Vaul
 };
 
 export const deleteVaultResource = async (id: string): Promise<boolean> => {
+    // First get the link to see if it's a stored file
+    const { data: res } = await supabase.from('vault_resources').select('link').eq('id', id).single();
+    if (res?.link?.includes('/storage/v1/object/public/vault/')) {
+        const urlParts = res.link.split('/storage/v1/object/public/vault/');
+        if (urlParts.length > 1) {
+            const filePath = urlParts[1];
+            await supabase.storage.from('vault').remove([filePath]);
+        }
+    }
+
     const { error } = await supabase
         .from('vault_resources')
         .delete()

@@ -26,7 +26,7 @@ export function FocusTimer({ onStatsRequest }: FocusTimerProps) {
     const [customMinutes, setCustomMinutes] = useState(25);
 
     // Clock state
-    const [currentTime, setCurrentTime] = useState(new Date());
+    const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
     // Fullscreen state
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -405,13 +405,13 @@ export function FocusTimer({ onStatsRequest }: FocusTimerProps) {
                         "text-8xl md:text-9xl font-black font-mono tracking-tighter mb-4 tabular-nums",
                         isFullscreen && isDarkMode ? "text-gray-100" : "text-gray-900"
                     )}>
-                        {formatClockTime(currentTime)}
+                        {currentTime ? formatClockTime(currentTime) : '--:--:--'}
                     </div>
                     <p className={cn(
                         "text-xl font-medium mb-8",
                         isFullscreen && isDarkMode ? "text-gray-400" : "text-gray-500"
                     )}>
-                        {getDateString(currentTime)}
+                        {currentTime ? getDateString(currentTime) : 'Loading...'}
                     </p>
                 </>
             ) : (

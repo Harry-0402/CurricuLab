@@ -155,16 +155,6 @@ export default function WebSubjectsContent() {
                             {subjects.length > 0 && ` · ${subjects.length} subjects`}
                         </p>
                     </div>
-                    {user && (
-                        <Link
-                            href="https://drive.google.com/drive/folders/14oGNaQxQGpiqt6pwZ6V4gN6XKERSRBQ0?usp=sharing"
-                            target="_blank"
-                            className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl transition-all shadow-sm active:scale-95 group self-start md:self-auto"
-                        >
-                            <Icons.FolderOpen size={18} className="text-gray-400 group-hover:text-amber-500 transition-colors" />
-                            <span className="text-sm font-bold text-gray-600 group-hover:text-amber-600 transition-colors">Resources</span>
-                        </Link>
-                    )}
                 </div>
 
                 {isLoading ? (

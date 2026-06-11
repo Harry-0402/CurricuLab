@@ -25,7 +25,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
         title: '',
         content: '',
         resourceLink: '',
-        date: new Date().toISOString().split('T')[0],
+        date: '',
         type: 'info'
     });
 

@@ -40,6 +40,7 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [user, setUser] = React.useState<any>(null);
+    const [isAdmin, setIsAdmin] = React.useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
@@ -48,6 +49,10 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
             const { supabase } = await import('@/utils/supabase/client');
             const { data: { session } } = await supabase.auth.getSession();
             setUser(session?.user ?? null);
+            if (session?.user) {
+                const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+                setIsAdmin(profile?.role === 'admin');
+            }
 
             const { data } = supabase.auth.onAuthStateChange((_event, session) => {
                 setUser(session?.user ?? null);
@@ -108,7 +113,7 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
                         )}
                     </div>
 
-                    {user && (
+                    {isAdmin && (
                         <div className="relative" ref={menuRef}>
                             <button
                                 onClick={(e) => {
@@ -148,7 +153,9 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
 
                 <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">{subject.title}</h3>
-                    <p className="text-sm text-gray-500 mb-6 line-clamp-2 min-h-[2.5rem]">{subject.description}</p>
+                    <p className="text-sm text-gray-500 mb-6 line-clamp-2 min-h-[2.5rem]">
+                        {subject.description || <span className="italic opacity-50">Faculty is not assigned</span>}
+                    </p>
                 </div>
 
                 <div className="space-y-4 mt-auto">

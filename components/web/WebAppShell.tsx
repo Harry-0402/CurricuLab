@@ -82,12 +82,9 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
 
     // --- Restricted Access Logic ---
     const publicPaths = [
-        '/', '/subjects', '/unauthorized', '/login', '/forgot-password',
-        '/tools/mindgrid', '/tools/prompts', '/tools/resume',
-        '/skillforge', '/focus',
-        '/community', '/faculty-fellows', '/docs'
+        '/', '/community', '/login', '/forgot-password', '/unauthorized'
     ];
-    const publicPrefixes = ['/subject/', '/unit/', '/auth/'];
+    const publicPrefixes = ['/auth/'];
 
     const isPublic = publicPaths.includes(pathname) || 
                      publicPrefixes.some(prefix => pathname.startsWith(prefix));
@@ -116,10 +113,6 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
             title: "Knowledge Vault",
             description: "Your personal repository of study materials and notes is just a sign-in away."
         };
-        if (pathname === '/tools/resources') return {
-            title: "Digital Library",
-            description: "Explore our vast collection of academic resources and research papers. Sign in to access the full library."
-        };
         if (pathname === '/tools/revision') return {
             title: "Revision Notes",
             description: "Access curated revision notes and study guides for your subjects by signing in."
@@ -128,7 +121,18 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
             title: "PaperTrail PYQs",
             description: "Solve previous years' question papers and track your progress. Sign in to unlock all papers."
         };
-        return {}; // Use defaults
+        if (pathname === '/subjects' || pathname.startsWith('/subject/')) return {
+            title: "Course Materials",
+            description: "Sign in to access course materials, lecture notes, and syllabus details."
+        };
+        if (pathname === '/faculty-fellows') return {
+            title: "Faculty Fellows",
+            description: "Sign in to view faculty profiles, research areas, and contact information."
+        };
+        return {
+            title: "Restricted Access",
+            description: "Sign in to view the latest announcements and updates from faculty members."
+        }; // Use defaults
     };
 
     const restrictedInfo = getRestrictedContent();

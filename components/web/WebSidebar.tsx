@@ -19,6 +19,9 @@ const academicSuite: NavItem[] = [
     { label: 'My Courses', href: '/subjects', icon: Icons.Subjects },
     { label: 'Classroom', href: '/classroom', icon: Icons.FolderOpen },
     { label: 'Assignments', href: '/assignments', icon: Icons.Questions },
+];
+
+const careerSuite: NavItem[] = [
     { label: 'Career Gateway', href: '/tools/career', icon: Icons.Briefcase },
     { label: 'ResumeStudio', href: '/tools/resume', icon: Icons.FileText },
     { label: 'MindGrid', href: '/tools/mindgrid', icon: Icons.LayoutGrid },
@@ -26,7 +29,6 @@ const academicSuite: NavItem[] = [
 
 const studyMaterials: NavItem[] = [
     { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
-    { label: 'Digital Library', href: '/tools/resources', icon: Icons.Database },
     { label: 'PaperTrail PYQs', href: '/tools/papertrail', icon: Icons.FileText },
     { label: 'Revision Notes', href: '/tools/revision', icon: Icons.Notes },
 ];
@@ -79,74 +81,38 @@ export function WebSidebar() {
         };
     }, []);
 
-    // Track collapsed state per section
-    const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({
-        'Academic Suite': true,
-        'Study Materials': true,
-        'Community': false,
-    });
-
-    const toggleSection = (title: string) => {
-        setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));
-    };
-
     const renderNavGroup = (title: string, items: NavItem[]) => {
-        const isOpen = openSections[title] ?? true;
-        const hasActive = items.some(item => pathname === item.href);
-
         return (
             <div key={title} className="mb-3">
-                <button
-                    onClick={() => toggleSection(title)}
-                    className={cn(
-                        "w-full flex items-center justify-between px-3 py-1 rounded-lg transition-colors group",
-                        hasActive && !isOpen ? "text-indigo-600" : "text-gray-400 hover:text-gray-600"
-                    )}
-                >
-                    <span className={cn(
-                        "text-[10px] font-bold uppercase tracking-widest transition-colors",
-                        hasActive && !isOpen ? "text-indigo-500" : "text-gray-400 group-hover:text-gray-600"
-                    )}>
+                <div className="w-full flex items-center px-3 py-1 mb-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
                         {title}
                     </span>
-                    <Icons.ChevronDown
-                        size={13}
-                        className={cn(
-                            "transition-transform duration-200 shrink-0",
-                            isOpen ? "rotate-180" : "rotate-0",
-                            hasActive && !isOpen ? "text-indigo-400" : "text-gray-300 group-hover:text-gray-500"
-                        )}
-                    />
-                </button>
-
-                <div className={cn(
-                    "overflow-hidden transition-all duration-200 ease-in-out",
-                    isOpen ? "max-h-96 opacity-100 mt-0.5" : "max-h-0 opacity-0"
-                )}>
-                    <nav className="space-y-0.5">
-                        {items.map((item) => {
-                            const isActive = pathname === item.href;
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center justify-between px-3 py-2 rounded-lg transition-all",
-                                        isActive ? "bg-indigo-50 text-indigo-600 shadow-sm" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-2.5">
-                                        <item.icon size={18} className={isActive ? "text-indigo-600" : "text-gray-400"} />
-                                        <span className="text-sm font-medium leading-none">{item.label}</span>
-                                    </div>
-                                    {item.badge && (
-                                        <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>
-                                    )}
-                                </Link>
-                            );
-                        })}
-                    </nav>
                 </div>
+
+                <nav className="space-y-0.5">
+                    {items.map((item) => {
+                        const isActive = pathname === item.href;
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    "flex items-center justify-between px-3 py-2 rounded-lg transition-all",
+                                    isActive ? "bg-indigo-50 text-indigo-600 shadow-sm" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                )}
+                            >
+                                <div className="flex items-center gap-2.5">
+                                    <item.icon size={18} className={isActive ? "text-indigo-600" : "text-gray-400"} />
+                                    <span className="text-sm font-medium leading-none">{item.label}</span>
+                                </div>
+                                {item.badge && (
+                                    <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>
+                                )}
+                            </Link>
+                        );
+                    })}
+                </nav>
             </div>
         );
     };
@@ -166,6 +132,7 @@ export function WebSidebar() {
 
             <div className="px-3 py-3">
                 {academicSuite.length > 0 && renderNavGroup("Academic Suite", academicSuite)}
+                {careerSuite.length > 0 && renderNavGroup("Career & Tools", careerSuite)}
                 {studyMaterials.length > 0 && renderNavGroup("Study Materials", studyMaterials)}
                 {community.length > 0 && renderNavGroup("Community", community)}
             </div>

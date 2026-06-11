@@ -9,6 +9,15 @@ export async function middleware(req: NextRequest) {
         },
     });
 
+    // Helper function to redirect while preserving cookies set on `res`
+    const redirectWithCookies = (url: URL | string) => {
+        const redirectRes = NextResponse.redirect(url);
+        res.cookies.getAll().forEach((cookie) => {
+            redirectRes.cookies.set(cookie);
+        });
+        return redirectRes;
+    };
+
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -38,40 +47,28 @@ export async function middleware(req: NextRequest) {
 
     // List of public paths and prefixes
     const publicPaths = [
-        '/', '/subjects', '/unauthorized',
-        '/tools/mindgrid', '/tools/prompts',
-        '/tools/resume',
-        '/skillforge', '/focus',
-        '/community', '/faculty-fellows', '/docs',
+        '/', '/community', '/unauthorized', '/login', '/forgot-password',
         '/auth/callback'
     ];
-    const publicPrefixes = ['/subject/', '/unit/', '/auth/'];
+    const publicPrefixes = ['/auth/'];
 
     const isPublicPath = publicPaths.includes(req.nextUrl.pathname) || 
                          publicPrefixes.some(prefix => req.nextUrl.pathname.startsWith(prefix));
 
-    // Secure Dashboard Protection
-    if (!session &&
-        !isPublicPath &&
-        req.nextUrl.pathname !== '/login' &&
-        req.nextUrl.pathname !== '/forgot-password' &&
-        !req.nextUrl.pathname.startsWith('/auth')
-    ) {
-        const redirectUrl = req.nextUrl.clone();
-        redirectUrl.pathname = '/login'; // Redirect to login instead of /
-        return NextResponse.redirect(redirectUrl);
-    }
+    // Secure Dashboard Protection for Guests is handled by WebAppShell
+    // so we don't redirect them here, allowing them to see the Restricted Access warning.
 
     // If session exists and user is on login page, redirect to Dashboard
     if (session && req.nextUrl.pathname === '/login') {
         const redirectUrl = req.nextUrl.clone();
         redirectUrl.pathname = '/';
-        return NextResponse.redirect(redirectUrl);
+        return redirectWithCookies(redirectUrl);
     }
 
     // CHECK AUTHORIZATION (Whitelist) - Only for authenticated users
     if (session && !isPublicPath) {
-        let isAuthorized = req.cookies.get('app_is_authorized')?.value === 'true';
+        const cookieKey = `app_is_authorized_${session.user.id}`;
+        let isAuthorized = req.cookies.get(cookieKey)?.value === 'true';
 
         if (!isAuthorized) {
             // Query authorized_users table to verify this email is allowed (Case-insensitive)
@@ -85,7 +82,7 @@ export async function middleware(req: NextRequest) {
 
             if (isAuthorized) {
                 // Cache the authorization status in a cookie to prevent DB hits on every request
-                res.cookies.set('app_is_authorized', 'true', {
+                res.cookies.set(cookieKey, 'true', {
                     path: '/',
                     maxAge: 60 * 60 * 24 * 365, // 1 year cache
                     httpOnly: true,
@@ -100,7 +97,7 @@ export async function middleware(req: NextRequest) {
         if (!isAuthorized && req.nextUrl.pathname !== '/unauthorized') {
             const redirectUrl = req.nextUrl.clone();
             redirectUrl.pathname = '/unauthorized';
-            return NextResponse.redirect(redirectUrl);
+            return redirectWithCookies(redirectUrl);
         }
     }
 

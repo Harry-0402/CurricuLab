@@ -31,6 +31,7 @@ export default function WebSubjectDetailContent() {
     // Local state for topics in the modal
     const [topicList, setTopicList] = useState<string[]>([]);
     const [newTopicInput, setNewTopicInput] = useState('');
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -137,13 +138,12 @@ export default function WebSubjectDetailContent() {
                                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Official Syllabus</span>
                                     <Icons.Download size={14} className="text-blue-600" />
                                 </div>
-                                <a
-                                    href={subject.syllabusPdfUrl}
-                                    download
+                                <button
+                                    onClick={() => setIsPreviewOpen(true)}
                                     className="w-full flex items-center justify-center gap-2 py-3 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all border border-blue-100"
                                 >
-                                    Download PDF
-                                </a>
+                                    Preview Syllabus
+                                </button>
                             </div>
                         )}
 
@@ -274,6 +274,52 @@ export default function WebSubjectDetailContent() {
                                 Close
                             </button>
                         </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+                {/* Preview Modal */}
+                <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+                    <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden">
+                        <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white z-10 shrink-0">
+                            <div>
+                                <DialogTitle className="text-xl font-black text-gray-900">Syllabus Preview</DialogTitle>
+                                <DialogDescription className="text-xs font-bold text-gray-500 mt-1">
+                                    {subject?.title}
+                                </DialogDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href={subject?.syllabusPdfUrl || '#'}
+                                    download
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-sm active:scale-95 text-xs font-bold"
+                                    title="Download Syllabus"
+                                >
+                                    <Icons.Download size={16} />
+                                    <span className="hidden sm:inline">Download</span>
+                                </a>
+                                <button
+                                    onClick={() => setIsPreviewOpen(false)}
+                                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+                                >
+                                    <Icons.X size={20} />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 w-full bg-gray-100 overflow-hidden relative">
+                            {subject?.syllabusPdfUrl ? (
+                                <iframe
+                                    src={subject.syllabusPdfUrl}
+                                    className="w-full h-full border-0 absolute inset-0"
+                                    title="Syllabus Preview"
+                                />
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-gray-400 font-bold">
+                                    No syllabus file available for preview.
+                                </div>
+                            )}
+                        </div>
                     </DialogContent>
                 </Dialog>
             </div>
