@@ -8,6 +8,7 @@ import { Announcement } from '@/types';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { Icons } from '@/components/shared/Icons';
 import { createAnnouncement, updateAnnouncement, deleteAnnouncement as apiDeleteAnnouncement, getAnnouncements, uploadAnnouncementAttachment } from '@/lib/services/announcement-service';
+import { useSemester } from '@/components/providers/SemesterProvider';
 import { toast } from 'sonner';
 
 interface AnnouncementModalProps {
@@ -18,6 +19,7 @@ interface AnnouncementModalProps {
 
 export function AnnouncementModal({ isOpen, onClose, announcement }: AnnouncementModalProps) {
     const { addAnnouncement, updateAnnouncement: storeUpdateAnnouncement, deleteAnnouncement: storeDeleteAnnouncement, setAnnouncements } = useAppStore();
+    const { activeSemesterId } = useSemester();
 
     const [formData, setFormData] = useState<Partial<Announcement>>({
         title: '',
@@ -103,7 +105,10 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
         setIsSubmitting(true);
 
         try {
-            let finalFormData = { ...formData };
+            let finalFormData = { 
+                ...formData,
+                semesterId: activeSemesterId ?? undefined
+            };
 
             // Upload file if new one is selected
             if (file) {
@@ -132,7 +137,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                 }
             }
 
-            const all = await getAnnouncements();
+            const all = await getAnnouncements(activeSemesterId ?? undefined);
             setAnnouncements(all);
 
             onClose();
@@ -157,7 +162,7 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
 
                 storeDeleteAnnouncement(announcement.id);
 
-                const all = await getAnnouncements();
+                const all = await getAnnouncements(activeSemesterId ?? undefined);
                 setAnnouncements(all);
 
                 onClose();

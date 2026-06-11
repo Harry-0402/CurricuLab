@@ -59,7 +59,8 @@ export const updateTimetableEntry = async (entry: TimetableEntry): Promise<Timet
         start_time: entry.startTime,
         end_time: entry.endTime,
         teacher: entry.teacher,
-        progress: entry.progress
+        progress: entry.progress,
+        semester_id: entry.semesterId ?? null
     };
     const { data, error } = await supabase.from('timetable').update(payload).eq('id', entry.id).select().single();
     if (error) throw error;

@@ -41,10 +41,6 @@ export function SemestersTab() {
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        loadAll();
-    }, []);
-
     async function loadAll() {
         setIsLoading(true);
         const [progs, sems] = await Promise.all([getPrograms(), getSemesters()]);
@@ -52,6 +48,24 @@ export function SemestersTab() {
         setSemesters(sems);
         setIsLoading(false);
     }
+
+    useEffect(() => {
+        loadAll();
+
+        const { supabase } = require('@/utils/supabase/client');
+        const channel = supabase.channel('realtime_semesters')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'semesters' }, () => {
+                loadAll();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'programs' }, () => {
+                loadAll();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
 
     function openAdd() {
         setEditingSemester(null);

@@ -8,6 +8,7 @@ import { TimetableEntry } from '@/types';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { Icons } from '@/components/shared/Icons';
 import * as TimetableService from '@/lib/services/timetable-service';
+import { useSemester } from '@/components/providers/SemesterProvider';
 
 interface TimetableModalProps {
     isOpen: boolean;
@@ -19,6 +20,7 @@ interface TimetableModalProps {
 
 export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime }: TimetableModalProps) {
     const { addTimetableEntry, updateTimetableEntry, deleteTimetableEntry } = useAppStore();
+    const { activeSemesterId } = useSemester();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -59,6 +61,7 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
         const finalEntry = {
             ...formData,
             id: entry?.id || Math.random().toString(36).substr(2, 9),
+            semesterId: activeSemesterId ?? undefined
         } as TimetableEntry;
 
         try {

@@ -83,6 +83,16 @@ export function TimetableAdminTab() {
     useEffect(() => {
         if (selectedSemesterId) {
             loadEntries(selectedSemesterId);
+
+            const channel = supabase.channel('realtime_timetable')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'timetable', filter: `semester_id=eq.${selectedSemesterId}` }, () => {
+                    loadEntries(selectedSemesterId);
+                })
+                .subscribe();
+
+            return () => {
+                supabase.removeChannel(channel);
+            };
         } else {
             setEntries([]);
         }

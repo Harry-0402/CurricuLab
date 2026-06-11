@@ -25,14 +25,14 @@ export default function WebHomePage() {
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const data = await getAnnouncements();
+                const data = await getAnnouncements(activeSemesterId ?? undefined);
                 setAnnouncements(data);
             } catch (error) {
                 console.error('Failed to fetch announcements:', error);
             }
         };
         fetchAnnouncements();
-    }, [setAnnouncements]);
+    }, [setAnnouncements, activeSemesterId]);
 
     useEffect(() => {
         const fetchTimetable = async () => {

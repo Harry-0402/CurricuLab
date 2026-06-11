@@ -48,10 +48,6 @@ export function StudentsTab() {
     const [isAdding, setIsAdding] = useState(false);
     const [addError, setAddError] = useState<string | null>(null);
 
-    useEffect(() => {
-        loadAll();
-    }, []);
-
     async function loadAll() {
         setIsLoading(true);
         const [users, sems] = await Promise.all([getAuthorizedUsers(), getSemesters()]);
@@ -59,6 +55,23 @@ export function StudentsTab() {
         setSemesters(sems);
         setIsLoading(false);
     }
+
+    useEffect(() => {
+        loadAll();
+
+        const channel = supabase.channel('realtime_students')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+                loadAll();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'authorized_users' }, () => {
+                loadAll();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
 
     async function handleChangeEnrollment(userId: string, semesterId: string) {
         setUpdatingId(userId);

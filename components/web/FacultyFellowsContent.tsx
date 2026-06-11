@@ -15,8 +15,10 @@ import {
     DialogFooter,
 } from "@/components/shared/Dialog";
 import { FacultyService, Person, INITIAL_DATA } from '@/lib/data/faculty-service';
+import { useSemester } from '@/components/providers/SemesterProvider';
 
 export function FacultyFellowsContent() {
+    const { activeSemesterId } = useSemester();
     const [activeTab, setActiveTab] = useState<'faculty' | 'fellows'>('faculty');
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
     const [faculty, setFaculty] = useState<Person[]>([]);
@@ -39,7 +41,7 @@ export function FacultyFellowsContent() {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const allMembers = await FacultyService.getAll();
+            const allMembers = await FacultyService.getAll(activeSemesterId ?? undefined);
             setFaculty(allMembers.filter(p => p.category === 'faculty'));
             setFellows(allMembers.filter(p => p.category === 'fellows'));
         } catch (error) {
@@ -52,7 +54,7 @@ export function FacultyFellowsContent() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [activeSemesterId]);
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -117,6 +119,7 @@ export function FacultyFellowsContent() {
                     category: memberType,
                     contactNo: formData.contactNo || "+1 (555) 000-0000",
                     gender: formData.gender || 'male',
+                    semesterId: activeSemesterId ?? undefined
                 } as any;
 
                 await FacultyService.add(newPersonPayload);

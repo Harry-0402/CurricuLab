@@ -12,15 +12,21 @@ export interface Person {
     contactNo: string;
     whatsappNo?: string;
     prn?: string;
+    semesterId?: string;
 }
 
 export const FacultyService = {
-    async getAll() {
-        // Fetch all records, order by created_at (or id)
-        const { data, error } = await supabase
+    async getAll(semesterId?: string) {
+        let query = supabase
             .from('faculty_members')
             .select('*')
             .order('id', { ascending: true });
+
+        if (semesterId) {
+            query = query.eq('semester_id', semesterId);
+        }
+
+        const { data, error } = await query;
 
         // If error or essentially empty, fall back to initial data
         if (error || !data || data.length === 0) {
@@ -43,7 +49,8 @@ export const FacultyService = {
             gender: item.gender,
             contactNo: item.contact_no,
             whatsappNo: item.whatsapp_no,
-            prn: item.prn
+            prn: item.prn,
+            semesterId: item.semester_id
         })) as Person[];
     },
 
@@ -58,7 +65,8 @@ export const FacultyService = {
             gender: person.gender,
             contact_no: person.contactNo,
             whatsapp_no: person.whatsappNo,
-            prn: person.prn
+            prn: person.prn,
+            semester_id: person.semesterId
         };
 
         const { data, error } = await supabase
@@ -94,7 +102,8 @@ export const FacultyService = {
             gender: person.gender,
             contact_no: person.contactNo,
             whatsapp_no: person.whatsappNo,
-            prn: person.prn
+            prn: person.prn,
+            semester_id: person.semesterId
         };
 
         const { error } = await supabase

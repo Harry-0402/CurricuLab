@@ -287,13 +287,7 @@ export function AssignmentContent() {
         );
     };
 
-    if (loading && subjects.length === 0) {
-        return (
-            <div className="flex items-center justify-center p-20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-            </div>
-        );
-    }
+
 
     return (
         <div className="space-y-10">
@@ -341,10 +335,18 @@ export function AssignmentContent() {
 
             {/* Assignments Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {loading && subjects.length > 0 ? (
+                {loading ? (
                     <div className="col-span-full py-20 flex flex-col items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
-                        <p className="text-sm font-bold text-gray-400">Loading assignments...</p>
+                        <p className="text-sm font-bold text-gray-400">Loading...</p>
+                    </div>
+                ) : subjects.length === 0 ? (
+                    <div className="col-span-full py-20 bg-gray-50 rounded-[35px] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
+                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-gray-300 mb-4 shadow-sm">
+                            <Icons.BookOpen size={28} />
+                        </div>
+                        <h3 className="text-xl font-black text-gray-900 mb-2">No Subjects Found</h3>
+                        <p className="text-sm font-bold text-gray-400">There are no subjects in this semester.</p>
                     </div>
                 ) : assignments.length === 0 ? (
                     <div className="col-span-full py-20 bg-gray-50 rounded-[35px] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center">

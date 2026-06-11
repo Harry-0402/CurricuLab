@@ -28,16 +28,27 @@ export function ProgramsTab() {
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        loadPrograms();
-    }, []);
-
     async function loadPrograms() {
         setIsLoading(true);
         const data = await getPrograms();
         setPrograms(data);
         setIsLoading(false);
     }
+
+    useEffect(() => {
+        loadPrograms();
+
+        const { supabase } = require('@/utils/supabase/client');
+        const channel = supabase.channel('realtime_programs')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'programs' }, () => {
+                loadPrograms();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
 
     function openAdd() {
         setEditingProgram(null);

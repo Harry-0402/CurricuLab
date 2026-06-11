@@ -141,6 +141,7 @@ export interface Announcement {
   attachmentUrl?: string;
   attachmentName?: string;
   attachmentType?: string;
+  semesterId?: string;
 }
 
 export interface KPIStats {

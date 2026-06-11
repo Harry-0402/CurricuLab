@@ -12,7 +12,8 @@ const mapAnnouncement = (a: any): Announcement => ({
     type: a.type,
     attachmentUrl: a.attachment_url,
     attachmentName: a.attachment_name,
-    attachmentType: a.attachment_type
+    attachmentType: a.attachment_type,
+    semesterId: a.semester_id
 });
 
 export const uploadAnnouncementAttachment = async (file: File): Promise<{ url: string; name: string; type: string }> => {
@@ -37,11 +38,17 @@ export const uploadAnnouncementAttachment = async (file: File): Promise<{ url: s
     };
 };
 
-export const getAnnouncements = async (): Promise<Announcement[]> => {
-    const { data, error } = await supabase
+export const getAnnouncements = async (semesterId?: string): Promise<Announcement[]> => {
+    let query = supabase
         .from('announcements')
         .select('*')
         .order('created_at', { ascending: false });
+
+    if (semesterId) {
+        query = query.eq('semester_id', semesterId);
+    }
+
+    const { data, error } = await query;
 
     if (error || !data) return [];
     // If is_active exists, filter by it; otherwise show all
@@ -62,6 +69,7 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
         attachment_url: announcement.attachmentUrl,
         attachment_name: announcement.attachmentName,
         attachment_type: announcement.attachmentType,
+        semester_id: announcement.semesterId,
         is_active: true
     };
 
@@ -78,6 +86,7 @@ export const createAnnouncement = async (announcement: Partial<Announcement>): P
                 attachment_url: announcement.attachmentUrl,
                 attachment_name: announcement.attachmentName,
                 attachment_type: announcement.attachmentType,
+                semester_id: announcement.semesterId,
                 is_active: true
             };
             const { data: fallbackData, error: fallbackError } = await supabase.from('announcements').insert(fallbackPayload).select().single();
@@ -133,7 +142,8 @@ export const updateAnnouncement = async (announcement: Announcement): Promise<An
         resource_link: announcement.resourceLink,
         attachment_url: announcement.attachmentUrl,
         attachment_name: announcement.attachmentName,
-        attachment_type: announcement.attachmentType
+        attachment_type: announcement.attachmentType,
+        semester_id: announcement.semesterId
     };
 
     const { data, error } = await supabase
@@ -152,7 +162,8 @@ export const updateAnnouncement = async (announcement: Announcement): Promise<An
                 resource_link: announcement.resourceLink,
                 attachment_url: announcement.attachmentUrl,
                 attachment_name: announcement.attachmentName,
-                attachment_type: announcement.attachmentType
+                attachment_type: announcement.attachmentType,
+                semester_id: announcement.semesterId
             };
             const { data: fallbackData, error: fallbackError } = await supabase
                 .from('announcements')

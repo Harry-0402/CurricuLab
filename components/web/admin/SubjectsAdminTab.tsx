@@ -68,6 +68,16 @@ export function SubjectsAdminTab() {
     useEffect(() => {
         if (selectedSemesterId) {
             loadSubjects(selectedSemesterId);
+
+            const channel = supabase.channel('realtime_subjects')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'subjects', filter: `semester_id=eq.${selectedSemesterId}` }, () => {
+                    loadSubjects(selectedSemesterId);
+                })
+                .subscribe();
+
+            return () => {
+                supabase.removeChannel(channel);
+            };
         } else {
             setSubjects([]);
         }
