@@ -5,7 +5,7 @@ import { SubjectService } from '@/lib/data/subject-service';
 import { ChangelogService } from '@/lib/services/changelog.service';
 
 // Helper to prevent infinite hangs on Supabase calls
-const withTimeout = (promise: Promise<any>, ms: number = 10000): Promise<any> => {
+const withTimeout = (promise: PromiseLike<any>, ms: number = 10000): Promise<any> => {
     return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
             reject(new Error(`Database request timed out after ${ms}ms`));
