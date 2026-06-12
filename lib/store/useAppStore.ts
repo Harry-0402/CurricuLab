@@ -2,42 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Bookmark, StudySession, TimetableEntry, Announcement } from '@/types';
 
-const TIMETABLE_PRESET: TimetableEntry[] = [
-    { id: 'mon-1015-pba206', day: 'Monday', startTime: '10:15 AM', endTime: '11:00 AM', subjectTitle: 'Legal Aspects of Business', subjectCode: 'PBA206', location: 'SCMS Classroom', teacher: 'Adv. Vishal Jadhav', progress: 0 },
-    { id: 'mon-1100-pba205', day: 'Monday', startTime: '11:00 AM', endTime: '12:00 PM', subjectTitle: 'Digital Transformation', subjectCode: 'PBA205', location: 'SCMS Classroom', teacher: 'Mr. Aniket Alvekar', progress: 0 },
-    { id: 'mon-1200-pba204', day: 'Monday', startTime: '12:00 PM', endTime: '01:00 PM', subjectTitle: 'Production and Operations Management', subjectCode: 'PBA204', location: 'SCMS Classroom', teacher: 'Dr. Shailendra Baraniya', progress: 0 },
-    { id: 'mon-1400-pba207', day: 'Monday', startTime: '02:00 PM', endTime: '03:00 PM', subjectTitle: 'Data Visualization and Story Telling', subjectCode: 'PBA207', location: 'SCMS Classroom', teacher: 'Dr. Samadhan Bundhe', progress: 0 },
-    { id: 'mon-1500-pba211', day: 'Monday', startTime: '03:00 PM', endTime: '04:00 PM', subjectTitle: 'Data Analysis using Python', subjectCode: 'PBA211', location: 'SCMS Lab', teacher: 'Mr. Aniket Alvekar', progress: 0 },
-    { id: 'mon-1600-pba212', day: 'Monday', startTime: '04:00 PM', endTime: '05:00 PM', subjectTitle: 'Data Analysis using Power BI (P)', subjectCode: 'PBA212', location: 'Power BI Lab', teacher: 'Dr. Samadhan Bundhe', progress: 0 },
-
-    { id: 'tue-1015-pba206', day: 'Tuesday', startTime: '10:15 AM', endTime: '11:00 AM', subjectTitle: 'Legal Aspects of Business', subjectCode: 'PBA206', location: 'SCMS Classroom', teacher: 'Adv. Vishal Jadhav', progress: 0 },
-    { id: 'tue-1100-pba205', day: 'Tuesday', startTime: '11:00 AM', endTime: '12:00 PM', subjectTitle: 'Digital Transformation', subjectCode: 'PBA205', location: 'SCMS Classroom', teacher: 'Mr. Aniket Alvekar', progress: 0 },
-    { id: 'tue-1200-pba204', day: 'Tuesday', startTime: '12:00 PM', endTime: '01:00 PM', subjectTitle: 'Production and Operations Management (T)', subjectCode: 'PBA204', location: 'Tutorial Room', teacher: 'Dr. Shailendra Baraniya', progress: 0 },
-    { id: 'tue-1400-pba211', day: 'Tuesday', startTime: '02:00 PM', endTime: '03:00 PM', subjectTitle: 'Data Analysis using Python (P)', subjectCode: 'PBA211', location: 'Python Lab', teacher: 'Mr. Aniket Alvekar', progress: 0 },
-    { id: 'tue-1500-pba208', day: 'Tuesday', startTime: '03:00 PM', endTime: '04:00 PM', subjectTitle: 'Business Research Methods', subjectCode: 'PBA208', location: 'SCMS Classroom', teacher: 'Dr. Zahir Shaikh', progress: 0 },
-    { id: 'tue-1600-pba212', day: 'Tuesday', startTime: '04:00 PM', endTime: '05:00 PM', subjectTitle: 'Data Analysis using Power BI (P)', subjectCode: 'PBA212', location: 'Power BI Lab', teacher: 'Dr. Samadhan Bundhe', progress: 0 },
-
-    { id: 'wed-1015-pba206', day: 'Wednesday', startTime: '10:15 AM', endTime: '11:00 AM', subjectTitle: 'Legal Aspects of Business', subjectCode: 'PBA206', location: 'SCMS Classroom', teacher: 'Adv. Vishal Jadhav', progress: 0 },
-    { id: 'wed-1100-pba205', day: 'Wednesday', startTime: '11:00 AM', endTime: '12:00 PM', subjectTitle: 'Digital Transformation (T)', subjectCode: 'PBA205', location: 'Tutorial Room', teacher: 'Mr. Aniket Alvekar', progress: 0 },
-    { id: 'wed-1200-pba207', day: 'Wednesday', startTime: '12:00 PM', endTime: '01:00 PM', subjectTitle: 'Data Visualization and Story Telling', subjectCode: 'PBA207', location: 'SCMS Classroom', teacher: 'Dr. Samadhan Bundhe', progress: 0 },
-    { id: 'wed-1400-pba208', day: 'Wednesday', startTime: '02:00 PM', endTime: '03:00 PM', subjectTitle: 'Business Research Methods', subjectCode: 'PBA208', location: 'SCMS Classroom', teacher: 'Dr. Zahir Shaikh', progress: 0 },
-    { id: 'wed-1500-pba211', day: 'Wednesday', startTime: '03:00 PM', endTime: '04:00 PM', subjectTitle: 'Data Analysis using Python (P)', subjectCode: 'PBA211', location: 'Python Lab', teacher: 'Mr. Aniket Alvekar', progress: 0 },
-    { id: 'wed-1600-pba212', day: 'Wednesday', startTime: '04:00 PM', endTime: '05:00 PM', subjectTitle: 'Data Analysis using Power BI (P)', subjectCode: 'PBA212', location: 'Power BI Lab', teacher: 'Dr. Samadhan Bundhe', progress: 0 },
-
-    { id: 'thu-1015-pba206', day: 'Thursday', startTime: '10:15 AM', endTime: '11:00 AM', subjectTitle: 'Legal Aspects of Business', subjectCode: 'PBA206', location: 'SCMS Classroom', teacher: 'Adv. Vishal Jadhav', progress: 0 },
-    { id: 'thu-1100-pba204', day: 'Thursday', startTime: '11:00 AM', endTime: '12:00 PM', subjectTitle: 'Production and Operations Management', subjectCode: 'PBA204', location: 'SCMS Classroom', teacher: 'Dr. Shailendra Baraniya', progress: 0 },
-    { id: 'thu-1200-pba207', day: 'Thursday', startTime: '12:00 PM', endTime: '01:00 PM', subjectTitle: 'Data Visualization and Story Telling', subjectCode: 'PBA207', location: 'SCMS Classroom', teacher: 'Dr. Samadhan Bundhe', progress: 0 },
-    { id: 'thu-1400-pba208', day: 'Thursday', startTime: '02:00 PM', endTime: '03:00 PM', subjectTitle: 'Business Research Methods', subjectCode: 'PBA208', location: 'SCMS Classroom', teacher: 'Dr. Zahir Shaikh', progress: 0 },
-    { id: 'thu-1500-pba211', day: 'Thursday', startTime: '03:00 PM', endTime: '04:00 PM', subjectTitle: 'Data Analysis using Python (P)', subjectCode: 'PBA211', location: 'Python Lab', teacher: 'Mr. Aniket Alvekar', progress: 0 },
-    { id: 'thu-1600-pba213', day: 'Thursday', startTime: '04:00 PM', endTime: '05:00 PM', subjectTitle: 'Business Communication Skills - II (P)', subjectCode: 'PBA213', location: 'Communication Lab', teacher: 'Dr. Samadhan Bundhe / FR', progress: 0 },
-
-    { id: 'fri-1015-pba204', day: 'Friday', startTime: '10:15 AM', endTime: '11:00 AM', subjectTitle: 'Production and Operations Management', subjectCode: 'PBA204', location: 'SCMS Classroom', teacher: 'Dr. Shailendra Baraniya', progress: 0 },
-    { id: 'fri-1100-pba205', day: 'Friday', startTime: '11:00 AM', endTime: '12:00 PM', subjectTitle: 'Digital Transformation', subjectCode: 'PBA205', location: 'SCMS Classroom', teacher: 'Mr. Aniket Alvekar', progress: 0 },
-    { id: 'fri-1200-pba207', day: 'Friday', startTime: '12:00 PM', endTime: '01:00 PM', subjectTitle: 'Data Visualization and Story Telling (P)', subjectCode: 'PBA207', location: 'Visualization Lab', teacher: 'Dr. Samadhan Bundhe', progress: 0 },
-    { id: 'fri-1400-pba208', day: 'Friday', startTime: '02:00 PM', endTime: '03:00 PM', subjectTitle: 'Business Research Methods', subjectCode: 'PBA208', location: 'SCMS Classroom', teacher: 'Dr. Zahir Shaikh', progress: 0 },
-    { id: 'fri-1500-pba212', day: 'Friday', startTime: '03:00 PM', endTime: '04:00 PM', subjectTitle: 'Data Analysis using Power BI (P)', subjectCode: 'PBA212', location: 'Power BI Lab', teacher: 'Dr. Samadhan Bundhe', progress: 0 },
-    { id: 'fri-1600-pba213', day: 'Friday', startTime: '04:00 PM', endTime: '05:00 PM', subjectTitle: 'Business Communication Skills - II (P)', subjectCode: 'PBA213', location: 'Communication Lab', teacher: 'Dr. Samadhan Bundhe / FR', progress: 0 }
-];
+const TIMETABLE_PRESET: TimetableEntry[] = [];
 
 interface AppState {
     bookmarks: Bookmark[];
