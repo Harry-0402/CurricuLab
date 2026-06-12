@@ -479,23 +479,28 @@ export const uploadVaultFile = async (file: File): Promise<string | null> => {
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
-        .from('vault')
-        .upload(filePath, file, {
-            contentType: file.type || 'application/octet-stream',
-            upsert: false
-        });
+    try {
+        const { error: uploadError } = await withTimeout(supabase.storage
+            .from('vault')
+            .upload(filePath, file, {
+                contentType: file.type || 'application/octet-stream',
+                upsert: false
+            }));
 
-    if (uploadError) {
+        if (uploadError) {
         console.error('Error uploading file:', uploadError);
         return null;
     }
 
-    const { data } = supabase.storage
-        .from('vault')
-        .getPublicUrl(filePath);
+        const { data } = supabase.storage
+            .from('vault')
+            .getPublicUrl(filePath);
 
-    return data.publicUrl;
+        return data.publicUrl;
+    } catch (error) {
+        console.error("uploadVaultFile timed out or failed:", error);
+        return null;
+    }
 };
 
 export const updateVaultResource = async (resource: VaultResource): Promise<VaultResource | null> => {
