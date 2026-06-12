@@ -132,6 +132,18 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                 const created = await createAnnouncement(finalFormData);
                 addAnnouncement(created);
 
+                // Trigger push notification to class students
+                fetch('/api/push/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: 'New Announcement',
+                        message: finalFormData.title,
+                        url: '/',
+                        targetSemesterId: finalFormData.semesterId
+                    })
+                }).catch(console.error);
+
                 if (announcement && !isUUID(announcement.id)) {
                     storeDeleteAnnouncement(announcement.id);
                 }

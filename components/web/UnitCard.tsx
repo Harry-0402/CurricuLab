@@ -41,11 +41,6 @@ export function UnitCard({ unit, onEditTopics, onViewTopics }: UnitCardProps) {
                             <Icons.Edit size={16} />
                         </button>
                     )}
-                    {unit.isCompleted && (
-                        <div className="bg-green-50 text-green-600 p-2 rounded-full border border-green-100">
-                            <Icons.CheckSquare size={20} />
-                        </div>
-                    )}
                 </div>
             </div>
 

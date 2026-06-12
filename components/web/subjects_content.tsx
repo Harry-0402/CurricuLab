@@ -85,33 +85,18 @@ export default function WebSubjectsContent() {
 
 
     const [editingSubject, setEditingSubject] = React.useState<Subject | null>(null);
-    // Extend Partial<Subject> to include temporary form field
-    const [formData, setFormData] = React.useState<Partial<Subject> & { unitsCompleted?: number }>({});
+    const [formData, setFormData] = React.useState<Partial<Subject>>({});
 
     const handleEdit = (subject: Subject) => {
         setEditingSubject(subject);
-        // Calculate units completed from progress percentage
-        const completed = Math.round((subject.progress / 100) * subject.unitCount);
-        setFormData({ ...subject, unitsCompleted: completed });
+        setFormData({ ...subject });
     };
 
     const handleSave = async () => {
         if (!editingSubject || !formData.title || !formData.code) return;
 
-        // Recalculate progress based on units completed
-        const currentUnitCount = formData.unitCount || editingSubject.unitCount;
-        const currentCompleted = formData.unitsCompleted ?? 0;
-
-        // Ensure valid calculation
-        const newProgress = currentUnitCount > 0
-            ? Math.round((currentCompleted / currentUnitCount) * 100)
-            : 0;
-
         const updatedSubject = {
             ...formData,
-            progress: newProgress,
-            // Remove the temporary field before saving
-            unitsCompleted: undefined
         } as Subject;
 
         try {
@@ -213,23 +198,12 @@ export default function WebSubjectsContent() {
                                 />
                             </div>
 
-                            {/* Progress Editing */}
+                            {/* Unit Count Editing */}
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <label className="text-right text-xs font-bold uppercase tracking-widest text-gray-500">
-                                    Status
+                                    Units
                                 </label>
                                 <div className="col-span-3 flex items-center gap-4">
-                                    <div className="flex-1 space-y-1">
-                                        <p className="text-[10px] uppercase font-bold text-gray-400">Completed Units</p>
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            max={formData.unitCount}
-                                            value={formData.unitsCompleted ?? 0}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, unitsCompleted: parseInt(e.target.value) || 0 }))}
-                                            className="flex h-10 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
                                     <div className="flex-1 space-y-1">
                                         <p className="text-[10px] uppercase font-bold text-gray-400">Total Units</p>
                                         <input

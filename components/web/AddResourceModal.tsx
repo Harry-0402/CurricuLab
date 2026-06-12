@@ -62,6 +62,18 @@ export function AddResourceModal({ isOpen, onClose, onSuccess }: AddResourceModa
             });
 
             toast.success('Resource added successfully!');
+            
+            // Trigger push notification to all students
+            fetch('/api/push/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: 'New Vault Resource',
+                    message: `A new ${formData.type} "${formData.title}" has been added!`,
+                    url: '/vault'
+                })
+            }).catch(console.error);
+
             onSuccess();
             onClose();
         } catch (error) {

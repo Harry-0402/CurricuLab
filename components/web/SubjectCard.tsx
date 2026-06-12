@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { Icons } from '@/components/shared/Icons';
-import { ProgressBar } from '@/components/shared/ProgressBar';
 import { toast } from 'sonner';
 import { Subject } from '@/types';
 import { cn } from '@/lib/utils';
@@ -158,11 +157,9 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
                     </p>
                 </div>
 
-                <div className="space-y-4 mt-auto">
-                    <ProgressBar value={subject.progress} color={subject.color} />
+                <div className="space-y-4 mt-auto pt-4 border-t border-gray-50">
                     <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        <span>{subject.unitCount} Units</span>
-                        <span>{subject.progress}% Complete</span>
+                        <span>{subject.unitCount} Units Available</span>
                     </div>
                 </div>
             </div>

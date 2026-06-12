@@ -7,7 +7,6 @@ import { UnitCard } from '@/components/web/UnitCard';
 import { Subject, Unit } from '@/types';
 import { SubjectService } from '@/lib/data/subject-service';
 import { UnitService } from '@/lib/data/unit-service';
-import { ProgressBar } from '@/components/shared/ProgressBar';
 import * as Icons from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -146,14 +145,6 @@ export default function WebSubjectDetailContent() {
                                 </button>
                             </div>
                         )}
-
-                        <div className="w-full sm:w-72 space-y-3 bg-white p-6 rounded-[30px] shadow-sm border border-gray-100">
-                            <div className="flex justify-between items-center">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Course Progress</span>
-                                <span className="text-sm font-black text-gray-900">{subject.progress}%</span>
-                            </div>
-                            <ProgressBar value={subject.progress} color={subject.color} />
-                        </div>
                     </div>
                 </div>
 

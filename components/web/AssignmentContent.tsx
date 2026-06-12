@@ -144,6 +144,18 @@ export function AssignmentContent() {
                 if (newAssignment.subjectId === activeSubjectId) {
                     setAssignments(prev => [...prev, newAssignment]);
                 }
+
+                // Trigger push notification to class students
+                fetch('/api/push/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: 'New Assignment Created',
+                        message: `A new assignment "${newAssignment.title}" has been created. Due Date: ${newAssignment.dueDate}`,
+                        url: '/assignments',
+                        targetSemesterId: activeSemesterId
+                    })
+                }).catch(console.error);
             }
         } catch (error) {
             console.error("Failed to save assignment:", error);

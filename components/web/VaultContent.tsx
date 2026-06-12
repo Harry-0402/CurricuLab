@@ -182,6 +182,18 @@ export function VaultContent() {
             } else {
                 // Add new resource to the beginning of the list
                 setResources(prev => [saved!, ...prev]);
+
+                // Trigger push notification to class students
+                fetch('/api/push/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: 'New Vault Resource',
+                        message: `A new ${formData.type.replace('_', ' ')} "${formData.title}" has been added!`,
+                        url: '/vault',
+                        targetSemesterId: activeSemesterId
+                    })
+                }).catch(console.error);
             }
         }
         setIsSaving(false);
@@ -286,7 +298,6 @@ export function VaultContent() {
                         )}
                     </div>
 
-                    {isAdmin && (
                     <button
                         onClick={handleOpenAddModal}
                         className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold text-sm hover:bg-black hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 ml-auto"
@@ -294,7 +305,6 @@ export function VaultContent() {
                         <Icons.Plus size={18} />
                         Add Resource
                     </button>
-                )}
                 </div>
             </div>
 
