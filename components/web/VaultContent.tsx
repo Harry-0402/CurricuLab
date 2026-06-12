@@ -40,6 +40,7 @@ export function VaultContent() {
         link: ''
     });
     const [isSaving, setIsSaving] = useState(false);
+    const [sessionToken, setSessionToken] = useState<string | undefined>(undefined);
 
     // Delete confirmation state
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -59,6 +60,26 @@ export function VaultContent() {
         }
     }, [selectedResource]);
 
+    // Keep session token globally fresh to avoid any timeout issues on save
+    useEffect(() => {
+        let subscription: any;
+        const setupAuthListener = async () => {
+            const { supabase } = await import('@/utils/supabase/client');
+            const { data } = supabase.auth.onAuthStateChange((event, session) => {
+                if (session?.access_token) {
+                    setSessionToken(session.access_token);
+                } else if (event === 'SIGNED_OUT') {
+                    setSessionToken(undefined);
+                }
+            });
+            subscription = data.subscription;
+        };
+        setupAuthListener();
+        return () => {
+            if (subscription) subscription.unsubscribe();
+        };
+    }, []);
+
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -70,6 +91,9 @@ export function VaultContent() {
             // Check admin status
             const { supabase } = await import('@/utils/supabase/client');
             const { data: { session } } = await supabase.auth.getSession();
+            if (session?.access_token) {
+                setSessionToken(session.access_token);
+            }
             if (session?.user) {
                 const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
                 setIsAdmin(profile?.role === 'admin');
@@ -162,9 +186,9 @@ export function VaultContent() {
                 saved = await updateVaultResource({
                     id: editingId,
                     ...resourceData
-                });
+                }, sessionToken);
             } else {
-                saved = await createVaultResource(resourceData);
+                saved = await createVaultResource(resourceData, sessionToken);
             }
 
             if (saved) {
@@ -210,7 +234,7 @@ export function VaultContent() {
     const handleConfirmDelete = async () => {
         if (!deleteConfirmId) return;
 
-        const success = await deleteVaultResource(deleteConfirmId);
+        const success = await deleteVaultResource(deleteConfirmId, sessionToken);
         if (success) {
             setResources(prev => prev.filter(r => r.id !== deleteConfirmId));
             if (selectedResource?.id === deleteConfirmId) {

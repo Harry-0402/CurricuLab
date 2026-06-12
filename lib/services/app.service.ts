@@ -466,9 +466,9 @@ export const getVaultResources = async (filters: { subjectId?: string; unitId?: 
     return data.map(mapVaultResource);
 };
 
-export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): Promise<VaultResource | null> => {
+export const createVaultResource = async (resource: Omit<VaultResource, 'id'>, providedToken?: string): Promise<VaultResource | null> => {
     try {
-        const token = await getAuthToken();
+        const token = providedToken || await getAuthToken();
         const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources`;
         
         const payload = {
@@ -557,7 +557,7 @@ export const uploadVaultFile = async (file: File): Promise<string | null> => {
     }
 };
 
-export const updateVaultResource = async (resource: VaultResource): Promise<VaultResource | null> => {
+export const updateVaultResource = async (resource: VaultResource, providedToken?: string): Promise<VaultResource | null> => {
     try {
         // Clean up old storage file if replacing it
         const { data: oldRes } = await withTimeout(supabase.from('vault_resources').select('link').eq('id', resource.id).single());
@@ -569,7 +569,7 @@ export const updateVaultResource = async (resource: VaultResource): Promise<Vaul
             }
         }
 
-        const token = await getAuthToken();
+        const token = providedToken || await getAuthToken();
         const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources?id=eq.${resource.id}`;
         
         const payload = {
@@ -617,7 +617,7 @@ export const updateVaultResource = async (resource: VaultResource): Promise<Vaul
     }
 };
 
-export const deleteVaultResource = async (id: string): Promise<boolean> => {
+export const deleteVaultResource = async (id: string, providedToken?: string): Promise<boolean> => {
     try {
         // First get the link to see if it's a stored file
         const { data: res } = await withTimeout(supabase.from('vault_resources').select('link').eq('id', id).single());
@@ -629,7 +629,7 @@ export const deleteVaultResource = async (id: string): Promise<boolean> => {
             }
         }
 
-        const token = await getAuthToken();
+        const token = providedToken || await getAuthToken();
         const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources?id=eq.${id}`;
         
         const response = await withTimeout(fetch(apiUrl, {
