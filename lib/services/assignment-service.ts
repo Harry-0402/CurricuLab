@@ -25,7 +25,7 @@ export const getAssignments = async (subjectId?: string): Promise<Assignment[]> 
     return data.map(mapAssignment);
 };
 
-export const getUpcomingAssignments = async (days: number): Promise<Assignment[]> => {
+export const getUpcomingAssignments = async (days: number, semesterId?: string | null): Promise<Assignment[]> => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString();
@@ -36,11 +36,17 @@ export const getUpcomingAssignments = async (days: number): Promise<Assignment[]
     futureDate.setHours(23, 59, 59, 999);
     const futureDateStr = futureDate.toISOString();
 
-    const { data, error } = await supabase
+    let query = supabase
         .from('assignments')
-        .select('*')
+        .select('*, subjects!inner(semester_id)')
         .gte('due_date', todayStr)
         .lte('due_date', futureDateStr);
+
+    if (semesterId) {
+        query = query.eq('subjects.semester_id', semesterId);
+    }
+
+    const { data, error } = await query;
 
     if (error || !data) return [];
     return data.map(mapAssignment);

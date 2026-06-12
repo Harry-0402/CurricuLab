@@ -104,10 +104,15 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
 
     // Check for due assignments globally
     useEffect(() => {
+        // Wait until auth and semester state are settled
+        if (isAuthLoading || isSemesterLoading) return;
+        // If user is logged in but not enrolled in a semester, don't show due dates
+        if (user && !enrolledSemesterId) return;
+
         const checkDueAssignments = async () => {
             try {
                 // Fetch filtered data directly from DB
-                const due = await getUpcomingAssignments(2); // Next 2 days
+                const due = await getUpcomingAssignments(2, enrolledSemesterId); // Next 2 days
 
                 if (due.length > 0) {
                     setDueAlerts(due);
@@ -120,11 +125,11 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
             }
         };
 
-        checkDueAssignments(); // Run on mount
+        checkDueAssignments(); // Run on mount/change
         const interval = setInterval(checkDueAssignments, 5 * 60 * 1000); // Run every 5 mins
 
         return () => clearInterval(interval);
-    }, []);
+    }, [user, enrolledSemesterId, isAuthLoading, isSemesterLoading]);
 
     // --- Restricted Access Logic ---
     const publicPaths = [

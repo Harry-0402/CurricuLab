@@ -15,8 +15,10 @@ import { ProgressSection } from './attendance/ProgressSection';
 import { AlertsSection } from './attendance/AlertsSection';
 import { AttendanceLogsTable } from './attendance/AttendanceLogsTable';
 import { MissingRecordsSuggestions } from './attendance/MissingRecordsSuggestions';
+import { useSemester } from '../providers/SemesterProvider';
 
 export function AttendanceWidget() {
+    const { enrolledSemesterId } = useSemester();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<any[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -52,10 +54,13 @@ export function AttendanceWidget() {
     const [attendanceAlerts, setAttendanceAlerts] = useState<{ subject: string, current: number, classesNeeded: number }[]>([]);
 
     useEffect(() => {
-        loadData();
-    }, []);
+        if (enrolledSemesterId !== undefined) {
+            loadData();
+        }
+    }, [enrolledSemesterId]);
 
     const loadData = async () => {
+        if (!enrolledSemesterId) return; // Wait until enrolled
         setLoading(true);
         try {
             const { stats: fetchedStats, subjects: fetchedSubjects, missingRecords: missing } = await AttendanceService.getDashboardData(5);
@@ -72,7 +77,7 @@ export function AttendanceWidget() {
             const myReminders = await ReminderService.getAllReminders();
             setReminders(myReminders);
 
-            const deadlines = await getUpcomingAssignments(14);
+            const deadlines = await getUpcomingAssignments(14, enrolledSemesterId);
             setUpcomingDeadlines(deadlines);
 
             const alerts = await AttendanceService.getAttendanceAlerts();
