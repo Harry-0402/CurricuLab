@@ -65,11 +65,17 @@ export function VaultContent() {
         let subscription: any;
         const setupAuthListener = async () => {
             const { supabase } = await import('@/utils/supabase/client');
-            const { data } = supabase.auth.onAuthStateChange((event, session) => {
+            const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
                 if (session?.access_token) {
                     setSessionToken(session.access_token);
+                    if (session.user && !isAdmin) {
+                        supabase.from('profiles').select('role').eq('id', session.user.id).single()
+                            .then(({ data: profile }) => setIsAdmin(profile?.role === 'admin'))
+                            .catch(console.error);
+                    }
                 } else if (event === 'SIGNED_OUT') {
                     setSessionToken(undefined);
+                    setIsAdmin(false);
                 }
             });
             subscription = data.subscription;
@@ -88,16 +94,8 @@ export function VaultContent() {
         const loadInitialData = async () => {
             setLoading(true);
 
-            // Check admin status
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.access_token) {
-                setSessionToken(session.access_token);
-            }
-            if (session?.user) {
-                const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-                setIsAdmin(profile?.role === 'admin');
-            }
+            // Note: Admin status and session token are now securely loaded by the onAuthStateChange listener 
+            // completely bypassing the buggy getSession() lock that was causing Infinite Loading hangs here!
             const fetchedSubjects = await SubjectService.getAll(activeSemesterId ?? undefined);
             setSubjects(fetchedSubjects);
 
