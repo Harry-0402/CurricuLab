@@ -137,66 +137,72 @@ export function VaultContent() {
         if (uploadMode === 'file' && !selectedFile && !editingId) return;
 
         setIsSaving(true);
-        let saved: VaultResource | null = null;
-        let finalLink = formData.link;
+        try {
+            let saved: VaultResource | null = null;
+            let finalLink = formData.link;
 
-        if (uploadMode === 'file' && selectedFile) {
-            const { uploadVaultFile } = await import('@/lib/services/app.service');
-            const uploadedUrl = await uploadVaultFile(selectedFile);
-            if (!uploadedUrl) {
-                toast.error("Failed to upload file");
-                setIsSaving(false);
-                return;
-            }
-            finalLink = uploadedUrl;
-        }
-
-        const resourceData = {
-            subjectId: formData.subjectId,
-            unitId: formData.unitId,
-            type: formData.type,
-            title: formData.title,
-            link: finalLink,
-            tags: selectedResource?.tags || []
-        };
-
-        if (editingId) {
-            saved = await updateVaultResource({
-                id: editingId,
-                ...resourceData
-            });
-        } else {
-            saved = await createVaultResource(resourceData);
-        }
-
-        if (saved) {
-            toast.success(editingId ? 'Resource updated successfully!' : 'Resource added successfully!');
-            setIsModalOpen(false);
-
-            // Optimistic UI update - add/update locally instead of refetching all
-            if (editingId) {
-                setResources(prev => prev.map(r => r.id === editingId ? saved! : r));
-                if (selectedResource?.id === editingId) {
-                    setSelectedResource(saved);
+            if (uploadMode === 'file' && selectedFile) {
+                const { uploadVaultFile } = await import('@/lib/services/app.service');
+                const uploadedUrl = await uploadVaultFile(selectedFile);
+                if (!uploadedUrl) {
+                    toast.error("Failed to upload file");
+                    setIsSaving(false);
+                    return;
                 }
-            } else {
-                // Add new resource to the beginning of the list
-                setResources(prev => [saved!, ...prev]);
-
-                // Trigger push notification to class students
-                fetch('/api/push/send', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title: 'New Vault Resource',
-                        message: `A new ${formData.type.replace('_', ' ')} "${formData.title}" has been added!`,
-                        url: '/vault',
-                        targetSemesterId: activeSemesterId
-                    })
-                }).catch(console.error);
+                finalLink = uploadedUrl;
             }
+
+            const resourceData = {
+                subjectId: formData.subjectId,
+                unitId: formData.unitId,
+                type: formData.type,
+                title: formData.title,
+                link: finalLink,
+                tags: selectedResource?.tags || []
+            };
+
+            if (editingId) {
+                saved = await updateVaultResource({
+                    id: editingId,
+                    ...resourceData
+                });
+            } else {
+                saved = await createVaultResource(resourceData);
+            }
+
+            if (saved) {
+                toast.success(editingId ? 'Resource updated successfully!' : 'Resource added successfully!');
+                setIsModalOpen(false);
+
+                // Optimistic UI update - add/update locally instead of refetching all
+                if (editingId) {
+                    setResources(prev => prev.map(r => r.id === editingId ? saved! : r));
+                    if (selectedResource?.id === editingId) {
+                        setSelectedResource(saved);
+                    }
+                } else {
+                    // Add new resource to the beginning of the list
+                    setResources(prev => [saved!, ...prev]);
+
+                    // Trigger push notification to class students
+                    fetch('/api/push/send', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: 'New Vault Resource',
+                            message: `A new ${formData.type.replace('_', ' ')} "${formData.title}" has been added!`,
+                            url: '/vault',
+                            targetSemesterId: activeSemesterId
+                        })
+                    }).catch(console.error);
+                }
+            }
+        } catch (error: any) {
+            console.error("Save error:", error);
+            toast.error("An unexpected error occurred. Please check the file and try again.");
+        } finally {
+            setIsSaving(false);
         }
-        setIsSaving(false);
     };
 
     const handleDeleteClick = (e: React.MouseEvent, id: string) => {
