@@ -91,12 +91,18 @@ export function VaultContent() {
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
+        if (!activeSemesterId) return;
+
+        let ignore = false;
         const loadInitialData = async () => {
             setLoading(true);
 
             // Note: Admin status and session token are now securely loaded by the onAuthStateChange listener 
             // completely bypassing the buggy getSession() lock that was causing Infinite Loading hangs here!
-            const fetchedSubjects = await SubjectService.getAll(activeSemesterId ?? undefined);
+            const fetchedSubjects = await SubjectService.getAll(activeSemesterId);
+            
+            if (ignore) return;
+            
             setSubjects(fetchedSubjects);
 
             // Load resources for first subject immediately (parallel with subject load)
@@ -106,6 +112,8 @@ export function VaultContent() {
 
                 // Fetch resources immediately without waiting
                 const data = await getVaultResources({ subjectId: firstSubjectId });
+                
+                if (ignore) return;
                 setResources(data);
             } else {
                 setActiveSubjectId('');
@@ -115,9 +123,11 @@ export function VaultContent() {
             setIsInitialLoad(false);
         };
         loadInitialData();
+        return () => { ignore = true; };
     }, [activeSemesterId]);
 
     useEffect(() => {
+        let ignore = false;
         const loadResources = async () => {
             // Skip the very first render (handled by initial load above)
             if (isInitialLoad || !activeSubjectId) return;
@@ -127,10 +137,14 @@ export function VaultContent() {
             const data = await getVaultResources({
                 subjectId: activeSubjectId
             });
+            
+            if (ignore) return;
+            
             setResources(data);
             setLoading(false);
         };
         loadResources();
+        return () => { ignore = true; };
     }, [activeSubjectId, isInitialLoad]);
 
 
