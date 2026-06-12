@@ -13,6 +13,7 @@ import { LastVisitManager } from '../shared/LastVisitManager';
 import { usePathname } from 'next/navigation';
 import { EnrollmentModal } from './EnrollmentModal';
 import { useSemester } from '../providers/SemesterProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 function urlBase64ToUint8Array(base64String: string) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
