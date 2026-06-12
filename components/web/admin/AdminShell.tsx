@@ -75,7 +75,7 @@ export function AdminShell() {
                 <div className="px-3 py-4 border-t border-gray-100">
                     <a
                         href="/"
-                        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-all"
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all"
                     >
                         <Icons.ArrowLeft size={16} />
                         Back to App

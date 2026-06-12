@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { ChangelogService, ChangeLog } from '@/lib/services/changelog.service';
 import { formatDistanceToNow } from 'date-fns';
 import { AttendanceWidget } from './AttendanceWidget';
+import { useSemester } from '@/components/providers/SemesterProvider';
 import { FaceVerificationModal } from './attendance/FaceVerificationModal';
 import { FaceRecognitionService } from '@/lib/services/face-recognition-service';
 import { toast } from 'sonner';
@@ -18,6 +19,7 @@ type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & S
 
 export default function WebProfileContent() {
     const [activeTab, setActiveTab] = useState<Tab>('Overview');
+    const { enrolledSemester } = useSemester();
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const [editEmail, setEditEmail] = useState('');
@@ -419,7 +421,12 @@ export default function WebProfileContent() {
                             </div>
                             <div className="flex-1 space-y-2">
                                 <h2 className="text-4xl font-black text-gray-900 tracking-tight capitalize">{displayName}</h2>
-                                <p className="text-gray-500 font-medium text-lg">MBA Student • Year 1</p>
+                                <p className="text-gray-500 font-medium text-lg">
+                                    {enrolledSemester
+                                        ? `${enrolledSemester.programName ?? 'Student'} • ${enrolledSemester.shortName}`
+                                        : 'Not enrolled in any semester'
+                                    }
+                                </p>
                             </div>
                             <Button
                                 onClick={() => setActiveTab('Settings')}
