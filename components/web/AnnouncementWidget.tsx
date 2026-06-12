@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { AnnouncementModal } from './AnnouncementModal';
 import { WidgetSettingsModal } from './WidgetSettingsModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/shared/Dialog';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 interface AnnouncementWidgetProps {
     announcements: Announcement[];
@@ -17,26 +18,11 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | undefined>(undefined);
-    const [user, setUser] = useState<any>(null);
+    const { user } = useAuth();
     const [currentUrl, setCurrentUrl] = useState('/');
 
     React.useEffect(() => {
         setCurrentUrl(window.location.pathname + window.location.search);
-        let subscription: any;
-        const setupAuth = async () => {
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-
-            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null);
-            });
-            subscription = data.subscription;
-        };
-        setupAuth();
-        return () => {
-            if (subscription) subscription.unsubscribe();
-        };
     }, []);
 
     const handleAdd = () => {

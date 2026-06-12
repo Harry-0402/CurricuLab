@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Icons } from '@/components/shared/Icons';
 import { toast } from 'sonner';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Subject } from '@/types';
 import { cn } from '@/lib/utils';
 
@@ -38,31 +39,8 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
     }
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const [user, setUser] = React.useState<any>(null);
-    const [isAdmin, setIsAdmin] = React.useState(false);
+    const { user, isAdmin } = useAuth();
     const menuRef = React.useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-        let subscription: any;
-        const setupAuth = async () => {
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-            if (session?.user) {
-                const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-                setIsAdmin(profile?.role === 'admin');
-            }
-
-            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null);
-            });
-            subscription = data.subscription;
-        };
-        setupAuth();
-        return () => {
-            if (subscription) subscription.unsubscribe();
-        };
-    }, []);
 
     React.useEffect(() => {
         function handleClickOutside(event: MouseEvent) {

@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 
 import { SubjectService } from '@/lib/data/subject-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: string; bgColor: string }> = {
     study_note: { label: 'Study Note', icon: Icons.FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
@@ -40,7 +41,9 @@ export function VaultContent() {
         link: ''
     });
     const [isSaving, setIsSaving] = useState(false);
-    const [sessionToken, setSessionToken] = useState<string | undefined>(undefined);
+    
+    // Auth State
+    const { isAdmin, sessionToken } = useAuth();
 
     // Delete confirmation state
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -60,35 +63,8 @@ export function VaultContent() {
         }
     }, [selectedResource]);
 
-    // Keep session token globally fresh to avoid any timeout issues on save
-    useEffect(() => {
-        let subscription: any;
-        const setupAuthListener = async () => {
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-                if (session?.access_token) {
-                    setSessionToken(session.access_token);
-                    if (session.user && !isAdmin) {
-                        supabase.from('profiles').select('role').eq('id', session.user.id).single()
-                            .then(({ data: profile }) => setIsAdmin(profile?.role === 'admin'))
-                            .catch(console.error);
-                    }
-                } else if (event === 'SIGNED_OUT') {
-                    setSessionToken(undefined);
-                    setIsAdmin(false);
-                }
-            });
-            subscription = data.subscription;
-        };
-        setupAuthListener();
-        return () => {
-            if (subscription) subscription.unsubscribe();
-        };
-    }, []);
-
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
-    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         if (!activeSemesterId) return;

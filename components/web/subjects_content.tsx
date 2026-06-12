@@ -17,32 +17,15 @@ import {
 
 import { SubjectService } from '@/lib/data/subject-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 
 export default function WebSubjectsContent() {
     // State
     const [subjects, setSubjects] = React.useState<Subject[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
-    const [user, setUser] = React.useState<any>(null);
+    const { user } = useAuth();
     const { activeSemesterId, activeSemester, enrolledSemesterId, isBrowsing } = useSemester();
-
-    React.useEffect(() => {
-        let subscription: any;
-        const setupAuth = async () => {
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-
-            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null);
-            });
-            subscription = data.subscription;
-        };
-        setupAuth();
-        return () => {
-            if (subscription) subscription.unsubscribe();
-        };
-    }, []);
 
     const fetchSubjects = async () => {
         try {

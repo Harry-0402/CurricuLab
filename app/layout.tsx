@@ -5,6 +5,7 @@ import { ToastProvider } from "@/components/shared/Toast";
 import { SessionManager } from "@/components/SessionManager";
 import { SemesterProvider } from "@/components/providers/SemesterProvider";
 import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from 'sonner';
 
 const inter = Inter({
@@ -34,13 +35,15 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className} suppressHydrationWarning>
                 <SessionManager />
-                <SemesterProvider>
-                    <RealtimeProvider>
-                        <ToastProvider>
-                            {children}
-                        </ToastProvider>
-                    </RealtimeProvider>
-                </SemesterProvider>
+                <AuthProvider>
+                    <SemesterProvider>
+                        <RealtimeProvider>
+                            <ToastProvider>
+                                {children}
+                            </ToastProvider>
+                        </RealtimeProvider>
+                    </SemesterProvider>
+                </AuthProvider>
                 <Toaster />
             </body>
         </html>

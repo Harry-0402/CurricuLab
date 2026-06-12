@@ -31,32 +31,9 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
     // Alert State
     const [dueAlerts, setDueAlerts] = useState<Assignment[]>([]);
     const [showDueAlert, setShowDueAlert] = useState(false);
-    const [user, setUser] = useState<any>(null);
-    const [isAuthLoading, setIsAuthLoading] = useState(true);
+    const { user, isAuthLoading } = useAuth();
     const [showEnrollment, setShowEnrollment] = useState(false);
     const { enrolledSemesterId, isLoading: isSemesterLoading, refreshEnrollment } = useSemester();
-
-    // Track Auth State
-    useEffect(() => {
-        let subscription: any;
-
-        const setupAuth = async () => {
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-            setIsAuthLoading(false);
-
-            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null);
-            });
-            subscription = data.subscription;
-        };
-
-        setupAuth();
-        return () => {
-            if (subscription) subscription.unsubscribe();
-        };
-    }, []);
 
     // Show enrollment modal if logged in but no class_id
     useEffect(() => {

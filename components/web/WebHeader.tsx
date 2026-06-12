@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/shared/Icons';
 import { useSemester } from '@/components/providers/SemesterProvider';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { cn } from '@/lib/utils';
 
 
 export function WebHeader() {
-    const [user, setUser] = React.useState<any>(null);
+    const { user } = useAuth();
     const [showSemesterMenu, setShowSemesterMenu] = useState(false);
     const semesterMenuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
@@ -34,23 +35,6 @@ export function WebHeader() {
             console.error('Logout failed', error);
         }
     };
-
-    React.useEffect(() => {
-        let subscription: any;
-
-        const setupAuthListener = async () => {
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data: { user: currentUser } } = await supabase.auth.getUser();
-            setUser(currentUser);
-            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null);
-            });
-            subscription = data.subscription;
-        };
-
-        setupAuthListener();
-        return () => { if (subscription) subscription.unsubscribe(); };
-    }, []);
 
     const getDisplayName = () => {
         if (!user) return 'Student';

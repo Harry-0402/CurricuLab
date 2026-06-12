@@ -8,6 +8,7 @@ import { TimetableModal } from './TimetableModal';
 import { WidgetSettingsModal } from './WidgetSettingsModal';
 
 import { useSemester } from '@/components/providers/SemesterProvider';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 interface TimetableWidgetProps {
     entries: TimetableEntry[];
@@ -53,25 +54,7 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const [initialDay, setInitialDay] = useState<string | undefined>(undefined);
     const [initialTime, setInitialTime] = useState<string | undefined>(undefined);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [user, setUser] = useState<any>(null);
-
-    React.useEffect(() => {
-        let subscription: any;
-        const setupAuth = async () => {
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-
-            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null);
-            });
-            subscription = data.subscription;
-        };
-        setupAuth();
-        return () => {
-            if (subscription) subscription.unsubscribe();
-        };
-    }, []);
+    const { user } = useAuth();
 
     const getEntry = (day: string, time: string) => {
         return entries.find(e => e.day === day && e.startTime === time);

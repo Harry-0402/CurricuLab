@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 
@@ -41,45 +42,8 @@ const community: NavItem[] = [
 
 export function WebSidebar() {
     const pathname = usePathname();
-    const [user, setUser] = React.useState<any>(null);
-    const [isAdmin, setIsAdmin] = React.useState(false);
-
-    React.useEffect(() => {
-        let subscription: any;
-        const setupAuth = async () => {
-            const { supabase } = await import('@/utils/supabase/client');
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-
-            if (session?.user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', session.user.id)
-                    .single();
-                setIsAdmin(profile?.role === 'admin');
-            }
-
-            const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
-                setUser(session?.user ?? null);
-                if (session?.user) {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('role')
-                        .eq('id', session.user.id)
-                        .single();
-                    setIsAdmin(profile?.role === 'admin');
-                } else {
-                    setIsAdmin(false);
-                }
-            });
-            subscription = data.subscription;
-        };
-        setupAuth();
-        return () => {
-            if (subscription) subscription.unsubscribe();
-        };
-    }, []);
+    const { user, isAdmin } = useAuth();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
     const renderNavGroup = (title: string, items: NavItem[]) => {
         return (
