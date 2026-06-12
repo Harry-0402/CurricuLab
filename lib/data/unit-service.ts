@@ -10,28 +10,6 @@ export const INITIAL_UNITS: Unit[] = [
     { id: "u1-3", subjectId: "s1", title: "Unit III: Facilities Location and Layout", description: "Strategic importance and Factors", order: 3, isCompleted: false, topics: ["Factors affecting location and layout", "Installation of facilities", "Single location decisions", "Multi-location decisions", "Principles of Facilities Layout", "Types of Facilities Layout"] },
     { id: "u1-4", subjectId: "s1", title: "Unit IV: Types of Industries and Manufacturing Methods", description: "Variety of Businesses and Integration", order: 4, isCompleted: false, topics: ["Integration of Manufacturing and Services", "Scale of Operations", "Methods of Manufacturing", "Project / Jobbing", "Batch Production", "Flow / Continuous Production", "Process Production", "Characteristics of each method"] },
     { id: "u1-5", subjectId: "s1", title: "Unit V: Inspection, Quality Control and Lean Systems", description: "Inspection and Statistical Quality Control", order: 5, isCompleted: false, topics: ["Cent percent Inspection", "Sample Inspection", "Operation Characteristics Curves", "Construction and Interpretation of Control Charts", "X-R, n, p, c, np charts", "Introduction to Six Sigma", "Numericals expected for Control Charts", "Lean Production Systems", "TOYOTA system", "JIT", "KANBAN", "Theory of Constraints"] },
-    // ... (rest of units remain same, truncated for brevity in replacement but full file content preserved effectively by just changing import and method)
-
-    // To avoid replacing the whole file just for correct import and method, I will target specific blocks if possible, but the Import is at top.
-    // Actually, since I need to change import AND method, rewriting the file with complete UNITS again is safest or using multi-replace?
-    // I'll stick to replacing the logic block and top block. 
-    // BUT `replace_file_content` supports single contiguous block.
-    // The file is small enough to rewrite the import and valid parts, or I can use `multi_replace`.
-    // I'll use `replace_file_content` to update the imports and then another call for the function? No, must be single call.
-    // I will target the top of the file down to the start of INITIAL_UNITS to add the import, AND I need to update the function at the bottom.
-    // Wait, I can't do two disjoint edits with `replace_file_content`.
-    // I will use `replace_file_content` to update the ENTIRE file content for safety and correctness, or `multi_replace`.
-    // Let's use `replace_file_content` targeting the top imports, effectively replacing the first few lines? No, imports are at top, function at bottom.
-    // I'll use `write_to_file` to overwrite it with the full content to be 100% sure, as I have the full content from memory/context.
-    // Be careful with the UNITS array, I must include ALL units.
-    // I'll try to use `multi_replace_file_content` to be surgical.
-
-    // s1: Production and Operations Management (PBA204)
-    { id: "u1-1", subjectId: "s1", title: "Unit I: Introduction to Operations Management", description: "Nature, Scope, Importance and Functions", order: 1, isCompleted: true, topics: ["Evolution from manufacturing to operations management", "Evolution of the factory system", "Manufacturing systems", "Quality", "Mass customization", "Contribution of Henry Ford, Deming, Crossby, Taguchi"] },
-    { id: "u1-2", subjectId: "s1", title: "Unit II: Productivity and Work Study", description: "Productivity, Objectives, Scope and Uses", order: 2, isCompleted: true, topics: ["Methods Study", "Flow process chart", "Flow diagram", "Process mapping", "Work Measurement", "Elements", "Performance Rating", "Allowances", "Standard Time", "Synthetic Time Standards", "Work Sampling", "Numericals expected for Standard Time"] },
-    { id: "u1-3", subjectId: "s1", title: "Unit III: Facilities Location and Layout", description: "Strategic importance and Factors", order: 3, isCompleted: false, topics: ["Factors affecting location and layout", "Installation of facilities", "Single location decisions", "Multi-location decisions", "Principles of Facilities Layout", "Types of Facilities Layout"] },
-    { id: "u1-4", subjectId: "s1", title: "Unit IV: Types of Industries and Manufacturing Methods", description: "Variety of Businesses and Integration", order: 4, isCompleted: false, topics: ["Integration of Manufacturing and Services", "Scale of Operations", "Methods of Manufacturing", "Project / Jobbing", "Batch Production", "Flow / Continuous Production", "Process Production", "Characteristics of each method"] },
-    { id: "u1-5", subjectId: "s1", title: "Unit V: Inspection, Quality Control and Lean Systems", description: "Inspection and Statistical Quality Control", order: 5, isCompleted: false, topics: ["Cent percent Inspection", "Sample Inspection", "Operation Characteristics Curves", "Construction and Interpretation of Control Charts", "X-R, n, p, c, np charts", "Introduction to Six Sigma", "Numericals expected for Control Charts", "Lean Production Systems", "TOYOTA system", "JIT", "KANBAN", "Theory of Constraints"] },
 
     // s2: Digital Transformation (PBA205)
     { id: "u2-1", subjectId: "s2", title: "Unit I: Understanding Digital Transformation", description: "Definition, Scope and Importance", order: 1, isCompleted: true, topics: ["Definition and Scope", "Importance and Benefits", "Key drivers", "Trends in digital transformation", "Overview of digital transformation frameworks"] },
