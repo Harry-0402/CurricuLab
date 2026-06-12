@@ -12,8 +12,8 @@ export * from './note-service';
 
 // --- Subjects (Supabase) ---
 
-export const getSubjects = async (): Promise<Subject[]> => {
-    return await SubjectService.getAll();
+export const getSubjects = async (semesterId?: string): Promise<Subject[]> => {
+    return await SubjectService.getAll(semesterId);
 };
 
 export const getSubjectById = async (id: string): Promise<Subject | undefined> => {

@@ -63,7 +63,7 @@ export function AttendanceWidget() {
         if (!enrolledSemesterId) return; // Wait until enrolled
         setLoading(true);
         try {
-            const { stats: fetchedStats, subjects: fetchedSubjects, missingRecords: missing } = await AttendanceService.getDashboardData(5);
+            const { stats: fetchedStats, subjects: fetchedSubjects, missingRecords: missing } = await AttendanceService.getDashboardData(enrolledSemesterId, 5);
             setStats(fetchedStats);
             setSubjects(fetchedSubjects);
             setMissingRecords(missing);
@@ -71,7 +71,7 @@ export function AttendanceWidget() {
             const allLogs = await AttendanceService.getAllLogs();
             setLogs(allLogs);
 
-            const kpis = await AttendanceService.getKPICounts();
+            const kpis = await AttendanceService.getKPICounts(enrolledSemesterId);
             setKpiCounts(kpis);
 
             const myReminders = await ReminderService.getAllReminders();
@@ -80,7 +80,7 @@ export function AttendanceWidget() {
             const deadlines = await getUpcomingAssignments(14, enrolledSemesterId);
             setUpcomingDeadlines(deadlines);
 
-            const alerts = await AttendanceService.getAttendanceAlerts();
+            const alerts = await AttendanceService.getAttendanceAlerts(enrolledSemesterId);
             setAttendanceAlerts(alerts);
 
             updateAvailableSubjects(selectedDate, fetchedSubjects);
@@ -96,7 +96,7 @@ export function AttendanceWidget() {
         const dayName = format(new Date(date), 'EEEE');
 
         try {
-            const timetable = await getTimetable();
+            const timetable = await getTimetable(enrolledSemesterId || undefined);
             const scheduledForDay = timetable.filter(t => t.day === dayName);
 
             if (scheduledForDay.length > 0) {
@@ -162,7 +162,7 @@ export function AttendanceWidget() {
     const handleDailyCheckIn = async (blob: Blob) => {
         setIsSubmitting(true);
         try {
-            await AttendanceService.markDailyAttendance(selectedDate, blob);
+            await AttendanceService.markDailyAttendance(selectedDate, blob, enrolledSemesterId);
             await loadData();
         } catch (error: any) {
             console.error('Failed daily check-in', error);

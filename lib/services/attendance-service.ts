@@ -85,7 +85,7 @@ export const AttendanceService = {
         return data;
     },
 
-    async markDailyAttendance(date: string, verificationImage: Blob) {
+    async markDailyAttendance(date: string, verificationImage: Blob, semesterId?: string | null) {
         const user = await AuthService.getCurrentUser();
         if (!user) throw new Error("User not authenticated");
 
@@ -110,8 +110,8 @@ export const AttendanceService = {
         // 2. Get Scheduled Subjects for the Day
         const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
         const [timetable, subjects] = await Promise.all([
-            getTimetable(),
-            getSubjects()
+            getTimetable(semesterId || undefined),
+            getSubjects(semesterId || undefined)
         ]);
 
         const scheduledClasses = timetable.filter(t => t.day === dayName);
@@ -222,9 +222,9 @@ export const AttendanceService = {
         return this.getAllLogs();
     },
 
-    async getAttendanceStats(): Promise<SubjectAttendanceStats[]> {
+    async getAttendanceStats(semesterId?: string | null): Promise<SubjectAttendanceStats[]> {
         const logs = await this.getAttendanceLogs();
-        const subjects = await getSubjects();
+        const subjects = await getSubjects(semesterId || undefined);
 
         const validLogs = logs.filter(l => l.status !== 'Canceled');
         const statsMap = new Map<string, { total: number, present: number, name: string }>();
@@ -234,12 +234,14 @@ export const AttendanceService = {
         });
 
         validLogs.forEach(log => {
-            const current = statsMap.get(log.subjectId) || { total: 0, present: 0, name: log.subjectName || 'Unknown' };
-            current.total++;
-            if (log.status === 'Present') {
-                current.present++;
+            const current = statsMap.get(log.subjectId);
+            if (current) {
+                current.total++;
+                if (log.status === 'Present') {
+                    current.present++;
+                }
+                statsMap.set(log.subjectId, current);
             }
-            statsMap.set(log.subjectId, current);
         });
 
         return Array.from(statsMap.entries()).map(([id, stat]) => ({
@@ -251,15 +253,15 @@ export const AttendanceService = {
         }));
     },
 
-    async getDashboardData(daysToCheckMissing = 5): Promise<{
+    async getDashboardData(semesterId?: string | null, daysToCheckMissing = 5): Promise<{
         stats: SubjectAttendanceStats[];
         subjects: Subject[];
         missingRecords: MissingRecord[];
     }> {
         const [logs, subjects, timetable] = await Promise.all([
             this.getAttendanceLogs(),
-            getSubjects(),
-            getTimetable()
+            getSubjects(semesterId || undefined),
+            getTimetable(semesterId || undefined)
         ]);
 
         const statsMap = new Map<string, { total: number, present: number, name: string }>();
@@ -269,12 +271,14 @@ export const AttendanceService = {
 
         const validLogs = logs.filter(l => l.status !== 'Canceled');
         validLogs.forEach(log => {
-            const current = statsMap.get(log.subjectId) || { total: 0, present: 0, name: log.subjectName || 'Unknown' };
-            current.total++;
-            if (log.status === 'Present') {
-                current.present++;
+            const current = statsMap.get(log.subjectId);
+            if (current) {
+                current.total++;
+                if (log.status === 'Present') {
+                    current.present++;
+                }
+                statsMap.set(log.subjectId, current);
             }
-            statsMap.set(log.subjectId, current);
         });
 
         const stats = Array.from(statsMap.entries()).map(([id, stat]) => ({
@@ -318,14 +322,24 @@ export const AttendanceService = {
         return { stats, subjects, missingRecords };
     },
 
-    async getKPICounts() {
+    async getKPICounts(semesterId?: string | null) {
         const user = await AuthService.getCurrentUser();
         if (!user) throw new Error("User not authenticated");
 
+        let subjectsQuery = supabase.from('subjects').select('id', { count: 'exact', head: true });
+        let assignmentsQuery = supabase.from('assignments').select('id, subjects!inner(semester_id)', { count: 'exact', head: true });
+        let announcementsQuery = supabase.from('announcements').select('id', { count: 'exact', head: true });
+
+        if (semesterId) {
+            subjectsQuery = subjectsQuery.eq('semester_id', semesterId);
+            assignmentsQuery = assignmentsQuery.eq('subjects.semester_id', semesterId);
+            announcementsQuery = announcementsQuery.eq('semester_id', semesterId);
+        }
+
         const [subjectsData, assignmentsData, announcementsData] = await Promise.all([
-            supabase.from('subjects').select('id', { count: 'exact', head: true }),
-            supabase.from('assignments').select('id', { count: 'exact', head: true }),
-            supabase.from('announcements').select('id', { count: 'exact', head: true })
+            subjectsQuery,
+            assignmentsQuery,
+            announcementsQuery
         ]);
 
         return {
@@ -335,8 +349,8 @@ export const AttendanceService = {
         };
     },
 
-    async getAttendanceAlerts() {
-        const stats = await this.getAttendanceStats();
+    async getAttendanceAlerts(semesterId?: string | null) {
+        const stats = await this.getAttendanceStats(semesterId);
         return stats
             .filter(s => s.percentage < 80)
             .map(s => {
