@@ -49,6 +49,7 @@ export interface Subject {
   unitCount: number;
   syllabusPdfUrl?: string;
   semesterId?: string;   // which semester this subject belongs to
+  gcrKeyword?: string; // keyword to match with Google Classroom courses
 }
 
 export interface Unit {

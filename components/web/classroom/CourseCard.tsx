@@ -1,14 +1,14 @@
 import React from 'react';
 import { Icons } from '@/components/shared/Icons';
-import { CLASSROOM_TO_SUBJECT_MAP } from './GoogleClassroomView';
 import { cn } from '@/lib/utils';
 
 interface CourseCardProps {
     course: any;
+    matchedSubjectCode?: string;
     onSelect: (course: any) => void;
 }
 
-export default function CourseCard({ course, onSelect }: CourseCardProps) {
+export default function CourseCard({ course, matchedSubjectCode, onSelect }: CourseCardProps) {
     return (
         <button
             onClick={() => onSelect(course)}
@@ -18,9 +18,9 @@ export default function CourseCard({ course, onSelect }: CourseCardProps) {
                 <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                     <Icons.BookOpen size={22} />
                 </div>
-                {CLASSROOM_TO_SUBJECT_MAP[course.name] && (
+                {matchedSubjectCode && (
                     <div className="px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 font-black text-[10px] rounded-lg border border-blue-200 shadow-sm uppercase tracking-widest">
-                        {CLASSROOM_TO_SUBJECT_MAP[course.name]}
+                        {matchedSubjectCode}
                     </div>
                 )}
             </div>

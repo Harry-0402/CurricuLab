@@ -18,6 +18,7 @@ interface SubjectRow {
     icon: string;
     progress: number;
     semester_id: string;
+    gcr_keyword: string | null;
 }
 
 interface FormData {
@@ -27,6 +28,7 @@ interface FormData {
     unitCount: number;
     color: string;
     icon: string;
+    gcrKeyword: string;
 }
 
 const COLOR_OPTIONS = [
@@ -47,6 +49,7 @@ const defaultForm: FormData = {
     unitCount: 5,
     color: '#4f46e5',
     icon: 'BookOpen',
+    gcrKeyword: '',
 };
 
 export function SubjectsAdminTab() {
@@ -122,6 +125,7 @@ export function SubjectsAdminTab() {
             unitCount: subject.unit_count,
             color: subject.color,
             icon: subject.icon,
+            gcrKeyword: subject.gcr_keyword ?? '',
         });
         setError(null);
         setShowAddModal(true);
@@ -150,6 +154,7 @@ export function SubjectsAdminTab() {
                         description: formData.description,
                         unit_count: formData.unitCount,
                         color: formData.color,
+                        gcr_keyword: formData.gcrKeyword,
                     })
                     .eq('id', editingSubject.id);
 
@@ -167,6 +172,7 @@ export function SubjectsAdminTab() {
                         progress: 0,
                         color: formData.color,
                         icon: 'BookOpen',
+                        gcr_keyword: formData.gcrKeyword,
                     }]);
 
                 if (error) throw error;
@@ -401,6 +407,18 @@ export function SubjectsAdminTab() {
                                     rows={2}
                                     className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Google Classroom Matching Keyword</label>
+                                <input
+                                    type="text"
+                                    value={formData.gcrKeyword}
+                                    onChange={e => setFormData(f => ({ ...f, gcrKeyword: e.target.value }))}
+                                    placeholder="e.g. PBA211 or Python"
+                                    className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                />
+                                <p className="text-xs text-gray-400 mt-1">Used to automatically match Google Classroom courses to this subject.</p>
                             </div>
 
                             <div>

@@ -238,7 +238,9 @@ export const SubjectService = {
             progress: record.progress,
             unitCount: record.unit_count,
             lastStudied: record.last_studied,
-            syllabusPdfUrl: record.syllabus_pdf_url
+            syllabusPdfUrl: record.syllabus_pdf_url,
+            semesterId: record.semester_id,
+            gcrKeyword: record.gcr_keyword
         };
     }
 };

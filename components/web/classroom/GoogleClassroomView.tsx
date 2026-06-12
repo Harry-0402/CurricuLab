@@ -14,17 +14,7 @@ interface GoogleClassroomViewProps {
     selectedCourse: ClassroomCourse | null;
 }
 
-// Mapping Configuration
-export const CLASSROOM_TO_SUBJECT_MAP: { [key: string]: string } = {
-    "MBA-BA-2 - DA using Python": "PBA211",
-    "MBA 2027- BA/ Production and Operations Management": "PBA204",
-    "MBA BA SEM-II 2026": "PBA208", // Assuming this maps to Business Analytics code if not exact match, checking Subject codes is safer
-    "Data Analysis using Power BI PBA313": "PBA212",
-    "Data Visualization & Story Telling": "PBA207",
-    "MBA-BA-2- Digital Transformation": "PBA205",
-    "MBA (BA) and (BFS)": "PBA206",
-    "Sandeep Uni - MBA 2nd year Business Communications Skills II": "PBA213"
-};
+// Subject mapping is now handled dynamically via the Subject's gcrKeyword field in the database.
 
 import { SubjectService } from '@/lib/data/subject-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
@@ -85,20 +75,17 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
         setSendingAssignmentId(work.id);
 
         try {
-            // 1. Identify Subject Code from Map
-            const subjectCode = CLASSROOM_TO_SUBJECT_MAP[selectedCourse.name] ||
-                Object.keys(CLASSROOM_TO_SUBJECT_MAP).find(k => selectedCourse.name.includes(k));
-
-            if (!subjectCode) {
-                toast.error(`No subject mapping found for "${selectedCourse.name}"`);
-                return;
-            }
-
-            const targetSubjectCode = typeof subjectCode === 'string' ? subjectCode : CLASSROOM_TO_SUBJECT_MAP[subjectCode];
-            const subject = subjects.find(s => s.code === targetSubjectCode);
+            // 1. Identify Subject by gcrKeyword or code
+            const subject = subjects.find(s => {
+                const courseName = selectedCourse.name.toLowerCase();
+                if (s.gcrKeyword && courseName.includes(s.gcrKeyword.toLowerCase())) {
+                    return true;
+                }
+                return false;
+            });
 
             if (!subject) {
-                toast.error(`Subject code ${targetSubjectCode} not found in database.`);
+                toast.error(`No matching subject found for "${selectedCourse.name}". Please set a GCR Keyword in the admin panel.`);
                 return;
             }
 
