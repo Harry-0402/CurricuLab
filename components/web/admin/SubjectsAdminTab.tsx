@@ -7,6 +7,7 @@ import { getSemesters } from '@/lib/services/semester-service';
 import { SubjectService } from '@/lib/data/subject-service';
 import { supabase } from '@/utils/supabase/client';
 import { Semester } from '@/types';
+import { SubjectUnitsModal } from './SubjectUnitsModal';
 
 interface SubjectRow {
     id: string;
@@ -68,6 +69,7 @@ export function SubjectsAdminTab() {
     const [formData, setFormData] = useState<FormData>(defaultForm);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [unitsModalSubject, setUnitsModalSubject] = useState<SubjectRow | null>(null);
 
     useEffect(() => {
         loadSemesters();
@@ -339,6 +341,13 @@ export function SubjectsAdminTab() {
                                     <div className="flex items-center gap-1.5 mt-2">
                                         <Icons.BookOpen size={11} className="text-indigo-400" />
                                         <span className="text-xs text-gray-400">{subject.unit_count} units</span>
+                                        <button 
+                                            onClick={() => setUnitsModalSubject(subject)}
+                                            className="ml-2 text-[11px] font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 px-2 py-0.5 rounded transition-colors flex items-center gap-1"
+                                        >
+                                            <Icons.Edit size={10} />
+                                            Manage Units
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -500,6 +509,15 @@ export function SubjectsAdminTab() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Units Modal */}
+            {unitsModalSubject && (
+                <SubjectUnitsModal
+                    subjectId={unitsModalSubject.id}
+                    subjectTitle={unitsModalSubject.title}
+                    onClose={() => setUnitsModalSubject(null)}
+                />
             )}
         </div>
     );

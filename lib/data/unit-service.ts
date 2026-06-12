@@ -59,6 +59,7 @@ export const UnitService = {
             return data.map((item: any) => ({
                 id: item.id,
                 subjectId: item.subject_id,
+                unitCode: item.unit_code,
                 title: item.title,
                 description: item.description,
                 order: item.order,
@@ -90,8 +91,9 @@ export const UnitService = {
             console.log(`Seeding units for subject ${subjectId} (matching ${unitsToSeed[0].subjectId} template)...`);
 
             const dbPayload = unitsToSeed.map(u => ({
-                id: u.id,  // Keep the static ID (e.g., u1-1) - assuming global uniqueness or 1:1 mapping
-                subject_id: subjectId, // IMPORTANT: Use the PASSED (real) subject ID, not the template's
+                id: crypto.randomUUID(), // Use a fresh UUID to prevent collision across subjects
+                subject_id: subjectId,
+                unit_code: u.id, // Provide unit_code to satisfy NOT NULL constraint
                 title: u.title,
                 description: u.description,
                 "order": u.order,
@@ -140,6 +142,32 @@ export const UnitService = {
             .update(payload)
             .eq('id', unit.id);
 
+        if (error) throw error;
+    },
+
+    async create(unit: Omit<Unit, 'id'>): Promise<Unit> {
+        const payload = {
+            id: crypto.randomUUID(),
+            subject_id: unit.subjectId,
+            unit_code: `U${unit.order}`, // generate a simple code
+            title: unit.title,
+            description: unit.description,
+            "order": unit.order,
+            is_completed: unit.isCompleted,
+            topics: unit.topics || []
+        };
+
+        const { error } = await supabase.from('units').insert([payload]);
+        if (error) throw error;
+        
+        return {
+            ...unit,
+            id: payload.id
+        };
+    },
+
+    async delete(unitId: string): Promise<void> {
+        const { error } = await supabase.from('units').delete().eq('id', unitId);
         if (error) throw error;
     }
 };
