@@ -687,7 +687,11 @@ export function VaultContent() {
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => {
-                                        if (selectedResource.link) {
+                                        if (htmlContent && selectedResource?.link?.includes('/storage/v1/object/public/vault/') && selectedResource.link.endsWith('.html')) {
+                                            const blob = new Blob([htmlContent], { type: 'text/html' });
+                                            const url = URL.createObjectURL(blob);
+                                            window.open(url, '_blank');
+                                        } else if (selectedResource?.link) {
                                             window.open(selectedResource.link, '_blank');
                                         }
                                     }}
