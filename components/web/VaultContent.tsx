@@ -574,7 +574,7 @@ export function VaultContent() {
 
                             <button
                                 onClick={handleSave}
-                                disabled={isSaving || !formData.title || !formData.subjectId || (uploadMode === 'link' ? !formData.link : (!selectedFile && !editingId))}
+                                disabled={isSaving || !formData.title || !formData.subjectId || !formData.link}
                                 className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-[22px] text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 active:scale-[0.98]"
                             >
                                 {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Save size={18} /> : <Icons.Plus size={18} />)}
