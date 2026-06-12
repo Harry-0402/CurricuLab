@@ -42,8 +42,8 @@ export async function middleware(req: NextRequest) {
     );
 
     const {
-        data: { session },
-    } = await supabase.auth.getSession();
+        data: { user },
+    } = await supabase.auth.getUser();
 
     // List of public paths and prefixes
     const publicPaths = [
@@ -58,16 +58,16 @@ export async function middleware(req: NextRequest) {
     // Secure Dashboard Protection for Guests is handled by WebAppShell
     // so we don't redirect them here, allowing them to see the Restricted Access warning.
 
-    // If session exists and user is on login page, redirect to Dashboard
-    if (session && req.nextUrl.pathname === '/login') {
+    // If user is authenticated and on login page, redirect to Dashboard
+    if (user && req.nextUrl.pathname === '/login') {
         const redirectUrl = req.nextUrl.clone();
         redirectUrl.pathname = '/';
         return redirectWithCookies(redirectUrl);
     }
 
     // CHECK AUTHORIZATION (Whitelist) - Only for authenticated users
-    if (session && !isPublicPath) {
-        const cookieKey = `app_is_authorized_${session.user.id}`;
+    if (user && !isPublicPath) {
+        const cookieKey = `app_is_authorized_${user.id}`;
         let isAuthorized = req.cookies.get(cookieKey)?.value === 'true';
 
         if (!isAuthorized) {
@@ -75,7 +75,7 @@ export async function middleware(req: NextRequest) {
             const { data, error } = await supabase
                 .from('authorized_users')
                 .select('email')
-                .ilike('email', session.user.email!)
+                .ilike('email', user.email!)
                 .single();
 
             isAuthorized = !!data && !error;

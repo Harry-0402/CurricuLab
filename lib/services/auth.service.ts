@@ -98,10 +98,6 @@ export const AuthService = {
             provider: provider,
             options: {
                 redirectTo: redirectTo,
-                queryParams: {
-                    access_type: 'offline',
-                    prompt: 'consent',
-                },
             },
         });
         return { data, error };
