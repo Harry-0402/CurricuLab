@@ -14,8 +14,6 @@ interface GoogleClassroomViewProps {
     selectedCourse: ClassroomCourse | null;
 }
 
-// Subject mapping is now handled dynamically via the Subject's gcrKeyword field in the database.
-
 import { SubjectService } from '@/lib/data/subject-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
 
