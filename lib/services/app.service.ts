@@ -444,19 +444,39 @@ export const getVaultResources = async (filters: { subjectId?: string; unitId?: 
 
 export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): Promise<VaultResource | null> => {
     try {
-        const { data, error } = await withTimeout(supabase.from('vault_resources').insert([{
+        const sessionRes = await withTimeout(supabase.auth.getSession(), 5000).catch(() => ({ data: { session: null } }));
+        const token = sessionRes?.data?.session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources`;
+        
+        const payload = {
             subject_id: resource.subjectId,
             unit_id: resource.unitId || null,
             type: resource.type,
             title: resource.title,
             link: resource.link || '',
             tags: resource.tags || []
-        }]).select().single());
+        };
 
-    if (error) {
-        console.error("Failed to create vault resource:", error.message);
-        return null;
-    }
+        const response = await withTimeout(fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(payload)
+        }));
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error creating vault resource via fetch:', errorText);
+            throw new Error(`Create failed: ${response.status} ${response.statusText}`);
+        }
+
+        const dataArray = await response.json();
+        const data = dataArray[0];
+        const error = null;
 
     const newResource = mapVaultResource(data);
     // Log Change - Fire and forget
@@ -526,24 +546,38 @@ export const updateVaultResource = async (resource: VaultResource): Promise<Vaul
             }
         }
 
-        const { data, error } = await withTimeout(supabase
-            .from('vault_resources')
-            .update({
-                subject_id: resource.subjectId,
-                unit_id: resource.unitId || null,
-                type: resource.type,
-                title: resource.title,
-                link: resource.link || '',
-                tags: resource.tags
-            })
-            .eq('id', resource.id)
-            .select()
-            .single());
+        const sessionRes = await withTimeout(supabase.auth.getSession(), 5000).catch(() => ({ data: { session: null } }));
+        const token = sessionRes?.data?.session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources?id=eq.${resource.id}`;
+        
+        const payload = {
+            subject_id: resource.subjectId,
+            unit_id: resource.unitId || null,
+            type: resource.type,
+            title: resource.title,
+            link: resource.link || '',
+            tags: resource.tags || []
+        };
 
-        if (error) {
-            console.error("Failed to update vault resource:", error.message);
-            return null;
+        const response = await withTimeout(fetch(apiUrl, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(payload)
+        }));
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error updating vault resource via fetch:', errorText);
+            throw new Error(`Update failed: ${response.status} ${response.statusText}`);
         }
+
+        const dataArray = await response.json();
+        const data = dataArray[0];
 
         const updatedResource = mapVaultResource(data);
         // Log Change - Fire and forget
@@ -573,14 +607,22 @@ export const deleteVaultResource = async (id: string): Promise<boolean> => {
             }
         }
 
-        const { error } = await withTimeout(supabase
-            .from('vault_resources')
-            .delete()
-            .eq('id', id));
+        const sessionRes = await withTimeout(supabase.auth.getSession(), 5000).catch(() => ({ data: { session: null } }));
+        const token = sessionRes?.data?.session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources?id=eq.${id}`;
+        
+        const response = await withTimeout(fetch(apiUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+            }
+        }));
 
-        if (error) {
-            console.error("Failed to delete vault resource:", error);
-            return false;
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error deleting vault resource via fetch:', errorText);
+            throw new Error(`Delete failed: ${response.status} ${response.statusText}`);
         }
 
         // Log Change - Fire and forget
