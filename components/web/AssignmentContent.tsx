@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
-import { toast } from 'sonner';
+import { useToast } from '@/components/shared/Toast';
 import { cn } from '@/lib/utils';
 import { Subject, Assignment, Unit } from '@/types';
 import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
@@ -24,6 +24,7 @@ import { SubjectService } from '@/lib/data/subject-service';
 
 export function AssignmentContent() {
     const { activeSemesterId } = useSemester();
+    const { showToast } = useToast();
     const searchParams = useSearchParams();
     const querySubjectId = searchParams.get('subjectId');
     const queryAssignmentId = searchParams.get('assignmentId');
@@ -305,10 +306,10 @@ export function AssignmentContent() {
             await updateAssignment(updatedAssignment);
             setSelectedAssignment(updatedAssignment);
             setAssignments(prev => prev.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
-            toast.success('Answer cleared');
+            showToast('Answer cleared', 'success');
         } catch (error) {
             console.error('Failed to clear answer:', error);
-            toast.error('Failed to clear answer');
+            showToast('Failed to clear answer', 'error');
         }
     };
 
@@ -583,7 +584,7 @@ export function AssignmentContent() {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     if (!selectedAssignment || selectedAssignment.questions.length === 0) {
-                                                        toast.error("No questions to copy");
+                                                        showToast("No questions to copy", "error");
                                                         return;
                                                     }
                                                     const questionList = selectedAssignment.questions
@@ -595,9 +596,9 @@ export function AssignmentContent() {
                                                     const prompt = `Here is a list of questions for my assignment:\n\n${questionList}\n\n\nPlease help me answer them based on ${subjectName}.\n\nInstructions:\n- The language should be simple, clear, and humanoid.\n- The word limit should be in 110-120 words for each question.`;
 
                                                     navigator.clipboard.writeText(prompt).then(() => {
-                                                        toast.success("Questions copied! Paste them into ChatGPT or Gemini to get solutions.");
+                                                        showToast("Questions copied! Paste them into ChatGPT or Gemini to get solutions.", "success");
                                                     }).catch(() => {
-                                                        toast.error("Failed to copy. Please allow clipboard permissions.");
+                                                        showToast("Failed to copy. Please allow clipboard permissions.", "error");
                                                     });
                                                 }}
                                                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-none rounded-2xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-all shadow-sm active:scale-95 shrink-0"

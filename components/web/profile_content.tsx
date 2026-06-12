@@ -6,8 +6,6 @@ import { Icons } from '@/components/shared/Icons';
 import { Button } from '@/components/shared/Button';
 import { Switch } from '@/components/shared/Switch';
 import { cn } from '@/lib/utils';
-import { ChangelogService, ChangeLog } from '@/lib/services/changelog.service';
-import { formatDistanceToNow } from 'date-fns';
 import { AttendanceWidget } from './AttendanceWidget';
 import { useSemester } from '@/components/providers/SemesterProvider';
 import { FaceVerificationModal } from './attendance/FaceVerificationModal';
@@ -15,7 +13,7 @@ import { FaceRecognitionService } from '@/lib/services/face-recognition-service'
 import { toast } from 'sonner';
 
 type Tab = 'Overview' | 'Settings';
-type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & Security' | 'Data & Storage' | 'Change History';
+type SettingCategory = 'General' | 'Appearance' | 'Notifications' | 'Privacy & Security' | 'Data & Storage';
 
 export default function WebProfileContent() {
     const [activeTab, setActiveTab] = useState<Tab>('Overview');
@@ -103,10 +101,6 @@ export default function WebProfileContent() {
         URL.revokeObjectURL(url);
     };
 
-    // Changelog State
-    const [logs, setLogs] = useState<ChangeLog[]>([]);
-    const [logsLoading, setLogsLoading] = useState(true);
-
     useEffect(() => {
         const fetchUser = async () => {
             const { data: { user } } = await import('@/utils/supabase/client').then(mod => mod.supabase.auth.getUser());
@@ -126,20 +120,6 @@ export default function WebProfileContent() {
         };
         fetchUser();
     }, []);
-
-    // Fetch logs when Change History is accessed
-    useEffect(() => {
-        if (activeTab === 'Settings' && activeSettingsCategory === 'Change History') {
-            loadLogs();
-        }
-    }, [activeTab, activeSettingsCategory]);
-
-    const loadLogs = async () => {
-        setLogsLoading(true);
-        const data = await ChangelogService.getRecentChanges(50);
-        setLogs(data);
-        setLogsLoading(false);
-    };
 
     // We use the editable name for display if available, else fallback logic
     const displayName = editName || (userEmail ? (userEmail.split('@')[0].charAt(0).toUpperCase() + userEmail.split('@')[0].slice(1)) : 'Javis');
@@ -172,27 +152,6 @@ export default function WebProfileContent() {
             setIsSaving(false);
         }
     };
-
-    // --- Render Helpers ---
-
-    const getActionIcon = (action: string) => {
-        switch (action) {
-            case 'CREATE': return <Icons.Plus className="text-green-600" size={16} />;
-            case 'UPDATE': return <Icons.Edit className="text-blue-600" size={16} />;
-            case 'DELETE': return <Icons.Delete className="text-red-600" size={16} />;
-            default: return <Icons.Info className="text-gray-600" size={16} />;
-        }
-    };
-
-    const getActionColor = (action: string) => {
-        switch (action) {
-            case 'CREATE': return 'bg-green-50 border-green-200 text-green-700';
-            case 'UPDATE': return 'bg-blue-50 border-blue-200 text-blue-700';
-            case 'DELETE': return 'bg-red-50 border-red-200 text-red-700';
-            default: return 'bg-gray-50 border-gray-200 text-gray-700';
-        }
-    };
-
     const renderSettingsContent = () => {
         switch (activeSettingsCategory) {
             case 'Notifications':
@@ -288,56 +247,7 @@ export default function WebProfileContent() {
                         </button>
                     </div>
                 );
-            case 'Change History':
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden h-[500px] overflow-y-auto no-scrollbar">
-                            {logsLoading ? (
-                                <div className="p-12 flex flex-col items-center justify-center text-gray-400">
-                                    <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4" />
-                                    <p className="font-bold text-sm">Loading history...</p>
-                                </div>
-                            ) : logs.length === 0 ? (
-                                <div className="p-16 text-center">
-                                    <div className="w-16 h-16 bg-gray-50 text-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                        <Icons.CheckSquare size={32} />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900">No changes recorded</h3>
-                                    <p className="text-gray-500 mt-1">Start editing content to see logs here.</p>
-                                </div>
-                            ) : (
-                                <div className="divide-y divide-gray-100">
-                                    {logs.map((log) => (
-                                        <div key={log.id} className="p-4 hover:bg-gray-50/50 transition-colors flex items-start gap-3">
-                                            <div className="mt-1">
-                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${getActionColor(log.action)}`}>
-                                                    {getActionIcon(log.action)}
-                                                </div>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between mb-1">
-                                                    <h4 className="font-bold text-gray-900 text-sm truncate pr-2">
-                                                        {log.action} <span className="text-gray-400 font-medium">on</span> {log.entityType}
-                                                    </h4>
-                                                    <span className="text-[10px] font-bold text-gray-400 shrink-0 whitespace-nowrap">
-                                                        {formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}
-                                                    </span>
-                                                </div>
-                                                <div className="bg-gray-50 rounded-lg p-2 border border-gray-100 text-[10px] text-gray-600 font-medium font-mono mb-2 overflow-x-auto">
-                                                    {JSON.stringify(log.changes)}
-                                                </div>
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400">
-                                                    <Icons.Profile size={12} />
-                                                    Changed by: <span className="text-gray-700">{log.changedBy ? (log.changedBy.includes('@') ? (log.changedBy.split('@')[0].charAt(0).toUpperCase() + log.changedBy.split('@')[0].slice(1)) : log.changedBy) : 'System'}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                );
+
             default: // General or Login settings
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
@@ -383,7 +293,6 @@ export default function WebProfileContent() {
         { id: 'Notifications' as const, icon: Icons.Bell, desc: 'Alerts and updates' },
         { id: 'Privacy & Security' as const, icon: Icons.Lock, desc: 'Visibility and safety' },
         { id: 'Data & Storage' as const, icon: Icons.Bookmark, desc: 'Sync and backup' },
-        { id: 'Change History' as const, icon: Icons.Clock, desc: 'System logs' },
     ];
 
     return (
@@ -470,15 +379,6 @@ export default function WebProfileContent() {
                                     <h1 className="text-2xl font-black text-gray-900 tracking-tight">{activeSettingsCategory}</h1>
                                     <p className="text-gray-400 font-bold text-sm mt-1">{categories.find(c => c.id === activeSettingsCategory)?.desc}</p>
                                 </div>
-                                {activeSettingsCategory === 'Change History' && (
-                                    <button
-                                        onClick={loadLogs}
-                                        className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-blue-600 hover:border-blue-200 rounded-lg transition-all shadow-sm active:scale-95"
-                                        title="Refresh Logs"
-                                    >
-                                        <Icons.Subjects size={16} />
-                                    </button>
-                                )}
                             </div>
                             {renderSettingsContent()}
                         </div>
