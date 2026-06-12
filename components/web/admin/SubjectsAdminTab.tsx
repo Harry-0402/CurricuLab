@@ -515,6 +515,7 @@ export function SubjectsAdminTab() {
             {unitsModalSubject && (
                 <SubjectUnitsModal
                     subjectId={unitsModalSubject.id}
+                    subjectCode={unitsModalSubject.code}
                     subjectTitle={unitsModalSubject.title}
                     onClose={() => setUnitsModalSubject(null)}
                 />

@@ -8,11 +8,12 @@ import { cn } from '@/lib/utils';
 
 interface SubjectUnitsModalProps {
     subjectId: string;
+    subjectCode: string;
     subjectTitle: string;
     onClose: () => void;
 }
 
-export function SubjectUnitsModal({ subjectId, subjectTitle, onClose }: SubjectUnitsModalProps) {
+export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClose }: SubjectUnitsModalProps) {
     const [units, setUnits] = useState<Unit[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -33,8 +34,8 @@ export function SubjectUnitsModal({ subjectId, subjectTitle, onClose }: SubjectU
         setIsLoading(true);
         setError(null);
         try {
-            // We pass '' for subject code just to fetch existing units or trigger seed
-            const data = await UnitService.getBySubjectId(subjectId, '');
+            // Pass subject code so UnitService can resolve the correct seed template (e.g. PBA204 -> s1)
+            const data = await UnitService.getBySubjectId(subjectId, subjectCode);
             setUnits(data);
         } catch (e: any) {
             setError('Failed to load units: ' + e.message);
