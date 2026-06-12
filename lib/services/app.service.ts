@@ -457,7 +457,10 @@ export const uploadVaultFile = async (file: File): Promise<string | null> => {
 
     const { error: uploadError } = await supabase.storage
         .from('vault')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+            contentType: file.type || 'application/octet-stream',
+            upsert: false
+        });
 
     if (uploadError) {
         console.error('Error uploading file:', uploadError);

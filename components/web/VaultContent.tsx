@@ -45,6 +45,22 @@ export function VaultContent() {
 
     // Delete confirmation state
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+    // State for HTML rendering workaround
+    const [htmlContent, setHtmlContent] = useState<string | null>(null);
+
+    // Fetch HTML content if it's a Supabase HTML file
+    useEffect(() => {
+        if (selectedResource?.link && selectedResource.link.includes('/storage/v1/object/public/vault/') && selectedResource.link.endsWith('.html')) {
+            fetch(selectedResource.link)
+                .then(res => res.text())
+                .then(text => setHtmlContent(text))
+                .catch(console.error);
+        } else {
+            setHtmlContent(null);
+        }
+    }, [selectedResource]);
+
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -692,12 +708,22 @@ export function VaultContent() {
                         {/* Content Area */}
                         <div className="flex-1 overflow-y-auto bg-gray-50 rounded-b-[32px] relative">
                             {selectedResource.link ? (
-                                <iframe
-                                    src={selectedResource.link}
-                                    className="w-full h-full border-0"
-                                    title="Resource Preview"
-                                    allow="autoplay; encrypted-media"
-                                />
+                                (htmlContent) ? (
+                                    <iframe
+                                        srcDoc={htmlContent}
+                                        className="w-full h-full border-0 bg-white"
+                                        title="Resource Preview"
+                                        allow="autoplay; encrypted-media"
+                                        sandbox="allow-scripts allow-same-origin allow-popups"
+                                    />
+                                ) : (
+                                    <iframe
+                                        src={selectedResource.link}
+                                        className="w-full h-full border-0 bg-white"
+                                        title="Resource Preview"
+                                        allow="autoplay; encrypted-media"
+                                    />
+                                )
                             ) : (
                                 <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
                                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
