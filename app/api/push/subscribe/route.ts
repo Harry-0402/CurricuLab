@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createSupabaseServerClient } from '@/utils/supabase/server';
 
 export async function POST(req: Request) {
     try {
@@ -11,26 +10,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Invalid subscription object' }, { status: 400 });
         }
 
-        const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                cookies: {
-                    getAll() {
-                        return cookies().getAll();
-                    },
-                    setAll(cookiesToSet) {
-                        try {
-                            cookiesToSet.forEach(({ name, value, options }) =>
-                                cookies().set(name, value, options)
-                            );
-                        } catch (error) {
-                            // Ignored
-                        }
-                    },
-                },
-            }
-        );
+        const supabase = await createSupabaseServerClient();
 
         const { data: { session } } = await supabase.auth.getSession();
 

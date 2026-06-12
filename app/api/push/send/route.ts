@@ -1,22 +1,10 @@
 import { NextResponse } from 'next/server';
 import { sendPushNotification } from '@/lib/services/push-service';
-import { createServerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createSupabaseServerClient } from '@/utils/supabase/server';
 
 export async function POST(req: Request) {
     try {
-        const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                cookies: {
-                    getAll() {
-                        return cookies().getAll();
-                    },
-                    setAll() { },
-                },
-            }
-        );
+        const supabase = await createSupabaseServerClient();
 
         const { data: { session } } = await supabase.auth.getSession();
         

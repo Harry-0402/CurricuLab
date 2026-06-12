@@ -35,6 +35,8 @@ export function AssignmentContent() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(null);
+    const [completedAssignments, setCompletedAssignments] = useState<Set<string>>(new Set());
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     // Detail Modal State
     const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
@@ -65,6 +67,24 @@ export function AssignmentContent() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [openMenuIndex]);
+
+    useEffect(() => {
+        const loadUserAndCompletions = async () => {
+            const { supabase } = await import('@/utils/supabase/client');
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                setCurrentUser(session.user);
+                const { data } = await supabase
+                    .from('user_completed_assignments')
+                    .select('assignment_id')
+                    .eq('user_id', session.user.id);
+                if (data) {
+                    setCompletedAssignments(new Set(data.map(d => d.assignment_id)));
+                }
+            }
+        };
+        loadUserAndCompletions();
+    }, []);
 
     useEffect(() => {
         const loadData = async () => {
@@ -162,6 +182,34 @@ export function AssignmentContent() {
             // Optionally add toast notification here
         }
         setEditingAssignment(null);
+    };
+
+    const toggleCompletion = async (e: React.MouseEvent, assignmentId: string) => {
+        e.stopPropagation();
+        if (!currentUser) return;
+        
+        const { supabase } = await import('@/utils/supabase/client');
+        const isCompleted = completedAssignments.has(assignmentId);
+        
+        // Optimistic update
+        setCompletedAssignments(prev => {
+            const next = new Set(prev);
+            if (isCompleted) next.delete(assignmentId);
+            else next.add(assignmentId);
+            return next;
+        });
+
+        if (isCompleted) {
+            await supabase
+                .from('user_completed_assignments')
+                .delete()
+                .eq('user_id', currentUser.id)
+                .eq('assignment_id', assignmentId);
+        } else {
+            await supabase
+                .from('user_completed_assignments')
+                .insert({ user_id: currentUser.id, assignment_id: assignmentId });
+        }
     };
 
     const handleDeleteAssignment = async (id: string) => {
@@ -378,7 +426,7 @@ export function AssignmentContent() {
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-start">
-                                    <div className="w-12 h-12 bg-gray-50 group-hover:bg-blue-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-blue-600 transition-colors duration-500">
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500 ${completedAssignments.has(assignment.id) ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
                                         <Icons.Calendar size={22} />
                                     </div>
                                     {/* Badges */}
@@ -415,6 +463,13 @@ export function AssignmentContent() {
                                         <span className="text-sm font-black text-gray-900">{assignment.dueDate || 'No due date'}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={(e) => toggleCompletion(e, assignment.id)}
+                                            className={`p-3 rounded-xl transition-all flex items-center gap-2 text-xs font-bold ${completedAssignments.has(assignment.id) ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                                        >
+                                            <Icons.CheckSquare size={16} />
+                                            <span className="hidden sm:inline">{completedAssignments.has(assignment.id) ? 'Completed' : 'Mark Done'}</span>
+                                        </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); openEditModal(assignment); }}
                                             className="p-3 bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
