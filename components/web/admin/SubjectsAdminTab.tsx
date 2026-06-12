@@ -19,6 +19,7 @@ interface SubjectRow {
     progress: number;
     semester_id: string;
     gcr_keyword: string | null;
+    syllabus_pdf_url: string | null;
 }
 
 interface FormData {
@@ -29,6 +30,8 @@ interface FormData {
     color: string;
     icon: string;
     gcrKeyword: string;
+    syllabusPdfUrl: string;
+    syllabusFile: File | null;
 }
 
 const COLOR_OPTIONS = [
@@ -50,6 +53,8 @@ const defaultForm: FormData = {
     color: '#4f46e5',
     icon: 'BookOpen',
     gcrKeyword: '',
+    syllabusPdfUrl: '',
+    syllabusFile: null,
 };
 
 export function SubjectsAdminTab() {
@@ -126,6 +131,8 @@ export function SubjectsAdminTab() {
             color: subject.color,
             icon: subject.icon,
             gcrKeyword: subject.gcr_keyword ?? '',
+            syllabusPdfUrl: subject.syllabus_pdf_url ?? '',
+            syllabusFile: null,
         });
         setError(null);
         setShowAddModal(true);
@@ -145,6 +152,20 @@ export function SubjectsAdminTab() {
         setError(null);
 
         try {
+            let finalPdfUrl = formData.syllabusPdfUrl;
+            if (formData.syllabusFile) {
+                const fileExt = formData.syllabusFile.name.split('.').pop();
+                const fileName = `syllabuses/${crypto.randomUUID()}.${fileExt}`;
+                const { error: uploadError } = await supabase.storage
+                    .from('library-assets')
+                    .upload(fileName, formData.syllabusFile);
+                if (uploadError) throw uploadError;
+                const { data: { publicUrl } } = supabase.storage
+                    .from('library-assets')
+                    .getPublicUrl(fileName);
+                finalPdfUrl = publicUrl;
+            }
+
             if (editingSubject) {
                 const { error } = await supabase
                     .from('subjects')
@@ -155,6 +176,7 @@ export function SubjectsAdminTab() {
                         unit_count: formData.unitCount,
                         color: formData.color,
                         gcr_keyword: formData.gcrKeyword,
+                        syllabus_pdf_url: finalPdfUrl || null,
                     })
                     .eq('id', editingSubject.id);
 
@@ -173,6 +195,7 @@ export function SubjectsAdminTab() {
                         color: formData.color,
                         icon: 'BookOpen',
                         gcr_keyword: formData.gcrKeyword,
+                        syllabus_pdf_url: finalPdfUrl || null,
                     }]);
 
                 if (error) throw error;
@@ -419,6 +442,21 @@ export function SubjectsAdminTab() {
                                     className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 />
                                 <p className="text-xs text-gray-400 mt-1">Used to automatically match Google Classroom courses to this subject.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Syllabus File (PDF/Word)</label>
+                                <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={e => setFormData(f => ({ ...f, syllabusFile: e.target.files?.[0] || null }))}
+                                    className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                />
+                                {formData.syllabusPdfUrl && !formData.syllabusFile && (
+                                    <p className="text-xs text-indigo-600 mt-1 font-semibold">
+                                        <a href={formData.syllabusPdfUrl} target="_blank" rel="noreferrer" className="hover:underline">Current Syllabus Uploaded</a>
+                                    </p>
+                                )}
                             </div>
 
                             <div>
