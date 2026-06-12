@@ -6,6 +6,11 @@ export async function GET(request: Request) {
     const requestUrl = new URL(request.url);
     const code = requestUrl.searchParams.get('code');
 
+    // Robust origin detection for proxies (Render)
+    const host = request.headers.get('host');
+    const protocol = request.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
+    const origin = host ? `${protocol}://${host}` : requestUrl.origin;
+
     if (code) {
         const supabase = await createSupabaseServerClient();
 
@@ -13,11 +18,6 @@ export async function GET(request: Request) {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (session) {
-            // Robust origin detection for proxies (Render)
-            const host = request.headers.get('host');
-            const protocol = request.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
-            const origin = host ? `${protocol}://${host}` : requestUrl.origin;
-
             const redirectUri = `${origin}/api/auth/google/callback`;
             const oauth2Client = new google.auth.OAuth2(
                 process.env.GOOGLE_OAUTH_CLIENT_ID,
@@ -50,18 +50,18 @@ export async function GET(request: Request) {
 
                 if (error) {
                     console.error('Error storing tokens:', error);
-                    return NextResponse.redirect(`${requestUrl.origin}/classroom?error=token_storage_failed`);
+                    return NextResponse.redirect(`${origin}/classroom?error=token_storage_failed`);
                 }
             } catch (error) {
                 console.error('Error retrieving access token:', error);
-                return NextResponse.redirect(`${requestUrl.origin}/classroom?error=oauth_failed`);
+                return NextResponse.redirect(`${origin}/classroom?error=oauth_failed`);
             }
         } else {
             // User not logged in
-            return NextResponse.redirect(`${requestUrl.origin}/classroom?error=unauthorized`);
+            return NextResponse.redirect(`${origin}/classroom?error=unauthorized`);
         }
     }
 
     // Redirect to classroom page
-    return NextResponse.redirect(`${requestUrl.origin}/classroom?drive_connected=true`);
+    return NextResponse.redirect(`${origin}/classroom?drive_connected=true`);
 }
