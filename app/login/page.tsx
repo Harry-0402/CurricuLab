@@ -90,10 +90,15 @@ function LoginContent() {
                     </button>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-50">
+                <div className="mt-4 pt-4 border-t border-gray-50 flex flex-col items-center gap-2">
                     <p className="text-center text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">
                         Protected System • CurricuLab IO
                     </p>
+                    <div className="flex gap-4 text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                        <a href="/terms" className="hover:text-blue-500 transition-colors">Terms</a>
+                        <span>•</span>
+                        <a href="/privacy" className="hover:text-blue-500 transition-colors">Privacy</a>
+                    </div>
                 </div>
             </div>
         </div>

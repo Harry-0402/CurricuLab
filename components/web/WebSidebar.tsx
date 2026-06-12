@@ -156,8 +156,15 @@ export function WebSidebar() {
                 </div>
             )}
 
-            <div className="mt-auto py-1 border-t border-gray-100 italic text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
-                CurricuLab v2.1
+            <div className="mt-auto py-3 border-t border-gray-100 flex flex-col items-center gap-1.5">
+                <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-gray-400">
+                    <Link href="/terms" className="hover:text-indigo-600 transition-colors">Terms</Link>
+                    <span>•</span>
+                    <Link href="/privacy" className="hover:text-indigo-600 transition-colors">Privacy</Link>
+                </div>
+                <div className="italic text-[9px] text-gray-300 text-center uppercase tracking-widest font-bold">
+                    CurricuLab v2.1
+                </div>
             </div>
         </aside>
     );
