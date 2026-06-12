@@ -481,17 +481,27 @@ export const uploadVaultFile = async (file: File): Promise<string | null> => {
 
     try {
         const fileBuffer = await file.arrayBuffer();
-        const { error: uploadError } = await withTimeout(supabase.storage
-            .from('vault')
-            .upload(filePath, fileBuffer, {
-                contentType: file.type || 'application/octet-stream',
-                upsert: false
-            }));
+        
+        // Use raw fetch to bypass any Supabase JS client deadlocks
+        const sessionRes = await withTimeout(supabase.auth.getSession(), 5000).catch(() => ({ data: { session: null } }));
+        const token = sessionRes?.data?.session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const uploadUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/vault/${filePath}`;
+        
+        const response = await withTimeout(fetch(uploadUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                'Content-Type': file.type || 'application/octet-stream',
+            },
+            body: fileBuffer
+        }));
 
-        if (uploadError) {
-        console.error('Error uploading file:', uploadError);
-        return null;
-    }
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error uploading file via fetch:', errorText);
+            throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+        }
 
         const { data } = supabase.storage
             .from('vault')
