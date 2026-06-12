@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { Subject, VaultResource, VaultResourceType } from '@/types';
-import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource } from '@/lib/services/app.service';
+import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource, uploadVaultFile } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { toast } from 'sonner';
 
@@ -142,7 +142,6 @@ export function VaultContent() {
             let finalLink = formData.link;
 
             if (uploadMode === 'file' && selectedFile) {
-                const { uploadVaultFile } = await import('@/lib/services/app.service');
                 const uploadedUrl = await uploadVaultFile(selectedFile);
                 if (!uploadedUrl) {
                     toast.error("Failed to upload file");

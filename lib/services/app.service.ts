@@ -425,7 +425,6 @@ export const getVaultResources = async (filters: { subjectId?: string; unitId?: 
 
 export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): Promise<VaultResource | null> => {
     const { data, error } = await supabase.from('vault_resources').insert([{
-        id: crypto.randomUUID(),
         subject_id: resource.subjectId,
         unit_id: resource.unitId || null,
         type: resource.type,
