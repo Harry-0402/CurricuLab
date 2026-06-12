@@ -9,6 +9,8 @@ import AddAgentModal from './AddAgentModal';
 import { MindGridService } from '@/lib/services/mindgrid-service';
 import { supabase } from '@/utils/supabase/client';
 
+import { toast } from 'sonner';
+
 export interface Agent {
     id: string;
     user_id?: string;
@@ -66,16 +68,24 @@ export default function MindGridContent() {
 
     const handleSaveAgent = async (agentData: Omit<Agent, 'id'>, id?: string) => {
         try {
+            if (!currentUser) {
+                toast.error("You must be logged in to register an AI unit.");
+                return;
+            }
+
             if (id) {
                 await MindGridService.update(id, agentData);
+                toast.success("AI unit updated successfully!");
             } else {
                 await MindGridService.create(agentData);
+                toast.success("AI unit registered successfully!");
             }
             await loadAgents();
             setShowAddModal(false);
             setEditingAgent(null);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to save agent:', error);
+            toast.error(error.message || 'Failed to save AI unit. Please try again.');
         }
     };
 

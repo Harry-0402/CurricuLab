@@ -38,8 +38,9 @@ export default function AddAgentModal({ isOpen, onClose, onSave, initialData }: 
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.name || !formData.url) return;
-        onSave(formData, initialData?.id);
+        const trimmedUrl = formData.url.trim();
+        if (!formData.name || !trimmedUrl) return;
+        onSave({ ...formData, url: trimmedUrl }, initialData?.id);
     };
 
     return (
@@ -83,7 +84,7 @@ export default function AddAgentModal({ isOpen, onClose, onSave, initialData }: 
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Access Frequency (URL)</label>
                             <input
                                 required
-                                type="url"
+                                type="text"
                                 value={formData.url}
                                 onChange={e => setFormData({ ...formData, url: e.target.value })}
                                 placeholder="https://chatgpt.com/g/..."
