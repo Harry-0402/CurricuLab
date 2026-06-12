@@ -5,6 +5,7 @@ import { ToastProvider } from "@/components/shared/Toast";
 import { SessionManager } from "@/components/SessionManager";
 import { SemesterProvider } from "@/components/providers/SemesterProvider";
 import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
+import { Toaster } from 'sonner';
 
 const inter = Inter({
     subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
                         </ToastProvider>
                     </RealtimeProvider>
                 </SemesterProvider>
+                <Toaster />
             </body>
         </html>
     );

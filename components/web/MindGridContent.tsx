@@ -86,6 +86,7 @@ export default function MindGridContent() {
         } catch (error: any) {
             console.error('Failed to save agent:', error);
             toast.error(error.message || 'Failed to save AI unit. Please try again.');
+            window.alert(error.message || 'Failed to save AI unit. Please try again.');
         }
     };
 
