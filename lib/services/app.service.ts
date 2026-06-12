@@ -23,6 +23,30 @@ const withTimeout = (promise: PromiseLike<any>, ms: number = 10000): Promise<any
     });
 };
 
+const getAuthToken = async () => {
+    let token = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    try {
+        const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+        const projectRef = projectUrl.match(/https:\/\/(.*?)\.supabase\.co/)?.[1];
+        if (projectRef && typeof window !== 'undefined') {
+            const storageKey = `sb-${projectRef}-auth-token`;
+            const storedSessionStr = localStorage.getItem(storageKey);
+            if (storedSessionStr) {
+                const storedSession = JSON.parse(storedSessionStr);
+                if (storedSession?.access_token) {
+                    return storedSession.access_token;
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Error reading token from local storage', e);
+    }
+    
+    // Fallback to getSession with a short timeout
+    const sessionRes = await withTimeout(supabase.auth.getSession(), 2000).catch(() => ({ data: { session: null } }));
+    return sessionRes?.data?.session?.access_token || token;
+};
+
 // Re-export services
 export * from './assignment-service';
 export * from './timetable-service';
@@ -444,8 +468,7 @@ export const getVaultResources = async (filters: { subjectId?: string; unitId?: 
 
 export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): Promise<VaultResource | null> => {
     try {
-        const sessionRes = await withTimeout(supabase.auth.getSession(), 5000).catch(() => ({ data: { session: null } }));
-        const token = sessionRes?.data?.session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const token = await getAuthToken();
         const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources`;
         
         const payload = {
@@ -546,8 +569,7 @@ export const updateVaultResource = async (resource: VaultResource): Promise<Vaul
             }
         }
 
-        const sessionRes = await withTimeout(supabase.auth.getSession(), 5000).catch(() => ({ data: { session: null } }));
-        const token = sessionRes?.data?.session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const token = await getAuthToken();
         const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources?id=eq.${resource.id}`;
         
         const payload = {
@@ -607,8 +629,7 @@ export const deleteVaultResource = async (id: string): Promise<boolean> => {
             }
         }
 
-        const sessionRes = await withTimeout(supabase.auth.getSession(), 5000).catch(() => ({ data: { session: null } }));
-        const token = sessionRes?.data?.session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const token = await getAuthToken();
         const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_resources?id=eq.${id}`;
         
         const response = await withTimeout(fetch(apiUrl, {
