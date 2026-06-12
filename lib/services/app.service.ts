@@ -480,9 +480,10 @@ export const uploadVaultFile = async (file: File): Promise<string | null> => {
     const filePath = `${fileName}`;
 
     try {
+        const fileBuffer = await file.arrayBuffer();
         const { error: uploadError } = await withTimeout(supabase.storage
             .from('vault')
-            .upload(filePath, file, {
+            .upload(filePath, fileBuffer, {
                 contentType: file.type || 'application/octet-stream',
                 upsert: false
             }));
