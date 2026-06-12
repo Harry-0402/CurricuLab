@@ -517,7 +517,7 @@ export const createVaultResource = async (resource: Omit<VaultResource, 'id'>, p
     }
 };
 
-export const uploadVaultFile = async (file: File): Promise<string | null> => {
+export const uploadVaultFile = async (file: File, providedToken?: string): Promise<string | null> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `${fileName}`;
@@ -526,8 +526,7 @@ export const uploadVaultFile = async (file: File): Promise<string | null> => {
         const fileBuffer = await file.arrayBuffer();
         
         // Use raw fetch to bypass any Supabase JS client deadlocks
-        const sessionRes = await withTimeout(supabase.auth.getSession(), 5000).catch(() => ({ data: { session: null } }));
-        const token = sessionRes?.data?.session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const token = providedToken || await getAuthToken();
         const uploadUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/vault/${filePath}`;
         
         const response = await withTimeout(fetch(uploadUrl, {
