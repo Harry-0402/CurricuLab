@@ -4,6 +4,25 @@ import { LOCAL_SUBJECTS, LOCAL_UNITS, LOCAL_NOTES, LOCAL_QUESTIONS } from "@/lib
 import { SubjectService } from '@/lib/data/subject-service';
 import { ChangelogService } from '@/lib/services/changelog.service';
 
+// Helper to prevent infinite hangs on Supabase calls
+const withTimeout = <T>(promise: Promise<T>, ms: number = 10000): Promise<T> => {
+    return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+            reject(new Error(`Database request timed out after ${ms}ms`));
+        }, ms);
+        promise.then(
+            (res) => {
+                clearTimeout(timeoutId);
+                resolve(res);
+            },
+            (err) => {
+                clearTimeout(timeoutId);
+                reject(err);
+            }
+        );
+    });
+};
+
 // Re-export services
 export * from './assignment-service';
 export * from './timetable-service';
@@ -424,14 +443,15 @@ export const getVaultResources = async (filters: { subjectId?: string; unitId?: 
 };
 
 export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): Promise<VaultResource | null> => {
-    const { data, error } = await supabase.from('vault_resources').insert([{
-        subject_id: resource.subjectId,
-        unit_id: resource.unitId || null,
-        type: resource.type,
-        title: resource.title,
-        link: resource.link || '',
-        tags: resource.tags || []
-    }]).select().single();
+    try {
+        const { data, error } = await withTimeout(supabase.from('vault_resources').insert([{
+            subject_id: resource.subjectId,
+            unit_id: resource.unitId || null,
+            type: resource.type,
+            title: resource.title,
+            link: resource.link || '',
+            tags: resource.tags || []
+        }]).select().single());
 
     if (error) {
         console.error("Failed to create vault resource:", error.message);
@@ -439,15 +459,20 @@ export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): 
     }
 
     const newResource = mapVaultResource(data);
-    // Log Change
-    await ChangelogService.logChange({
+    const newResource = mapVaultResource(data);
+    // Log Change - Fire and forget
+    ChangelogService.logChange({
         entity_type: 'Vault Resource',
         entity_id: newResource.id,
         action: 'CREATE',
         changes: { title: newResource.title, type: newResource.type }
-    });
+    }).catch(console.error);
 
-    return newResource;
+        return newResource;
+    } catch (error) {
+        console.error("createVaultResource timed out or failed:", error);
+        throw error;
+    }
 };
 
 export const uploadVaultFile = async (file: File): Promise<string | null> => {
@@ -475,67 +500,85 @@ export const uploadVaultFile = async (file: File): Promise<string | null> => {
 };
 
 export const updateVaultResource = async (resource: VaultResource): Promise<VaultResource | null> => {
-    // Clean up old storage file if replacing it
-    const { data: oldRes } = await supabase.from('vault_resources').select('link').eq('id', resource.id).single();
-    if (oldRes?.link && oldRes.link !== resource.link && oldRes.link.includes('/storage/v1/object/public/vault/')) {
-        const urlParts = oldRes.link.split('/storage/v1/object/public/vault/');
-        if (urlParts.length > 1) {
-            const filePath = urlParts[1];
-            await supabase.storage.from('vault').remove([filePath]);
+    try {
+        // Clean up old storage file if replacing it
+        const { data: oldRes } = await withTimeout(supabase.from('vault_resources').select('link').eq('id', resource.id).single());
+        if (oldRes?.link && oldRes.link !== resource.link && oldRes.link.includes('/storage/v1/object/public/vault/')) {
+            const urlParts = oldRes.link.split('/storage/v1/object/public/vault/');
+            if (urlParts.length > 1) {
+                const filePath = urlParts[1];
+                await withTimeout(supabase.storage.from('vault').remove([filePath]));
+            }
         }
+
+        const { data, error } = await withTimeout(supabase
+            .from('vault_resources')
+            .update({
+                subject_id: resource.subjectId,
+                unit_id: resource.unitId || null,
+                type: resource.type,
+                title: resource.title,
+                link: resource.link || '',
+                tags: resource.tags
+            })
+            .eq('id', resource.id)
+            .select()
+            .single());
+
+        if (error) {
+            console.error("Failed to update vault resource:", error.message);
+            return null;
+        }
+
+        const updatedResource = mapVaultResource(data);
+        // Log Change - Fire and forget
+        ChangelogService.logChange({
+            entity_type: 'Vault Resource',
+            entity_id: updatedResource.id,
+            action: 'UPDATE',
+            changes: { title: updatedResource.title }
+        }).catch(console.error);
+
+        return updatedResource;
+    } catch (error) {
+        console.error("updateVaultResource timed out or failed:", error);
+        throw error;
     }
-
-    const { data, error } = await supabase
-        .from('vault_resources')
-        .update({
-            subject_id: resource.subjectId,
-            unit_id: resource.unitId || null,
-            type: resource.type,
-            title: resource.title,
-            link: resource.link || '',
-            tags: resource.tags
-        })
-        .eq('id', resource.id)
-        .select()
-        .single();
-
-    if (error) {
-        console.error("Failed to update vault resource:", error.message);
-        return null;
-    }
-
-    const updatedResource = mapVaultResource(data);
-    // Log Change
-    await ChangelogService.logChange({
-        entity_type: 'Vault Resource',
-        entity_id: updatedResource.id,
-        action: 'UPDATE',
-        changes: { title: updatedResource.title }
-    });
-
-    return updatedResource;
 };
 
 export const deleteVaultResource = async (id: string): Promise<boolean> => {
-    // First get the link to see if it's a stored file
-    const { data: res } = await supabase.from('vault_resources').select('link').eq('id', id).single();
-    if (res?.link?.includes('/storage/v1/object/public/vault/')) {
-        const urlParts = res.link.split('/storage/v1/object/public/vault/');
-        if (urlParts.length > 1) {
-            const filePath = urlParts[1];
-            await supabase.storage.from('vault').remove([filePath]);
+    try {
+        // First get the link to see if it's a stored file
+        const { data: res } = await withTimeout(supabase.from('vault_resources').select('link').eq('id', id).single());
+        if (res?.link?.includes('/storage/v1/object/public/vault/')) {
+            const urlParts = res.link.split('/storage/v1/object/public/vault/');
+            if (urlParts.length > 1) {
+                const filePath = urlParts[1];
+                await withTimeout(supabase.storage.from('vault').remove([filePath]));
+            }
         }
-    }
 
-    const { error } = await supabase
-        .from('vault_resources')
-        .delete()
-        .eq('id', id);
+        const { error } = await withTimeout(supabase
+            .from('vault_resources')
+            .delete()
+            .eq('id', id));
 
-    if (error) {
-        console.error("Failed to delete vault resource:", error);
-        return false;
+        if (error) {
+            console.error("Failed to delete vault resource:", error);
+            return false;
+        }
+
+        // Log Change - Fire and forget
+        ChangelogService.logChange({
+            entity_type: 'Vault Resource',
+            entity_id: id,
+            action: 'DELETE'
+        }).catch(console.error);
+
+        return true;
+    } catch (error) {
+        console.error("deleteVaultResource timed out or failed:", error);
+        throw error;
     }
-    return true;
 };
 
