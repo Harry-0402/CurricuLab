@@ -459,7 +459,6 @@ export const createVaultResource = async (resource: Omit<VaultResource, 'id'>): 
     }
 
     const newResource = mapVaultResource(data);
-    const newResource = mapVaultResource(data);
     // Log Change - Fire and forget
     ChangelogService.logChange({
         entity_type: 'Vault Resource',
