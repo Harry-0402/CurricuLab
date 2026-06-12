@@ -130,8 +130,7 @@ export const UnitService = {
         const payload: any = {
             title: unit.title,
             description: unit.description,
-            topics: unit.topics,
-            updated_at: new Date().toISOString()
+            topics: unit.topics
         };
 
         // Filter out undefined values
