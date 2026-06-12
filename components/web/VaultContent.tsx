@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { Subject, VaultResource, VaultResourceType } from '@/types';
-import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource, uploadVaultFile } from '@/lib/services/app.service';
+import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { toast } from 'sonner';
 
@@ -40,8 +40,6 @@ export function VaultContent() {
         link: ''
     });
     const [isSaving, setIsSaving] = useState(false);
-    const [uploadMode, setUploadMode] = useState<'link' | 'file'>('link');
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [sessionToken, setSessionToken] = useState<string | undefined>(undefined);
 
     // Delete confirmation state
@@ -151,8 +149,6 @@ export function VaultContent() {
             title: '',
             link: ''
         });
-        setUploadMode('link');
-        setSelectedFile(null);
         setIsModalOpen(true);
     };
 
@@ -166,30 +162,16 @@ export function VaultContent() {
             title: resource.title || '',
             link: resource.link || ''
         });
-        setUploadMode('link');
-        setSelectedFile(null);
         setIsModalOpen(true);
     };
 
     const handleSave = async () => {
-        if (!formData.subjectId || !formData.title) return;
-        if (uploadMode === 'link' && !formData.link) return;
-        if (uploadMode === 'file' && !selectedFile && !editingId) return;
+        if (!formData.subjectId || !formData.title || !formData.link) return;
 
         setIsSaving(true);
         try {
             let saved: VaultResource | null = null;
             let finalLink = formData.link;
-
-            if (uploadMode === 'file' && selectedFile) {
-                const uploadedUrl = await uploadVaultFile(selectedFile, sessionToken);
-                if (!uploadedUrl) {
-                    toast.error("Failed to upload file");
-                    setIsSaving(false);
-                    return;
-                }
-                finalLink = uploadedUrl;
-            }
 
             const resourceData = {
                 subjectId: formData.subjectId,
@@ -598,89 +580,25 @@ export function VaultContent() {
                             </div>
 
                             <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider pl-1">Source</label>
-                                    <div className="flex bg-gray-100 p-1 rounded-xl">
-                                        <button
-                                            type="button"
-                                            onClick={() => setUploadMode('link')}
-                                            className={cn(
-                                                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
-                                                uploadMode === 'link' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
-                                            )}
-                                        >
-                                            Link
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setUploadMode('file')}
-                                            className={cn(
-                                                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
-                                                uploadMode === 'file' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
-                                            )}
-                                        >
-                                            Upload File
-                                        </button>
-                                    </div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Resource Link</label>
+                                <div className="relative">
+                                    <input
+                                        type="url"
+                                        value={formData.link || ''}
+                                        onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                                        placeholder="https://..."
+                                        className="w-full p-4 pl-10 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
+                                    />
+                                    <Icons.Link className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 </div>
-
-                                {uploadMode === 'link' ? (
-                                    <div className="relative">
-                                        <input
-                                            type="url"
-                                            value={formData.link}
-                                            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                            placeholder="https://..."
-                                            className="w-full p-4 pl-10 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
-                                        />
-                                        <Icons.Link className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                    </div>
-                                ) : (
-                                    <div className="relative group">
-                                        <input
-                                            type="file"
-                                            id="file-upload"
-                                            onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                            accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.html"
-                                        />
-                                        <div className={cn(
-                                            "w-full p-6 border-2 border-dashed rounded-2xl text-center transition-all",
-                                            selectedFile 
-                                                ? "border-blue-500 bg-blue-50" 
-                                                : "border-gray-200 bg-gray-50 group-hover:bg-gray-100 group-hover:border-gray-300"
-                                        )}>
-                                            <div className="flex flex-col items-center gap-2">
-                                                <div className={cn(
-                                                    "p-3 rounded-full transition-colors",
-                                                    selectedFile ? "bg-blue-100 text-blue-600" : "bg-white text-gray-400 shadow-sm"
-                                                )}>
-                                                    <Icons.UploadCloud size={24} />
-                                                </div>
-                                                {selectedFile ? (
-                                                    <div className="space-y-1">
-                                                        <p className="text-sm font-bold text-gray-900">{selectedFile.name}</p>
-                                                        <p className="text-xs font-medium text-gray-500">
-                                                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                                                        </p>
-                                                    </div>
-                                                ) : (
-                                                    <div className="space-y-1">
-                                                        <p className="text-sm font-bold text-gray-700">Click or drag file to upload</p>
-                                                        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">
-                                                            Supports PDF, DOC, PPT, Excel, HTML
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                                <p className="text-xs text-gray-400 mt-2 pl-1">
+                                    Paste the deployed HTML, PDF, or Drive URL here.
+                                </p>
                             </div>
 
                             <button
                                 onClick={handleSave}
-                                disabled={isSaving || !formData.title || !formData.subjectId || (uploadMode === 'link' ? !formData.link : (!selectedFile && !editingId))}
+                                disabled={isSaving || !formData.title || !formData.subjectId || !formData.link}
                                 className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-[22px] text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 active:scale-[0.98]"
                             >
                                 {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Save size={18} /> : <Icons.Plus size={18} />)}
