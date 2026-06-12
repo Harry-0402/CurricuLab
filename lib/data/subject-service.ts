@@ -1,5 +1,5 @@
 
-import { supabase } from '@/utils/supabase/client';
+import { supabaseData as supabase } from '@/utils/supabase/client';
 import { Subject } from '@/types';
 import { ChangelogService } from "@/lib/services/changelog.service";
 

@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/supabase/client";
+import { supabase, supabaseData } from "@/utils/supabase/client";
 import { Subject, Unit, Question, KPIStats, TimetableEntry, Announcement, Assignment } from "@/types";
 import { LOCAL_SUBJECTS, LOCAL_UNITS, LOCAL_NOTES, LOCAL_QUESTIONS } from "@/lib/data/course-data";
 import { SubjectService } from '@/lib/data/subject-service';
@@ -450,7 +450,7 @@ const mapVaultResource = (data: any): VaultResource => ({
 });
 
 export const getVaultResources = async (filters: { subjectId?: string; unitId?: string; type?: VaultResourceType }): Promise<VaultResource[]> => {
-    let query = supabase.from('vault_resources').select('*');
+    let query = supabaseData.from('vault_resources').select('*');
 
     if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
     if (filters.unitId) query = query.eq('unit_id', filters.unitId);
@@ -560,7 +560,7 @@ export const uploadVaultFile = async (file: File): Promise<string | null> => {
 export const updateVaultResource = async (resource: VaultResource, providedToken?: string): Promise<VaultResource | null> => {
     try {
         // Clean up old storage file if replacing it
-        const { data: oldRes } = await withTimeout(supabase.from('vault_resources').select('link').eq('id', resource.id).single());
+        const { data: oldRes } = await withTimeout(supabaseData.from('vault_resources').select('link').eq('id', resource.id).single());
         if (oldRes?.link && oldRes.link !== resource.link && oldRes.link.includes('/storage/v1/object/public/vault/')) {
             const urlParts = oldRes.link.split('/storage/v1/object/public/vault/');
             if (urlParts.length > 1) {
@@ -620,7 +620,7 @@ export const updateVaultResource = async (resource: VaultResource, providedToken
 export const deleteVaultResource = async (id: string, providedToken?: string): Promise<boolean> => {
     try {
         // First get the link to see if it's a stored file
-        const { data: res } = await withTimeout(supabase.from('vault_resources').select('link').eq('id', id).single());
+        const { data: res } = await withTimeout(supabaseData.from('vault_resources').select('link').eq('id', id).single());
         if (res?.link?.includes('/storage/v1/object/public/vault/')) {
             const urlParts = res.link.split('/storage/v1/object/public/vault/');
             if (urlParts.length > 1) {
