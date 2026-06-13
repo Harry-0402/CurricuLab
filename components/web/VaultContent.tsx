@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-import { Subject, VaultResource, VaultResourceType } from '@/types';
+import { Subject, Unit, VaultResource, VaultResourceType } from '@/types';
 import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { toast } from 'sonner';
 
 import { SubjectService } from '@/lib/data/subject-service';
+import { UnitService } from '@/lib/data/unit-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
 import { useAuth } from '@/components/providers/AuthProvider';
 
@@ -25,6 +26,7 @@ export function VaultContent() {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [activeSubjectId, setActiveSubjectId] = useState<string>('');
     const [resources, setResources] = useState<VaultResource[]>([]);
+    const [units, setUnits] = useState<Unit[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedResource, setSelectedResource] = useState<VaultResource | null>(null);
     const [selectedType, setSelectedType] = useState<VaultResourceType | 'all'>('all');
@@ -50,6 +52,9 @@ export function VaultContent() {
 
     // State for HTML rendering workaround
     const [htmlContent, setHtmlContent] = useState<string | null>(null);
+
+    // State for prompt copy feedback
+    const [copiedId, setCopiedId] = useState<string | null>(null);
 
     // Fetch HTML content if it's a Supabase HTML file
     useEffect(() => {
@@ -103,19 +108,22 @@ export function VaultContent() {
             if (isInitialLoad || !activeSubjectId) return;
 
             setLoading(true);
+            const activeSub = subjects.find(s => s.id === activeSubjectId);
             // Only filter by subject on server side - type and unit filtering done client-side
-            const data = await getVaultResources({
-                subjectId: activeSubjectId
-            });
+            const [data, fetchedUnits] = await Promise.all([
+                getVaultResources({ subjectId: activeSubjectId }),
+                UnitService.getBySubjectId(activeSubjectId, activeSub?.code)
+            ]);
             
             if (ignore) return;
             
             setResources(data);
+            setUnits(fetchedUnits);
             setLoading(false);
         };
         loadResources();
         return () => { ignore = true; };
-    }, [activeSubjectId, isInitialLoad]);
+    }, [activeSubjectId, isInitialLoad, subjects]);
 
 
 
@@ -225,6 +233,54 @@ export function VaultContent() {
             toast.info('Resource deleted');
         }
         setDeleteConfirmId(null);
+    };
+
+    const handleCopyPrompt = (e: React.MouseEvent, resource: VaultResource) => {
+        e.stopPropagation();
+        if (!resource.link) {
+            toast.error("No link available for this resource to generate a prompt.");
+            return;
+        }
+
+        const subject = subjects.find(s => s.id === resource.subjectId);
+        const subjectLabel = subject ? `${subject.title}${subject.code ? ` (${subject.code})` : ''}` : '';
+        const typeLabel = TYPE_CONFIG[resource.type]?.label || 'resource';
+
+        const orderNum = resource.unitId ? parseInt(resource.unitId.replace('unit-', ''), 10) : null;
+        const matchingUnit = orderNum ? units.find(u => u.order === orderNum) : undefined;
+
+        let unitContext = '';
+        if (matchingUnit) {
+            unitContext = `\n\nUnit Context:
+- Unit: ${matchingUnit.title}
+- Description: ${matchingUnit.description}${matchingUnit.topics && matchingUnit.topics.length > 0 ? `
+- Syllabus Topics:
+${matchingUnit.topics.map(t => `  * ${t}`).join('\n')}` : ''}`;
+        }
+
+        const prompt = `You are an expert academic tutor. I want you to act as my study assistant and explain the material in the following resource:
+Subject: ${subjectLabel}
+Resource Title: "${resource.title}"
+Resource Type: ${typeLabel}
+Resource URL: ${resource.link}${unitContext}
+
+Please review the document at the URL provided and generate a highly detailed, comprehensive study guide that elaborates on the content. Your explanation must:
+1. Align with the syllabus/topics specified for the unit (if provided above).
+2. Identify and explain every core concept in depth, defining technical terms and key ideas clearly.
+3. Go through each main point presented in the document, explaining the logic, theory, and background details.
+4. Break down and expand on all sub-points, providing additional explanations, context, and practical examples where helpful.
+5. Structure the output clearly with hierarchical headings (Markdown format), bullet points, and clean spacing to optimize it for reading and learning.`;
+
+        navigator.clipboard.writeText(prompt)
+            .then(() => {
+                setCopiedId(resource.id);
+                toast.success("AI Prompt copied to clipboard!");
+                setTimeout(() => setCopiedId(null), 2000);
+            })
+            .catch((err) => {
+                console.error("Failed to copy prompt:", err);
+                toast.error("Failed to copy prompt to clipboard. Please try again.");
+            });
     };
 
 
@@ -456,11 +512,35 @@ export function VaultContent() {
                                             </h3>
                                         </div>
 
-                                        <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400">
+                                        <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400 flex-wrap gap-2">
                                             <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
-                                            <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
-                                                Read More <Icons.ArrowRight size={12} />
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={(e) => handleCopyPrompt(e, resource)}
+                                                    className={cn(
+                                                        "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
+                                                        copiedId === resource.id
+                                                            ? "bg-green-50 text-green-600 border-green-200"
+                                                            : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
+                                                    )}
+                                                    title="Generate AI Study Prompt"
+                                                >
+                                                    {copiedId === resource.id ? (
+                                                        <>
+                                                            <Icons.Check size={11} className="text-green-500" />
+                                                            <span>Copied!</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Icons.Sparkles size={11} className="text-purple-500" />
+                                                            <span>AI Prompt</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                                <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
+                                                    Read More <Icons.ArrowRight size={12} />
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
