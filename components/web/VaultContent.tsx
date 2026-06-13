@@ -25,7 +25,7 @@ const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: 
     question_bank: { label: 'Question Bank', icon: Icons.CheckSquare, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
     case_study: { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
     project: { label: 'Project', icon: Icons.FolderKanban, color: 'text-green-600', bgColor: 'bg-green-50' },
-    revision_note: { label: 'Revision Note', icon: Icons.FileEdit, color: 'text-rose-600', bgColor: 'bg-rose-50' },
+    revision_note: { label: 'Revision Note', icon: Icons.PenLine, color: 'text-rose-600', bgColor: 'bg-rose-50' },
     other_resources: { label: 'Other Resources', icon: Icons.Link, color: 'text-orange-600', bgColor: 'bg-orange-50' }
 };
 
