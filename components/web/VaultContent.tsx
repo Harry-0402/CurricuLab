@@ -81,21 +81,15 @@ export function VaultContent() {
             
             setSubjects(fetchedSubjects);
 
-            // Load resources for first subject immediately (parallel with subject load)
+            // Set the activeSubjectId which will trigger the resource load via the secondary useEffect hook exactly once
             if (fetchedSubjects.length > 0) {
                 const firstSubjectId = fetchedSubjects[0].id;
                 setActiveSubjectId(firstSubjectId);
-
-                // Fetch resources immediately without waiting
-                const data = await getVaultResources({ subjectId: firstSubjectId });
-                
-                if (ignore) return;
-                setResources(data);
             } else {
                 setActiveSubjectId('');
                 setResources([]);
+                setLoading(false);
             }
-            setLoading(false);
             setIsInitialLoad(false);
         };
         loadInitialData();
@@ -105,7 +99,7 @@ export function VaultContent() {
     useEffect(() => {
         let ignore = false;
         const loadResources = async () => {
-            // Skip the very first render (handled by initial load above)
+            // Skip the very first render (wait until initial load sets subjects and isInitialLoad to false)
             if (isInitialLoad || !activeSubjectId) return;
 
             setLoading(true);

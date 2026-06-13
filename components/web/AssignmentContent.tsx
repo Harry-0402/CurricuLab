@@ -102,8 +102,9 @@ export function AssignmentContent() {
                 } else {
                     setActiveSubjectId(validStoredSubject ? validStoredSubject.id : fetchedSubjects[0].id);
                 }
+            } else {
+                setLoading(false);
             }
-            setLoading(false);
         };
         loadData();
     }, [querySubjectId, activeSemesterId]);
@@ -149,6 +150,7 @@ export function AssignmentContent() {
                     // Moved to another subject, remove from current view
                     setAssignments(prev => prev.filter(a => a.id !== updated.id));
                 }
+                showToast('Assignment updated successfully!', 'success');
             } else {
                 // Create
                 const newAssignment = await createAssignment({
@@ -165,6 +167,7 @@ export function AssignmentContent() {
                 if (newAssignment.subjectId === activeSubjectId) {
                     setAssignments(prev => [...prev, newAssignment]);
                 }
+                showToast('Assignment created successfully!', 'success');
 
                 // Trigger push notification to class students
                 fetch('/api/push/send', {
@@ -180,7 +183,7 @@ export function AssignmentContent() {
             }
         } catch (error) {
             console.error("Failed to save assignment:", error);
-            // Optionally add toast notification here
+            showToast('Failed to save assignment', 'error');
         }
         setEditingAssignment(null);
     };
@@ -217,8 +220,10 @@ export function AssignmentContent() {
         try {
             await deleteAssignment(id);
             setAssignments(prev => prev.filter(a => a.id !== id));
+            showToast('Assignment deleted successfully', 'success');
         } catch (error) {
             console.error("Failed to delete assignment:", error);
+            showToast('Failed to delete assignment', 'error');
         }
     };
 
