@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabase/server';
 import { GoogleDriveService } from '@/lib/services/google-drive-service';
+import { GoogleClassroomService } from '@/lib/services/google-classroom-service';
 
 export async function POST(req: NextRequest) {
     try {
@@ -21,31 +22,15 @@ export async function POST(req: NextRequest) {
 
         const metadata = JSON.parse(metadataStr);
 
-        // Get tokens
-        const { data: tokenData, error: tokenError } = await supabase
-            .from('google_oauth_tokens')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-
-        if (tokenError || !tokenData) {
-            return NextResponse.json({ error: 'Google account not connected' }, { status: 400 });
-        }
-
-        const tokens = {
-            access_token: tokenData.access_token,
-            refresh_token: tokenData.refresh_token,
-            scope: tokenData.scope,
-            token_type: tokenData.token_type,
-            expiry_date: new Date(tokenData.expires_at).getTime(),
-        };
-
         // Robust origin detection for proxies (Render)
         const requestUrl = new URL(req.url);
         const host = req.headers.get('host');
         const protocol = req.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
         const origin = host ? `${protocol}://${host}` : requestUrl.origin;
         const redirectUri = `${origin}/api/auth/google/callback`;
+
+        // Get fresh tokens (handles automatic refresh and DB sync)
+        const tokens = await GoogleClassroomService.getFreshTokens(session.user.id, supabase, redirectUri);
 
         const buffer = Buffer.from(await file.arrayBuffer());
 

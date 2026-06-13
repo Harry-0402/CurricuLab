@@ -20,7 +20,12 @@ export default function WebHomePage() {
     const setAnnouncements = useAppStore(state => state.setAnnouncements);
     const setTimetable = useAppStore(state => state.setTimetable);
     const { activeSemesterId } = useSemester();
+    const [mounted, setMounted] = useState(false);
 
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const fetchAnnouncements = async () => {
@@ -74,9 +79,23 @@ export default function WebHomePage() {
                     </a>
                 </div>
 
-                <TimetableWidget entries={timetable} />
-
-                <AnnouncementWidget announcements={announcements} />
+                {mounted ? (
+                    <>
+                        <TimetableWidget entries={timetable} />
+                        <AnnouncementWidget announcements={announcements} />
+                    </>
+                ) : (
+                    <>
+                        {/* Timetable Skeleton */}
+                        <div className="h-64 bg-gray-50/50 rounded-[32px] border border-gray-100/50 animate-pulse flex items-center justify-center">
+                            <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Loading Academic Roadmap...</span>
+                        </div>
+                        {/* Announcements Skeleton */}
+                        <div className="h-64 bg-gray-50/50 rounded-[32px] border border-gray-100/50 animate-pulse flex items-center justify-center">
+                            <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Loading Announcements...</span>
+                        </div>
+                    </>
+                )}
             </div>
         </WebAppShell>
     );

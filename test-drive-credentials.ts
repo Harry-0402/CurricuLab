@@ -39,8 +39,12 @@ async function testCredentials() {
         console.log('\n✅ SUCCESS! Found', response.data.files?.length || 0, 'files/folders');
         console.log('Files:', response.data.files);
 
-    } catch (error: any) {
-        console.error('\n❌ ERROR:', error.message);
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('\n❌ ERROR:', error.message);
+        } else {
+            console.error('\n❌ ERROR:', String(error));
+        }
         console.error('Full error:', error);
     }
 }

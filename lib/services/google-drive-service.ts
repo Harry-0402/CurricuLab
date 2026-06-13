@@ -153,13 +153,16 @@ export const GoogleDriveService = {
             });
 
             // Set permissions (anyone with link can view - needed for sharing)
-            await drive.permissions.create({
-                fileId: response.data.id!,
-                requestBody: {
-                    role: 'reader',
-                    type: 'anyone',
-                },
-            });
+            // Skip for student submissions to preserve privacy and academic integrity
+            if (metadata.type !== 'submission') {
+                await drive.permissions.create({
+                    fileId: response.data.id!,
+                    requestBody: {
+                        role: 'reader',
+                        type: 'anyone',
+                    },
+                });
+            }
 
             return response.data as DriveFile;
         } catch (error) {

@@ -17,31 +17,15 @@ export async function GET(
 
         // const { courseId, workId } = params;
 
-        // Get tokens
-        const { data: tokenData, error: tokenError } = await supabase
-            .from('google_oauth_tokens')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-
-        if (tokenError || !tokenData) {
-            return NextResponse.json({ error: 'Google account not connected' }, { status: 400 });
-        }
-
-        const tokens = {
-            access_token: tokenData.access_token,
-            refresh_token: tokenData.refresh_token,
-            scope: tokenData.scope,
-            token_type: tokenData.token_type,
-            expiry_date: new Date(tokenData.expires_at).getTime(),
-        };
-
         // Robust origin detection for proxies (Render)
         const requestUrl = new URL(req.url);
         const host = req.headers.get('host');
         const protocol = req.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
         const origin = host ? `${protocol}://${host}` : requestUrl.origin;
         const redirectUri = `${origin}/api/auth/google/callback`;
+
+        // Get fresh tokens (handles automatic refresh and DB sync)
+        const tokens = await GoogleClassroomService.getFreshTokens(session.user.id, supabase, redirectUri);
 
         const submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens, redirectUri);
 
@@ -76,31 +60,15 @@ export async function POST(
             return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
         }
 
-        // Get tokens
-        const { data: tokenData, error: tokenError } = await supabase
-            .from('google_oauth_tokens')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-
-        if (tokenError || !tokenData) {
-            return NextResponse.json({ error: 'Google account not connected' }, { status: 400 });
-        }
-
-        const tokens = {
-            access_token: tokenData.access_token,
-            refresh_token: tokenData.refresh_token,
-            scope: tokenData.scope,
-            token_type: tokenData.token_type,
-            expiry_date: new Date(tokenData.expires_at).getTime(),
-        };
-
         // Robust origin detection for proxies (Render)
         const requestUrl = new URL(req.url);
         const host = req.headers.get('host');
         const protocol = req.headers.get('x-forwarded-proto') ?? (requestUrl.protocol === 'https:' ? 'https' : 'http');
         const origin = host ? `${protocol}://${host}` : requestUrl.origin;
         const redirectUri = `${origin}/api/auth/google/callback`;
+
+        // Get fresh tokens (handles automatic refresh and DB sync)
+        const tokens = await GoogleClassroomService.getFreshTokens(session.user.id, supabase, redirectUri);
 
         // 1. Get existing submission
         let submission = await GoogleClassroomService.getStudentSubmission(courseId, workId, tokens, redirectUri);

@@ -1,8 +1,8 @@
-import { createServerClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     let res = NextResponse.next({
         request: {
             headers: req.headers,
@@ -18,21 +18,36 @@ export async function middleware(req: NextRequest) {
         return redirectRes;
     };
 
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        console.error("Missing Supabase environment variables in proxy");
+        return new NextResponse("Internal Server Error: Missing Supabase Env Variables", { status: 500 });
+    }
+
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         {
             cookies: {
                 getAll() {
                     return req.cookies.getAll();
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => req.cookies.set(name, value));
+                    // Keep track of existing cookies we might have manually set on `res`
+                    const existingCookies = res.cookies.getAll();
+                    
+                    cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value));
                     res = NextResponse.next({
                         request: {
                             headers: req.headers,
                         },
                     });
+                    
+                    // Re-apply any previous cookies
+                    existingCookies.forEach((cookie) => {
+                        res.cookies.set(cookie.name, cookie.value);
+                    });
+                    
+                    // Apply new Supabase cookies
                     cookiesToSet.forEach(({ name, value, options }) =>
                         res.cookies.set(name, value, options)
                     );
@@ -67,6 +82,13 @@ export async function middleware(req: NextRequest) {
 
     // CHECK AUTHORIZATION (Whitelist) - Only for authenticated users
     if (user && !isPublicPath) {
+        if (!user.email) {
+            console.error("User missing email address attempting to access secure route:", user.id);
+            const redirectUrl = req.nextUrl.clone();
+            redirectUrl.pathname = '/unauthorized';
+            return redirectWithCookies(redirectUrl);
+        }
+
         const cookieKey = `app_is_authorized_${user.id}`;
         let isAuthorized = req.cookies.get(cookieKey)?.value === 'true';
 
@@ -75,16 +97,17 @@ export async function middleware(req: NextRequest) {
             const { data, error } = await supabase
                 .from('authorized_users')
                 .select('email')
-                .ilike('email', user.email!)
+                .ilike('email', user.email)
                 .single();
 
             isAuthorized = !!data && !error;
 
             if (isAuthorized) {
                 // Cache the authorization status in a cookie to prevent DB hits on every request
+                // Cache set to 1 hour to ensure changes in whitelist propagate relatively quickly
                 res.cookies.set(cookieKey, 'true', {
                     path: '/',
-                    maxAge: 60 * 60 * 24 * 365, // 1 year cache
+                    maxAge: 60 * 60, // 1 hour cache
                     httpOnly: true,
                     sameSite: 'lax',
                     secure: process.env.NODE_ENV === 'production'
@@ -111,9 +134,9 @@ export const config = {
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * - api (API routes, except likely auth)
          * - assets (public assets)
+         * (Removed 'api' from exclusion to process API routes)
          */
-        '/((?!_next/static|_next/image|favicon.ico|api|assets|.*\\..*).*)',
+        '/((?!_next/static|_next/image|favicon.ico|assets|.*\\..*).*)',
     ],
 };

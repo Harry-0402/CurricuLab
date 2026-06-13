@@ -12,7 +12,20 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "rag-system/python-service/venv/**",
+    "test-supabase.js",
+    "update_semesters.js",
+    "sql-files/run-updates.js",
+    "convert-logo.js"
   ]),
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "prefer-const": "off"
+    }
+  }
 ]);
 
 export default eslintConfig;

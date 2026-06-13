@@ -88,6 +88,93 @@ export interface ClassroomStudentSubmission {
 
 export const GoogleClassroomService = {
     /**
+     * Get fresh OAuth2 tokens, refreshing the token in the database if it is expired.
+     * Prevents redundant OAuth roundtrips on every request by persisting the refreshed access token.
+     */
+    async getFreshTokens(userId: string, supabase: any, redirectUri?: string): Promise<DriveTokens> {
+        // Fetch token from database
+        const { data: tokenData, error: tokenError } = await supabase
+            .from('google_oauth_tokens')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+
+        if (tokenError || !tokenData) {
+            throw new Error('Google account not connected');
+        }
+
+        let tokens: DriveTokens = {
+            access_token: tokenData.access_token,
+            refresh_token: tokenData.refresh_token,
+            scope: tokenData.scope,
+            token_type: tokenData.token_type,
+            expiry_date: new Date(tokenData.expires_at).getTime(),
+        };
+
+        const now = Date.now();
+        // Check if expired or expiring within 1 minute
+        if (tokens.expiry_date && now >= tokens.expiry_date - 60000) {
+            try {
+                console.log(`[GoogleClassroomService] Token expired for user ${userId}. Refreshing...`);
+                const effectiveRedirectUri = redirectUri ||
+                    process.env.GOOGLE_OAUTH_REDIRECT_URI ||
+                    'https://curriculab-sj6g.onrender.com/api/auth/google/callback';
+
+                const oauth2Client = new google.auth.OAuth2(
+                    process.env.GOOGLE_OAUTH_CLIENT_ID,
+                    process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+                    effectiveRedirectUri
+                );
+
+                oauth2Client.setCredentials({
+                    access_token: tokens.access_token,
+                    refresh_token: tokens.refresh_token,
+                    scope: tokens.scope,
+                    token_type: tokens.token_type,
+                    expiry_date: tokens.expiry_date
+                });
+
+                const { credentials } = await oauth2Client.refreshAccessToken();
+
+                if (!credentials.access_token) {
+                    throw new Error('No access token returned from refresh');
+                }
+
+                const updates: any = {
+                    access_token: credentials.access_token,
+                    expires_at: new Date(credentials.expiry_date!).toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                if (credentials.refresh_token) {
+                    updates.refresh_token = credentials.refresh_token;
+                }
+
+                const { error: updateError } = await supabase
+                    .from('google_oauth_tokens')
+                    .update(updates)
+                    .eq('user_id', userId);
+
+                if (updateError) {
+                    throw updateError;
+                }
+
+                tokens = {
+                    access_token: credentials.access_token,
+                    refresh_token: credentials.refresh_token || tokens.refresh_token,
+                    scope: credentials.scope || tokens.scope,
+                    token_type: credentials.token_type || tokens.token_type,
+                    expiry_date: credentials.expiry_date!
+                };
+                console.log(`[GoogleClassroomService] Token refreshed successfully in DB for user ${userId}`);
+            } catch (refreshError) {
+                console.error(`[GoogleClassroomService] Failed to refresh token for user ${userId}:`, refreshError);
+            }
+        }
+
+        return tokens;
+    },
+
+    /**
      * Get authenticated Classroom client using user tokens
      */
     getAuthenticatedClient(tokens: DriveTokens, redirectUri?: string) {

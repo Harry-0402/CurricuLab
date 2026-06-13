@@ -18,6 +18,11 @@ const supabaseAdmin = createClient(
 );
 
 export async function sendPushNotification(title: string, body: string, url?: string, targetSemesterId?: string) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        console.error('CRITICAL: SUPABASE_SERVICE_ROLE_KEY is missing. Administrative queries for push notifications will fail due to RLS policies.');
+        throw new Error('SUPABASE_SERVICE_ROLE_KEY is missing. Cannot fetch subscriber lists securely without bypassing RLS.');
+    }
+
     if (!vapidPublicKey || !vapidPrivateKey) {
         console.warn('VAPID keys not configured. Skipping push notification.');
         return;
