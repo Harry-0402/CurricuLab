@@ -154,9 +154,17 @@ export function ClassroomContent() {
                             </h1>
                         </div>
                         {!selectedCourse && (
-                            <p className="text-gray-400 font-medium max-w-xl">
-                                Access your synced Google Classroom courses, assignments, and study materials in one place.
-                            </p>
+                            <div className="space-y-3">
+                                <p className="text-gray-400 font-medium max-w-xl">
+                                    Access your synced Google Classroom courses, assignments, and study materials in one place.
+                                </p>
+                                <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl flex items-start gap-2 leading-relaxed shrink-0 max-w-xl">
+                                    <Icons.Info size={14} className="shrink-0 mt-0.5 text-purple-500" />
+                                    <span>
+                                        <strong>Note:</strong> These are all of your enrolled Google Classrooms, displaying your coursework and synced materials irrespective of the semester you are currently browsing.
+                                    </span>
+                                </div>
+                            </div>
                         )}
                     </div>
 
