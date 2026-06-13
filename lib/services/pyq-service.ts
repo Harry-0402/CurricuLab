@@ -13,8 +13,12 @@ export interface PYQFile {
 }
 
 export const PYQService = {
-    async getAll(searchQuery?: string): Promise<PYQFile[]> {
-        let query = supabase.from('pyqs').select('*, subjects(code, title)');
+    async getAll(searchQuery?: string, semesterId?: string): Promise<PYQFile[]> {
+        let query = supabase.from('pyqs').select('*, subjects!inner(code, title, semester_id)');
+
+        if (semesterId) {
+            query = query.eq('subjects.semester_id', semesterId);
+        }
 
         if (searchQuery) {
             query = query.or(`title.ilike.%${searchQuery}%,year.ilike.%${searchQuery}%,subjects.code.ilike.%${searchQuery}%,subjects.title.ilike.%${searchQuery}%`);

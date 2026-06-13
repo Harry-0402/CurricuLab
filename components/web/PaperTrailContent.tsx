@@ -70,7 +70,7 @@ export function PaperTrailContent() {
 
     const loadPYQs = async () => {
         setIsLoading(true);
-        const data = await PYQService.getAll(searchQuery);
+        const data = await PYQService.getAll(searchQuery, activeSemesterId ?? undefined);
         setPyqs(data);
         setIsLoading(false);
     };
