@@ -5,7 +5,7 @@ export interface PYQFile {
     subjectId: string;
     title: string;
     year: string;
-    type: 'pdf' | 'word';
+    type: 'pdf' | 'word' | 'image';
     url: string;
     createdAt?: string;
     subjectCode?: string;
@@ -32,7 +32,7 @@ export const PYQService = {
             subjectId: item.subject_id,
             title: item.title,
             year: item.year,
-            type: item.file_type as 'pdf' | 'word',
+            type: item.file_type as 'pdf' | 'word' | 'image',
             url: item.file_url,
             createdAt: item.created_at,
             subjectCode: item.subjects?.code,
@@ -59,7 +59,7 @@ export const PYQService = {
             subjectId: data.subject_id,
             title: data.title,
             year: data.year,
-            type: data.file_type as 'pdf' | 'word',
+            type: data.file_type as 'pdf' | 'word' | 'image',
             url: data.file_url,
             createdAt: data.created_at,
             subjectCode: data.subjects?.code,

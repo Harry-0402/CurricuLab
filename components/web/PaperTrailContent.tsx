@@ -20,7 +20,7 @@ import {
 } from "@/components/shared/Dialog";
 
 export function PaperTrailContent() {
-    const { activeSemesterId } = useSemester();
+    const { activeSemesterId, activeSemester } = useSemester();
     const [isAdmin, setIsAdmin] = useState(false);
     
     // Data State
@@ -33,7 +33,7 @@ export function PaperTrailContent() {
 
     // Modals
     const [previewFile, setPreviewFile] = useState<PYQFile | null>(null);
-    const [shareFile, setShareFile] = useState<PYQFile | null>(null);
+    const [copiedPrompt, setCopiedPrompt] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [uploadMode, setUploadMode] = useState<'link' | 'file'>('link');
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -45,7 +45,7 @@ export function PaperTrailContent() {
         subjectId: '',
         title: '',
         year: '',
-        type: 'pdf' as 'pdf' | 'word',
+        type: 'pdf' as 'pdf' | 'word' | 'image',
         url: ''
     });
 
@@ -101,17 +101,34 @@ export function PaperTrailContent() {
         document.body.removeChild(link);
     };
 
-    const handleShareToAI = (pyq: PYQFile, platform: 'chatgpt' | 'gemini') => {
-        handleDownload(pyq);
-        const subjectTitle = pyq.subjectTitle || 'the subject';
-        const prompt = `I am preparing for an exam. Please find the attached PYQ (Previous Year Question) paper for "${subjectTitle}". \n\nInstructions:\n1. Solve the questions step-by-step.\n2. Explain the core concepts clearly.\n3. Format the answers beautifully using Markdown.`;
-        
-        navigator.clipboard.writeText(prompt);
-        const url = platform === 'chatgpt' ? 'https://chatgpt.com/' : 'https://gemini.google.com/';
-        window.open(url, '_blank');
-        
-        toast.success(`File downloaded and prompt copied! Please upload the file to ${platform === 'chatgpt' ? 'ChatGPT' : 'Gemini'} and paste the prompt.`);
-        setShareFile(null);
+    const handleCopyUniversalPrompt = () => {
+        const programLabel = activeSemester?.programName 
+            ? `${activeSemester.programName}${activeSemester.name ? ` - ${activeSemester.name}` : ''}`
+            : activeSemester?.name || 'our academic program';
+
+        const prompt = `I am a student studying in ${programLabel}. I have attached/will provide a question paper for one of our courses. 
+
+Please act as an expert academic evaluator and professor. I want you to solve the questions from this paper according to the following strict constraints:
+
+1. UNDERSTAND THE PROGRAM LEVEL: Provide answers appropriate for the level of ${programLabel}.
+2. MARKS CONSIDERATION: Gauge the length and depth of each answer based on the marks allocated:
+   - For 2 marks questions: Provide a precise answer of 4-5 lines.
+   - For 7 or 8 marks questions: Provide a detailed explanation spanning approximately 2 pages (approx. 500-600 words).
+   - For 10 marks questions: Provide a comprehensive, in-depth explanation spanning approximately 3 pages (approx. 800-900 words).
+   - For 15 marks questions: Provide an exhaustive, highly detailed analysis spanning approximately 4 pages (approx. 1100-1200 words).
+3. STRUCTURAL FORMAT: Format each answer beautifully using clean Markdown, featuring clear headers, key points, bullet lists, and relevant examples where applicable.
+4. DELIVERY: Crucially, answer **only one question at a time**. After providing the answer to the first question, ask me if you should proceed to the next one.`;
+
+        navigator.clipboard.writeText(prompt)
+            .then(() => {
+                setCopiedPrompt(true);
+                toast.success("Universal AI Prompt copied to clipboard!");
+                setTimeout(() => setCopiedPrompt(false), 2000);
+            })
+            .catch((err) => {
+                console.error("Failed to copy prompt:", err);
+                toast.error("Failed to copy prompt. Please try again.");
+            });
     };
 
     const handleSavePYQ = async (e: React.FormEvent) => {
@@ -194,14 +211,37 @@ export function PaperTrailContent() {
                         <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
                         <p className="text-4xl font-black text-gray-900 tracking-tight">PaperTrail PYQs</p>
                     </div>
-                    {isAdmin && (
-                        <button 
-                            onClick={openAddModal}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm active:scale-95 whitespace-nowrap self-start md:self-auto"
+                    <div className="flex items-center gap-3 self-start md:self-auto">
+                        <button
+                            onClick={handleCopyUniversalPrompt}
+                            className={cn(
+                                "flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm active:scale-95 whitespace-nowrap",
+                                copiedPrompt
+                                    ? "bg-green-50 text-green-600 border border-green-200"
+                                    : "bg-gradient-to-br from-purple-500 to-indigo-600 text-white hover:shadow-lg hover:shadow-purple-100"
+                            )}
                         >
-                            <Icons.Plus size={16} /> Add PYQ
+                            {copiedPrompt ? (
+                                <>
+                                    <Icons.Check size={16} className="text-green-500" />
+                                    <span>Prompt Copied!</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Icons.Sparkles size={16} className="text-white" />
+                                    <span>AI Study Prompt</span>
+                                </>
+                            )}
                         </button>
-                    )}
+                        {isAdmin && (
+                            <button 
+                                onClick={openAddModal}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm active:scale-95 whitespace-nowrap"
+                            >
+                                <Icons.Plus size={16} /> Add PYQ
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center shrink-0 z-10 relative">
@@ -273,11 +313,11 @@ export function PaperTrailContent() {
                                             <Icons.Eye size={14} /> Preview
                                         </button>
                                         <button 
-                                            onClick={() => setShareFile(pyq)}
-                                            className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-purple-500 to-indigo-600 text-white hover:shadow-lg hover:shadow-purple-200 rounded-xl transition-all shrink-0"
-                                            title="Share to AI"
+                                            onClick={() => handleDownload(pyq)}
+                                            className="w-10 h-10 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all shrink-0"
+                                            title="Download PDF/File"
                                         >
-                                            <Icons.Sparkles size={14} />
+                                            <Icons.Download size={14} />
                                         </button>
                                     </div>
                                 </div>
@@ -315,6 +355,7 @@ export function PaperTrailContent() {
                                     <select required value={formData.type} onChange={e => setFormData({...formData, type: e.target.value as any})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20">
                                         <option value="pdf">PDF</option>
                                         <option value="word">Word</option>
+                                        <option value="image">Image</option>
                                     </select>
                                 </div>
                             </div>
@@ -330,7 +371,7 @@ export function PaperTrailContent() {
                             ) : (
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-gray-400">Upload File</label>
-                                    <input required={uploadMode === 'file' && !editingId} type="file" accept=".pdf,.doc,.docx" onChange={e => setSelectedFile(e.target.files?.[0] || null)} className="w-full bg-gray-50 border border-dashed border-gray-300 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20" />
+                                    <input required={uploadMode === 'file' && !editingId} type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.webp" onChange={e => setSelectedFile(e.target.files?.[0] || null)} className="w-full bg-gray-50 border border-dashed border-gray-300 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500/20" />
                                 </div>
                             )}
                             <div className="pt-4 flex items-center justify-end gap-3">
@@ -366,41 +407,16 @@ export function PaperTrailContent() {
 
                         <div className="flex-1 w-full bg-gray-100 overflow-hidden relative">
                             {previewFile?.url ? (
-                                <iframe src={previewFile.url} className="w-full h-full border-0 absolute inset-0" title="PYQ Preview" />
+                                previewFile.type === 'image' ? (
+                                    <div className="w-full h-full flex items-center justify-center p-4 bg-white">
+                                        <img src={previewFile.url} className="max-w-full max-h-full object-contain rounded-lg shadow-sm" alt="PYQ Preview" />
+                                    </div>
+                                ) : (
+                                    <iframe src={previewFile.url} className="w-full h-full border-0 absolute inset-0" title="PYQ Preview" />
+                                )
                             ) : (
                                 <div className="flex items-center justify-center h-full text-gray-400 font-bold">No file available for preview.</div>
                             )}
-                        </div>
-                    </DialogContent>
-                </Dialog>
-
-                {/* Share to AI Modal */}
-                <Dialog open={!!shareFile} onOpenChange={(open) => !open && setShareFile(null)}>
-                    <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                                <Icons.Sparkles className="text-purple-500" size={20} /> 
-                                Ask AI for Solutions
-                            </DialogTitle>
-                            <DialogDescription>
-                                Choose an AI assistant. We will download the PYQ file to your device and copy the instructions to your clipboard. You can then upload the file to the AI and paste the instructions.
-                            </DialogDescription>
-                        </DialogHeader>
-
-                        <div className="grid grid-cols-2 gap-4 py-4">
-                            <button onClick={() => shareFile && handleShareToAI(shareFile, 'chatgpt')} className="flex flex-col items-center justify-center gap-3 p-6 bg-gray-50 border border-gray-100 hover:bg-white hover:border-green-500 hover:shadow-md rounded-2xl transition-all group">
-                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 group-hover:border-green-200 group-hover:scale-110 transition-all">
-                                    <Icons.Bot size={24} className="text-green-600" />
-                                </div>
-                                <span className="font-bold text-gray-900">ChatGPT</span>
-                            </button>
-                            
-                            <button onClick={() => shareFile && handleShareToAI(shareFile, 'gemini')} className="flex flex-col items-center justify-center gap-3 p-6 bg-gray-50 border border-gray-100 hover:bg-white hover:border-blue-500 hover:shadow-md rounded-2xl transition-all group">
-                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 group-hover:border-blue-200 group-hover:scale-110 transition-all">
-                                    <Icons.Sparkles size={24} className="text-blue-600" />
-                                </div>
-                                <span className="font-bold text-gray-900">Gemini</span>
-                            </button>
                         </div>
                     </DialogContent>
                 </Dialog>
