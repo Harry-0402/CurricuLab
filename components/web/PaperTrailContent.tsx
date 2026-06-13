@@ -255,6 +255,13 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                     />
                 </div>
 
+                <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl flex items-start gap-2 leading-relaxed shrink-0">
+                    <Icons.Info size={14} className="shrink-0 mt-0.5 text-purple-500" />
+                    <span>
+                        <strong>How to use:</strong> Click the <strong>"AI Study Prompt"</strong> button at the top to copy a structured prompt tailored to your program level. Download any PYQ paper, upload it to your preferred AI (ChatGPT or Gemini), and paste the copied prompt to solve the questions step-by-step with mark-based answer limits.
+                    </span>
+                </div>
+
                 {/* Grid Content */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar pb-6 pr-2">
                     {isLoading ? (
