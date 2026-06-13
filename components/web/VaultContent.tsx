@@ -537,28 +537,30 @@ Please review the document at the URL provided above and generate a highly detai
                                         <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400 flex-wrap gap-2">
                                             <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
                                             <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={(e) => handleCopyPrompt(e, resource)}
-                                                    className={cn(
-                                                        "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
-                                                        copiedId === resource.id
-                                                            ? "bg-green-50 text-green-600 border-green-200"
-                                                            : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
-                                                    )}
-                                                    title="Generate AI Study Prompt"
-                                                >
-                                                    {copiedId === resource.id ? (
-                                                        <>
-                                                            <Icons.Check size={11} className="text-green-500" />
-                                                            <span>Copied!</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Icons.Sparkles size={11} className="text-purple-500" />
-                                                            <span>AI Prompt</span>
-                                                        </>
-                                                    )}
-                                                </button>
+                                                {resource.type === 'study_note' && (
+                                                    <button
+                                                        onClick={(e) => handleCopyPrompt(e, resource)}
+                                                        className={cn(
+                                                            "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
+                                                            copiedId === resource.id
+                                                                ? "bg-green-50 text-green-600 border-green-200"
+                                                                : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
+                                                        )}
+                                                        title="Generate AI Study Prompt"
+                                                    >
+                                                        {copiedId === resource.id ? (
+                                                            <>
+                                                                <Icons.Check size={11} className="text-green-500" />
+                                                                <span>Copied!</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Icons.Sparkles size={11} className="text-purple-500" />
+                                                                <span>AI Prompt</span>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                )}
                                                 <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
                                                     Read More <Icons.ArrowRight size={12} />
                                                 </span>
