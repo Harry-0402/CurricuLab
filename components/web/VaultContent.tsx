@@ -13,11 +13,19 @@ import { UnitService } from '@/lib/data/unit-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
 import { useAuth } from '@/components/providers/AuthProvider';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { CodeBlock } from './CodeBlock';
+import { ConfirmationModal } from '@/components/shared/ConfirmationModal';
+import { getRevisionNotesByUnit, createRevisionNote, deleteRevisionNotesByUnit } from '@/lib/data/revision-notes-service';
+import { RevisionNote } from '@/types';
+
 const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: string; bgColor: string }> = {
     study_note: { label: 'Study Note', icon: Icons.FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
     question_bank: { label: 'Question Bank', icon: Icons.CheckSquare, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
     case_study: { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
     project: { label: 'Project', icon: Icons.FolderKanban, color: 'text-green-600', bgColor: 'bg-green-50' },
+    revision_note: { label: 'Revision Note', icon: Icons.FileEdit, color: 'text-rose-600', bgColor: 'bg-rose-50' },
     other_resources: { label: 'Other Resources', icon: Icons.Link, color: 'text-orange-600', bgColor: 'bg-orange-50' }
 };
 
@@ -31,6 +39,126 @@ export function VaultContent() {
     const [selectedResource, setSelectedResource] = useState<VaultResource | null>(null);
     const [selectedType, setSelectedType] = useState<VaultResourceType | 'all'>('all');
     const [selectedUnitId, setSelectedUnitId] = useState<string>('all');
+
+    // Revision Notes State
+    const [selectedRevisionUnit, setSelectedRevisionUnit] = useState<string>('');
+    const [revisionNotes, setRevisionNotes] = useState<RevisionNote[]>([]);
+    const [isRevisionLoading, setIsRevisionLoading] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generationProgress, setGenerationProgress] = useState(0);
+    const [showRegenConfirm, setShowRegenConfirm] = useState(false);
+    const [isRegenerating, setIsRegenerating] = useState(false);
+    const [showRevisionExportMenu, setShowRevisionExportMenu] = useState(false);
+
+    useEffect(() => {
+        setSelectedRevisionUnit('');
+        setRevisionNotes([]);
+    }, [activeSubjectId]);
+
+    // Fetch revision notes when unit is selected
+    const fetchRevisionNotes = async (unitId: string) => {
+        setIsRevisionLoading(true);
+        try {
+            const data = await getRevisionNotesByUnit(unitId);
+            setRevisionNotes(data);
+        } catch (error) {
+            console.error("Error fetching revision notes:", error);
+        } finally {
+            setIsRevisionLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedRevisionUnit) {
+            fetchRevisionNotes(selectedRevisionUnit);
+        } else {
+            setRevisionNotes([]);
+        }
+    }, [selectedRevisionUnit]);
+
+    const handleRegenerateRevisionNotes = async () => {
+        if (!selectedRevisionUnit || !activeSubjectId) return;
+
+        setIsRegenerating(true);
+        setIsRevisionLoading(true);
+        try {
+            await deleteRevisionNotesByUnit(selectedRevisionUnit);
+            setRevisionNotes([]); // Clear local state
+            await handleGenerateAiRevisionNotes(); // Trigger fresh generation
+        } catch (error) {
+            console.error("Failed to regenerate notes:", error);
+            toast.error("Failed to clear existing notes. Please try again.");
+        } finally {
+            setIsRevisionLoading(false);
+            setIsRegenerating(false);
+            setShowRegenConfirm(false);
+        }
+    };
+
+    const handleGenerateAiRevisionNotes = async () => {
+        if (!selectedRevisionUnit || !activeSubjectId) return;
+
+        setIsGenerating(true);
+        setGenerationProgress(0);
+
+        try {
+            const unit = units.find(u => u.id === selectedRevisionUnit);
+            const subject = subjects.find(s => s.id === activeSubjectId);
+
+            if (!unit || !subject || !unit.topics || unit.topics.length === 0) {
+                toast.error("No topics found for this unit to generate notes from.");
+                setIsGenerating(false);
+                return;
+            }
+
+            let completed = 0;
+            for (const topic of unit.topics) {
+                const content = await AiService.generateNoteContent(subject.title, unit.title, topic);
+                const tempNote: RevisionNote = {
+                    id: crypto.randomUUID(),
+                    unitId: selectedRevisionUnit,
+                    title: topic,
+                    content: content,
+                    generatedAt: new Date().toISOString()
+                };
+
+                const savedNote = await createRevisionNote(tempNote);
+                setRevisionNotes(prev => [...prev, savedNote]);
+                completed++;
+                setGenerationProgress(Math.round((completed / unit.topics.length) * 100));
+            }
+        } catch (error: any) {
+            console.error("Failed to generate notes:", error);
+            toast.error(`Error producing notes: ${error.message || "Unknown error"}`);
+        } finally {
+            setIsGenerating(false);
+            setGenerationProgress(0);
+        }
+    };
+
+    const handleExportRevisionHTML = async () => {
+        if (!activeSubjectId || !selectedRevisionUnit) return;
+        const subject = subjects.find(s => s.id === activeSubjectId);
+        const unit = units.find(u => u.id === selectedRevisionUnit);
+
+        if (subject && unit) {
+            const { PlatformExportService } = await import('@/lib/services/export-service');
+            await PlatformExportService.generateNotesHTMLExport(subject.title, unit.title, revisionNotes);
+            setShowRevisionExportMenu(false);
+        }
+    };
+
+    const handleExportRevisionWord = async () => {
+        if (!activeSubjectId || !selectedRevisionUnit) return;
+        const subject = subjects.find(s => s.id === activeSubjectId);
+        const unit = units.find(u => u.id === selectedRevisionUnit);
+
+        if (subject && unit) {
+            const { PlatformExportService } = await import('@/lib/services/export-service');
+            await PlatformExportService.generateWordDocument(subject.title, unit.title, revisionNotes);
+            setShowRevisionExportMenu(false);
+        }
+    };
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -426,7 +554,7 @@ Please review the document at the URL provided above and generate a highly detai
                     >
                         All
                     </button>
-                    {(['study_note', 'question_bank', 'case_study', 'project', 'other_resources'] as VaultResourceType[]).map(type => {
+                    {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'other_resources'] as VaultResourceType[]).map(type => {
                         const config = TYPE_CONFIG[type];
                         const isActive = selectedType === type;
                         return (
@@ -458,113 +586,298 @@ Please review the document at the URL provided above and generate a highly detai
 
             {/* Main Content - Grid Layout */}
             <div className="flex-1 overflow-y-auto min-h-0 print:hidden scrollbar-hide">
-                {loading ? (
-                    <div className="flex items-center justify-center h-64">
-                        <div className="flex flex-col items-center gap-3">
-                            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                            <p className="text-sm font-medium text-gray-500">Loading resources...</p>
+                {selectedType === 'revision_note' ? (
+                    <div className="space-y-6 pb-10">
+                        <ConfirmationModal
+                            isOpen={showRegenConfirm}
+                            onClose={() => setShowRegenConfirm(false)}
+                            onConfirm={handleRegenerateRevisionNotes}
+                            title="Regenerate Notes?"
+                            description="Are you sure you want to delete all existing notes for this unit and generate a fresh set? This cannot be undone."
+                            confirmText="Regenerate"
+                            variant="danger"
+                            isLoading={isRegenerating}
+                            icon="RefreshCw"
+                        />
+
+                        {/* Unit Selector */}
+                        <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-sm space-y-2">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Select Unit</label>
+                            <select
+                                value={selectedRevisionUnit}
+                                onChange={(e) => setSelectedRevisionUnit(e.target.value)}
+                                className="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                            >
+                                <option value="">Choose a unit to view or generate revision notes...</option>
+                                {units.map(u => {
+                                    const cleanTitle = u.title.replace(/^Unit\s+[IVXLCDM\d]+\s*:\s*/i, '');
+                                    return (
+                                        <option key={u.id} value={u.id}>Unit {u.order}: {cleanTitle}</option>
+                                    );
+                                })}
+                            </select>
                         </div>
-                    </div>
-                ) : filteredResources.length === 0 ? (
-                    <div className="flex items-center justify-center h-64">
-                        <div className="text-center">
-                            <Icons.FileText className="mx-auto mb-4 text-gray-300" size={64} />
-                            <p className="text-lg font-bold text-gray-400">No resources yet</p>
-                            <p className="text-sm text-gray-400 mt-2">Click "Add Resource" to get started</p>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
-                        {filteredResources.map(resource => {
-                            const config = TYPE_CONFIG[resource.type];
-                            if (!config) return null; // Skip resources with invalid types
-                            return (
-                                <div
-                                    key={resource.id}
-                                    onClick={() => { setSelectedResource(resource); }}
-                                    className="bg-white rounded-3xl p-6 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
-                                >
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn("p-3 rounded-2xl transition-colors", config.bgColor)}>
-                                                <config.icon className={config.color} size={24} />
+
+                        {isRevisionLoading || isGenerating ? (
+                            <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                                {isGenerating ? (
+                                    <>
+                                        <Icons.Sparkles size={40} className="text-blue-500 animate-pulse" />
+                                        <div className="text-center space-y-2">
+                                            <p className="font-bold uppercase tracking-widest text-xs text-blue-600">Generating Revision Notes with AI...</p>
+                                            <div className="w-64 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full bg-blue-500 transition-all duration-300 ease-out"
+                                                    style={{ width: `${generationProgress}%` }}
+                                                />
                                             </div>
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                <span className={cn(
-                                                    "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border",
-                                                    config.bgColor, config.color
-                                                )}>
-                                                    {config.label}
-                                                </span>
-                                                {resource.unitId && (
-                                                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
-                                                        {resource.unitId.replace('unit-', 'Unit ')}
-                                                    </span>
-                                                )}
-                                            </div>
+                                            <p className="text-xs font-medium text-gray-400">{generationProgress}% Complete</p>
                                         </div>
-                                        {isAdmin && (
-                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button
-                                                    onClick={(e) => handleOpenEditModal(e, resource)}
-                                                    className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-colors"
-                                                    title="Edit"
-                                                >
-                                                    <Icons.Edit size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => handleDeleteClick(e, resource.id)}
-                                                    className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-colors"
-                                                    title="Delete"
-                                                >
-                                                    <Icons.Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Icons.Clock size={40} className="animate-spin" />
+                                        <p className="font-bold uppercase tracking-widest text-xs">Loading notes...</p>
+                                    </>
+                                )}
+                            </div>
+                        ) : selectedRevisionUnit && revisionNotes.length > 0 ? (
+                            <div id="revision-notes-container" className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                <div className="flex items-center justify-between border-b border-gray-100 pb-8">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-gray-900 rounded-2xl flex items-center justify-center text-white">
+                                            <Icons.GraduationCap size={24} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xl font-black text-gray-900">{units.find(u => u.id === selectedRevisionUnit)?.title}</p>
+                                            <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">{activeSubject?.code} - {activeSubject?.title}</p>
+                                        </div>
                                     </div>
+                                    <div className="flex items-center gap-3 print:hidden">
+                                        <button
+                                            onClick={() => setShowRegenConfirm(true)}
+                                            className="flex items-center gap-2 bg-white hover:bg-red-50 text-red-600 border border-red-100 p-3 rounded-xl transition-all shadow-sm group"
+                                        >
+                                            <Icons.RefreshCw size={18} className="group-hover:rotate-180 transition-transform duration-500" />
+                                            <span className="text-xs font-bold uppercase tracking-wide">Regenerate</span>
+                                        </button>
 
-                                    <div className="flex-grow flex flex-col">
-                                        <div className="flex-grow">
-                                            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
-                                                {resource.title}
-                                            </h3>
-                                        </div>
+                                        <div className="relative">
+                                            <button
+                                                onClick={() => setShowRevisionExportMenu(!showRevisionExportMenu)}
+                                                className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white p-3 rounded-xl transition-all shadow-lg shadow-gray-200"
+                                            >
+                                                <Icons.Download size={20} />
+                                                <span className="text-xs font-bold uppercase tracking-wide">Export</span>
+                                                <Icons.ChevronDown size={16} className={`transition-transform ${showRevisionExportMenu ? 'rotate-180' : ''}`} />
+                                            </button>
 
-                                        <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400 flex-wrap gap-2">
-                                            <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={(e) => handleCopyPrompt(e, resource)}
-                                                    className={cn(
-                                                        "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
-                                                        copiedId === resource.id
-                                                            ? "bg-green-50 text-green-600 border-green-200"
-                                                            : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
-                                                    )}
-                                                    title="Generate AI Study Prompt"
-                                                >
-                                                    {copiedId === resource.id ? (
-                                                        <>
-                                                            <Icons.Check size={11} className="text-green-500" />
-                                                            <span>Copied!</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Icons.Sparkles size={11} className="text-purple-500" />
-                                                            <span>AI Prompt</span>
-                                                        </>
-                                                    )}
-                                                </button>
-                                                <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
-                                                    Read More <Icons.ArrowRight size={12} />
-                                                </span>
-                                            </div>
+                                            {showRevisionExportMenu && (
+                                                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                                    <button
+                                                        onClick={handleExportRevisionWord}
+                                                        className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-left group"
+                                                    >
+                                                        <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                            <Icons.FileText size={16} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-gray-900">Word Document</p>
+                                                            <p className="text-[10px] font-medium text-gray-500">Editable .docx file</p>
+                                                        </div>
+                                                    </button>
+                                                    <button
+                                                        onClick={handleExportRevisionHTML}
+                                                        className="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl transition-colors text-left group"
+                                                    >
+                                                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                                            <Icons.Globe size={16} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-gray-900">Web Page</p>
+                                                            <p className="text-[10px] font-medium text-gray-500">Standalone .html file</p>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                            );
-                        })}
+
+                                <div className="grid grid-cols-1 gap-10 print:gap-6">
+                                    {revisionNotes.map(note => (
+                                        <div key={note.id} className="space-y-4 print:break-inside-avoid">
+                                            <h3 className="text-lg font-black text-gray-900 flex items-center gap-3">
+                                                <div className="w-1.5 h-6 bg-blue-600 rounded-full print:bg-black" />
+                                                {note.title}
+                                            </h3>
+                                            <div className="text-gray-600 leading-relaxed text-sm bg-gray-50/50 p-6 rounded-3xl border border-gray-100/50 prose prose-blue max-w-none print:bg-transparent print:border-none print:p-0 print:text-black">
+                                                <ReactMarkdown
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        h1: ({ ...props }) => <h1 className="text-2xl font-black text-gray-900 mb-4 pb-2 border-b border-gray-100" {...props} />,
+                                                        h2: ({ ...props }) => <h2 className="text-lg font-bold text-gray-800 mt-6 mb-3 flex items-center gap-2" {...props} />,
+                                                        h3: ({ ...props }) => <h3 className="text-md font-bold text-blue-600 mt-4 mb-2 uppercase tracking-wide text-xs" {...props} />,
+                                                        strong: ({ ...props }) => <strong className="font-bold text-gray-900" {...props} />,
+                                                        ul: ({ ...props }) => <ul className="list-disc pl-5 space-y-2 text-gray-700 mb-4" {...props} />,
+                                                        li: ({ ...props }) => <li className="pl-1" {...props} />,
+                                                        p: ({ ...props }) => <p className="mb-4 leading-relaxed text-gray-600" {...props} />,
+                                                        code({ node, className, children, ...props }: any) {
+                                                            const match = /language-(\w+)/.exec(className || '');
+                                                            const lang = match ? match[1] : '';
+                                                            const codeContent = String(children).replace(/\n$/, '');
+
+                                                            if (lang) {
+                                                                return <CodeBlock code={codeContent} language={lang} />;
+                                                            }
+                                                            return (
+                                                                <code className="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-mono text-xs font-bold" {...props}>
+                                                                    {children}
+                                                                </code>
+                                                            );
+                                                        }
+                                                    }}
+                                                >
+                                                    {note.content}
+                                                </ReactMarkdown>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : selectedRevisionUnit ? (
+                            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[40px] border border-dashed border-gray-200 text-gray-400 gap-6">
+                                <div className="flex flex-col items-center gap-3">
+                                    <Icons.Info size={32} />
+                                    <p className="font-bold uppercase tracking-widest text-xs">No notes found for this unit.</p>
+                                </div>
+
+                                <button
+                                    onClick={handleGenerateAiRevisionNotes}
+                                    className="group relative px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                                >
+                                    <Icons.Sparkles size={18} className="text-blue-100 group-hover:text-white transition-colors" />
+                                    <span>Generate Notes with AI</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[40px] border border-dashed border-gray-200 text-gray-400 gap-3">
+                                <Icons.Lightbulb size={32} />
+                                <p className="font-bold uppercase tracking-widest text-xs">Select a unit to view or generate a revision sheet.</p>
+                            </div>
+                        )}
                     </div>
+                ) : (
+                    <>
+                        {loading ? (
+                            <div className="flex items-center justify-center h-64">
+                                <div className="flex flex-col items-center gap-3">
+                                    <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                    <p className="text-sm font-medium text-gray-500">Loading resources...</p>
+                                </div>
+                            </div>
+                        ) : filteredResources.length === 0 ? (
+                            <div className="flex items-center justify-center h-64">
+                                <div className="text-center">
+                                    <Icons.FileText className="mx-auto mb-4 text-gray-300" size={64} />
+                                    <p className="text-lg font-bold text-gray-400">No resources yet</p>
+                                    <p className="text-sm text-gray-400 mt-2">Click "Add Resource" to get started</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
+                                {filteredResources.map(resource => {
+                                    const config = TYPE_CONFIG[resource.type];
+                                    if (!config) return null; // Skip resources with invalid types
+                                    return (
+                                        <div
+                                            key={resource.id}
+                                            onClick={() => { setSelectedResource(resource); }}
+                                            className="bg-white rounded-3xl p-6 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
+                                        >
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={cn("p-3 rounded-2xl transition-colors", config.bgColor)}>
+                                                        <config.icon className={config.color} size={24} />
+                                                    </div>
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className={cn(
+                                                            "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border",
+                                                            config.bgColor, config.color
+                                                        )}>
+                                                            {config.label}
+                                                        </span>
+                                                        {resource.unitId && (
+                                                            <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
+                                                                {resource.unitId.replace('unit-', 'Unit ')}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                {isAdmin && (
+                                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button
+                                                            onClick={(e) => handleOpenEditModal(e, resource)}
+                                                            className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-colors"
+                                                            title="Edit"
+                                                        >
+                                                            <Icons.Edit size={16} />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => handleDeleteClick(e, resource.id)}
+                                                            className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-colors"
+                                                            title="Delete"
+                                                        >
+                                                            <Icons.Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex-grow flex flex-col">
+                                                <div className="flex-grow">
+                                                    <h3 className="text-lg font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                                                        {resource.title}
+                                                    </h3>
+                                                </div>
+
+                                                <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400 flex-wrap gap-2">
+                                                    <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={(e) => handleCopyPrompt(e, resource)}
+                                                            className={cn(
+                                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
+                                                                copiedId === resource.id
+                                                                    ? "bg-green-50 text-green-600 border-green-200"
+                                                                    : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
+                                                            )}
+                                                            title="Generate AI Study Prompt"
+                                                        >
+                                                            {copiedId === resource.id ? (
+                                                                <>
+                                                                    <Icons.Check size={11} className="text-green-500" />
+                                                                    <span>Copied!</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Icons.Sparkles size={11} className="text-purple-500" />
+                                                                    <span>AI Prompt</span>
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                        <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
+                                                            Read More <Icons.ArrowRight size={12} />
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 
@@ -634,7 +947,7 @@ Please review the document at the URL provided above and generate a highly detai
                                             onChange={(e) => setFormData({ ...formData, type: e.target.value as VaultResourceType })}
                                             className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
                                         >
-                                            {(['study_note', 'question_bank', 'case_study', 'project', 'other_resources'] as VaultResourceType[]).map(type => {
+                                            {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'other_resources'] as VaultResourceType[]).map(type => {
                                                 const config = TYPE_CONFIG[type];
                                                 return (
                                                     <option key={type} value={type}>
