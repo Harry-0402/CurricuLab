@@ -12,6 +12,7 @@ import { Subject, Unit, RevisionNote } from '@/types';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { CodeBlock } from './CodeBlock';
 
 import { SubjectService } from '@/lib/data/subject-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
@@ -302,6 +303,20 @@ export function RevisionGeneratorContent() {
                                                     ul: ({ ...props }) => <ul className="list-disc pl-5 space-y-2 text-gray-700 mb-4" {...props} />,
                                                     li: ({ ...props }) => <li className="pl-1" {...props} />,
                                                     p: ({ ...props }) => <p className="mb-4 leading-relaxed text-gray-600" {...props} />,
+                                                    code({ node, className, children, ...props }: any) {
+                                                        const match = /language-(\w+)/.exec(className || '');
+                                                        const lang = match ? match[1] : '';
+                                                        const codeContent = String(children).replace(/\n$/, '');
+
+                                                        if (lang) {
+                                                            return <CodeBlock code={codeContent} language={lang} />;
+                                                        }
+                                                        return (
+                                                            <code className="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-mono text-xs font-bold" {...props}>
+                                                                {children}
+                                                            </code>
+                                                        );
+                                                    }
                                                 }}
                                             >
                                                 {note.content}

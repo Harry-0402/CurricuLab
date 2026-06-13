@@ -47,15 +47,25 @@ export default function WebSubjectsContent() {
         // Set up real-time subscription
         const subscription = SubjectService.subscribeToChanges(
             (newSubject) => {
+                if (activeSemesterId && newSubject.semesterId !== activeSemesterId) return;
                 setSubjects(prev => {
                     if (prev.some(s => s.id === newSubject.id)) return prev;
                     return [...prev, newSubject];
                 });
             },
             (updatedSubject) => {
-                setSubjects(prev =>
-                    prev.map(s => s.id === updatedSubject.id ? updatedSubject : s)
-                );
+                if (activeSemesterId && updatedSubject.semesterId !== activeSemesterId) {
+                    // If a subject was moved to another semester, remove it from current view
+                    setSubjects(prev => prev.filter(s => s.id !== updatedSubject.id));
+                    return;
+                }
+                setSubjects(prev => {
+                    if (prev.some(s => s.id === updatedSubject.id)) {
+                        return prev.map(s => s.id === updatedSubject.id ? updatedSubject : s);
+                    }
+                    // If it was moved into this semester, add it
+                    return [...prev, updatedSubject];
+                });
             },
             (deletedId) => {
                 setSubjects(prev => prev.filter(s => s.id !== deletedId));

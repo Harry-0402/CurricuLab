@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { CodeBlock } from '../CodeBlock';
 
 type ConversationMessage = { role: 'user' | 'assistant'; content: string };
 
@@ -244,7 +245,20 @@ export function AiMentorTab() {
                                                 ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2 space-y-0.5 text-sm" {...props} />,
                                                 li: ({ node, ...props }) => <li className="text-sm" {...props} />,
                                                 strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
-                                                code: ({ node, ...props }) => <code className="bg-pink-100 text-pink-700 rounded px-1 py-0.5 text-xs font-mono" {...props} />,
+                                                code({ node, className, children, ...props }: any) {
+                                                    const match = /language-(\w+)/.exec(className || '');
+                                                    const lang = match ? match[1] : '';
+                                                    const codeContent = String(children).replace(/\n$/, '');
+
+                                                    if (lang) {
+                                                        return <CodeBlock code={codeContent} language={lang} />;
+                                                    }
+                                                    return (
+                                                        <code className="bg-pink-100 text-pink-700 rounded px-1.5 py-0.5 text-xs font-mono font-bold" {...props}>
+                                                            {children}
+                                                        </code>
+                                                    );
+                                                }
                                             }}
                                         >
                                             {msg.content}

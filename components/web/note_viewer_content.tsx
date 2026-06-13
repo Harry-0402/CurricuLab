@@ -8,6 +8,8 @@ import { Note } from '@/types';
 import { Icons } from '@/components/shared/Icons';
 import { Button } from '@/components/shared/Button';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { CodeBlock } from './CodeBlock';
 
 export default function WebNoteViewerContent() {
     const params = useParams();
@@ -38,7 +40,27 @@ export default function WebNoteViewerContent() {
                         </div>
 
                         <article className="prose prose-blue max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed">
-                            <ReactMarkdown>{note.content}</ReactMarkdown>
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    code({ node, className, children, ...props }: any) {
+                                        const match = /language-(\w+)/.exec(className || '');
+                                        const lang = match ? match[1] : '';
+                                        const codeContent = String(children).replace(/\n$/, '');
+
+                                        if (lang) {
+                                            return <CodeBlock code={codeContent} language={lang} />;
+                                        }
+                                        return (
+                                            <code className="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-mono text-xs font-bold" {...props}>
+                                                {children}
+                                            </code>
+                                        );
+                                    }
+                                }}
+                            >
+                                {note.content}
+                            </ReactMarkdown>
                         </article>
                     </div>
                 </div>

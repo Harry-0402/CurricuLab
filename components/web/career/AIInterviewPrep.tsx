@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import { CodeBlock } from '../CodeBlock';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -77,8 +78,20 @@ export function AIInterviewPrep() {
                                     remarkPlugins={[remarkGfm, remarkMath]}
                                     rehypePlugins={[rehypeKatex]}
                                     components={{
-                                        code: ({ node, ...props }) => <code className="bg-gray-100 text-red-500 px-1 rounded" {...props} />,
-                                        pre: ({ node, ...props }) => <pre className="bg-gray-900 text-gray-100 p-4 rounded-xl overflow-x-auto" {...props} />
+                                        code({ node, className, children, ...props }: any) {
+                                            const match = /language-(\w+)/.exec(className || '');
+                                            const lang = match ? match[1] : '';
+                                            const codeContent = String(children).replace(/\n$/, '');
+
+                                            if (lang) {
+                                                return <CodeBlock code={codeContent} language={lang} />;
+                                            }
+                                            return (
+                                                <code className="bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded font-mono text-xs font-bold" {...props}>
+                                                    {children}
+                                                </code>
+                                            );
+                                        }
                                     }}
                                 >
                                     {msg.content}
