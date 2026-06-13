@@ -180,9 +180,12 @@ export function RevisionGeneratorContent() {
                             className="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50"
                         >
                             <option value="">Choose a unit...</option>
-                            {units.map(u => (
-                                <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>
-                            ))}
+                            {units.map(u => {
+                                const cleanTitle = u.title.replace(/^Unit\s+[IVXLCDM\d]+\s*:\s*/i, '');
+                                return (
+                                    <option key={u.id} value={u.id}>Unit {u.order}: {cleanTitle}</option>
+                                );
+                            })}
                         </select>
                     </div>
                 </div>

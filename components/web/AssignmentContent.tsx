@@ -612,6 +612,13 @@ export function AssignmentContent() {
                                                 Solve via AI (Copy Prompt)
                                             </button>
                                         </div>
+                                        
+                                        <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl flex items-start gap-2 leading-relaxed">
+                                            <Icons.Info size={14} className="shrink-0 mt-0.5 text-purple-500" />
+                                            <span>
+                                                <strong>How to use:</strong> Click <strong>"Solve via AI (Copy Prompt)"</strong> above to copy a customized, structured prompt containing these questions to your clipboard. Paste it into your preferred AI (ChatGPT, Gemini, or Claude) to get comprehensive explanations instantly.
+                                            </span>
+                                        </div>
                                         {selectedAssignment.questions.length === 0 && (
                                             <div className="text-center py-10 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
                                                 <p className="text-sm font-bold text-gray-400">No questions added to this assignment.</p>

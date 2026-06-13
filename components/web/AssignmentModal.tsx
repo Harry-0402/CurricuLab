@@ -262,9 +262,12 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
                                         className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all appearance-none cursor-pointer"
                                     >
                                         <option value="">Select Unit (Optional)</option>
-                                        {units.map(u => (
-                                            <option key={u.id} value={u.id}>Unit {u.order}: {u.title}</option>
-                                        ))}
+                                        {units.map(u => {
+                                            const cleanTitle = u.title.replace(/^Unit\s+[IVXLCDM\d]+\s*:\s*/i, '');
+                                            return (
+                                                <option key={u.id} value={u.id}>Unit {u.order}: {cleanTitle}</option>
+                                            );
+                                        })}
                                     </select>
                                 </div>
                             </div>
