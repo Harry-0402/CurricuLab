@@ -251,20 +251,31 @@ export function VaultContent() {
 
         let unitContext = '';
         if (matchingUnit) {
-            unitContext = `\n\nUnit Context:
+            const syllabusList = matchingUnit.topics && matchingUnit.topics.length > 0
+                ? `\n- Syllabus Topics:\n${matchingUnit.topics.map(t => `  * ${t}`).join('\n')}`
+                : '';
+            
+            unitContext = `
+
+UNIT SYLLABUS CONTEXT:
 - Unit: ${matchingUnit.title}
-- Description: ${matchingUnit.description}${matchingUnit.topics && matchingUnit.topics.length > 0 ? `
-- Syllabus Topics:
-${matchingUnit.topics.map(t => `  * ${t}`).join('\n')}` : ''}`;
+- Description: ${matchingUnit.description}${syllabusList}
+--------------------------------------------------`;
         }
 
-        const prompt = `You are an expert academic tutor. I want you to act as my study assistant and explain the material in the following resource:
-Subject: ${subjectLabel}
-Resource Title: "${resource.title}"
-Resource Type: ${typeLabel}
-Resource URL: ${resource.link}${unitContext}
+        const prompt = `You are an expert academic tutor. I want you to act as my study assistant and explain the material in the following resource.
 
-Please review the document at the URL provided and generate a highly detailed, comprehensive study guide that elaborates on the content. Your explanation must:
+--------------------------------------------------
+RESOURCE DETAILS:
+- Subject: ${subjectLabel}
+- Title: "${resource.title}"
+- Type: ${typeLabel}
+- URL: ${resource.link}
+--------------------------------------------------${unitContext}
+
+INSTRUCTIONS FOR THE STUDY GUIDE:
+Please review the document at the URL provided above and generate a highly detailed, comprehensive study guide that elaborates on the content. Your explanation must:
+
 1. Align with the syllabus/topics specified for the unit (if provided above).
 2. Identify and explain every core concept in depth, defining technical terms and key ideas clearly.
 3. Go through each main point presented in the document, explaining the logic, theory, and background details.
