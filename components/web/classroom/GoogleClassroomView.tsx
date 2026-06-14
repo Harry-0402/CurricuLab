@@ -46,11 +46,11 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
 
     useEffect(() => {
         const fetchSubjects = async () => {
-            const fetched = await SubjectService.getAll(activeSemesterId ?? undefined);
+            const fetched = await SubjectService.getAll();
             setSubjects(fetched);
         };
         fetchSubjects();
-    }, [activeSemesterId]);
+    }, []);
 
     useEffect(() => {
         if (selectedCourse?.id) {
@@ -73,20 +73,17 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
         setSendingAssignmentId(work.id);
 
         try {
-            // 1. Identify Subject by gcrKeyword or code
+            // 1. Identify Subject by gcrKeyword
             const subject = subjects.find(s => {
                 const courseName = selectedCourse.name.toLowerCase();
                 if (s.gcrKeyword && courseName.includes(s.gcrKeyword.toLowerCase())) {
-                    return true;
-                }
-                if (s.code && courseName.includes(s.code.toLowerCase())) {
                     return true;
                 }
                 return false;
             });
 
             if (!subject) {
-                toast.error(`No matching subject found for "${selectedCourse.name}". Please ensure your GCR Keyword in the admin panel is spelled correctly and matches the course name.`);
+                toast.error(`No matching subject found for "${selectedCourse.name}". Please set a GCR Keyword in the admin panel.`);
                 return;
             }
 

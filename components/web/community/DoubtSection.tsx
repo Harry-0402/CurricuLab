@@ -5,6 +5,8 @@ import { supabase } from '@/utils/supabase/client';
 import { Icons } from '@/components/shared/Icons';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import { useSemester } from '@/components/providers/SemesterProvider';
+import { SubjectService } from '@/lib/data/subject-service';
 
 interface Doubt {
     id: string;
@@ -25,6 +27,7 @@ interface Doubt {
 }
 
 export function DoubtSection() {
+    const { activeSemesterId } = useSemester();
     const [doubts, setDoubts] = useState<Doubt[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -35,6 +38,7 @@ export function DoubtSection() {
     const [newComment, setNewComment] = useState('');
     const [isCommentsLoading, setIsCommentsLoading] = useState(false);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [categories, setCategories] = useState<string[]>(['All', 'General']);
 
     // Form State
     const [newDoubt, setNewDoubt] = useState({
@@ -45,12 +49,24 @@ export function DoubtSection() {
         category: 'General'
     });
 
-    const categories = ['All', 'General', 'PBA204', 'PBA205', 'PBA206', 'PBA207', 'PBA208', 'PBA211', 'PBA212', 'PBA213'];
+    useEffect(() => {
+        if (activeSemesterId) {
+            fetchDoubts();
+        }
+        getCurrentUser();
+    }, [activeSemesterId]);
 
     useEffect(() => {
-        fetchDoubts();
-        getCurrentUser();
-    }, []);
+        const loadDynamicCategories = async () => {
+            if (activeSemesterId) {
+                const subjects = await SubjectService.getAll(activeSemesterId);
+                const codes = subjects.map(s => s.code).filter(Boolean);
+                setCategories(['All', 'General', ...codes]);
+                setSelectedCategory('All'); // Reset selected category filter on semester change
+            }
+        };
+        loadDynamicCategories();
+    }, [activeSemesterId]);
 
     const getCurrentUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
@@ -58,6 +74,7 @@ export function DoubtSection() {
     };
 
     const fetchDoubts = async () => {
+        if (!activeSemesterId) return;
         setIsLoading(true);
         try {
             const { data, error } = await supabase
@@ -71,6 +88,7 @@ export function DoubtSection() {
                     ),
                     comments_count:doubt_comments(count)
                 `)
+                .eq('semester_id', activeSemesterId)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -106,7 +124,8 @@ export function DoubtSection() {
                     description: newDoubt.description,
                     tags: tagsArray,
                     is_anonymous: newDoubt.is_anonymous,
-                    category: newDoubt.category
+                    category: newDoubt.category,
+                    semester_id: activeSemesterId
                 });
 
             if (error) throw error;

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase/client';
 import { Icons } from '@/components/shared/Icons';
 import { toast } from 'sonner';
+import { useSemester } from '@/components/providers/SemesterProvider';
+import { SubjectService } from '@/lib/data/subject-service';
 
 interface WhatsAppGroup {
     id: string;
@@ -15,6 +17,7 @@ interface WhatsAppGroup {
 }
 
 export function WhatsAppGroups() {
+    const { activeSemesterId } = useSemester();
     const [groups, setGroups] = useState<WhatsAppGroup[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -27,18 +30,33 @@ export function WhatsAppGroups() {
         icon_url: ''
     });
 
-    const categories = ['General', 'PBA204', 'PBA205', 'PBA206', 'PBA207', 'PBA208', 'PBA211', 'PBA212', 'PBA213'];
+    const [categories, setCategories] = useState<string[]>(['General']);
 
     useEffect(() => {
-        fetchGroups();
-    }, []);
+        if (activeSemesterId) {
+            fetchGroups();
+        }
+    }, [activeSemesterId]);
+
+    useEffect(() => {
+        const loadDynamicCategories = async () => {
+            if (activeSemesterId) {
+                const subjects = await SubjectService.getAll(activeSemesterId);
+                const codes = subjects.map(s => s.code).filter(Boolean);
+                setCategories(['General', ...codes]);
+            }
+        };
+        loadDynamicCategories();
+    }, [activeSemesterId]);
 
     const fetchGroups = async () => {
+        if (!activeSemesterId) return;
         setIsLoading(true);
         try {
             const { data, error } = await supabase
                 .from('whatsapp_groups')
                 .select('*')
+                .eq('semester_id', activeSemesterId)
                 .order('name');
             if (error) throw error;
             setGroups(data || []);
@@ -63,7 +81,8 @@ export function WhatsAppGroups() {
                     link: newGroup.link,
                     description: newGroup.description,
                     category: newGroup.category,
-                    icon_url: newGroup.icon_url || null
+                    icon_url: newGroup.icon_url || null,
+                    semester_id: activeSemesterId
                 });
 
             if (error) throw error;
