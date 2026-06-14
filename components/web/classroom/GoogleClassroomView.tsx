@@ -73,11 +73,30 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
         setSendingAssignmentId(work.id);
 
         try {
-            // 1. Identify Subject by gcrKeyword
+            // Helper to normalize strings for robust matching (ignores casing, punctuation, & vs and, and double-letter typos)
+            const normalizeStr = (str: string): string => {
+                return str
+                    .toLowerCase()
+                    .replace(/&/g, 'and')
+                    .replace(/[^a-z0-9]/g, '')
+                    .replace(/(.)\1+/g, '$1');
+            };
+
+            const courseNameNormalized = normalizeStr(selectedCourse.name);
+
+            // 1. Identify Subject by GCR Keyword or Title (fuzzy normalized matching)
             const subject = subjects.find(s => {
-                const courseName = selectedCourse.name.toLowerCase();
-                if (s.gcrKeyword && courseName.includes(s.gcrKeyword.toLowerCase())) {
-                    return true;
+                if (s.gcrKeyword) {
+                    const keywordNormalized = normalizeStr(s.gcrKeyword);
+                    if (courseNameNormalized.includes(keywordNormalized) || keywordNormalized.includes(courseNameNormalized)) {
+                        return true;
+                    }
+                }
+                if (s.title) {
+                    const titleNormalized = normalizeStr(s.title);
+                    if (courseNameNormalized.includes(titleNormalized) || titleNormalized.includes(courseNameNormalized)) {
+                        return true;
+                    }
                 }
                 return false;
             });
