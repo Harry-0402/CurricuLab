@@ -440,6 +440,21 @@ export function PortfolioBuilder() {
                             ))}
                         </div>
                     </section>
+
+                    {/* Deployment & Customization Guide */}
+                    <section className="mt-8 p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl space-y-3">
+                        <h3 className="text-xs font-black text-indigo-800 uppercase tracking-widest flex items-center gap-1.5">
+                            <Icons.Info size={14} /> Next Steps
+                        </h3>
+                        <div className="text-xs text-indigo-900/80 space-y-2 leading-relaxed">
+                            <p>
+                                <strong>Deploying:</strong> Once exported, you can instantly host your HTML file for free on platforms like <a href="https://vercel.com" target="_blank" className="underline font-medium hover:text-indigo-600">Vercel</a>, <a href="https://netlify.com" target="_blank" className="underline font-medium hover:text-indigo-600">Netlify</a>, or <a href="https://pages.github.com/" target="_blank" className="underline font-medium hover:text-indigo-600">GitHub Pages</a> by dragging and dropping.
+                            </p>
+                            <p>
+                                <strong>Customizing:</strong> Want to add a custom domain, tweak colors, or add a new section? Open the HTML file in <strong>VS Code</strong>, or use AI agents like <strong>Antigravity</strong>, <strong>Claude Code</strong>, or <strong>Codex</strong> to easily modify the code!
+                            </p>
+                        </div>
+                    </section>
                 </div>
             </div>
 
