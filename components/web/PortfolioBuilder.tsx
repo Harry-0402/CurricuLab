@@ -13,6 +13,13 @@ interface Project {
     tags: string;
 }
 
+interface Education {
+    id: string;
+    institution: string;
+    degree: string;
+    year: string;
+}
+
 interface PortfolioData {
     name: string;
     title: string;
@@ -21,7 +28,9 @@ interface PortfolioData {
     github: string;
     linkedin: string;
     twitter: string;
+    skills: string;
     projects: Project[];
+    education: Education[];
 }
 
 export function PortfolioBuilder() {
@@ -33,6 +42,7 @@ export function PortfolioBuilder() {
         github: 'https://github.com/alexdev',
         linkedin: 'https://linkedin.com/in/alexdev',
         twitter: '',
+        skills: 'React, Next.js, TypeScript, Tailwind CSS, Node.js',
         projects: [
             {
                 id: '1',
@@ -42,6 +52,14 @@ export function PortfolioBuilder() {
                 demoUrl: 'https://example.com',
                 repoUrl: 'https://github.com',
                 tags: 'Next.js, Tailwind, Stripe'
+            }
+        ],
+        education: [
+            {
+                id: '1',
+                institution: 'University of Technology',
+                degree: 'B.S. Computer Science',
+                year: '2020 - 2024'
             }
         ]
     });
@@ -108,6 +126,7 @@ export function PortfolioBuilder() {
             <div class="flex gap-6 text-sm font-medium text-slate-300">
                 <a href="#about" class="hover:text-white transition-colors">About</a>
                 <a href="#projects" class="hover:text-white transition-colors">Projects</a>
+                <a href="#background" class="hover:text-white transition-colors">Background</a>
                 <a href="#contact" class="hover:text-white transition-colors">Contact</a>
             </div>
         </div>
@@ -144,9 +163,43 @@ export function PortfolioBuilder() {
         </section>
         ` : ''}
 
+        <!-- Background (Skills & Education) -->
+        <section id="background" class="max-w-6xl mx-auto px-6 py-20">
+            <h2 class="text-3xl font-bold text-white mb-12 flex items-center gap-4">
+                <span class="text-brand-500 font-mono text-xl">02.</span> Background
+                <div class="h-px bg-slate-700/50 flex-1 ml-4"></div>
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                ${portfolio.skills ? `
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-6">Skills & Technologies</h3>
+                    <div class="flex flex-wrap gap-3">
+                        ${portfolio.skills.split(',').map(s => `<span class="px-4 py-2 bg-slate-800/50 text-brand-400 rounded-lg text-sm font-medium border border-slate-700/50">${s.trim()}</span>`).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                ${portfolio.education.length > 0 ? `
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-6">Education</h3>
+                    <div class="space-y-4">
+                        ${portfolio.education.map(e => `
+                            <div class="p-6 bg-slate-800/30 rounded-xl border border-slate-700/50">
+                                <h4 class="text-lg font-bold text-white">${e.degree}</h4>
+                                <p class="text-brand-400 font-medium text-sm mb-1">${e.institution}</p>
+                                <p class="text-slate-500 text-sm font-mono">${e.year}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        </section>
+
         <!-- Contact Section -->
         <section id="contact" class="max-w-3xl mx-auto px-6 py-32 text-center">
-            <p class="text-brand-400 font-mono text-sm tracking-widest uppercase mb-4">02. What's Next?</p>
+            <p class="text-brand-400 font-mono text-sm tracking-widest uppercase mb-4">03. What's Next?</p>
             <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Get In Touch</h2>
             <p class="text-lg text-slate-400 mb-10 leading-relaxed">Although I'm not currently looking for any new opportunities, my inbox is always open. Whether you have a question or just want to say hi, I'll try my best to get back to you!</p>
             ${portfolio.email ? `<a href="mailto:${portfolio.email}" class="inline-flex items-center justify-center px-8 py-4 border border-brand-500 text-brand-400 hover:bg-brand-500/10 font-medium rounded-lg transition-colors">Say Hello</a>` : ''}
@@ -191,6 +244,27 @@ export function PortfolioBuilder() {
 
     const removeProject = (id: string) => {
         setData(prev => ({ ...prev, projects: prev.projects.filter(p => p.id !== id) }));
+    };
+
+    const handleEducationChange = (id: string, field: keyof Education, value: string) => {
+        setData(prev => ({
+            ...prev,
+            education: prev.education.map(e => e.id === id ? { ...e, [field]: value } : e)
+        }));
+    };
+
+    const addEducation = () => {
+        const newEdu: Education = {
+            id: Date.now().toString(),
+            institution: 'University Name',
+            degree: 'Degree / Major',
+            year: 'YYYY - YYYY'
+        };
+        setData(prev => ({ ...prev, education: [...prev.education, newEdu] }));
+    };
+
+    const removeEducation = (id: string) => {
+        setData(prev => ({ ...prev, education: prev.education.filter(e => e.id !== id) }));
     };
 
     const downloadHTML = () => {
@@ -263,6 +337,47 @@ export function PortfolioBuilder() {
                                 <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0"><span className="text-[10px] font-bold text-gray-500">𝕏</span></div>
                                 <input type="text" name="twitter" value={data.twitter} onChange={handleChange} placeholder="X / Twitter URL" className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-all" />
                             </div>
+                        </div>
+                    </section>
+
+                    {/* Skills */}
+                    <section className="space-y-4">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Skills & Tech</h3>
+                        <div className="space-y-3">
+                            <div>
+                                <input type="text" name="skills" value={data.skills} onChange={handleChange} placeholder="e.g. React, Next.js, Python, Tailwind" className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" />
+                                <p className="text-[10px] text-gray-400 mt-1.5 ml-1">Comma separated list of skills.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Education */}
+                    <section className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Education</h3>
+                            <button onClick={addEducation} className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded hover:bg-indigo-100 flex items-center gap-1 transition-colors">
+                                <Icons.Plus size={12} /> ADD
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            {data.education.map((edu, index) => (
+                                <div key={edu.id} className="p-4 rounded-xl border border-gray-200 bg-gray-50/50 space-y-3 relative group">
+                                    <button onClick={() => removeEducation(edu.id)} className="absolute top-3 right-3 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Icons.Trash2 size={14} />
+                                    </button>
+                                    <h4 className="text-[10px] font-bold text-gray-500 uppercase">Education {index + 1}</h4>
+                                    
+                                    <div>
+                                        <input type="text" placeholder="Degree / Certification" value={edu.degree} onChange={(e) => handleEducationChange(edu.id, 'degree', e.target.value)} className="w-full px-3 py-1.5 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-all font-medium" />
+                                    </div>
+                                    <div>
+                                        <input type="text" placeholder="Institution / University" value={edu.institution} onChange={(e) => handleEducationChange(edu.id, 'institution', e.target.value)} className="w-full px-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-all" />
+                                    </div>
+                                    <div>
+                                        <input type="text" placeholder="Year (e.g., 2020 - 2024)" value={edu.year} onChange={(e) => handleEducationChange(edu.id, 'year', e.target.value)} className="w-full px-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-all font-mono" />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
