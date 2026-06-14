@@ -176,7 +176,7 @@ export function PortfolioBuilder() {
                 ${portfolio.skills ? `
                 <div>
                     <h3 class="text-xl font-bold text-white mb-6">Skills & Technologies</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div class="space-y-6">
                         <div>
                             <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Technical</h4>
                             <div class="flex flex-wrap gap-2">
@@ -223,7 +223,7 @@ export function PortfolioBuilder() {
         </section>
     </main>
 
-    <footer class="py-8 text-center text-slate-500 text-sm border-t border-slate-800">
+    <footer class="py-12 text-center text-slate-500 text-sm border-t border-slate-800">
         <p>Built with ❤️ by ${portfolio.name}</p>
     </footer>
 </body>
@@ -314,7 +314,7 @@ export function PortfolioBuilder() {
                     </button>
                 </div>
                 
-                <div className="p-5 space-y-8">
+                <div className="p-5 pb-12 space-y-8">
                     {/* Personal Info */}
                     <section className="space-y-4">
                         <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Personal Info</h3>
