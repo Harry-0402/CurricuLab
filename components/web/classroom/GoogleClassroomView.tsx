@@ -79,11 +79,14 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                 if (s.gcrKeyword && courseName.includes(s.gcrKeyword.toLowerCase())) {
                     return true;
                 }
+                if (s.code && courseName.includes(s.code.toLowerCase())) {
+                    return true;
+                }
                 return false;
             });
 
             if (!subject) {
-                toast.error(`No matching subject found for "${selectedCourse.name}". Please set a GCR Keyword in the admin panel.`);
+                toast.error(`No matching subject found for "${selectedCourse.name}". Please ensure your GCR Keyword in the admin panel is spelled correctly and matches the course name.`);
                 return;
             }
 
