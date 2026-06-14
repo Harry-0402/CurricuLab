@@ -245,10 +245,11 @@ export const GoogleDriveService = {
             const isGoogleDoc = mimeType.startsWith('application/vnd.google-apps');
 
             if (isGoogleDoc) {
-                // Determine export mime type (default to PDF for docs/sheets/slides)
+                // Determine export mime type (default to PDF for docs/sheets/slides, DOCX for documents)
                 let exportMimeType = 'application/pdf';
-                if (mimeType.includes('spreadsheet')) exportMimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-                if (mimeType.includes('presentation')) exportMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+                if (mimeType.includes('document')) exportMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                else if (mimeType.includes('spreadsheet')) exportMimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                else if (mimeType.includes('presentation')) exportMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
 
                 const response = await drive.files.export(
                     { fileId, mimeType: exportMimeType },

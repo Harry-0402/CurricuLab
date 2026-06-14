@@ -541,12 +541,15 @@ Return ONLY the formatted answer in markdown format.`;
         return this.generateContent(prompt);
     },
 
-    async parseAssignmentContent(text: string, fileData?: { base64: string, mimeType: string }): Promise<any> {
-        // Keeping this for broader usage, but cleaning it up
+    async parseAssignmentContent(text: string, fileData?: { base64: string, mimeType: string, text?: string }): Promise<any> {
+        const combinedText = fileData?.text ? `${text}\n\n[Extracted from Attachment]:\n${fileData.text}` : text;
+        const hasFile = fileData && !fileData.text;
+        const isDocx = fileData?.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
         const prompt = `
         You are an expert Assignment Parser.
-        Extract the structured details from the following ${fileData ? 'attached assignment file' : 'raw assignment text'}.
-        ${text ? `\nAdditional Context/Text: "${text}"` : ''}
+        Extract the structured details from the following ${hasFile ? 'attached assignment file' : 'raw assignment text'}.
+        ${combinedText ? `\nAdditional Context/Text: "${combinedText}"` : ''}
 
         Return ONLY raw JSON (no markdown formatting) with this exact structure:
         {
@@ -563,7 +566,7 @@ Return ONLY the formatted answer in markdown format.`;
         `;
 
         try {
-            if (fileData) {
+            if (hasFile && !isDocx) {
                 if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
                 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
@@ -612,7 +615,7 @@ Return ONLY the formatted answer in markdown format.`;
         try {
             let resultText = "";
             // Gemini doesn't support DOCX binary, so if we have it, we MUST rely on the extracted text
-            if (fileData && !isDocx) {
+            if (hasFile && !isDocx) {
                 if (!GEMINI_API_KEY) throw new Error("Gemini API Key missing");
                 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
@@ -628,7 +631,7 @@ Return ONLY the formatted answer in markdown format.`;
                 const response = await result.response;
                 resultText = response.text();
             } else {
-                // For DOCX or text-only inputs, we send a standard text prompt
+                // For DOCX, PDF with extracted text, or text-only inputs, we send a standard text prompt
                 resultText = await this.generateContent(prompt);
             }
 

@@ -25,6 +25,7 @@ const academicSuite: NavItem[] = [
 const careerSuite: NavItem[] = [
     { label: 'Career Gateway', href: '/tools/career', icon: Icons.Briefcase },
     { label: 'ResumeStudio', href: '/tools/resume', icon: Icons.FileText },
+    { label: 'Portfolio Builder', href: '/tools/portfolio', icon: Icons.Layout },
     { label: 'MindGrid', href: '/tools/mindgrid', icon: Icons.LayoutGrid },
 ];
 
