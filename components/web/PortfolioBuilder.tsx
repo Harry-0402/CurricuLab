@@ -29,6 +29,7 @@ interface PortfolioData {
     linkedin: string;
     twitter: string;
     skills: string;
+    softSkills: string;
     projects: Project[];
     education: Education[];
 }
@@ -43,6 +44,7 @@ export function PortfolioBuilder() {
         linkedin: 'https://linkedin.com/in/alexdev',
         twitter: '',
         skills: 'React, Next.js, TypeScript, Tailwind CSS, Node.js',
+        softSkills: 'Communication, Teamwork, Problem Solving, Leadership',
         projects: [
             {
                 id: '1',
@@ -174,8 +176,21 @@ export function PortfolioBuilder() {
                 ${portfolio.skills ? `
                 <div>
                     <h3 class="text-xl font-bold text-white mb-6">Skills & Technologies</h3>
-                    <div class="flex flex-wrap gap-3">
-                        ${portfolio.skills.split(',').map(s => `<span class="px-4 py-2 bg-slate-800/50 text-brand-400 rounded-lg text-sm font-medium border border-slate-700/50">${s.trim()}</span>`).join('')}
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Technical</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${portfolio.skills.split(',').map(s => `<span class="px-3 py-1 bg-slate-800/50 text-brand-400 rounded-lg text-sm font-medium border border-slate-700/50">${s.trim()}</span>`).join('')}
+                            </div>
+                        </div>
+                        ${portfolio.softSkills ? `
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Professional</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${portfolio.softSkills.split(',').map(s => `<span class="px-3 py-1 bg-slate-800/30 text-slate-300 rounded-lg text-sm font-medium border border-slate-700/30">${s.trim()}</span>`).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
                 ` : ''}
@@ -186,9 +201,11 @@ export function PortfolioBuilder() {
                     <div class="space-y-4">
                         ${portfolio.education.map(e => `
                             <div class="p-6 bg-slate-800/30 rounded-xl border border-slate-700/50">
-                                <h4 class="text-lg font-bold text-white">${e.degree}</h4>
-                                <p class="text-brand-400 font-medium text-sm mb-1">${e.institution}</p>
-                                <p class="text-slate-500 text-sm font-mono">${e.year}</p>
+                                <div class="flex items-start justify-between gap-4 mb-1">
+                                    <h4 class="text-lg font-bold text-white">${e.degree}</h4>
+                                    <span class="text-slate-500 text-sm font-mono shrink-0 pt-1">${e.year}</span>
+                                </div>
+                                <p class="text-brand-400 font-medium text-sm">${e.institution}</p>
                             </div>
                         `).join('')}
                     </div>
@@ -343,10 +360,16 @@ export function PortfolioBuilder() {
                     {/* Skills */}
                     <section className="space-y-4">
                         <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Skills & Tech</h3>
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             <div>
+                                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Technical Skills</label>
                                 <input type="text" name="skills" value={data.skills} onChange={handleChange} placeholder="e.g. React, Next.js, Python, Tailwind" className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" />
-                                <p className="text-[10px] text-gray-400 mt-1.5 ml-1">Comma separated list of skills.</p>
+                                <p className="text-[10px] text-gray-400 mt-1.5 ml-1">Comma separated.</p>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Soft Skills</label>
+                                <input type="text" name="softSkills" value={data.softSkills} onChange={handleChange} placeholder="e.g. Communication, Teamwork, Leadership" className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" />
+                                <p className="text-[10px] text-gray-400 mt-1.5 ml-1">Comma separated.</p>
                             </div>
                         </div>
                     </section>
