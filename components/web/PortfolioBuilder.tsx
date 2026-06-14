@@ -176,7 +176,7 @@ export function PortfolioBuilder() {
                 ${portfolio.skills ? `
                 <div>
                     <h3 class="text-xl font-bold text-white mb-6">Skills & Technologies</h3>
-                    <div class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
                         <div>
                             <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Technical</h4>
                             <div class="flex flex-wrap gap-2">
@@ -185,7 +185,7 @@ export function PortfolioBuilder() {
                         </div>
                         ${portfolio.softSkills ? `
                         <div>
-                            <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Professional</h4>
+                            <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Soft Skills</h4>
                             <div class="flex flex-wrap gap-2">
                                 ${portfolio.softSkills.split(',').map(s => `<span class="px-3 py-1 bg-slate-800/30 text-slate-300 rounded-lg text-sm font-medium border border-slate-700/30">${s.trim()}</span>`).join('')}
                             </div>
@@ -461,7 +461,7 @@ export function PortfolioBuilder() {
                         srcDoc={previewHtml} 
                         className="w-full h-full border-0"
                         title="Portfolio Preview"
-                        sandbox="allow-scripts"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
                     />
                 </div>
             </div>
