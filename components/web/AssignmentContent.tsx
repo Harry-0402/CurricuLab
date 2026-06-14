@@ -23,11 +23,24 @@ import { useSemester } from '@/components/providers/SemesterProvider';
 import { SubjectService } from '@/lib/data/subject-service';
 
 export function AssignmentContent() {
-    const { activeSemesterId } = useSemester();
+    const { activeSemesterId, setActiveSemester } = useSemester();
     const { showToast } = useToast();
     const searchParams = useSearchParams();
     const querySubjectId = searchParams.get('subjectId');
     const queryAssignmentId = searchParams.get('assignmentId');
+
+    // Automatically switch active semester to the subject's semester if deep-linked to a subject in another semester
+    useEffect(() => {
+        const checkAndSwitchSemester = async () => {
+            if (querySubjectId) {
+                const sub = await SubjectService.getById(querySubjectId);
+                if (sub && sub.semesterId && sub.semesterId !== activeSemesterId) {
+                    setActiveSemester(sub.semesterId);
+                }
+            }
+        };
+        checkAndSwitchSemester();
+    }, [querySubjectId, activeSemesterId, setActiveSemester]);
 
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [activeSubjectId, setActiveSubjectId] = useState<string | null>(null);

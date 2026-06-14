@@ -73,6 +73,10 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
         setSendingAssignmentId(work.id);
 
         try {
+            // Invalidate cache and fetch fresh subjects to avoid stale data if edited in the admin panel
+            SubjectService.invalidateCache();
+            const freshSubjects = await SubjectService.getAll();
+
             // Helper to normalize strings for robust matching (ignores casing, punctuation, & vs and, and double-letter typos)
             const normalizeStr = (str: string): string => {
                 return str
@@ -85,7 +89,7 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
             const courseNameNormalized = normalizeStr(selectedCourse.name);
 
             // 1. Identify Subject by GCR Keyword or Title (fuzzy normalized matching)
-            const subject = subjects.find(s => {
+            const subject = freshSubjects.find(s => {
                 if (s.gcrKeyword) {
                     const keywordNormalized = normalizeStr(s.gcrKeyword);
                     if (courseNameNormalized.includes(keywordNormalized) || keywordNormalized.includes(courseNameNormalized)) {
