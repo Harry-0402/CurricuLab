@@ -631,7 +631,13 @@ Please review the document at the URL provided above and generate a highly detai
                             return (
                                 <div
                                     key={resource.id}
-                                    onClick={() => { setSelectedResource(resource); }}
+                                    onClick={() => {
+                                        if (resource.type === 'youtube_video' && resource.link) {
+                                            window.open(resource.link, '_blank');
+                                        } else {
+                                            setSelectedResource(resource);
+                                        }
+                                    }}
                                     className="bg-white rounded-3xl p-6 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
                                 >
                                     <div className="flex items-start justify-between mb-4">
@@ -820,7 +826,7 @@ Please review the document at the URL provided above and generate a highly detai
                                             onChange={(e) => setFormData({ ...formData, type: e.target.value as VaultResourceType })}
                                             className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
                                         >
-                                            {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'youtube_video', 'flashcard', 'other_resources'] as VaultResourceType[]).map(type => {
+                                            {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'youtube_video', 'other_resources'] as VaultResourceType[]).map(type => {
                                                 const config = TYPE_CONFIG[type];
                                                 return (
                                                     <option key={type} value={type}>
