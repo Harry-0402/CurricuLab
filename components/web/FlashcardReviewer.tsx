@@ -82,7 +82,7 @@ export function FlashcardReviewer({ flashcards, reviews, onReviewComplete, onClo
 
             {/* Flashcard 3D Container */}
             <div 
-                className="w-full aspect-[4/3] md:aspect-[3/2] perspective-1000 mb-8 cursor-pointer group"
+                className="w-full h-[300px] sm:h-[350px] perspective-1000 mb-8 cursor-pointer group"
                 onClick={() => !isFlipped && setIsFlipped(true)}
             >
                 <div className={cn(
