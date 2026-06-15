@@ -48,21 +48,65 @@ CRITICAL INSTRUCTION 2: Every single flashcard MUST be entirely unique. Do NOT r
 Output your response as a valid JSON object containing a "flashcards" array. Each flashcard must have "frontContent" (the question or concept) and "backContent" (the answer or definition). 
 Do NOT output any markdown blocks or text outside the JSON object. Just return the JSON object directly.`;
 
-        const chatCompletion = await groq.chat.completions.create({
-            messages: [
-                { role: 'system', content: SYSTEM_PROMPT },
-                { role: 'user', content: `Study Material:\n\n${content}` }
-            ],
-            model: 'llama-3.3-70b-versatile',
-            temperature: 0.3,
-            max_tokens: 3000,
-            response_format: { type: "json_object" }
-        });
+        let jsonResult = "";
 
-        const reply = chatCompletion.choices[0]?.message?.content || "{}";
+        try {
+            const chatCompletion = await groq.chat.completions.create({
+                messages: [
+                    { role: 'system', content: SYSTEM_PROMPT },
+                    { role: 'user', content: `Study Material:\n\n${content}` }
+                ],
+                model: 'llama-3.3-70b-versatile',
+                temperature: 0.3,
+                max_tokens: 3000,
+                response_format: { type: "json_object" }
+            });
+            jsonResult = chatCompletion.choices[0]?.message?.content || "";
+        } catch (groqError: any) {
+            console.warn("Groq generation failed, attempting OpenRouter fallback:", groqError.message || groqError);
+            const openRouterKey = process.env.OPENROUTER_API_KEY;
+            
+            if (!openRouterKey) {
+                // If we don't have a fallback key, re-throw the original Groq error to be caught by the outer catch
+                throw groqError;
+            }
+
+            // Fallback to OpenRouter using Fetch API
+            const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${openRouterKey}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "meta-llama/llama-3.3-70b-instruct", // Compatible model on OpenRouter
+                    messages: [
+                        { role: 'system', content: SYSTEM_PROMPT },
+                        { role: 'user', content: `Study Material:\n\n${content}` }
+                    ],
+                    temperature: 0.3,
+                    response_format: { type: "json_object" }
+                })
+            });
+
+            if (!openRouterResponse.ok) {
+                const errorText = await openRouterResponse.text();
+                console.error("OpenRouter fallback failed:", errorText);
+                throw new Error(`OpenRouter Fallback Failed: ${openRouterResponse.statusText}. Original Groq Error: ${groqError.message}`);
+            }
+
+            const openRouterData = await openRouterResponse.json();
+            jsonResult = openRouterData.choices[0]?.message?.content || "";
+        }
+
+        if (!jsonResult) {
+            return NextResponse.json({ error: "No response from AI" }, { status: 500 });
+        }
+
+        // 2. Parse the JSON response
         let parsedData;
         try {
-            parsedData = JSON.parse(reply);
+            parsedData = JSON.parse(jsonResult);
         } catch (e) {
             return NextResponse.json({ error: "Failed to parse JSON from AI" }, { status: 500 });
         }
