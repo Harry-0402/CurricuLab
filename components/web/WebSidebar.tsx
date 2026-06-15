@@ -32,6 +32,7 @@ const careerSuite: NavItem[] = [
 const studyMaterials: NavItem[] = [
     { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
     { label: 'PaperTrail PYQs', href: '/tools/papertrail', icon: Icons.FileText },
+    { label: 'LearnPilot AI', href: '/ai-tutor', icon: Icons.Sparkles, badge: 'RAG' },
 ];
 
 const community: NavItem[] = [
