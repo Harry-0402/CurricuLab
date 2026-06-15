@@ -455,7 +455,10 @@ Please review the document at the URL provided above and generate a highly detai
     // Client-side filtering for better performance (no DB reload on type/unit changes)
     const filteredResources = [...resources, ...flashcardDecks]
         .filter(r => r.type in TYPE_CONFIG)
-        .filter(r => selectedType === 'all' || r.type === selectedType)
+        .filter(r => {
+            if (selectedType === 'all') return r.type !== 'flashcard';
+            return r.type === selectedType;
+        })
         .filter(r => selectedUnitId === 'all' || r.unitId === selectedUnitId);
 
 
