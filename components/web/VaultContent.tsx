@@ -138,6 +138,17 @@ export function VaultContent() {
             });
             const data = await res.json();
             if (res.ok) {
+                const newFlashcards: Flashcard[] = (data.data || []).map((d: any) => ({
+                    id: d.id,
+                    vaultResourceId: d.vault_resource_id,
+                    frontContent: d.front_content,
+                    backContent: d.back_content,
+                    createdAt: d.created_at,
+                    updatedAt: d.updated_at,
+                    unitId: resource.unitId,
+                    resourceTitle: resource.title
+                }));
+                setFlashcards(prev => [...prev, ...newFlashcards]);
                 toast.success(`Generated ${data.count} flashcards successfully!`);
             } else {
                 toast.error(data.error || "Failed to generate flashcards");
