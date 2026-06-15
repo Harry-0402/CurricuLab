@@ -32,7 +32,7 @@ const MiniFlashcard = ({ flashcard }: { flashcard: Flashcard }) => {
     const [isFlipped, setIsFlipped] = useState(false);
     return (
         <div 
-            className="w-full aspect-[4/3] perspective-1000 cursor-pointer group"
+            className="w-full h-64 perspective-1000 cursor-pointer group"
             onClick={() => setIsFlipped(!isFlipped)}
         >
             <div className={cn(
@@ -41,13 +41,13 @@ const MiniFlashcard = ({ flashcard }: { flashcard: Flashcard }) => {
             )}>
                 <div className="absolute inset-0 backface-hidden bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col items-center justify-center text-center group-hover:border-blue-100 overflow-y-auto custom-scrollbar">
                     <span className="absolute top-4 left-4 text-[9px] font-black tracking-widest text-blue-500 uppercase">Front</span>
-                    <div className="text-sm font-medium text-gray-900 w-full line-clamp-4">
+                    <div className="text-sm font-medium text-gray-900 w-full pt-6">
                         {flashcard.frontContent}
                     </div>
                 </div>
                 <div className="absolute inset-0 backface-hidden rotate-y-180 bg-blue-50 rounded-3xl border border-blue-100 shadow-sm p-6 flex flex-col items-center justify-center text-center overflow-y-auto custom-scrollbar">
                     <span className="absolute top-4 left-4 text-[9px] font-black tracking-widest text-blue-500 uppercase">Back</span>
-                    <div className="text-sm font-medium text-gray-900 w-full line-clamp-4">
+                    <div className="text-sm font-medium text-gray-900 w-full pt-6">
                         {flashcard.backContent}
                     </div>
                 </div>
