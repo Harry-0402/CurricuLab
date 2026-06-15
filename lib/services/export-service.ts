@@ -115,96 +115,6 @@ export class PlatformExportService {
         return paragraphs;
     }
 
-    static async generateChatExport(messages: { role: 'user' | 'assistant', content: string }[]): Promise<void> {
-        const doc = new Document({
-            sections: [{
-                properties: { type: SectionType.CONTINUOUS },
-                children: [
-                    new Paragraph({
-                        text: "LearnPilot Session",
-                        heading: HeadingLevel.TITLE,
-                        alignment: AlignmentType.CENTER,
-                        spacing: { after: 400 }
-                    }),
-                    ...messages.flatMap(msg => this.parseChatToDocx(msg))
-                ]
-            }]
-        });
-
-        const blob = await Packer.toBlob(doc);
-        saveAs(blob, `learnpilot_session_${new Date().toISOString().slice(0, 10)}.docx`);
-    }
-
-    private static parseChatToDocx(msg: { role: 'user' | 'assistant', content: string }): Paragraph[] {
-        const paragraphs: Paragraph[] = [];
-        const isUser = msg.role === 'user';
-
-        // Role Label
-        paragraphs.push(new Paragraph({
-            children: [
-                new TextRun({
-                    text: isUser ? "You" : "LearnPilot",
-                    bold: true,
-                    color: isUser ? "000000" : "2563EB", // Black for user, Blue for AI
-                    size: 24 // 12pt
-                })
-            ],
-            spacing: { before: 200, after: 100 },
-            border: {
-                bottom: {
-                    color: "E5E7EB",
-                    space: 5,
-                    style: BorderStyle.SINGLE,
-                    size: 4
-                }
-            }
-        }));
-
-        // Content
-        if (isUser) {
-            // User content usually plain text
-            paragraphs.push(new Paragraph({
-                text: msg.content,
-                spacing: { after: 300 }
-            }));
-        } else {
-            // AI Content needs markdown parsing
-            const lines = msg.content.split('\n');
-            lines.forEach(line => {
-                const trimmed = line.trim();
-                if (!trimmed) return;
-
-                if (trimmed.startsWith('# ')) {
-                    paragraphs.push(new Paragraph({
-                        text: trimmed.replace('# ', '').trim(),
-                        heading: HeadingLevel.HEADING_2,
-                        spacing: { before: 150, after: 100 }
-                    }));
-                } else if (trimmed.startsWith('## ')) {
-                    paragraphs.push(new Paragraph({
-                        text: trimmed.replace('## ', '').trim(),
-                        heading: HeadingLevel.HEADING_3,
-                        spacing: { before: 150, after: 100 }
-                    }));
-                } else if (trimmed.startsWith('- ')) {
-                    paragraphs.push(new Paragraph({
-                        children: this.parseTextRuns(trimmed.substring(2)),
-                        bullet: { level: 0 }
-                    }));
-                } else {
-                    paragraphs.push(new Paragraph({
-                        children: this.parseTextRuns(trimmed),
-                        spacing: { after: 100 }
-                    }));
-                }
-            });
-            // Spacer
-            paragraphs.push(new Paragraph({ text: "", spacing: { after: 300 } }));
-        }
-
-        return paragraphs;
-    }
-
     static async generateQuestionBankExport(
         subjectTitle: string,
         unitTitle: string,
@@ -501,26 +411,6 @@ export class PlatformExportService {
             </div>
         `;
         this.downloadHTML(content, `papertrail_${question.question.slice(0, 20).replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`);
-    }
-
-    static async generateChatHTMLExport(messages: any[], subjectTitle: string): Promise<void> {
-        const content = `
-            <div class="header">
-                <div class="role-badge assistant">LEARNPILOT SESSION</div>
-                <h1>Chat History</h1>
-                <p>${subjectTitle}</p>
-            </div>
-            <div class="chat-history">
-                ${messages.map(msg => `
-                    <div class="chat-message ${msg.role}">
-                        <div class="role-badge ${msg.role}">${msg.role === 'user' ? 'YOU' : 'LEARNPILOT'}</div>
-                        <div class="message-content">${this.markdownToHtml(msg.content)}</div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-
-        this.downloadHTML(content, `learnpilot_session_${subjectTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`);
     }
 
     static async generateResumeHTMLExport(resume: ResumeData): Promise<void> {

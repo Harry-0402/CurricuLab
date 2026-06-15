@@ -130,10 +130,6 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
             title: "Manage Your Tasks",
             description: "Sign in to track your assignments, set deadlines, and sync with your academic calendar."
         };
-        if (pathname === '/ai-tutor') return {
-            title: "LearnPilot AI",
-            description: "Our advanced AI tutor is reserved for registered students. Sign in to start your personalized learning journey."
-        };
         if (pathname === '/tools/career') return {
             title: "Career Gateway",
             description: "Access internship listings, career roadmaps, and professional networking tools by signing in."

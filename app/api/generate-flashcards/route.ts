@@ -78,7 +78,7 @@ Do NOT output any markdown blocks or text outside the JSON object. Just return t
 
         if (error) {
             console.error("Supabase insert error:", error);
-            return NextResponse.json({ error: "Failed to save flashcards to database" }, { status: 500 });
+            return NextResponse.json({ error: `Database error: ${error.message || error.details || 'Failed to save flashcards'}` }, { status: 500 });
         }
 
         return NextResponse.json({ success: true, count: flashcards.length, data });
