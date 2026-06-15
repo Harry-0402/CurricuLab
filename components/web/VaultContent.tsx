@@ -196,13 +196,13 @@ export function VaultContent() {
             
             setSubjects(fetchedSubjects);
 
-            // Set the activeSubjectId which will trigger the resource load via the secondary useEffect hook exactly once
             if (fetchedSubjects.length > 0) {
                 const firstSubjectId = fetchedSubjects[0].id;
                 setActiveSubjectId(firstSubjectId);
             } else {
                 setActiveSubjectId('');
                 setResources([]);
+                setFlashcards([]);
                 setLoading(false);
             }
             setIsInitialLoad(false);
@@ -453,12 +453,9 @@ Please review the document at the URL provided above and generate a highly detai
     }, [flashcards, activeSubjectId]);
 
     // Client-side filtering for better performance (no DB reload on type/unit changes)
-    const filteredResources = [...resources, ...flashcardDecks]
+    const filteredResources = [...resources]
         .filter(r => r.type in TYPE_CONFIG)
-        .filter(r => {
-            if (selectedType === 'all') return r.type !== 'flashcard';
-            return r.type === selectedType;
-        })
+        .filter(r => selectedType === 'all' || r.type === selectedType)
         .filter(r => selectedUnitId === 'all' || r.unitId === selectedUnitId);
 
 
@@ -564,7 +561,7 @@ Please review the document at the URL provided above and generate a highly detai
                     >
                         All
                     </button>
-                    {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'youtube_video', 'flashcard', 'other_resources'] as VaultResourceType[]).map(type => {
+                    {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'youtube_video', 'other_resources'] as VaultResourceType[]).map(type => {
                         const config = TYPE_CONFIG[type];
                         const isActive = selectedType === type;
                         return (
