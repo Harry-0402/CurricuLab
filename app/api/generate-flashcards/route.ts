@@ -106,8 +106,18 @@ Do NOT output any markdown blocks or text outside the JSON object. Just return t
         // 2. Parse the JSON response
         let parsedData;
         try {
-            parsedData = JSON.parse(jsonResult);
+            // Sanitize response by extracting the outermost JSON object
+            const startIndex = jsonResult.indexOf('{');
+            const endIndex = jsonResult.lastIndexOf('}');
+            
+            if (startIndex !== -1 && endIndex !== -1 && endIndex >= startIndex) {
+                const cleanJson = jsonResult.substring(startIndex, endIndex + 1);
+                parsedData = JSON.parse(cleanJson);
+            } else {
+                throw new Error("No JSON object found in response");
+            }
         } catch (e) {
+            console.error("Failed to parse JSON from AI. Raw output:", jsonResult);
             return NextResponse.json({ error: "Failed to parse JSON from AI" }, { status: 500 });
         }
 
