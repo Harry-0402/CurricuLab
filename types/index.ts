@@ -212,6 +212,8 @@ export interface Flashcard {
   backContent: string;
   createdAt?: string;
   updatedAt?: string;
+  unitId?: string;
+  resourceTitle?: string;
 }
 
 export interface FlashcardReview {

@@ -1,10 +1,10 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-import { Subject, Unit, VaultResource, VaultResourceType } from '@/types';
-import { getSubjects, getVaultResources, createVaultResource, updateVaultResource, deleteVaultResource } from '@/lib/services/app.service';
+import { Subject, Unit, VaultResource, VaultResourceType, Flashcard } from '@/types';
+import { getSubjects, getVaultResources, getSubjectFlashcards, createVaultResource, updateVaultResource, deleteVaultResource, deleteFlashcardDeck } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { toast } from 'sonner';
 
@@ -17,15 +17,43 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './CodeBlock';
 import { FlashcardReviewer } from './FlashcardReviewer';
-const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: string; bgColor: string }> = {
-    study_note: { label: 'Study Note', icon: Icons.FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-    question_bank: { label: 'Question Bank', icon: Icons.CheckSquare, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
-    case_study: { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
-    project: { label: 'Project', icon: Icons.FolderKanban, color: 'text-green-600', bgColor: 'bg-green-50' },
-    revision_note: { label: 'Revision Note', icon: Icons.PenLine, color: 'text-rose-600', bgColor: 'bg-rose-50' },
-    youtube_video: { label: 'YouTube Video', icon: Icons.Youtube, color: 'text-red-600', bgColor: 'bg-red-50' },
-    flashcard: { label: 'Flashcard', icon: Icons.Layers, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-    other_resources: { label: 'Other Resources', icon: Icons.Link, color: 'text-orange-600', bgColor: 'bg-orange-50' }
+const TYPE_CONFIG: Record<string, { label: string, icon: any, color: string, bgColor: string }> = {
+    'study_note': { label: 'Study Note', icon: Icons.BookOpen, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+    'question_bank': { label: 'Question Bank', icon: Icons.Database, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+    'case_study': { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
+    'project': { label: 'Project', icon: Icons.Layout, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+    'revision_note': { label: 'Revision Note', icon: Icons.Layers, color: 'text-rose-600', bgColor: 'bg-rose-50' },
+    'youtube_video': { label: 'YouTube Video', icon: Icons.Youtube, color: 'text-red-600', bgColor: 'bg-red-50' },
+    'flashcard': { label: 'Flashcards', icon: Icons.Layers, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+    'other_resources': { label: 'Other Resources', icon: Icons.FileText, color: 'text-gray-600', bgColor: 'bg-gray-100' }
+};
+
+const MiniFlashcard = ({ flashcard }: { flashcard: Flashcard }) => {
+    const [isFlipped, setIsFlipped] = useState(false);
+    return (
+        <div 
+            className="w-full aspect-[4/3] perspective-1000 cursor-pointer group"
+            onClick={() => setIsFlipped(!isFlipped)}
+        >
+            <div className={cn(
+                "w-full h-full transition-all duration-500 transform-style-3d relative",
+                isFlipped ? "rotate-y-180" : ""
+            )}>
+                <div className="absolute inset-0 backface-hidden bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col items-center justify-center text-center group-hover:border-blue-100 overflow-y-auto custom-scrollbar">
+                    <span className="absolute top-4 left-4 text-[9px] font-black tracking-widest text-blue-500 uppercase">Front</span>
+                    <div className="text-sm font-medium text-gray-900 w-full line-clamp-4">
+                        {flashcard.frontContent}
+                    </div>
+                </div>
+                <div className="absolute inset-0 backface-hidden rotate-y-180 bg-blue-50 rounded-3xl border border-blue-100 shadow-sm p-6 flex flex-col items-center justify-center text-center overflow-y-auto custom-scrollbar">
+                    <span className="absolute top-4 left-4 text-[9px] font-black tracking-widest text-blue-500 uppercase">Back</span>
+                    <div className="text-sm font-medium text-gray-900 w-full line-clamp-4">
+                        {flashcard.backContent}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 const getYoutubeEmbedUrl = (url: string) => {
@@ -55,11 +83,12 @@ export function VaultContent() {
     const [loading, setLoading] = useState(true);
     const [selectedResource, setSelectedResource] = useState<VaultResource | null>(null);
     const [selectedType, setSelectedType] = useState<VaultResourceType | 'all'>('all');
-    const [selectedUnitId, setSelectedUnitId] = useState<string>('all');
+    const [selectedUnitId, setSelectedUnitId] = useState<string | 'all'>('all');
+    const [reviewDeckId, setReviewDeckId] = useState<string | null>(null);
+    const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isReviewMode, setIsReviewMode] = useState(false);
     const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
@@ -126,6 +155,18 @@ export function VaultContent() {
         generateFlashcardsForResource(selectedResource, htmlContent || undefined);
     };
 
+    const handleDeleteDeck = async (deckResource: VaultResource & { _vaultResourceId: string }) => {
+        if (!confirm("Are you sure you want to delete these flashcards?")) return;
+        try {
+            await deleteFlashcardDeck(deckResource._vaultResourceId);
+            setFlashcards(prev => prev.filter(f => f.vaultResourceId !== deckResource._vaultResourceId));
+            setSelectedResource(null);
+            toast.success("Flashcards deleted successfully!");
+        } catch (error) {
+            toast.error("Failed to delete flashcards");
+        }
+    };
+
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -168,15 +209,17 @@ export function VaultContent() {
             setLoading(true);
             const activeSub = subjects.find(s => s.id === activeSubjectId);
             // Only filter by subject on server side - type and unit filtering done client-side
-            const [data, fetchedUnits] = await Promise.all([
+            const [data, fetchedUnits, fetchedFlashcards] = await Promise.all([
                 getVaultResources({ subjectId: activeSubjectId }),
-                UnitService.getBySubjectId(activeSubjectId, activeSub?.code)
+                UnitService.getBySubjectId(activeSubjectId, activeSub?.code),
+                getSubjectFlashcards(activeSubjectId)
             ]);
             
             if (ignore) return;
             
             setResources(data);
             setUnits(fetchedUnits);
+            setFlashcards(fetchedFlashcards);
             setLoading(false);
         };
         loadResources();
@@ -375,8 +418,31 @@ Please review the document at the URL provided above and generate a highly detai
         setShowExportMenu(false);
     };
 
+    const flashcardDecks = useMemo(() => {
+        const map = new Map<string, { flashcards: Flashcard[], unitId: string, title: string }>();
+        flashcards.forEach(f => {
+            if (!map.has(f.vaultResourceId)) {
+                map.set(f.vaultResourceId, { flashcards: [], unitId: f.unitId || '', title: f.resourceTitle || '' });
+            }
+            map.get(f.vaultResourceId)!.flashcards.push(f);
+        });
+        return Array.from(map.entries()).map(([vid, data]) => ({
+            id: `deck-${vid}`,
+            subjectId: activeSubjectId,
+            unitId: data.unitId,
+            type: 'flashcard' as VaultResourceType,
+            title: `Flashcards: ${data.title || 'Study Note'}`,
+            link: '',
+            tags: [],
+            createdAt: data.flashcards[0]?.createdAt || new Date().toISOString(),
+            updatedAt: data.flashcards[0]?.updatedAt || new Date().toISOString(),
+            _flashcards: data.flashcards,
+            _vaultResourceId: vid
+        } as VaultResource & { _flashcards: Flashcard[], _vaultResourceId: string }));
+    }, [flashcards, activeSubjectId]);
+
     // Client-side filtering for better performance (no DB reload on type/unit changes)
-    const filteredResources = resources
+    const filteredResources = [...resources, ...flashcardDecks]
         .filter(r => r.type in TYPE_CONFIG)
         .filter(r => selectedType === 'all' || r.type === selectedType)
         .filter(r => selectedUnitId === 'all' || r.unitId === selectedUnitId);
@@ -514,28 +580,15 @@ Please review the document at the URL provided above and generate a highly detai
                 </span>
             </div>
 
-            {/* Flashcard Review Action */}
-            {selectedType === 'flashcard' && !isReviewMode && (
-                <div className="flex justify-center shrink-0 mb-2">
-                    <button
-                        onClick={() => setIsReviewMode(true)}
-                        className="px-6 py-3 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition-colors shadow-lg shadow-teal-200 flex items-center gap-2"
-                    >
-                        <Icons.Layers size={18} />
-                        Start Flashcard Review Session
-                    </button>
-                </div>
-            )}
-
             {/* Main Content - Grid Layout or Review Mode */}
             <div className="flex-1 overflow-y-auto min-h-0 print:hidden scrollbar-hide">
-                {isReviewMode ? (
+                {reviewDeckId ? (
                     <div className="py-8">
                         <FlashcardReviewer
-                            flashcards={[]} // Empty for now until DB query is added
+                            flashcards={flashcardDecks.find(d => d.id === reviewDeckId)?._flashcards || []}
                             reviews={[]}
                             onReviewComplete={(id, rating) => { console.log(id, rating); }}
-                            onClose={() => setIsReviewMode(false)}
+                            onClose={() => setReviewDeckId(null)}
                         />
                     </div>
                 ) : loading ? (
@@ -549,8 +602,14 @@ Please review the document at the URL provided above and generate a highly detai
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
                             <Icons.FileText className="mx-auto mb-4 text-gray-300" size={64} />
-                            <p className="text-lg font-bold text-gray-400">No resources yet</p>
-                            <p className="text-sm text-gray-400 mt-2">Click "Add Resource" to get started</p>
+                            <p className="text-lg font-bold text-gray-400">
+                                {selectedType === 'flashcard' ? "No flashcards yet" : "No resources yet"}
+                            </p>
+                            <p className="text-sm text-gray-400 mt-2">
+                                {selectedType === 'flashcard' 
+                                    ? "Open a study note and click 'Auto-Flashcard' to generate some!" 
+                                    : "Click \"Add Resource\" to get started"}
+                            </p>
                         </div>
                     </div>
                 ) : (
@@ -831,21 +890,47 @@ Please review the document at the URL provided above and generate a highly detai
                                         <span className="hidden sm:inline">Auto-Flashcard</span>
                                     </button>
                                 )}
-                                <button
-                                    onClick={() => {
-                                        if (htmlContent && selectedResource?.link?.includes('/storage/v1/object/public/vault/') && selectedResource.link.endsWith('.html')) {
-                                            const blob = new Blob([htmlContent], { type: 'text/html' });
-                                            const url = URL.createObjectURL(blob);
-                                            window.open(url, '_blank');
-                                        } else if (selectedResource?.link) {
-                                            window.open(selectedResource.link, '_blank');
-                                        }
-                                    }}
-                                    className="p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-blue-600"
-                                    title="Open in new tab"
-                                >
-                                    <Icons.ExternalLink size={20} />
-                                </button>
+                                {/* Flashcard Deck Actions */}
+                                {selectedResource.type === 'flashcard' && (
+                                    <>
+                                        <button
+                                            onClick={() => {
+                                                setReviewDeckId(selectedResource.id);
+                                                setSelectedResource(null);
+                                            }}
+                                            className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 rounded-xl font-bold text-sm transition-colors shadow-sm shadow-teal-200"
+                                            title="Start Flashcard Review Session"
+                                        >
+                                            <Icons.Layers size={16} />
+                                            <span className="hidden sm:inline">Start Review Session</span>
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteDeck(selectedResource as VaultResource & { _vaultResourceId: string })}
+                                            className="p-3 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-full transition-colors"
+                                            title="Delete Flashcards"
+                                        >
+                                            <Icons.Trash2 size={20} />
+                                        </button>
+                                    </>
+                                )}
+
+                                {selectedResource.type !== 'flashcard' && (
+                                    <button
+                                        onClick={() => {
+                                            if (htmlContent && selectedResource?.link?.includes('/storage/v1/object/public/vault/') && selectedResource.link.endsWith('.html')) {
+                                                const blob = new Blob([htmlContent], { type: 'text/html' });
+                                                const url = URL.createObjectURL(blob);
+                                                window.open(url, '_blank');
+                                            } else if (selectedResource?.link) {
+                                                window.open(selectedResource.link, '_blank');
+                                            }
+                                        }}
+                                        className="p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-blue-600"
+                                        title="Open in new tab"
+                                    >
+                                        <Icons.ExternalLink size={20} />
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => setSelectedResource(null)}
                                     className="p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900"
@@ -857,7 +942,15 @@ Please review the document at the URL provided above and generate a highly detai
 
                         {/* Content Area */}
                         <div className="flex-1 overflow-y-auto bg-gray-50 rounded-b-[32px] relative">
-                            {selectedResource.link ? (
+                            {selectedResource.type === 'flashcard' ? (
+                                <div className="p-8">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        {(selectedResource as any)._flashcards?.map((flashcard: Flashcard) => (
+                                            <MiniFlashcard key={flashcard.id} flashcard={flashcard} />
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : selectedResource.link ? (
                                 (htmlContent) ? (
                                     <iframe
                                         srcDoc={htmlContent}

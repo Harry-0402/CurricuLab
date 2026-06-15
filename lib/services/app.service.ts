@@ -435,7 +435,7 @@ export const deleteMarkWiseQuestion = async (id: string): Promise<boolean> => {
 
 // --- Vault Resources (Study Notes, Case Studies, Projects) ---
 
-import { VaultResource, VaultResourceType } from '@/types';
+import { VaultResource, VaultResourceType, Flashcard } from '@/types';
 
 const mapVaultResource = (data: any): VaultResource => ({
     id: data.id,
@@ -464,6 +464,59 @@ export const getVaultResources = async (filters: { subjectId?: string; unitId?: 
     }
 
     return data.map(mapVaultResource);
+};
+
+export const getSubjectFlashcards = async (subjectId: string): Promise<Flashcard[]> => {
+    const { data, error } = await supabaseData
+        .from('vault_flashcards')
+        .select(`
+            *,
+            vault_resources!inner(subject_id, unit_id, title)
+        `)
+        .eq('vault_resources.subject_id', subjectId)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Failed to fetch subject flashcards:", error);
+        return [];
+    }
+
+    return data.map((f: any) => ({
+        id: f.id,
+        vaultResourceId: f.vault_resource_id,
+        frontContent: f.front_content,
+        backContent: f.back_content,
+        createdAt: f.created_at,
+        updatedAt: f.updated_at,
+        unitId: f.vault_resources?.unit_id,
+        resourceTitle: f.vault_resources?.title
+    }));
+};
+
+export const deleteFlashcardDeck = async (vaultResourceId: string, providedToken?: string): Promise<boolean> => {
+    try {
+        const token = providedToken || await getAuthToken();
+        const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vault_flashcards?vault_resource_id=eq.${vaultResourceId}`;
+        
+        const response = await withTimeout(fetch(apiUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+            }
+        }));
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error deleting flashcard deck via fetch:', errorText);
+            throw new Error(`Delete failed: ${response.status} ${response.statusText}`);
+        }
+
+        return true;
+    } catch (error) {
+        console.error("deleteFlashcardDeck timed out or failed:", error);
+        throw error;
+    }
 };
 
 export const createVaultResource = async (resource: Omit<VaultResource, 'id'>, providedToken?: string): Promise<VaultResource | null> => {

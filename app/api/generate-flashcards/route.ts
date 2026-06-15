@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         }
 
         // 1. Ask Groq to extract flashcards in structured JSON format
-        const SYSTEM_PROMPT = `You are an expert tutor. Given the following study material, extract the key concepts and create 5 high-quality flashcards.
+        const SYSTEM_PROMPT = `You are an expert tutor. Given the following study material, extract the key concepts and create 30 to 40 high-quality flashcards.
 Output your response as a valid JSON object containing a "flashcards" array. Each flashcard must have "frontContent" (the question or concept) and "backContent" (the answer or definition). 
 Do NOT output any markdown blocks or text outside the JSON object. Just return the JSON object directly.`;
 

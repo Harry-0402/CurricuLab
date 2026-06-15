@@ -49,15 +49,13 @@ export function AiMentorTab() {
 
     const handleExportWord = async () => {
         if (messages.length === 0) return;
-        const { PlatformExportService } = await import('@/lib/services/export-service');
-        await PlatformExportService.generateChatExport(messages);
+        // Functionality removed during LearnPilot deletion
         setShowExportMenu(false);
     };
 
     const handleExportHTML = async () => {
         if (messages.length === 0) return;
-        const { PlatformExportService } = await import('@/lib/services/export-service');
-        await PlatformExportService.generateChatHTMLExport(messages, "SkillForge AI Mentor");
+        // Functionality removed during LearnPilot deletion
         setShowExportMenu(false);
     };
 
