@@ -96,7 +96,9 @@ export function VaultContent() {
     }, [selectedResource]);
 
     const handleGenerateFlashcards = async () => {
-        if (!selectedResource || !htmlContent) return;
+        if (!selectedResource) return;
+        if (!htmlContent && !selectedResource.link) return;
+        
         setIsGeneratingFlashcards(true);
         try {
             const res = await fetch('/api/generate-flashcards', {
@@ -104,7 +106,8 @@ export function VaultContent() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     vaultResourceId: selectedResource.id,
-                    content: htmlContent
+                    content: htmlContent,
+                    url: !htmlContent ? selectedResource.link : undefined
                 })
             });
             const data = await res.json();
@@ -800,7 +803,7 @@ Please review the document at the URL provided above and generate a highly detai
                             </div>
                             <div className="flex items-center gap-2">
                                 {/* Generate Flashcards Button */}
-                                {htmlContent && (
+                                {(selectedResource.type === 'study_note' || selectedResource.type === 'revision_note') && (htmlContent || selectedResource.link) && (
                                     <button
                                         onClick={handleGenerateFlashcards}
                                         disabled={isGeneratingFlashcards}

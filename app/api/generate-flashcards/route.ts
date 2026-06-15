@@ -11,10 +11,23 @@ const groq = new Groq({ apiKey: groqApiKey });
 
 export async function POST(req: Request) {
     try {
-        const { vaultResourceId, content } = await req.json();
+        let { vaultResourceId, content, url } = await req.json();
 
-        if (!vaultResourceId || !content) {
-            return NextResponse.json({ error: "Missing vaultResourceId or content" }, { status: 400 });
+        if (!vaultResourceId) {
+            return NextResponse.json({ error: "Missing vaultResourceId" }, { status: 400 });
+        }
+
+        if (!content && url) {
+            try {
+                const fetched = await fetch(url);
+                content = await fetched.text();
+            } catch (e) {
+                return NextResponse.json({ error: "Failed to fetch content from URL" }, { status: 400 });
+            }
+        }
+
+        if (!content) {
+            return NextResponse.json({ error: "Missing content or valid URL" }, { status: 400 });
         }
 
         if (!groqApiKey) {
