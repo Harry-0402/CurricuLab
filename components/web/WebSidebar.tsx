@@ -31,6 +31,7 @@ const careerSuite: NavItem[] = [
 
 const studyMaterials: NavItem[] = [
     { label: 'Knowledge Vault', href: '/vault', icon: Icons.Notes },
+    { label: 'YouTube Library', href: '/youtube-library', icon: Icons.Youtube },
     { label: 'PaperTrail PYQs', href: '/tools/papertrail', icon: Icons.FileText },
 ];
 

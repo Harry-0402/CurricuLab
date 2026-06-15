@@ -713,3 +713,141 @@ export const deleteVaultResource = async (id: string, providedToken?: string): P
     }
 };
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// YouTube Library  (dedicated `youtube_library` table)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface YoutubeVideo {
+    id: string;
+    subjectId: string;
+    unitId?: string;
+    title: string;
+    url: string;
+    tags: string[];
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+const mapYoutubeVideo = (data: any): YoutubeVideo => ({
+    id: data.id,
+    subjectId: data.subject_id,
+    unitId: data.unit_id || '',
+    title: data.title,
+    url: data.url || '',
+    tags: data.tags || [],
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+});
+
+export const getYoutubeVideos = async (filters: { subjectId?: string; unitId?: string }): Promise<YoutubeVideo[]> => {
+    let query = supabaseData.from('youtube_library').select('*');
+    if (filters.subjectId) query = query.eq('subject_id', filters.subjectId);
+    if (filters.unitId)    query = query.eq('unit_id', filters.unitId);
+    const { data, error } = await query.order('created_at', { ascending: false });
+    if (error) {
+        console.error('Failed to fetch youtube_library:', error);
+        return [];
+    }
+    return data.map(mapYoutubeVideo);
+};
+
+export const createYoutubeVideo = async (
+    video: Omit<YoutubeVideo, 'id'>,
+    providedToken?: string
+): Promise<YoutubeVideo | null> => {
+    try {
+        const token = providedToken || await getAuthToken();
+        const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/youtube_library`;
+        const payload = {
+            subject_id: video.subjectId,
+            unit_id: video.unitId || null,
+            title: video.title,
+            url: video.url,
+            tags: video.tags || [],
+        };
+        const response = await withTimeout(fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation',
+            },
+            body: JSON.stringify(payload),
+        }));
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error creating youtube video:', errorText);
+            throw new Error(`Create failed: ${response.status}`);
+        }
+        const dataArray = await response.json();
+        return mapYoutubeVideo(dataArray[0]);
+    } catch (error) {
+        console.error('createYoutubeVideo failed:', error);
+        throw error;
+    }
+};
+
+export const updateYoutubeVideo = async (
+    video: YoutubeVideo,
+    providedToken?: string
+): Promise<YoutubeVideo | null> => {
+    try {
+        const token = providedToken || await getAuthToken();
+        const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/youtube_library?id=eq.${video.id}`;
+        const payload = {
+            subject_id: video.subjectId,
+            unit_id: video.unitId || null,
+            title: video.title,
+            url: video.url,
+            tags: video.tags || [],
+        };
+        const response = await withTimeout(fetch(apiUrl, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation',
+            },
+            body: JSON.stringify(payload),
+        }));
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error updating youtube video:', errorText);
+            throw new Error(`Update failed: ${response.status}`);
+        }
+        const dataArray = await response.json();
+        return mapYoutubeVideo(dataArray[0]);
+    } catch (error) {
+        console.error('updateYoutubeVideo failed:', error);
+        throw error;
+    }
+};
+
+export const deleteYoutubeVideo = async (
+    id: string,
+    providedToken?: string
+): Promise<boolean> => {
+    try {
+        const token = providedToken || await getAuthToken();
+        const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/youtube_library?id=eq.${id}`;
+        const response = await withTimeout(fetch(apiUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            },
+        }));
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error deleting youtube video:', errorText);
+            throw new Error(`Delete failed: ${response.status}`);
+        }
+        return true;
+    } catch (error) {
+        console.error('deleteYoutubeVideo failed:', error);
+        throw error;
+    }
+};

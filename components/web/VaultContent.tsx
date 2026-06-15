@@ -23,7 +23,6 @@ const TYPE_CONFIG: Record<string, { label: string, icon: any, color: string, bgC
     'case_study': { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
     'project': { label: 'Project', icon: Icons.Layout, color: 'text-orange-600', bgColor: 'bg-orange-50' },
     'revision_note': { label: 'Revision Note', icon: Icons.Layers, color: 'text-rose-600', bgColor: 'bg-rose-50' },
-    'youtube_video': { label: 'YouTube Video', icon: Icons.Youtube, color: 'text-red-600', bgColor: 'bg-red-50' },
     'flashcard': { label: 'Flashcards', icon: Icons.Layers, color: 'text-teal-600', bgColor: 'bg-teal-50' },
     'other_resources': { label: 'Other Resources', icon: Icons.FileText, color: 'text-gray-600', bgColor: 'bg-gray-100' }
 };
@@ -561,7 +560,7 @@ Please review the document at the URL provided above and generate a highly detai
                     >
                         All
                     </button>
-                    {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'youtube_video', 'other_resources'] as VaultResourceType[]).map(type => {
+                    {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'other_resources'] as VaultResourceType[]).map(type => {
                         const config = TYPE_CONFIG[type];
                         const isActive = selectedType === type;
                         return (
@@ -826,7 +825,7 @@ Please review the document at the URL provided above and generate a highly detai
                                             onChange={(e) => setFormData({ ...formData, type: e.target.value as VaultResourceType })}
                                             className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
                                         >
-                                            {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'youtube_video', 'other_resources'] as VaultResourceType[]).map(type => {
+                                            {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'other_resources'] as VaultResourceType[]).map(type => {
                                                 const config = TYPE_CONFIG[type];
                                                 return (
                                                     <option key={type} value={type}>
