@@ -30,6 +30,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Missing content or valid URL" }, { status: 400 });
         }
 
+        // Truncate content to ~4000 tokens (approx 15,000 chars) to prevent hitting Groq's 12000 TPM limit
+        // which adds input tokens and max_tokens together.
+        const MAX_CHARS = 15000;
+        if (content.length > MAX_CHARS) {
+            content = content.substring(0, MAX_CHARS) + "\n\n...[Content truncated to fit limits]";
+        }
+
         if (!groqApiKey) {
             return NextResponse.json({ error: "Groq API Key missing" }, { status: 500 });
         }
@@ -48,7 +55,7 @@ Do NOT output any markdown blocks or text outside the JSON object. Just return t
             ],
             model: 'llama-3.3-70b-versatile',
             temperature: 0.3,
-            max_tokens: 8000,
+            max_tokens: 3000,
             response_format: { type: "json_object" }
         });
 
