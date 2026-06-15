@@ -95,6 +95,13 @@ Do NOT output any markdown blocks or text outside the JSON object. Just return t
 
     } catch (error: any) {
         console.error("Flashcard generation failed:", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        let errorMessage = error.message || "Internal server error";
+        
+        // Catch Groq rate limit errors and make them user-friendly
+        if (errorMessage.includes("Rate limit") || errorMessage.includes("rate_limit_exceeded") || errorMessage.includes("429")) {
+            errorMessage = "AI token limit reached. Please wait for 2-3 minutes for tokens to refresh, then try again.";
+        }
+        
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
