@@ -56,6 +56,7 @@ export function AiTutorContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedModelId, setSelectedModelId] = useState(MODELS[0].id);
     const [showExportMenu, setShowExportMenu] = useState(false);
+    const [vaultMode, setVaultMode] = useState(false); // RAG toggle
     const scrollRef = useRef<HTMLDivElement>(null);
     const hasLoaded = useRef(false);
 
@@ -120,14 +121,16 @@ export function AiTutorContent() {
     const generateResponse = async (modelId: string, currentMessages: Message[], userPrompt: string): Promise<{ text: string, isTruncated: boolean }> => {
         const selectedModel = MODELS.find(m => m.id === modelId) || MODELS[0];
 
-        // Handles Groq, Copilot, and OpenRouter via server-side route
-        if (selectedModel.provider === 'groq' || selectedModel.provider === 'copilot' || selectedModel.provider === 'openrouter') {
-            const response = await fetch('/api/chat', {
+        // Handles Groq, Copilot, OpenRouter, AND RAG
+        if (vaultMode || selectedModel.provider === 'groq' || selectedModel.provider === 'copilot' || selectedModel.provider === 'openrouter') {
+            const endpoint = vaultMode ? '/api/chat-rag' : '/api/chat';
+            
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     messages: [...currentMessages, { role: 'user', content: userPrompt }],
-                    provider: selectedModel.provider,
+                    provider: vaultMode ? 'groq' : selectedModel.provider, // RAG uses Groq
                     model: selectedModel.id
                 })
             });
@@ -274,7 +277,8 @@ export function AiTutorContent() {
                             <select
                                 value={selectedModelId}
                                 onChange={(e) => setSelectedModelId(e.target.value)}
-                                className="appearance-none bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl px-4 py-2.5 pr-10 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
+                                disabled={vaultMode} // Disable model select in vault mode
+                                className="appearance-none bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl px-4 py-2.5 pr-10 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm disabled:opacity-50"
                             >
                                 {MODELS.map(m => (
                                     <option key={m.id} value={m.id}>{m.name}</option>
@@ -282,6 +286,21 @@ export function AiTutorContent() {
                             </select>
                             <Icons.ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                         </div>
+
+                        {/* Vault Mode Toggle */}
+                        <button
+                            onClick={() => setVaultMode(!vaultMode)}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all shadow-sm font-bold text-sm border",
+                                vaultMode 
+                                    ? "bg-blue-600 border-blue-600 text-white shadow-blue-200" 
+                                    : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+                            )}
+                            title="Toggle Vault Mode (RAG)"
+                        >
+                            <Icons.Database size={18} />
+                            <span className="hidden sm:inline">Vault Mode</span>
+                        </button>
                     </div>
                 </div>
 

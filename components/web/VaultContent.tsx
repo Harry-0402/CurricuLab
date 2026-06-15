@@ -16,6 +16,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './CodeBlock';
+import { FlashcardReviewer } from './FlashcardReviewer';
 const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: string; bgColor: string }> = {
     study_note: { label: 'Study Note', icon: Icons.FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
     question_bank: { label: 'Question Bank', icon: Icons.CheckSquare, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
@@ -58,6 +59,7 @@ export function VaultContent() {
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isReviewMode, setIsReviewMode] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         subjectId: '',
@@ -480,9 +482,31 @@ Please review the document at the URL provided above and generate a highly detai
                 </span>
             </div>
 
-            {/* Main Content - Grid Layout */}
+            {/* Flashcard Review Action */}
+            {selectedType === 'flashcard' && !isReviewMode && (
+                <div className="flex justify-center shrink-0 mb-2">
+                    <button
+                        onClick={() => setIsReviewMode(true)}
+                        className="px-6 py-3 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition-colors shadow-lg shadow-teal-200 flex items-center gap-2"
+                    >
+                        <Icons.Layers size={18} />
+                        Start Flashcard Review Session
+                    </button>
+                </div>
+            )}
+
+            {/* Main Content - Grid Layout or Review Mode */}
             <div className="flex-1 overflow-y-auto min-h-0 print:hidden scrollbar-hide">
-                {loading ? (
+                {isReviewMode ? (
+                    <div className="py-8">
+                        <FlashcardReviewer
+                            flashcards={[]} // Empty for now until DB query is added
+                            reviews={[]}
+                            onReviewComplete={(id, rating) => { console.log(id, rating); }}
+                            onClose={() => setIsReviewMode(false)}
+                        />
+                    </div>
+                ) : loading ? (
                     <div className="flex items-center justify-center h-64">
                         <div className="flex flex-col items-center gap-3">
                             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>

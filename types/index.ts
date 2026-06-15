@@ -205,6 +205,33 @@ export interface VaultResource {
   updatedAt?: string;
 }
 
+export interface Flashcard {
+  id: string;
+  vaultResourceId: string;
+  frontContent: string;
+  backContent: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface FlashcardReview {
+  id: string;
+  flashcardId: string;
+  userId: string;
+  easeFactor: number;
+  intervalDays: number;
+  repetitions: number;
+  nextReviewDate: string;
+  lastReviewedAt?: string;
+}
+
+export interface VaultEmbedding {
+  id: string;
+  vaultResourceId: string;
+  contentChunk: string;
+  embedding: number[]; // Array of floats
+}
+
 export interface ResumeExperience {
   id: string;
   company: string;
