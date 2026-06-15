@@ -82,7 +82,7 @@ export function FlashcardReviewer({ flashcards, reviews, onReviewComplete, onClo
 
             {/* Flashcard 3D Container */}
             <div 
-                className="w-full h-[300px] sm:h-[350px] perspective-1000 mb-8 cursor-pointer group"
+                className="w-full h-[200px] perspective-1000 mb-8 cursor-pointer group"
                 onClick={() => !isFlipped && setIsFlipped(true)}
             >
                 <div className={cn(
@@ -91,7 +91,7 @@ export function FlashcardReviewer({ flashcards, reviews, onReviewComplete, onClo
                 )}>
                     
                     {/* FRONT */}
-                    <div className="absolute inset-0 backface-hidden bg-white rounded-[32px] border-2 border-gray-100 shadow-sm p-8 md:p-12 flex flex-col items-center justify-center text-center group-hover:border-blue-100 transition-colors">
+                    <div className="absolute inset-0 backface-hidden bg-white rounded-[32px] border-2 border-gray-100 shadow-sm p-6 md:p-8 flex flex-col items-center justify-center text-center group-hover:border-blue-100 transition-colors overflow-y-auto custom-scrollbar">
                         <span className="absolute top-6 left-6 text-[10px] font-black tracking-widest text-blue-500 uppercase">Front</span>
                         <div className="prose prose-sm md:prose-base prose-blue max-w-none w-full">
                             <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
@@ -106,7 +106,7 @@ export function FlashcardReviewer({ flashcards, reviews, onReviewComplete, onClo
                     </div>
 
                     {/* BACK */}
-                    <div className="absolute inset-0 backface-hidden rotate-y-180 bg-blue-50 rounded-[32px] border-2 border-blue-100 shadow-sm p-8 md:p-12 flex flex-col items-center justify-center text-center overflow-y-auto custom-scrollbar">
+                    <div className="absolute inset-0 backface-hidden rotate-y-180 bg-blue-50 rounded-[32px] border-2 border-blue-100 shadow-sm p-6 md:p-8 flex flex-col items-center justify-center text-center overflow-y-auto custom-scrollbar">
                         <span className="absolute top-6 left-6 text-[10px] font-black tracking-widest text-blue-500 uppercase">Back</span>
                         <div className="prose prose-sm md:prose-base prose-blue max-w-none w-full">
                             <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
