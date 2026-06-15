@@ -95,19 +95,16 @@ export function VaultContent() {
         }
     }, [selectedResource]);
 
-    const handleGenerateFlashcards = async () => {
-        if (!selectedResource) return;
-        if (!htmlContent && !selectedResource.link) return;
-        
+    const generateFlashcardsForResource = async (resource: VaultResource, contentOverride?: string) => {
         setIsGeneratingFlashcards(true);
         try {
             const res = await fetch('/api/generate-flashcards', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    vaultResourceId: selectedResource.id,
-                    content: htmlContent,
-                    url: !htmlContent ? selectedResource.link : undefined
+                    vaultResourceId: resource.id,
+                    content: contentOverride,
+                    url: !contentOverride ? resource.link : undefined
                 })
             });
             const data = await res.json();
@@ -121,6 +118,12 @@ export function VaultContent() {
         } finally {
             setIsGeneratingFlashcards(false);
         }
+    };
+
+    const handleGenerateFlashcards = () => {
+        if (!selectedResource) return;
+        if (!htmlContent && !selectedResource.link) return;
+        generateFlashcardsForResource(selectedResource, htmlContent || undefined);
     };
 
     const [showExportMenu, setShowExportMenu] = useState(false);
@@ -611,28 +614,42 @@ Please review the document at the URL provided above and generate a highly detai
                                             <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
                                             <div className="flex items-center gap-2">
                                                 {resource.type === 'study_note' && (
-                                                    <button
-                                                        onClick={(e) => handleCopyPrompt(e, resource)}
-                                                        className={cn(
-                                                            "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
-                                                            copiedId === resource.id
-                                                                ? "bg-green-50 text-green-600 border-green-200"
-                                                                : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
-                                                        )}
-                                                        title="Generate AI Study Prompt"
-                                                    >
-                                                        {copiedId === resource.id ? (
-                                                            <>
-                                                                <Icons.Check size={11} className="text-green-500" />
-                                                                <span>Copied!</span>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Icons.Sparkles size={11} className="text-purple-500" />
-                                                                <span>AI Prompt</span>
-                                                            </>
-                                                        )}
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                generateFlashcardsForResource(resource);
+                                                            }}
+                                                            disabled={isGeneratingFlashcards}
+                                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50"
+                                                            title="Auto-generate Flashcards"
+                                                        >
+                                                            <Icons.Layers size={11} className="text-indigo-500" />
+                                                            <span>Auto-Flashcard</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => handleCopyPrompt(e, resource)}
+                                                            className={cn(
+                                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
+                                                                copiedId === resource.id
+                                                                    ? "bg-green-50 text-green-600 border-green-200"
+                                                                    : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
+                                                            )}
+                                                            title="Generate AI Study Prompt"
+                                                        >
+                                                            {copiedId === resource.id ? (
+                                                                <>
+                                                                    <Icons.Check size={11} className="text-green-500" />
+                                                                    <span>Copied!</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Icons.Sparkles size={11} className="text-purple-500" />
+                                                                    <span>AI Prompt</span>
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    </>
                                                 )}
                                                 <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
                                                     Read More <Icons.ArrowRight size={12} />
