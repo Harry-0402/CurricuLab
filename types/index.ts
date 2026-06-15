@@ -191,7 +191,7 @@ export interface Assignment {
   externalLink?: string;
 }
 
-export type VaultResourceType = 'study_note' | 'question_bank' | 'case_study' | 'project' | 'revision_note' | 'other_resources';
+export type VaultResourceType = 'study_note' | 'question_bank' | 'case_study' | 'project' | 'revision_note' | 'youtube_video' | 'flashcard' | 'other_resources';
 
 export interface VaultResource {
   id: string;

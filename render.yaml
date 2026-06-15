@@ -6,7 +6,11 @@ services:
     plan: free
     autoDeploy: false # Disabled to save build minutes
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: node .next/standalone/server.js
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_OPTIONS
+        value: "--max_old_space_size=384"
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"

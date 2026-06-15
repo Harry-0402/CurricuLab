@@ -22,7 +22,27 @@ const TYPE_CONFIG: Record<VaultResourceType, { label: string; icon: any; color: 
     case_study: { label: 'Case Study', icon: Icons.Briefcase, color: 'text-purple-600', bgColor: 'bg-purple-50' },
     project: { label: 'Project', icon: Icons.FolderKanban, color: 'text-green-600', bgColor: 'bg-green-50' },
     revision_note: { label: 'Revision Note', icon: Icons.PenLine, color: 'text-rose-600', bgColor: 'bg-rose-50' },
+    youtube_video: { label: 'YouTube Video', icon: Icons.Youtube, color: 'text-red-600', bgColor: 'bg-red-50' },
+    flashcard: { label: 'Flashcard', icon: Icons.Layers, color: 'text-teal-600', bgColor: 'bg-teal-50' },
     other_resources: { label: 'Other Resources', icon: Icons.Link, color: 'text-orange-600', bgColor: 'bg-orange-50' }
+};
+
+const getYoutubeEmbedUrl = (url: string) => {
+    if (!url) return '';
+    try {
+        let videoId = '';
+        if (url.includes('youtube.com/watch')) {
+            const urlObj = new URL(url);
+            videoId = urlObj.searchParams.get('v') || '';
+        } else if (url.includes('youtu.be/')) {
+            videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else if (url.includes('youtube.com/embed/')) {
+            return url;
+        }
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+    } catch (e) {
+        return url;
+    }
 };
 
 export function VaultContent() {
@@ -416,13 +436,13 @@ Please review the document at the URL provided above and generate a highly detai
             </div>
 
             {/* Filter Row */}
-            <div className="flex items-center justify-between gap-4 shrink-0 print:hidden">
+            <div className="flex items-center justify-between gap-4 shrink-0 print:hidden w-full overflow-hidden">
                 {/* Type Filter Badges */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <button
                         onClick={() => setSelectedType('all')}
                         className={cn(
-                            "px-4 py-2 rounded-xl text-xs font-bold transition-all border",
+                            "px-3 py-1.5 rounded-[10px] text-[11px] font-bold transition-all border",
                             selectedType === 'all'
                                 ? "bg-gray-900 text-white border-gray-900"
                                 : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
@@ -430,7 +450,7 @@ Please review the document at the URL provided above and generate a highly detai
                     >
                         All
                     </button>
-                    {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'other_resources'] as VaultResourceType[]).map(type => {
+                    {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'youtube_video', 'flashcard', 'other_resources'] as VaultResourceType[]).map(type => {
                         const config = TYPE_CONFIG[type];
                         const isActive = selectedType === type;
                         return (
@@ -438,13 +458,13 @@ Please review the document at the URL provided above and generate a highly detai
                                 key={type}
                                 onClick={() => setSelectedType(type)}
                                 className={cn(
-                                    "px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-2",
+                                    "px-3 py-1.5 rounded-[10px] text-[11px] font-bold transition-all border flex items-center gap-1.5",
                                     isActive
                                         ? `${config.bgColor} ${config.color} border-current`
                                         : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
                                 )}
                             >
-                                <config.icon size={14} />
+                                <config.icon size={13} />
                                 {config.label}s
                             </button>
                         );
@@ -640,7 +660,7 @@ Please review the document at the URL provided above and generate a highly detai
                                             onChange={(e) => setFormData({ ...formData, type: e.target.value as VaultResourceType })}
                                             className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
                                         >
-                                            {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'other_resources'] as VaultResourceType[]).map(type => {
+                                            {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'youtube_video', 'flashcard', 'other_resources'] as VaultResourceType[]).map(type => {
                                                 const config = TYPE_CONFIG[type];
                                                 return (
                                                     <option key={type} value={type}>
@@ -766,10 +786,11 @@ Please review the document at the URL provided above and generate a highly detai
                                     />
                                 ) : (
                                     <iframe
-                                        src={selectedResource.link}
+                                        src={selectedResource.type === 'youtube_video' ? getYoutubeEmbedUrl(selectedResource.link) : selectedResource.link}
                                         className="w-full h-full border-0 bg-white"
                                         title="Resource Preview"
-                                        allow="autoplay; encrypted-media"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
                                     />
                                 )
                             ) : (
