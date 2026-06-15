@@ -50,10 +50,16 @@ export function FlashcardReviewer({ flashcards, reviews, onReviewComplete, onClo
         );
     }
 
-    const handleRating = (rating: 'again' | 'hard' | 'good' | 'easy') => {
-        onReviewComplete(currentCard.id, rating);
+    const handleNext = () => {
         setIsFlipped(false);
         setCurrentIndex(prev => prev + 1);
+    };
+
+    const handlePrevious = () => {
+        if (currentIndex > 0) {
+            setIsFlipped(false);
+            setCurrentIndex(prev => prev - 1);
+        }
     };
 
     return (
@@ -112,28 +118,32 @@ export function FlashcardReviewer({ flashcards, reviews, onReviewComplete, onClo
             </div>
 
             {/* Controls */}
-            {isFlipped ? (
-                <div className="flex flex-wrap justify-center gap-3 w-full animate-in slide-in-from-bottom-4 duration-300">
-                    <button onClick={() => handleRating('again')} className="flex-1 md:flex-none min-w-[100px] px-4 py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-2xl font-bold transition-colors">
-                        <div className="text-xs opacity-70 mb-1">Again</div>
-                        <div>&lt; 1m</div>
-                    </button>
-                    <button onClick={() => handleRating('hard')} className="flex-1 md:flex-none min-w-[100px] px-4 py-3 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-2xl font-bold transition-colors">
-                        <div className="text-xs opacity-70 mb-1">Hard</div>
-                        <div>1d</div>
-                    </button>
-                    <button onClick={() => handleRating('good')} className="flex-1 md:flex-none min-w-[100px] px-4 py-3 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-2xl font-bold transition-colors">
-                        <div className="text-xs opacity-70 mb-1">Good</div>
-                        <div>3d</div>
-                    </button>
-                    <button onClick={() => handleRating('easy')} className="flex-1 md:flex-none min-w-[100px] px-4 py-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-2xl font-bold transition-colors">
-                        <div className="text-xs opacity-70 mb-1">Easy</div>
-                        <div>5d</div>
-                    </button>
-                </div>
-            ) : (
-                <div className="h-[60px]" /> /* Spacer to prevent layout shift */
-            )}
+            <div className="flex justify-between items-center w-full mt-6">
+                <button 
+                    onClick={handlePrevious} 
+                    disabled={currentIndex === 0}
+                    className="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <Icons.ArrowLeft size={18} />
+                    Previous
+                </button>
+                
+                <button 
+                    onClick={() => setIsFlipped(!isFlipped)} 
+                    className="px-6 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl font-bold transition-colors flex items-center gap-2"
+                >
+                    <Icons.Repeat size={18} />
+                    Flip Card
+                </button>
+
+                <button 
+                    onClick={handleNext} 
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-200"
+                >
+                    {currentIndex === flashcards.length - 1 ? "Finish" : "Next"}
+                    {currentIndex === flashcards.length - 1 ? <Icons.Check size={18} /> : <Icons.ArrowRight size={18} />}
+                </button>
+            </div>
         </div>
     );
 }
