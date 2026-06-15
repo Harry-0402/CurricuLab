@@ -60,6 +60,7 @@ export function VaultContent() {
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isReviewMode, setIsReviewMode] = useState(false);
+    const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         subjectId: '',
@@ -93,6 +94,31 @@ export function VaultContent() {
             setHtmlContent(null);
         }
     }, [selectedResource]);
+
+    const handleGenerateFlashcards = async () => {
+        if (!selectedResource || !htmlContent) return;
+        setIsGeneratingFlashcards(true);
+        try {
+            const res = await fetch('/api/generate-flashcards', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    vaultResourceId: selectedResource.id,
+                    content: htmlContent
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                toast.success(`Generated ${data.count} flashcards successfully!`);
+            } else {
+                toast.error(data.error || "Failed to generate flashcards");
+            }
+        } catch (e: any) {
+            toast.error("Error generating flashcards");
+        } finally {
+            setIsGeneratingFlashcards(false);
+        }
+    };
 
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -773,6 +799,18 @@ Please review the document at the URL provided above and generate a highly detai
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
+                                {/* Generate Flashcards Button */}
+                                {htmlContent && (
+                                    <button
+                                        onClick={handleGenerateFlashcards}
+                                        disabled={isGeneratingFlashcards}
+                                        className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-xl font-bold text-sm transition-colors disabled:opacity-50"
+                                        title="Generate Flashcards with AI"
+                                    >
+                                        {isGeneratingFlashcards ? <Icons.Loader2 className="animate-spin" size={16} /> : <Icons.Sparkles size={16} />}
+                                        <span className="hidden sm:inline">Auto-Flashcard</span>
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => {
                                         if (htmlContent && selectedResource?.link?.includes('/storage/v1/object/public/vault/') && selectedResource.link.endsWith('.html')) {
