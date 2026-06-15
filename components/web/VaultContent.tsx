@@ -674,18 +674,38 @@ Please review the document at the URL provided above and generate a highly detai
                                             <div className="flex items-center gap-2">
                                                 {resource.type === 'study_note' && (
                                                     <>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                generateFlashcardsForResource(resource);
-                                                            }}
-                                                            disabled={isGeneratingFlashcards}
-                                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50"
-                                                            title="Auto-generate Flashcards"
-                                                        >
-                                                            <Icons.Layers size={11} className="text-indigo-500" />
-                                                            <span>Auto-Flashcard</span>
-                                                        </button>
+                                                        {(() => {
+                                                            const existingDeck = flashcardDecks.find(d => d._vaultResourceId === resource.id);
+                                                            if (existingDeck) {
+                                                                return (
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setSelectedResource(existingDeck);
+                                                                        }}
+                                                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-teal-50 text-teal-600 border-teal-100/50 hover:bg-teal-100 hover:text-teal-700"
+                                                                        title="See Flashcards"
+                                                                    >
+                                                                        <Icons.Layers size={11} className="text-teal-500" />
+                                                                        <span>See Flashcards</span>
+                                                                    </button>
+                                                                );
+                                                            }
+                                                            return (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        generateFlashcardsForResource(resource);
+                                                                    }}
+                                                                    disabled={isGeneratingFlashcards}
+                                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50"
+                                                                    title="Auto-generate Flashcards"
+                                                                >
+                                                                    <Icons.Layers size={11} className="text-indigo-500" />
+                                                                    <span>Auto-Flashcard</span>
+                                                                </button>
+                                                            );
+                                                        })()}
                                                         <button
                                                             onClick={(e) => handleCopyPrompt(e, resource)}
                                                             className={cn(
@@ -880,15 +900,32 @@ Please review the document at the URL provided above and generate a highly detai
                             <div className="flex items-center gap-2">
                                 {/* Generate Flashcards Button */}
                                 {(selectedResource.type === 'study_note' || selectedResource.type === 'revision_note') && (htmlContent || selectedResource.link) && (
-                                    <button
-                                        onClick={handleGenerateFlashcards}
-                                        disabled={isGeneratingFlashcards}
-                                        className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-xl font-bold text-sm transition-colors disabled:opacity-50"
-                                        title="Generate Flashcards with AI"
-                                    >
-                                        {isGeneratingFlashcards ? <Icons.Loader2 className="animate-spin" size={16} /> : <Icons.Sparkles size={16} />}
-                                        <span className="hidden sm:inline">Auto-Flashcard</span>
-                                    </button>
+                                    (() => {
+                                        const existingDeck = flashcardDecks.find(d => d._vaultResourceId === selectedResource.id);
+                                        if (existingDeck) {
+                                            return (
+                                                <button
+                                                    onClick={() => setSelectedResource(existingDeck)}
+                                                    className="flex items-center gap-2 px-4 py-2 bg-teal-100 text-teal-700 hover:bg-teal-200 rounded-xl font-bold text-sm transition-colors shadow-sm"
+                                                    title="See Flashcards"
+                                                >
+                                                    <Icons.Layers size={16} />
+                                                    <span className="hidden sm:inline">See Flashcards</span>
+                                                </button>
+                                            );
+                                        }
+                                        return (
+                                            <button
+                                                onClick={handleGenerateFlashcards}
+                                                disabled={isGeneratingFlashcards}
+                                                className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 shadow-sm"
+                                                title="Generate Flashcards with AI"
+                                            >
+                                                {isGeneratingFlashcards ? <Icons.Loader2 className="animate-spin" size={16} /> : <Icons.Sparkles size={16} />}
+                                                <span className="hidden sm:inline">Auto-Flashcard</span>
+                                            </button>
+                                        );
+                                    })()
                                 )}
                                 {/* Flashcard Deck Actions */}
                                 {selectedResource.type === 'flashcard' && (
