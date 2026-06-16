@@ -330,14 +330,14 @@ export function YoutubeLibraryContent() {
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-10 pb-10">
+                    <div className="flex flex-col gap-8 pb-10">
                         {['unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', ''].map(unitKey => {
                             const groupVideos = filteredVideos.filter(v => (v.unitId || '') === unitKey);
                             if (groupVideos.length === 0) return null;
                             const label = unitKey ? (UNIT_LABELS[unitKey] || unitKey) : 'Other Videos';
                             return (
-                                <div key={unitKey} className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-3 pb-2 border-b border-gray-100">
+                                <div key={unitKey} className="flex flex-col gap-3">
+                                    <div className="flex items-center gap-3 ml-1 mb-1">
                                         <div className="p-2.5 rounded-xl bg-red-50 text-red-600 transition-colors">
                                             <Icons.Youtube size={20} />
                                         </div>

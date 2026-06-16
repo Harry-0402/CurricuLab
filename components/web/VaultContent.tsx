@@ -623,14 +623,14 @@ Please review the document at the URL provided above and generate a highly detai
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-10 pb-10">
+                    <div className="flex flex-col gap-8 pb-10">
                         {Object.entries(TYPE_CONFIG).map(([typeKey, config]) => {
                             const groupResources = filteredResources.filter(r => r.type === typeKey);
                             if (groupResources.length === 0) return null;
                             
                             return (
-                                <div key={typeKey} className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-3 pb-2 border-b border-gray-100">
+                                <div key={typeKey} className="flex flex-col gap-3">
+                                    <div className="flex items-center gap-3 ml-1 mb-1">
                                         <div className={cn("p-2.5 rounded-xl transition-colors", config.bgColor)}>
                                             <config.icon className={config.color} size={20} />
                                         </div>
