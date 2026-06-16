@@ -623,134 +623,151 @@ Please review the document at the URL provided above and generate a highly detai
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
-                        {filteredResources.map(resource => {
-                            const config = TYPE_CONFIG[resource.type];
-                            if (!config) return null; // Skip resources with invalid types
+                    <div className="flex flex-col gap-10 pb-10">
+                        {Object.entries(TYPE_CONFIG).map(([typeKey, config]) => {
+                            const groupResources = filteredResources.filter(r => r.type === typeKey);
+                            if (groupResources.length === 0) return null;
+                            
                             return (
-                                <div
-                                    key={resource.id}
-                                    onClick={() => {
-                                        if (resource.type === 'youtube_video' && resource.link) {
-                                            window.open(resource.link, '_blank');
-                                        } else {
-                                            setSelectedResource(resource);
-                                        }
-                                    }}
-                                    className="bg-white rounded-3xl p-6 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
-                                >
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn("p-3 rounded-2xl transition-colors", config.bgColor)}>
-                                                <config.icon className={config.color} size={24} />
-                                            </div>
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                <span className={cn(
-                                                    "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border",
-                                                    config.bgColor, config.color
-                                                )}>
-                                                    {config.label}
-                                                </span>
-                                                {resource.unitId && (
-                                                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
-                                                        {resource.unitId.replace('unit-', 'Unit ')}
-                                                    </span>
-                                                )}
-                                            </div>
+                                <div key={typeKey} className="flex flex-col gap-4">
+                                    <div className="flex items-center gap-3 pb-2 border-b border-gray-100">
+                                        <div className={cn("p-2.5 rounded-xl transition-colors", config.bgColor)}>
+                                            <config.icon className={config.color} size={20} />
                                         </div>
-                                        {isAdmin && (
-                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button
-                                                    onClick={(e) => handleOpenEditModal(e, resource)}
-                                                    className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-colors"
-                                                    title="Edit"
-                                                >
-                                                    <Icons.Edit size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => handleDeleteClick(e, resource.id)}
-                                                    className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-colors"
-                                                    title="Delete"
-                                                >
-                                                    <Icons.Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        )}
+                                        <h3 className={cn("text-lg font-bold", config.color)}>
+                                            {config.label}s
+                                        </h3>
                                     </div>
-
-                                    <div className="flex-grow flex flex-col">
-                                        <div className="flex-grow">
-                                            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
-                                                {resource.title}
-                                            </h3>
-                                        </div>
-
-                                        <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400 flex-wrap gap-2">
-                                            <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
-                                            <div className="flex items-center gap-2">
-                                                {resource.type === 'study_note' && (
-                                                    <>
-                                                        {(() => {
-                                                            const existingDeck = flashcardDecks.find(d => d._vaultResourceId === resource.id);
-                                                            if (existingDeck) {
-                                                                return (
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            setSelectedResource(existingDeck);
-                                                                        }}
-                                                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-teal-50 text-teal-600 border-teal-100/50 hover:bg-teal-100 hover:text-teal-700"
-                                                                        title="See Flashcards"
-                                                                    >
-                                                                        <Icons.Layers size={11} className="text-teal-500" />
-                                                                        <span>See Flashcards</span>
-                                                                    </button>
-                                                                );
-                                                            }
-                                                            return (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {groupResources.map(resource => {
+                                            return (
+                                                <div
+                                                    key={resource.id}
+                                                    onClick={() => {
+                                                        if (resource.type === 'youtube_video' && resource.link) {
+                                                            window.open(resource.link, '_blank');
+                                                        } else {
+                                                            setSelectedResource(resource);
+                                                        }
+                                                    }}
+                                                    className="bg-white rounded-3xl p-6 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
+                                                >
+                                                    <div className="flex items-start justify-between mb-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={cn("p-3 rounded-2xl transition-colors", config.bgColor)}>
+                                                                <config.icon className={config.color} size={24} />
+                                                            </div>
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className={cn(
+                                                                    "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border",
+                                                                    config.bgColor, config.color
+                                                                )}>
+                                                                    {config.label}
+                                                                </span>
+                                                                {resource.unitId && (
+                                                                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
+                                                                        {resource.unitId.replace('unit-', 'Unit ')}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        {isAdmin && (
+                                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                                 <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        generateFlashcardsForResource(resource);
-                                                                    }}
-                                                                    disabled={isGeneratingFlashcards}
-                                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50"
-                                                                    title="Auto-generate Flashcards"
+                                                                    onClick={(e) => handleOpenEditModal(e, resource)}
+                                                                    className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-colors"
+                                                                    title="Edit"
                                                                 >
-                                                                    <Icons.Layers size={11} className="text-indigo-500" />
-                                                                    <span>Auto-Flashcard</span>
+                                                                    <Icons.Edit size={16} />
                                                                 </button>
-                                                            );
-                                                        })()}
-                                                        <button
-                                                            onClick={(e) => handleCopyPrompt(e, resource)}
-                                                            className={cn(
-                                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
-                                                                copiedId === resource.id
-                                                                    ? "bg-green-50 text-green-600 border-green-200"
-                                                                    : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
-                                                            )}
-                                                            title="Generate AI Study Prompt"
-                                                        >
-                                                            {copiedId === resource.id ? (
-                                                                <>
-                                                                    <Icons.Check size={11} className="text-green-500" />
-                                                                    <span>Copied!</span>
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <Icons.Sparkles size={11} className="text-purple-500" />
-                                                                    <span>AI Prompt</span>
-                                                                </>
-                                                            )}
-                                                        </button>
-                                                    </>
-                                                )}
-                                                <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
-                                                    Read More <Icons.ArrowRight size={12} />
-                                                </span>
-                                            </div>
-                                        </div>
+                                                                <button
+                                                                    onClick={(e) => handleDeleteClick(e, resource.id)}
+                                                                    className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-colors"
+                                                                    title="Delete"
+                                                                >
+                                                                    <Icons.Trash2 size={16} />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex-grow flex flex-col">
+                                                        <div className="flex-grow">
+                                                            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                                                                {resource.title}
+                                                            </h3>
+                                                        </div>
+
+                                                        <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400 flex-wrap gap-2">
+                                                            <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
+                                                            <div className="flex items-center gap-2">
+                                                                {resource.type === 'study_note' && (
+                                                                    <>
+                                                                        {(() => {
+                                                                            const existingDeck = flashcardDecks.find(d => d._vaultResourceId === resource.id);
+                                                                            if (existingDeck) {
+                                                                                return (
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation();
+                                                                                            setSelectedResource(existingDeck);
+                                                                                        }}
+                                                                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-teal-50 text-teal-600 border-teal-100/50 hover:bg-teal-100 hover:text-teal-700"
+                                                                                        title="See Flashcards"
+                                                                                    >
+                                                                                        <Icons.Layers size={11} className="text-teal-500" />
+                                                                                        <span>See Flashcards</span>
+                                                                                    </button>
+                                                                                );
+                                                                            }
+                                                                            return (
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        generateFlashcardsForResource(resource);
+                                                                                    }}
+                                                                                    disabled={isGeneratingFlashcards}
+                                                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50"
+                                                                                    title="Auto-generate Flashcards"
+                                                                                >
+                                                                                    <Icons.Layers size={11} className="text-indigo-500" />
+                                                                                    <span>Auto-Flashcard</span>
+                                                                                </button>
+                                                                            );
+                                                                        })()}
+                                                                        <button
+                                                                            onClick={(e) => handleCopyPrompt(e, resource)}
+                                                                            className={cn(
+                                                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
+                                                                                copiedId === resource.id
+                                                                                    ? "bg-green-50 text-green-600 border-green-200"
+                                                                                    : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
+                                                                            )}
+                                                                            title="Generate AI Study Prompt"
+                                                                        >
+                                                                            {copiedId === resource.id ? (
+                                                                                <>
+                                                                                    <Icons.Check size={11} className="text-green-500" />
+                                                                                    <span>Copied!</span>
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <Icons.Sparkles size={11} className="text-purple-500" />
+                                                                                    <span>AI Prompt</span>
+                                                                                </>
+                                                                            )}
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                                <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
+                                                                    Read More <Icons.ArrowRight size={12} />
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             );
