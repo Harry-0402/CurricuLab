@@ -330,67 +330,86 @@ export function YoutubeLibraryContent() {
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
-                        {filteredVideos.map(video => (
-                            <div
-                                key={video.id}
-                                onClick={() => handleCardClick(video)}
-                                className="bg-white rounded-3xl p-5 border border-gray-100 hover:border-red-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col"
-                            >
-                                {/* Play thumbnail */}
-                                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-red-50 to-red-100 mb-4 flex items-center justify-center shrink-0">
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg shadow-red-200 group-hover:scale-110 transition-transform duration-300">
-                                            <Icons.Play className="text-white ml-1" size={22} fill="white" />
+                    <div className="flex flex-col gap-10 pb-10">
+                        {['unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', ''].map(unitKey => {
+                            const groupVideos = filteredVideos.filter(v => (v.unitId || '') === unitKey);
+                            if (groupVideos.length === 0) return null;
+                            const label = unitKey ? (UNIT_LABELS[unitKey] || unitKey) : 'Other Videos';
+                            return (
+                                <div key={unitKey} className="flex flex-col gap-4">
+                                    <div className="flex items-center gap-3 pb-2 border-b border-gray-100">
+                                        <div className="p-2.5 rounded-xl bg-red-50 text-red-600 transition-colors">
+                                            <Icons.Youtube size={20} />
                                         </div>
+                                        <h3 className="text-lg font-bold text-red-600">
+                                            {label}
+                                        </h3>
                                     </div>
-                                    <Icons.Youtube className="absolute bottom-3 right-3 text-red-300 opacity-60" size={20} />
-                                </div>
-
-                                {/* Meta */}
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-red-50 text-red-600 border border-red-100">
-                                        YouTube Video
-                                    </span>
-                                    {video.unitId && (
-                                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
-                                            {video.unitId.replace('unit-', 'Unit ')}
-                                        </span>
-                                    )}
-                                    {isAdmin && (
-                                        <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={e => handleOpenEditModal(e, video)}
-                                                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
-                                                title="Edit"
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {groupVideos.map(video => (
+                                            <div
+                                                key={video.id}
+                                                onClick={() => handleCardClick(video)}
+                                                className="bg-white rounded-3xl p-5 border border-gray-100 hover:border-red-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col"
                                             >
-                                                <Icons.Edit size={14} />
-                                            </button>
-                                            <button
-                                                onClick={e => handleDeleteClick(e, video.id)}
-                                                className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Icons.Trash2 size={14} />
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
+                                                {/* Play thumbnail */}
+                                                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-red-50 to-red-100 mb-4 flex items-center justify-center shrink-0">
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg shadow-red-200 group-hover:scale-110 transition-transform duration-300">
+                                                            <Icons.Play className="text-white ml-1" size={22} fill="white" />
+                                                        </div>
+                                                    </div>
+                                                    <Icons.Youtube className="absolute bottom-3 right-3 text-red-300 opacity-60" size={20} />
+                                                </div>
 
-                                {/* Title */}
-                                <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-red-600 transition-colors flex-grow">
-                                    {video.title}
-                                </h3>
+                                                {/* Meta */}
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-red-50 text-red-600 border border-red-100">
+                                                        YouTube Video
+                                                    </span>
+                                                    {video.unitId && (
+                                                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
+                                                            {video.unitId.replace('unit-', 'Unit ')}
+                                                        </span>
+                                                    )}
+                                                    {isAdmin && (
+                                                        <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button
+                                                                onClick={e => handleOpenEditModal(e, video)}
+                                                                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors"
+                                                                title="Edit"
+                                                            >
+                                                                <Icons.Edit size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={e => handleDeleteClick(e, video.id)}
+                                                                className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
+                                                                title="Delete"
+                                                            >
+                                                                <Icons.Trash2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
 
-                                {/* Footer */}
-                                <div className="pt-3 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400">
-                                    <span>{new Date(video.createdAt || new Date()).toLocaleDateString()}</span>
-                                    <span className="flex items-center gap-1 text-red-500 font-bold group-hover:translate-x-1 transition-transform">
-                                        Watch <Icons.ArrowRight size={12} />
-                                    </span>
+                                                {/* Title */}
+                                                <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-red-600 transition-colors flex-grow">
+                                                    {video.title}
+                                                </h3>
+
+                                                {/* Footer */}
+                                                <div className="pt-3 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400">
+                                                    <span>{new Date(video.createdAt || new Date()).toLocaleDateString()}</span>
+                                                    <span className="flex items-center gap-1 text-red-500 font-bold group-hover:translate-x-1 transition-transform">
+                                                        Watch <Icons.ArrowRight size={12} />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
