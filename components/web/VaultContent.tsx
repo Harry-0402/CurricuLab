@@ -915,7 +915,7 @@ Please review the document at the URL provided above and generate a highly detai
                             </div>
                             <div className="flex items-center gap-2">
                                 {/* Generate Flashcards Button */}
-                                {(selectedResource.type === 'study_note' || selectedResource.type === 'revision_note') && (htmlContent || selectedResource.link) && (
+                                {(selectedResource.type === 'study_note') && (htmlContent || selectedResource.link) && (
                                     (() => {
                                         const existingDeck = flashcardDecks.find(d => d._vaultResourceId === selectedResource.id);
                                         if (existingDeck) {

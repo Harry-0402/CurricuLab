@@ -55,35 +55,53 @@ const dataToInsert = [
   
   // Sem 2
   // PBA204
-  { subject_id: 'pba204', unit_id: 'unit-1', type: 'study_note', title: 'Unit 1: Introduction to Operations Management', link: 'https://curriculab-resources.netlify.app/sem-2/pba204%20%E2%80%93%20production%20and%20operations%20management/pba204%20unit-1%20notes' },
-  { subject_id: 'pba204', unit_id: 'unit-2', type: 'study_note', title: 'Unit 2', link: 'https://curriculab-resources.netlify.app/sem-2/pba204%20%E2%80%93%20production%20and%20operations%20management/pba204%20unit-2%20notes' },
-  { subject_id: 'pba204', unit_id: 'unit-3', type: 'study_note', title: 'Unit 3', link: 'https://curriculab-resources.netlify.app/sem-2/pba204%20%E2%80%93%20production%20and%20operations%20management/pba204%20unit-3%20notes' },
-  { subject_id: 'pba204', unit_id: 'unit-4', type: 'study_note', title: 'Unit 4', link: 'https://curriculab-resources.netlify.app/sem-2/pba204%20%E2%80%93%20production%20and%20operations%20management/pba204%20unit-4%20notes' },
-  { subject_id: 'pba204', unit_id: 'unit-5', type: 'study_note', title: 'Unit 5', link: 'https://curriculab-resources.netlify.app/sem-2/pba204%20%E2%80%93%20production%20and%20operations%20management/pba204%20unit-5%20notes' },
+  { subject_id: 'pba204', unit_id: 'unit-1', type: 'revision_note', title: 'Unit 1 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA204%20Production%20and%20Operations%20Management/PBA204%20Unit-1%20Revision%20Notes.html' },
+  { subject_id: 'pba204', unit_id: 'unit-2', type: 'revision_note', title: 'Unit 2 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA204%20Production%20and%20Operations%20Management/PBA204%20Unit-2%20Revision%20Notes.html' },
+  { subject_id: 'pba204', unit_id: 'unit-3', type: 'revision_note', title: 'Unit 3 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA204%20Production%20and%20Operations%20Management/PBA204%20Unit-3%20Revision%20Notes.html' },
+  { subject_id: 'pba204', unit_id: 'unit-4', type: 'revision_note', title: 'Unit 4 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA204%20Production%20and%20Operations%20Management/PBA204%20Unit-4%20Revision%20Notes.html' },
+  { subject_id: 'pba204', unit_id: 'unit-5', type: 'revision_note', title: 'Unit 5 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA204%20Production%20and%20Operations%20Management/PBA204%20Unit-5%20Revision%20Notes.html' },
   // PBA205
-  { subject_id: 'pba205', unit_id: 'unit-1', type: 'study_note', title: 'Unit 1: Understanding Digital Transformation', link: 'https://curriculab-resources.netlify.app/sem-2/pba205%20%E2%80%93%20digital%20transformation/pba205%20unit%201%20notes' },
-  { subject_id: 'pba205', unit_id: 'unit-2', type: 'study_note', title: 'Unit 2: Leading Digital Transformation', link: 'https://curriculab-resources.netlify.app/sem-2/pba205%20%E2%80%93%20digital%20transformation/pba205%20unit%202%20notes' },
-  { subject_id: 'pba205', unit_id: 'unit-3', type: 'study_note', title: 'Unit 3: Digital Transformation in Various Industries', link: 'https://curriculab-resources.netlify.app/sem-2/pba205%20%E2%80%93%20digital%20transformation/pba205%20unit%203%20notes' },
-  { subject_id: 'pba205', unit_id: 'unit-4', type: 'study_note', title: 'Unit 4: Innovation in the Digital Age', link: 'https://curriculab-resources.netlify.app/sem-2/pba205%20%E2%80%93%20digital%20transformation/pba205%20unit%204%20notes' },
-  { subject_id: 'pba205', unit_id: 'unit-5', type: 'study_note', title: 'Unit 5: Digital Technologies and Trends', link: 'https://curriculab-resources.netlify.app/sem-2/pba205%20%E2%80%93%20digital%20transformation/pba205%20unit%205%20notes' },
+  { subject_id: 'pba205', unit_id: 'unit-1', type: 'revision_note', title: 'Unit 1 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA205%20Digital%20Transformation/PBA205%20Unit-1%20Revision%20Notes.html' },
+  { subject_id: 'pba205', unit_id: 'unit-2', type: 'revision_note', title: 'Unit 2 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA205%20Digital%20Transformation/PBA205%20Unit-2%20Revision%20Notes.html' },
+  { subject_id: 'pba205', unit_id: 'unit-3', type: 'revision_note', title: 'Unit 3 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA205%20Digital%20Transformation/PBA205%20Unit-3%20Revision%20Notes.html' },
+  { subject_id: 'pba205', unit_id: 'unit-4', type: 'revision_note', title: 'Unit 4 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA205%20Digital%20Transformation/PBA205%20Unit-4%20Revision%20Notes.html' },
+  { subject_id: 'pba205', unit_id: 'unit-5', type: 'revision_note', title: 'Unit 5 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA205%20Digital%20Transformation/PBA205%20Unit-5%20Revision%20Notes.html' },
   // PBA206
-  { subject_id: 'pba206', unit_id: 'unit-1', type: 'study_note', title: 'Unit 1: Law of Contract – Indian Contract Act, 1872', link: 'https://curriculab-resources.netlify.app/sem-2/pba206%20%E2%80%93%20legal%20aspects%20of%20business/pba206%20unit-1' },
-  { subject_id: 'pba206', unit_id: 'unit-2', type: 'study_note', title: 'Unit 2', link: 'https://curriculab-resources.netlify.app/sem-2/pba206%20%E2%80%93%20legal%20aspects%20of%20business/pba206%20unit-2' },
-  { subject_id: 'pba206', unit_id: 'unit-3', type: 'study_note', title: 'Unit 3', link: 'https://curriculab-resources.netlify.app/sem-2/pba206%20%E2%80%93%20legal%20aspects%20of%20business/pba206%20unit-3' },
-  { subject_id: 'pba206', unit_id: 'unit-4', type: 'study_note', title: 'Unit 4', link: 'https://curriculab-resources.netlify.app/sem-2/pba206%20%E2%80%93%20legal%20aspects%20of%20business/pba206%20unit-4' },
-  { subject_id: 'pba206', unit_id: 'unit-5', type: 'study_note', title: 'Unit 5', link: 'https://curriculab-resources.netlify.app/sem-2/pba206%20%E2%80%93%20legal%20aspects%20of%20business/pba206%20unit-5' },
+  { subject_id: 'pba206', unit_id: 'unit-1', type: 'revision_note', title: 'Unit 1 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA206%20Legal%20Aspects%20of%20Business/PBA206%20Unit-1%20Revision%20Notes.html' },
+  { subject_id: 'pba206', unit_id: 'unit-2', type: 'revision_note', title: 'Unit 2 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA206%20Legal%20Aspects%20of%20Business/PBA206%20Unit-2%20Revision%20Notes.html' },
+  { subject_id: 'pba206', unit_id: 'unit-3', type: 'revision_note', title: 'Unit 3 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA206%20Legal%20Aspects%20of%20Business/PBA206%20Unit-3%20Revision%20Notes.html' },
+  { subject_id: 'pba206', unit_id: 'unit-4', type: 'revision_note', title: 'Unit 4 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA206%20Legal%20Aspects%20of%20Business/PBA206%20Unit-4%20Revision%20Notes.html' },
+  { subject_id: 'pba206', unit_id: 'unit-5', type: 'revision_note', title: 'Unit 5 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA206%20Legal%20Aspects%20of%20Business/PBA206%20Unit-5%20Revision%20Notes.html' },
   // PBA207
-  { subject_id: 'pba207', unit_id: 'unit-1', type: 'study_note', title: 'Unit 1: Introduction to Visualization', link: 'https://curriculab-resources.netlify.app/sem-2/pba207%20%E2%80%93%20visualization%20and%20storytelling/pba207%20unit%201%20notes' },
-  { subject_id: 'pba207', unit_id: 'unit-2', type: 'study_note', title: 'Unit 2: Visualization Techniques', link: 'https://curriculab-resources.netlify.app/sem-2/pba207%20%E2%80%93%20visualization%20and%20storytelling/pba207%20unit%202%20notes' },
-  { subject_id: 'pba207', unit_id: 'unit-3', type: 'study_note', title: 'Unit 3: Advanced Visualization', link: 'https://curriculab-resources.netlify.app/sem-2/pba207%20%E2%80%93%20visualization%20and%20storytelling/pba207%20unit%203%20notes' },
-  { subject_id: 'pba207', unit_id: 'unit-4', type: 'study_note', title: 'Unit 4: Visual Storytelling', link: 'https://curriculab-resources.netlify.app/sem-2/pba207%20%E2%80%93%20visualization%20and%20storytelling/pba207%20unit%204%20notes' },
-  { subject_id: 'pba207', unit_id: 'unit-5', type: 'study_note', title: 'Unit 5: Business Storytelling & Dashboards', link: 'https://curriculab-resources.netlify.app/sem-2/pba207%20%E2%80%93%20visualization%20and%20storytelling/pba207%20unit%205%20notes' },
+  { subject_id: 'pba207', unit_id: 'unit-1', type: 'revision_note', title: 'Unit 1 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA207%20Visualization%20and%20Storytelling/PBA207%20Unit-1%20Revision%20Notes.html' },
+  { subject_id: 'pba207', unit_id: 'unit-2', type: 'revision_note', title: 'Unit 2 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA207%20Visualization%20and%20Storytelling/PBA207%20Unit-2%20Revision%20Notes.html' },
+  { subject_id: 'pba207', unit_id: 'unit-3', type: 'revision_note', title: 'Unit 3 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA207%20Visualization%20and%20Storytelling/PBA207%20Unit-3%20Revision%20Notes.html' },
+  { subject_id: 'pba207', unit_id: 'unit-4', type: 'revision_note', title: 'Unit 4 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA207%20Visualization%20and%20Storytelling/PBA207%20Unit-4%20Revision%20Notes.html' },
+  { subject_id: 'pba207', unit_id: 'unit-5', type: 'revision_note', title: 'Unit 5 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA207%20Visualization%20and%20Storytelling/PBA207%20Unit-5%20Revision%20Notes.html' },
   // PBA208
-  { subject_id: 'pba208', unit_id: 'unit-1', type: 'study_note', title: 'Unit 1: Introduction to Business Research', link: 'https://curriculab-resources.netlify.app/sem-2/pba208%20%E2%80%93%20business%20research%20methods/pba208%20unit-1%20notes' },
-  { subject_id: 'pba208', unit_id: 'unit-2', type: 'study_note', title: 'Unit 2', link: 'https://curriculab-resources.netlify.app/sem-2/pba208%20%E2%80%93%20business%20research%20methods/pba208%20unit-2%20notes' },
-  { subject_id: 'pba208', unit_id: 'unit-3', type: 'study_note', title: 'Unit 3', link: 'https://curriculab-resources.netlify.app/sem-2/pba208%20%E2%80%93%20business%20research%20methods/pba208%20unit-3%20notes' },
-  { subject_id: 'pba208', unit_id: 'unit-4', type: 'study_note', title: 'Unit 4', link: 'https://curriculab-resources.netlify.app/sem-2/pba208%20%E2%80%93%20business%20research%20methods/pba208%20unit-4%20notes' },
-  { subject_id: 'pba208', unit_id: 'unit-5', type: 'study_note', title: 'Unit 5', link: 'https://curriculab-resources.netlify.app/sem-2/pba208%20%E2%80%93%20business%20research%20methods/pba208%20unit-5%20notes' }
+  { subject_id: 'pba208', unit_id: 'unit-1', type: 'revision_note', title: 'Unit 1 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA208%20Business%20Research%20Methods/PBA208%20Unit-1%20Revision%20Notes.html' },
+  { subject_id: 'pba208', unit_id: 'unit-2', type: 'revision_note', title: 'Unit 2 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA208%20Business%20Research%20Methods/PBA208%20Unit-2%20Revision%20Notes.html' },
+  { subject_id: 'pba208', unit_id: 'unit-3', type: 'revision_note', title: 'Unit 3 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA208%20Business%20Research%20Methods/PBA208%20Unit-3%20Revision%20Notes.html' },
+  { subject_id: 'pba208', unit_id: 'unit-4', type: 'revision_note', title: 'Unit 4 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA208%20Business%20Research%20Methods/PBA208%20Unit-4%20Revision%20Notes.html' },
+  { subject_id: 'pba208', unit_id: 'unit-5', type: 'revision_note', title: 'Unit 5 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA208%20Business%20Research%20Methods/PBA208%20Unit-5%20Revision%20Notes.html' },
+  // PBA211
+  { subject_id: 'pba211', unit_id: 'unit-1', type: 'revision_note', title: 'Unit 1 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA211%20Data%20Analysis%20Using%20Python/PBA211%20Unit-1%20Revision%20Notes.html' },
+  { subject_id: 'pba211', unit_id: 'unit-2', type: 'revision_note', title: 'Unit 2 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA211%20Data%20Analysis%20Using%20Python/PBA211%20Unit-2%20Revision%20Notes.html' },
+  { subject_id: 'pba211', unit_id: 'unit-3', type: 'revision_note', title: 'Unit 3 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA211%20Data%20Analysis%20Using%20Python/PBA211%20Unit-3%20Revision%20Notes.html' },
+  { subject_id: 'pba211', unit_id: 'unit-4', type: 'revision_note', title: 'Unit 4 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA211%20Data%20Analysis%20Using%20Python/PBA211%20Unit-4%20Revision%20Notes.html' },
+  { subject_id: 'pba211', unit_id: 'unit-5', type: 'revision_note', title: 'Unit 5 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA211%20Data%20Analysis%20Using%20Python/PBA211%20Unit-5%20Revision%20Notes.html' },
+  // PBA212
+  { subject_id: 'pba212', unit_id: 'unit-1', type: 'revision_note', title: 'Unit 1 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA212%20Data%20Analysis%20Using%20Powerbi/PBA212%20Unit-1%20Revision%20Notes.html' },
+  { subject_id: 'pba212', unit_id: 'unit-2', type: 'revision_note', title: 'Unit 2 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA212%20Data%20Analysis%20Using%20Powerbi/PBA212%20Unit-2%20Revision%20Notes.html' },
+  { subject_id: 'pba212', unit_id: 'unit-3', type: 'revision_note', title: 'Unit 3 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA212%20Data%20Analysis%20Using%20Powerbi/PBA212%20Unit-3%20Revision%20Notes.html' },
+  { subject_id: 'pba212', unit_id: 'unit-4', type: 'revision_note', title: 'Unit 4 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA212%20Data%20Analysis%20Using%20Powerbi/PBA212%20Unit-4%20Revision%20Notes.html' },
+  { subject_id: 'pba212', unit_id: 'unit-5', type: 'revision_note', title: 'Unit 5 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA212%20Data%20Analysis%20Using%20Powerbi/PBA212%20Unit-5%20Revision%20Notes.html' },
+  // PBA213
+  { subject_id: 'pba213', unit_id: 'unit-1', type: 'revision_note', title: 'Unit 1 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA213%20Business%20Communication%20-%20II/PBA213%20Unit-1%20Revision%20Notes.html' },
+  { subject_id: 'pba213', unit_id: 'unit-2', type: 'revision_note', title: 'Unit 2 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA213%20Business%20Communication%20-%20II/PBA213%20Unit-2%20Revision%20Notes.html' },
+  { subject_id: 'pba213', unit_id: 'unit-3', type: 'revision_note', title: 'Unit 3 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA213%20Business%20Communication%20-%20II/PBA213%20Unit-3%20Revision%20Notes.html' },
+  { subject_id: 'pba213', unit_id: 'unit-4', type: 'revision_note', title: 'Unit 4 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA213%20Business%20Communication%20-%20II/PBA213%20Unit-4%20Revision%20Notes.html' },
+  { subject_id: 'pba213', unit_id: 'unit-5', type: 'revision_note', title: 'Unit 5 Revision Notes', link: 'https://curriculab-resources.netlify.app/Sem-2/PBA213%20Business%20Communication%20-%20II/PBA213%20Unit-5%20Revision%20Notes.html' }
 ];
 
 async function main() {
