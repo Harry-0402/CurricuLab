@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 import { GoogleClassroomView } from './classroom/GoogleClassroomView';
 import CourseCard from './classroom/CourseCard';
 import { ConfirmationModal } from '@/components/shared/ConfirmationModal';
+import { SubjectService } from '@/lib/data/subject-service';
+import { Subject } from '@/types';
 
 export function ClassroomContent() {
     // State
@@ -22,6 +24,15 @@ export function ClassroomContent() {
     const [user, setUser] = useState<any>(null);
     const [showResetConfirm, setShowResetConfirm] = useState(false);
     const [isResetting, setIsResetting] = useState(false);
+    const [subjects, setSubjects] = useState<Subject[]>([]);
+
+    useEffect(() => {
+        const fetchSubjects = async () => {
+            const fetched = await SubjectService.getAll();
+            setSubjects(fetched);
+        };
+        fetchSubjects();
+    }, []);
 
     // Initial Load - Parallel Fetching
     useEffect(() => {
@@ -262,13 +273,36 @@ export function ClassroomContent() {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-                                        {courses.map(course => (
-                                            <CourseCard
-                                                key={course.id}
-                                                course={course}
-                                                onSelect={setSelectedCourse}
-                                            />
-                                        ))}
+                                        {courses.map(course => {
+                                            const normalizeStr = (str: string): string => {
+                                                return str
+                                                    .toLowerCase()
+                                                    .replace(/&/g, 'and')
+                                                    .replace(/[^a-z0-9]/g, '')
+                                                    .replace(/(.)\1+/g, '$1');
+                                            };
+                                            const courseNameNormalized = normalizeStr(course.name);
+                                            const subject = subjects.find(s => {
+                                                if (s.gcrKeyword) {
+                                                    const keywordNormalized = normalizeStr(s.gcrKeyword);
+                                                    if (courseNameNormalized.includes(keywordNormalized) || keywordNormalized.includes(courseNameNormalized)) return true;
+                                                }
+                                                if (s.title) {
+                                                    const titleNormalized = normalizeStr(s.title);
+                                                    if (courseNameNormalized.includes(titleNormalized) || titleNormalized.includes(courseNameNormalized)) return true;
+                                                }
+                                                return false;
+                                            });
+
+                                            return (
+                                                <CourseCard
+                                                    key={course.id}
+                                                    course={course}
+                                                    matchedSubjectCode={subject?.code}
+                                                    onSelect={setSelectedCourse}
+                                                />
+                                            );
+                                        })}
                                     </div>
                                 )
                             ) : (
