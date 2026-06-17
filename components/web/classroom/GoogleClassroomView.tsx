@@ -96,12 +96,6 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                         return true;
                     }
                 }
-                if (s.title) {
-                    const titleNormalized = normalizeStr(s.title);
-                    if (courseNameNormalized.includes(titleNormalized) || titleNormalized.includes(courseNameNormalized)) {
-                        return true;
-                    }
-                }
                 return false;
             });
 
