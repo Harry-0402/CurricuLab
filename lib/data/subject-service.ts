@@ -59,6 +59,7 @@ export const SubjectService = {
             lastStudied: item.last_studied,
             syllabusPdfUrl: item.syllabus_pdf_url,
             semesterId: item.semester_id,
+            gcrKeyword: item.gcr_keyword,
         })) as Subject[];
 
         this.cache[cacheKey] = mapped;
@@ -160,7 +161,8 @@ export const SubjectService = {
             progress: data.progress,
             unitCount: data.unit_count,
             lastStudied: data.last_studied,
-            syllabusPdfUrl: data.syllabus_pdf_url
+            syllabusPdfUrl: data.syllabus_pdf_url,
+            gcrKeyword: data.gcr_keyword
         } as Subject;
     },
 
