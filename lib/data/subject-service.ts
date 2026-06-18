@@ -127,7 +127,10 @@ export const SubjectService = {
             description: data.description,
             progress: data.progress,
             unitCount: data.unit_count,
-            lastStudied: data.last_studied
+            lastStudied: data.last_studied,
+            semesterId: data.semester_id,
+            gcrKeyword: data.gcr_keyword,
+            syllabusPdfUrl: data.syllabus_pdf_url,
         } as Subject;
 
         // Log Change
@@ -163,6 +166,7 @@ export const SubjectService = {
             progress: data.progress,
             unitCount: data.unit_count,
             lastStudied: data.last_studied,
+            semesterId: data.semester_id,
             syllabusPdfUrl: data.syllabus_pdf_url,
             gcrKeyword: data.gcr_keyword
         } as Subject;
