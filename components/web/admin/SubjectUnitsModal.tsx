@@ -13,6 +13,17 @@ interface SubjectUnitsModalProps {
     onClose: () => void;
 }
 
+interface SubtopicInput {
+    id: string;
+    title: string;
+}
+
+interface TopicInput {
+    id: string;
+    title: string;
+    subtopics: SubtopicInput[];
+}
+
 export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClose }: SubjectUnitsModalProps) {
     const [units, setUnits] = useState<Unit[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +35,11 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
     // Form state for adding/editing a unit
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [topicsInput, setTopicsInput] = useState('');
+    
+    // Topics State
+    const [topicsList, setTopicsList] = useState<TopicInput[]>([]);
+    const [isBatchMode, setIsBatchMode] = useState(false);
+    const [batchInput, setBatchInput] = useState('');
 
     useEffect(() => {
         loadUnits();
@@ -34,7 +49,6 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
         setIsLoading(true);
         setError(null);
         try {
-            // Pass subject code so UnitService can resolve the correct seed template (e.g. PBA204 -> s1)
             const data = await UnitService.getBySubjectId(subjectId, subjectCode);
             setUnits(data);
         } catch (e: any) {
@@ -44,25 +58,64 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
         }
     }
 
+    function parseTopics(rawTopics: string[]): TopicInput[] {
+        const list: TopicInput[] = [];
+        for (const t of rawTopics) {
+            if (t.startsWith('  - ') || t.startsWith('\t- ')) {
+                if (list.length > 0) {
+                    list[list.length - 1].subtopics.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        title: t.replace(/^[ \t]+- /, '')
+                    });
+                }
+            } else {
+                const title = t.replace(/^- /, '');
+                list.push({ 
+                    id: Math.random().toString(36).substr(2, 9), 
+                    title, 
+                    subtopics: [] 
+                });
+            }
+        }
+        return list;
+    }
+
+    function serializeTopics(list: TopicInput[]): string[] {
+        const result: string[] = [];
+        for (const topic of list) {
+            if (!topic.title.trim()) continue;
+            result.push(`- ${topic.title.trim()}`);
+            for (const sub of topic.subtopics) {
+                if (sub.title.trim()) {
+                    result.push(`  - ${sub.title.trim()}`);
+                }
+            }
+        }
+        return result;
+    }
+
     function handleEdit(unit: Unit) {
         setEditingUnit(unit);
         setTitle(unit.title);
         setDescription(unit.description);
-        setTopicsInput(unit.topics ? unit.topics.join('\n') : '');
+        setTopicsList(parseTopics(unit.topics || []));
+        setIsBatchMode(false);
     }
 
     function handleAdd() {
         setEditingUnit(null);
         setTitle(`Unit ${units.length + 1}: `);
         setDescription('');
-        setTopicsInput('');
+        setTopicsList([]);
+        setIsBatchMode(false);
     }
 
     function cancelEdit() {
         setEditingUnit(null);
         setTitle('');
         setDescription('');
-        setTopicsInput('');
+        setTopicsList([]);
+        setIsBatchMode(false);
     }
 
     async function handleSave() {
@@ -71,17 +124,14 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
         setIsSaving(true);
         setError(null);
         try {
-            const topics = topicsInput
-                .split('\n')
-                .map(t => t.trim())
-                .filter(t => t.length > 0);
+            const topicsToSave = serializeTopics(topicsList);
 
             if (editingUnit) {
                 await UnitService.update({
                     ...editingUnit,
                     title,
                     description,
-                    topics
+                    topics: topicsToSave
                 });
             } else {
                 await UnitService.create({
@@ -90,7 +140,7 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
                     description,
                     order: units.length + 1,
                     isCompleted: false,
-                    topics
+                    topics: topicsToSave
                 });
             }
             cancelEdit();
@@ -114,9 +164,54 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
         }
     }
 
+    function handleAddTopic() {
+        setTopicsList([...topicsList, { id: Math.random().toString(36).substr(2, 9), title: '', subtopics: [] }]);
+    }
+
+    function handleUpdateTopic(index: number, val: string) {
+        const updated = [...topicsList];
+        updated[index].title = val;
+        setTopicsList(updated);
+    }
+
+    function handleRemoveTopic(index: number) {
+        const updated = [...topicsList];
+        updated.splice(index, 1);
+        setTopicsList(updated);
+    }
+
+    function handleAddSubtopic(topicIndex: number) {
+        const updated = [...topicsList];
+        updated[topicIndex].subtopics.push({ id: Math.random().toString(36).substr(2, 9), title: '' });
+        setTopicsList(updated);
+    }
+
+    function handleUpdateSubtopic(topicIndex: number, subIndex: number, val: string) {
+        const updated = [...topicsList];
+        updated[topicIndex].subtopics[subIndex].title = val;
+        setTopicsList(updated);
+    }
+
+    function handleRemoveSubtopic(topicIndex: number, subIndex: number) {
+        const updated = [...topicsList];
+        updated[topicIndex].subtopics.splice(subIndex, 1);
+        setTopicsList(updated);
+    }
+
+    function openBatchMode() {
+        setBatchInput(serializeTopics(topicsList).join('\n'));
+        setIsBatchMode(true);
+    }
+
+    function handleApplyBatch() {
+        const lines = batchInput.split('\n').filter(l => l.trim() !== '');
+        setTopicsList(parseTopics(lines));
+        setIsBatchMode(false);
+    }
+
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
                 <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
                     <div>
                         <h2 className="text-xl font-black text-gray-900">Manage Units</h2>
@@ -171,7 +266,7 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
                                                 <h4 className="font-bold text-gray-900 text-sm leading-snug">{unit.title}</h4>
                                                 {unit.description && <p className="text-xs text-gray-500 mt-1 line-clamp-1">{unit.description}</p>}
                                                 <div className="mt-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                                                    {unit.topics?.length || 0} topics
+                                                    {parseTopics(unit.topics || []).length} topics
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
@@ -198,13 +293,22 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
                     </div>
 
                     {/* Right: Edit/Add Form */}
-                    <div className="w-80 shrink-0">
-                        <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-0 shadow-sm">
-                            <h3 className="font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100">
-                                {editingUnit ? 'Edit Unit' : 'Add New Unit'}
-                            </h3>
+                    <div className="w-96 shrink-0 flex flex-col max-h-full">
+                        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex flex-col h-full max-h-full overflow-hidden">
+                            <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 shrink-0">
+                                <h3 className="font-bold text-gray-900">
+                                    {editingUnit ? 'Edit Unit' : 'Add New Unit'}
+                                </h3>
+                                {isBatchMode ? (
+                                    <button onClick={() => setIsBatchMode(false)} className="text-xs font-bold text-gray-500 hover:text-gray-700">Cancel Batch</button>
+                                ) : (
+                                    <button onClick={openBatchMode} className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                                        <Icons.FileText size={12} /> Batch Upload
+                                    </button>
+                                )}
+                            </div>
                             
-                            <div className="space-y-4">
+                            <div className="space-y-4 overflow-y-auto flex-1 pr-2 pb-2">
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Title *</label>
                                     <input
@@ -222,40 +326,108 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
                                         value={description}
                                         onChange={e => setDescription(e.target.value)}
                                         placeholder="Overview of the unit..."
-                                        rows={3}
+                                        rows={2}
                                         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Topics (One per line)</label>
-                                    <textarea
-                                        value={topicsInput}
-                                        onChange={e => setTopicsInput(e.target.value)}
-                                        placeholder="Topic 1\nTopic 2\nTopic 3"
-                                        rows={8}
-                                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none font-mono text-xs leading-relaxed"
-                                    />
-                                </div>
-
-                                <div className="pt-2 flex gap-2">
-                                    <button
-                                        onClick={handleSave}
-                                        disabled={isSaving || !title.trim()}
-                                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:bg-indigo-300"
-                                    >
-                                        {isSaving && <Icons.Loader2 size={14} className="animate-spin" />}
-                                        Save Unit
-                                    </button>
-                                    {editingUnit && (
+                                {isBatchMode ? (
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Markdown Topics</label>
+                                        <p className="text-[10px] text-gray-400 mb-2 leading-relaxed">
+                                            Paste topics in markdown format. Use <code className="bg-gray-100 px-1 rounded">- Topic</code> for main topics and <code className="bg-gray-100 px-1 rounded">  - Subtopic</code> for subtopics.
+                                        </p>
+                                        <textarea
+                                            value={batchInput}
+                                            onChange={e => setBatchInput(e.target.value)}
+                                            placeholder="- Main Topic\n  - Subtopic 1\n  - Subtopic 2"
+                                            rows={12}
+                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none font-mono text-xs leading-relaxed"
+                                        />
                                         <button
-                                            onClick={cancelEdit}
-                                            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold py-2 rounded-lg transition-colors"
+                                            onClick={handleApplyBatch}
+                                            className="mt-2 w-full bg-gray-900 hover:bg-black text-white text-xs font-bold py-2 rounded-lg transition-colors"
                                         >
-                                            Cancel
+                                            Apply Markdown
                                         </button>
-                                    )}
-                                </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">Topics</label>
+                                            <button onClick={handleAddTopic} className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                                                <Icons.Plus size={12} /> Add Topic
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="space-y-3">
+                                            {topicsList.length === 0 && (
+                                                <div className="text-center py-4 border border-dashed border-gray-200 rounded-xl">
+                                                    <p className="text-xs text-gray-400 font-medium">No topics added.</p>
+                                                </div>
+                                            )}
+                                            {topicsList.map((topic, tIndex) => (
+                                                <div key={topic.id} className="bg-gray-50 border border-gray-100 rounded-xl p-3">
+                                                    <div className="flex items-start gap-2 mb-2">
+                                                        <div className="mt-1.5 flex-shrink-0 text-gray-400">
+                                                            <Icons.GripVertical size={14} />
+                                                        </div>
+                                                        <input 
+                                                            type="text"
+                                                            value={topic.title}
+                                                            onChange={e => handleUpdateTopic(tIndex, e.target.value)}
+                                                            placeholder="Main Topic"
+                                                            className="flex-1 bg-white border border-gray-200 rounded-md px-2 py-1 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                        />
+                                                        <button onClick={() => handleRemoveTopic(tIndex)} className="mt-1 p-1 text-gray-400 hover:text-red-500 transition-colors">
+                                                            <Icons.Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    {/* Subtopics */}
+                                                    <div className="ml-6 space-y-2 border-l-2 border-gray-200 pl-3">
+                                                        {topic.subtopics.map((sub, sIndex) => (
+                                                            <div key={sub.id} className="flex items-start gap-2">
+                                                                <input 
+                                                                    type="text"
+                                                                    value={sub.title}
+                                                                    onChange={e => handleUpdateSubtopic(tIndex, sIndex, e.target.value)}
+                                                                    placeholder="Subtopic"
+                                                                    className="flex-1 bg-white border border-gray-200 rounded-md px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                                                />
+                                                                <button onClick={() => handleRemoveSubtopic(tIndex, sIndex)} className="mt-1 p-1 text-gray-400 hover:text-red-500 transition-colors">
+                                                                    <Icons.X size={12} />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                        <button onClick={() => handleAddSubtopic(tIndex)} className="text-[10px] font-bold text-gray-500 hover:text-indigo-600 flex items-center gap-1 uppercase tracking-wider py-1">
+                                                            <Icons.Plus size={10} /> Add Subtopic
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="pt-4 border-t border-gray-100 flex gap-2 shrink-0">
+                                <button
+                                    onClick={handleSave}
+                                    disabled={isSaving || !title.trim()}
+                                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:bg-indigo-300"
+                                >
+                                    {isSaving && <Icons.Loader2 size={14} className="animate-spin" />}
+                                    Save Unit
+                                </button>
+                                {editingUnit && (
+                                    <button
+                                        onClick={cancelEdit}
+                                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold py-2 rounded-lg transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>

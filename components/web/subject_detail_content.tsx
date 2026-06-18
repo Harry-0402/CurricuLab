@@ -234,16 +234,41 @@ export default function WebSubjectDetailContent() {
 
                         <div className="py-6">
                             <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                                {topicList.length === 0 ? (
-                                    <p className="text-center text-gray-400 text-sm py-4">No topics listed.</p>
-                                ) : (
-                                    topicList.map((topic, index) => (
-                                        <div key={index} className="flex items-start gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-50">
-                                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                                            <span className="text-sm font-medium text-gray-700 leading-relaxed">{topic}</span>
-                                        </div>
-                                    ))
-                                )}
+                                {(() => {
+                                    const parsed: { title: string, subtopics: string[] }[] = [];
+                                    let curr: { title: string, subtopics: string[] } | null = null;
+                                    for (const t of topicList) {
+                                        if (t.startsWith('  - ') || t.startsWith('\t- ')) {
+                                            if (curr) curr.subtopics.push(t.replace(/^[ \t]+- /, ''));
+                                        } else {
+                                            const title = t.replace(/^- /, '');
+                                            curr = { title, subtopics: [] };
+                                            parsed.push(curr);
+                                        }
+                                    }
+                                    return parsed.length === 0 ? (
+                                        <p className="text-center text-gray-400 text-sm py-4">No topics listed.</p>
+                                    ) : (
+                                        parsed.map((topic, index) => (
+                                            <div key={index} className="flex flex-col gap-2 p-3 bg-blue-50/50 rounded-xl border border-blue-50">
+                                                <div className="flex items-start gap-3">
+                                                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                                                    <span className="text-sm font-medium text-gray-700 leading-relaxed">{topic.title}</span>
+                                                </div>
+                                                {topic.subtopics.length > 0 && (
+                                                    <ul className="pl-6 space-y-1.5 mt-1 border-l-2 border-blue-100 ml-0.5">
+                                                        {topic.subtopics.map((sub, j) => (
+                                                            <li key={j} className="flex items-start gap-2 text-xs text-gray-600 font-medium">
+                                                                <span className="shrink-0 mt-0.5">-</span>
+                                                                <span className="leading-relaxed">{sub}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        ))
+                                    );
+                                })()}
                             </div>
                         </div>
 
