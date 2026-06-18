@@ -725,6 +725,7 @@ export interface YoutubeVideo {
     title: string;
     url: string;
     tags: string[];
+    videoPayload?: any[];
     createdAt?: string;
     updatedAt?: string;
 }
@@ -736,6 +737,7 @@ const mapYoutubeVideo = (data: any): YoutubeVideo => ({
     title: data.title,
     url: data.url || '',
     tags: data.tags || [],
+    videoPayload: data.video_payload || undefined,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
 });

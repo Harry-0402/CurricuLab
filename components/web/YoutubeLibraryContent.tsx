@@ -70,6 +70,8 @@ export function YoutubeLibraryContent() {
 
     // Viewer
     const [selectedVideo, setSelectedVideo] = useState<YoutubeVideo | null>(null);
+    const [scrapingVideoId, setScrapingVideoId] = useState<string | null>(null);
+    const [activeAlternativeId, setActiveAlternativeId] = useState<string | null>(null);
 
     // Add / Edit modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -192,11 +194,40 @@ export function YoutubeLibraryContent() {
         setDeleteConfirmId(null);
     };
 
-    const handleCardClick = (video: YoutubeVideo) => {
+    const handleCardClick = async (video: YoutubeVideo) => {
         if (isEmbeddable(video.url)) {
             setSelectedVideo(video);
+            setActiveAlternativeId(null);
         } else {
-            window.open(video.url, '_blank');
+            // Unembeddable -> Search Component overlay
+            if (video.videoPayload && video.videoPayload.length > 0) {
+                setSelectedVideo(video);
+                setActiveAlternativeId(video.videoPayload[0].videoId);
+                return;
+            }
+            
+            try {
+                setScrapingVideoId(video.id);
+                const res = await fetch(`/api/youtube-search?id=${video.id}`);
+                const json = await res.json();
+                
+                if (res.ok && json.data) {
+                    // Update local state so it doesn't fetch again
+                    const updatedVideo = { ...video, videoPayload: json.data };
+                    setVideos(prev => prev.map(v => v.id === video.id ? updatedVideo : v));
+                    setSelectedVideo(updatedVideo);
+                    setActiveAlternativeId(json.data[0]?.videoId || null);
+                } else {
+                    toast.error(json.error || 'Failed to fetch search results.');
+                    window.open(video.url, '_blank'); // fallback
+                }
+            } catch (err) {
+                console.error(err);
+                toast.error('Network error. Falling back to new tab.');
+                window.open(video.url, '_blank');
+            } finally {
+                setScrapingVideoId(null);
+            }
         }
     };
 
@@ -387,9 +418,15 @@ export function YoutubeLibraryContent() {
                                 {/* Footer */}
                                 <div className="pt-3 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400">
                                     <span>{new Date(video.createdAt || new Date()).toLocaleDateString()}</span>
-                                    <span className="flex items-center gap-1 text-red-500 font-bold group-hover:translate-x-1 transition-transform">
-                                        Watch <Icons.ArrowRight size={12} />
-                                    </span>
+                                    {scrapingVideoId === video.id ? (
+                                        <span className="flex items-center gap-1 text-red-500 font-bold">
+                                            <Icons.Loader2 size={12} className="animate-spin" /> Fetching...
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-1 text-red-500 font-bold group-hover:translate-x-1 transition-transform">
+                                            {isEmbeddable(video.url) ? 'Watch' : 'Search'} <Icons.ArrowRight size={12} />
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -400,7 +437,10 @@ export function YoutubeLibraryContent() {
             {/* ── Video Viewer Modal ── */}
             {selectedVideo && !isModalOpen && !deleteConfirmId && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-white rounded-[32px] w-full max-w-5xl flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200 overflow-hidden" style={{ maxHeight: '92vh' }}>
+                    <div className={cn(
+                        "bg-white rounded-[32px] w-full flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200 overflow-hidden",
+                        selectedVideo.videoPayload?.length ? "max-w-6xl" : "max-w-5xl"
+                    )} style={{ maxHeight: '92vh', height: selectedVideo.videoPayload?.length ? '92vh' : 'auto' }}>
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
                             <div className="flex items-center gap-3 min-w-0">
@@ -425,7 +465,7 @@ export function YoutubeLibraryContent() {
                                     <span className="hidden sm:inline">Open in YouTube</span>
                                 </button>
                                 <button
-                                    onClick={() => setSelectedVideo(null)}
+                                    onClick={() => { setSelectedVideo(null); setActiveAlternativeId(null); }}
                                     className="p-2.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
                                 >
                                     <Icons.X size={22} />
@@ -433,16 +473,61 @@ export function YoutubeLibraryContent() {
                             </div>
                         </div>
 
-                        {/* 16:9 embed */}
-                        <div className="relative w-full bg-black" style={{ paddingTop: '56.25%' }}>
-                            <iframe
-                                className="absolute inset-0 w-full h-full"
-                                src={getYoutubeEmbedUrl(selectedVideo.url)}
-                                title={selectedVideo.title}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen
-                            />
-                        </div>
+                        {/* Body */}
+                        {selectedVideo.videoPayload && selectedVideo.videoPayload.length > 0 ? (
+                            <div className="flex flex-col md:flex-row flex-1 overflow-hidden bg-gray-50">
+                                {/* Main Player */}
+                                <div className="flex-1 bg-black flex flex-col relative md:min-w-[65%]">
+                                    <div className="relative w-full h-full min-h-[300px]">
+                                        <iframe
+                                            className="absolute inset-0 w-full h-full"
+                                            src={`https://www.youtube.com/embed/${activeAlternativeId}?autoplay=1&rel=0`}
+                                            title={selectedVideo.title}
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            allowFullScreen
+                                        />
+                                    </div>
+                                </div>
+                                {/* Alternatives List */}
+                                <div className="md:w-[35%] overflow-y-auto p-4 flex flex-col gap-3 border-l border-gray-200 bg-white min-w-[300px]">
+                                    <h3 className="text-sm font-bold text-gray-900 mb-2 px-1">Top Matches</h3>
+                                    {selectedVideo.videoPayload.map((alt: any) => (
+                                        <button 
+                                            key={alt.videoId} 
+                                            onClick={() => setActiveAlternativeId(alt.videoId)}
+                                            className={cn(
+                                                "flex gap-3 p-2 rounded-xl text-left transition-colors",
+                                                activeAlternativeId === alt.videoId ? "bg-red-50 border border-red-100" : "hover:bg-gray-50 border border-transparent"
+                                            )}
+                                        >
+                                            <div className="w-32 aspect-video bg-gray-200 rounded-lg overflow-hidden shrink-0 relative">
+                                                <img src={alt.thumbnail} alt={alt.title} className="w-full h-full object-cover" />
+                                                {activeAlternativeId === alt.videoId && (
+                                                    <div className="absolute inset-0 bg-red-600/20 flex items-center justify-center">
+                                                        <Icons.Play className="text-white fill-white drop-shadow-md" size={20} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col justify-center min-w-0">
+                                                <p className="text-sm font-bold text-gray-900 line-clamp-2 leading-tight mb-1">{alt.title}</p>
+                                                <p className="text-xs font-medium text-gray-500 truncate">{alt.channelName}</p>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            /* 16:9 embed (Fallback) */
+                            <div className="relative w-full bg-black" style={{ paddingTop: '56.25%' }}>
+                                <iframe
+                                    className="absolute inset-0 w-full h-full"
+                                    src={getYoutubeEmbedUrl(selectedVideo.url)}
+                                    title={selectedVideo.title}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
