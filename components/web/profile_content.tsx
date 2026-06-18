@@ -6,7 +6,6 @@ import { Icons } from '@/components/shared/Icons';
 import { Button } from '@/components/shared/Button';
 import { Switch } from '@/components/shared/Switch';
 import { cn } from '@/lib/utils';
-import { AttendanceWidget } from './AttendanceWidget';
 import { useSemester } from '@/components/providers/SemesterProvider';
 import { FaceVerificationModal } from './attendance/FaceVerificationModal';
 import { FaceRecognitionService } from '@/lib/services/face-recognition-service';
@@ -344,11 +343,6 @@ export default function WebProfileContent() {
                             >
                                 Edit Profile
                             </Button>
-                        </div>
-
-
-                        <div className="mt-8">
-                            <AttendanceWidget />
                         </div>
                     </div>
                 ) : (
