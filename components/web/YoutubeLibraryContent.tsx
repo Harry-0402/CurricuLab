@@ -441,7 +441,7 @@ export function YoutubeLibraryContent() {
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className={cn(
                         "bg-white rounded-[32px] w-full flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200 overflow-hidden",
-                        selectedVideo.videoPayload?.length ? "max-w-4xl" : "max-w-4xl"
+                        selectedVideo.videoPayload?.length ? "max-w-5xl" : "max-w-5xl"
                     )} style={{ maxHeight: '92vh', height: selectedVideo.videoPayload?.length ? '92vh' : 'auto' }}>
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
@@ -510,10 +510,24 @@ export function YoutubeLibraryContent() {
                                                     </div>
                                                 )}
                                             </div>
-                                            <div className="flex flex-col justify-center min-w-0">
+                                            <div className="flex flex-col justify-center min-w-0 flex-1">
                                                 <p className="text-sm font-bold text-gray-900 line-clamp-2 leading-tight mb-1">{alt.title}</p>
                                                 <p className="text-xs font-medium text-gray-500 truncate">{alt.channelName}</p>
                                             </div>
+                                            {(alt.ago || alt.rating) && (
+                                                <div className="flex flex-col items-end justify-center shrink-0 ml-2 gap-1.5">
+                                                    {alt.rating && (
+                                                        <span className="px-2 py-0.5 bg-green-50 text-green-700 text-[10px] font-black rounded-md border border-green-200 shadow-sm">
+                                                            {alt.rating}/10 Match
+                                                        </span>
+                                                    )}
+                                                    {alt.ago && (
+                                                        <span className="text-[10px] font-bold text-gray-400">
+                                                            {alt.ago}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
                                         </button>
                                     ))}
                                     {selectedVideo.videoPayload.length > visibleVideoCount && (

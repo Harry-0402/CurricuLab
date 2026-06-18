@@ -56,12 +56,25 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'No results found on YouTube' }, { status: 404 });
         }
 
+        function getSimilarityScore(title: string, query: string) {
+            const t = title.toLowerCase();
+            const q = query.toLowerCase().split(' ').filter(w => w.length > 2);
+            if (q.length === 0) return (8.0 + Math.random() * 1.5).toFixed(1);
+            let matches = 0;
+            q.forEach(word => { if (t.includes(word)) matches++; });
+            const ratio = matches / q.length;
+            let score = 5.5 + (ratio * 4.3); // Score between 5.5 and 9.8
+            return Math.min(9.9, score).toFixed(1);
+        }
+
         // Return all scraped videos (removed the 25 result limit)
         const topResults = searchResults.videos.map((v: any) => ({
             videoId: v.videoId,
             title: v.title,
             thumbnail: v.thumbnail || v.image,
             channelName: v.author?.name || 'Unknown',
+            ago: v.ago || 'Unknown date',
+            rating: getSimilarityScore(v.title, searchQuery),
         }));
 
         // 4. Update the Cache in Supabase
