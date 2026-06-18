@@ -17,16 +17,7 @@ const TEAM_DISTRIBUTION = [
     { team: "Research & Quality", member: "Akash Jayaprakash Mangalumthodi", role: "R&D Manager" }
 ];
 
-const SUBJECT_ALLOCATION = [
-    { code: "PBA204", name: "Production and Operations Management", manager: "Anukriti Srivastava" },
-    { code: "PBA205", name: "Digital Transformation", manager: "Anukriti Srivastava" },
-    { code: "PBA206", name: "Legal aspects of business", manager: "Tejas Patil" },
-    { code: "PBA211", name: "Data analysis using python", manager: "Tejas Patil" },
-    { code: "PBA208", name: "Business research methods", manager: "Manishankar Veermalla" },
-    { code: "PBA212", name: "Data analysis using Power Bi", manager: "Manishankar Veermalla" },
-    { code: "PBA207", name: "Data visualization and story telling", manager: "Georgetta Wilson" },
-    { code: "PBA213", name: "Business communication skills", manager: "Georgetta Wilson" }
-];
+
 
 const TECHNICAL_STEPS = [
     { title: "Requirement Analysis", desc: "Understanding system needs and expectations from the Coordinator and other teams." },
@@ -266,35 +257,6 @@ export default function DocumentationContent() {
                     </div>
                 </section>
 
-                {/* Section: Subject & Resource Allocation */}
-                <section className="space-y-10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-1.5 h-8 bg-amber-600 rounded-full" />
-                        <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Subject & Resource Allocation</h2>
-                    </div>
-                    <div className="bg-white border border-gray-100 rounded-[40px] shadow-sm overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-50 border-b border-gray-100">
-                                    <tr>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">Code</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">Subject Name</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">Resource Manager</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {SUBJECT_ALLOCATION.map((s, i) => (
-                                        <tr key={i} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-8 py-4 text-[10px] font-black text-amber-600 uppercase tracking-widest">{s.code}</td>
-                                            <td className="px-8 py-4 text-xs font-black text-gray-900">{s.name}</td>
-                                            <td className="px-8 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">{s.manager}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
 
                 {/* Section: Learning Outcomes */}
                 <section className="space-y-10">
