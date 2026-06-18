@@ -95,12 +95,10 @@ export const SubjectService = {
 
         console.log('Updating subject:', subject.id, 'with payload:', payload);
 
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('subjects')
             .update(payload)
-            .eq('id', subject.id)
-            .select()
-            .single();
+            .eq('id', subject.id);
 
         if (error) {
             console.error('Error updating subject:', {
@@ -113,25 +111,7 @@ export const SubjectService = {
             throw new Error(`Failed to update subject: ${error.message || JSON.stringify(error)}`);
         }
 
-        if (!data) {
-            console.error('No data returned after update for subject:', subject.id);
-            throw new Error('Update succeeded but no data was returned');
-        }
-
-        const updatedSubject = {
-            id: data.id,
-            code: data.code,
-            title: data.title,
-            icon: data.icon,
-            color: data.color,
-            description: data.description,
-            progress: data.progress,
-            unitCount: data.unit_count,
-            lastStudied: data.last_studied,
-            semesterId: data.semester_id,
-            gcrKeyword: data.gcr_keyword,
-            syllabusPdfUrl: data.syllabus_pdf_url,
-        } as Subject;
+        const updatedSubject = { ...subject, ...payload, semesterId: subject.semesterId, syllabusPdfUrl: subject.syllabusPdfUrl };
 
         // Log Change
         await ChangelogService.logChange({
