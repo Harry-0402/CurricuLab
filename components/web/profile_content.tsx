@@ -7,8 +7,6 @@ import { Button } from '@/components/shared/Button';
 import { Switch } from '@/components/shared/Switch';
 import { cn } from '@/lib/utils';
 import { useSemester } from '@/components/providers/SemesterProvider';
-import { FaceVerificationModal } from './attendance/FaceVerificationModal';
-import { FaceRecognitionService } from '@/lib/services/face-recognition-service';
 import { toast } from 'sonner';
 
 type Tab = 'Overview' | 'Settings';
@@ -33,23 +31,6 @@ export default function WebProfileContent() {
         publicProfile: true,
         shareStreaks: true,
     });
-
-    // Face ID State
-    const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
-    const [isEnrolling, setIsEnrolling] = useState(false);
-
-    const handleEnrollment = async (blob: Blob) => {
-        setIsEnrolling(true);
-        try {
-            const success = await FaceRecognitionService.enrollFace(blob);
-            if (success) {
-                // Removed alert for smoother flow
-                setIsEnrollmentModalOpen(false);
-            }
-        } finally {
-            setIsEnrolling(false);
-        }
-    };
 
     // Load settings from local storage on mount
     useEffect(() => {
@@ -193,26 +174,6 @@ export default function WebProfileContent() {
                                 />
                             </div>
                         ))}
-
-                        {/* Face ID Section */}
-                        <div className="p-5 bg-white border border-gray-100 rounded-3xl flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-black text-gray-900 flex items-center gap-2">
-                                    Face ID
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
-                                        BETA
-                                    </span>
-                                </p>
-                                <p className="text-[11px] font-bold text-gray-400">Use facial recognition for attendance</p>
-                            </div>
-                            <Button
-                                onClick={() => setIsEnrollmentModalOpen(true)}
-                                variant="outline"
-                                className="h-10 px-4 rounded-xl border-gray-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all font-bold text-xs"
-                            >
-                                Set up
-                            </Button>
-                        </div>
 
                         <button
                             onClick={handleGlobalLogout}
@@ -380,15 +341,6 @@ export default function WebProfileContent() {
                 )}
             </div>
 
-
-            <FaceVerificationModal
-                isOpen={isEnrollmentModalOpen}
-                onClose={() => setIsEnrollmentModalOpen(false)}
-                onCapture={handleEnrollment}
-                title="Set up Face ID"
-                description="Position your face clearly in the frame to enroll."
-                isProcessing={isEnrolling}
-            />
         </WebAppShell >
     );
 }
