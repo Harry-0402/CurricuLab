@@ -441,7 +441,7 @@ export function YoutubeLibraryContent() {
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className={cn(
                         "bg-white rounded-[32px] w-full flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200 overflow-hidden",
-                        selectedVideo.videoPayload?.length ? "max-w-6xl" : "max-w-5xl"
+                        selectedVideo.videoPayload?.length ? "max-w-4xl" : "max-w-4xl"
                     )} style={{ maxHeight: '92vh', height: selectedVideo.videoPayload?.length ? '92vh' : 'auto' }}>
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
@@ -477,10 +477,10 @@ export function YoutubeLibraryContent() {
 
                         {/* Body */}
                         {selectedVideo.videoPayload && selectedVideo.videoPayload.length > 0 ? (
-                            <div className="flex flex-col md:flex-row flex-1 overflow-hidden bg-gray-50">
+                            <div className="flex flex-col flex-1 overflow-y-auto bg-gray-50">
                                 {/* Main Player */}
-                                <div className="flex-1 bg-black flex flex-col relative md:min-w-[65%]">
-                                    <div className="relative w-full h-full min-h-[300px]">
+                                <div className="w-full bg-black shrink-0 relative">
+                                    <div className="relative w-full aspect-video">
                                         <iframe
                                             className="absolute inset-0 w-full h-full"
                                             src={`https://www.youtube.com/embed/${activeAlternativeId}?autoplay=1&rel=0`}
@@ -491,7 +491,7 @@ export function YoutubeLibraryContent() {
                                     </div>
                                 </div>
                                 {/* Alternatives List */}
-                                <div className="md:w-[35%] overflow-y-auto p-4 flex flex-col gap-3 border-l border-gray-200 bg-white min-w-[300px]">
+                                <div className="w-full p-6 flex flex-col gap-4 border-t border-gray-200 bg-white">
                                     <h3 className="text-sm font-bold text-gray-900 mb-2 px-1">Related Videos</h3>
                                     {selectedVideo.videoPayload.slice(0, visibleVideoCount).map((alt: any) => (
                                         <button 
