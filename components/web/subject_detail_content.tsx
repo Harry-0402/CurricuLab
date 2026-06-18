@@ -320,7 +320,7 @@ export default function WebSubjectDetailContent() {
     return (
         <WebAppShell>
             <div className="space-y-10">
-                <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8">
+                <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-8">
                     <div className="space-y-4 flex-1">
                         <h2 className="text-4xl font-black text-gray-900 tracking-tight">{subject.title}</h2>
                         <p className="text-lg font-bold text-gray-400 max-w-2xl leading-relaxed">{subject.description}</p>
