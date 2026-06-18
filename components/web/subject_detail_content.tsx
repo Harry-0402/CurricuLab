@@ -365,7 +365,7 @@ export default function WebSubjectDetailContent() {
                 {/* Edit Unit Modal */}
                 <Dialog open={!!editingUnit} onOpenChange={(open) => !open && setEditingUnit(null)}>
                     <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
-                        <div className="flex items-center justify-between pl-6 pr-12 py-4 border-b border-gray-100 shrink-0">
+                        <div className="flex items-center justify-between pl-6 pr-20 py-4 border-b border-gray-100 shrink-0">
                             <div>
                                 <DialogTitle>Edit Unit</DialogTitle>
                                 <DialogDescription className="mt-1">
