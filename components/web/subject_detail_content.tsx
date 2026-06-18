@@ -324,6 +324,13 @@ export default function WebSubjectDetailContent() {
                     <div className="space-y-4 flex-1">
                         <h2 className="text-4xl font-black text-gray-900 tracking-tight">{subject.title}</h2>
                         <p className="text-lg font-bold text-gray-400 max-w-2xl leading-relaxed">{subject.description}</p>
+                        
+                        <div className="inline-flex items-center gap-2 px-3 py-2 mt-2 rounded-xl bg-amber-50 border border-amber-100">
+                            <Icons.Info size={14} className="text-amber-500 shrink-0" />
+                            <p className="text-xs font-bold text-amber-700">
+                                Note: The active semester is locked to this subject. To browse other semesters, return to the Courses page.
+                            </p>
+                        </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 shrink-0 items-center">
