@@ -72,6 +72,7 @@ export function YoutubeLibraryContent() {
     const [selectedVideo, setSelectedVideo] = useState<YoutubeVideo | null>(null);
     const [scrapingVideoId, setScrapingVideoId] = useState<string | null>(null);
     const [activeAlternativeId, setActiveAlternativeId] = useState<string | null>(null);
+    const [visibleVideoCount, setVisibleVideoCount] = useState<number>(10);
 
     // Add / Edit modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -195,6 +196,7 @@ export function YoutubeLibraryContent() {
     };
 
     const handleCardClick = async (video: YoutubeVideo) => {
+        setVisibleVideoCount(10);
         if (isEmbeddable(video.url)) {
             setSelectedVideo(video);
             setActiveAlternativeId(null);
@@ -491,7 +493,7 @@ export function YoutubeLibraryContent() {
                                 {/* Alternatives List */}
                                 <div className="md:w-[35%] overflow-y-auto p-4 flex flex-col gap-3 border-l border-gray-200 bg-white min-w-[300px]">
                                     <h3 className="text-sm font-bold text-gray-900 mb-2 px-1">Related Videos</h3>
-                                    {selectedVideo.videoPayload.map((alt: any) => (
+                                    {selectedVideo.videoPayload.slice(0, visibleVideoCount).map((alt: any) => (
                                         <button 
                                             key={alt.videoId} 
                                             onClick={() => setActiveAlternativeId(alt.videoId)}
@@ -514,6 +516,14 @@ export function YoutubeLibraryContent() {
                                             </div>
                                         </button>
                                     ))}
+                                    {selectedVideo.videoPayload.length > visibleVideoCount && (
+                                        <button 
+                                            onClick={() => setVisibleVideoCount(prev => prev + 15)}
+                                            className="w-full py-3 mt-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors"
+                                        >
+                                            Load More Videos...
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ) : (
