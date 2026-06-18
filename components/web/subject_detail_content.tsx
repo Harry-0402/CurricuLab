@@ -238,10 +238,10 @@ export default function WebSubjectDetailContent() {
                                     const parsed: { title: string, subtopics: string[] }[] = [];
                                     let curr: { title: string, subtopics: string[] } | null = null;
                                     for (const t of topicList) {
-                                        if (t.startsWith('  - ') || t.startsWith('\t- ')) {
-                                            if (curr) curr.subtopics.push(t.replace(/^[ \t]+- /, ''));
+                                        if (/^[ \t]+-/.test(t)) {
+                                            if (curr) curr.subtopics.push(t.replace(/^[ \t]+-[ \t]*/, ''));
                                         } else {
-                                            const title = t.replace(/^- /, '');
+                                            const title = t.replace(/^-[ \t]*/, '');
                                             curr = { title, subtopics: [] };
                                             parsed.push(curr);
                                         }

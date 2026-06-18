@@ -61,15 +61,15 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
     function parseTopics(rawTopics: string[]): TopicInput[] {
         const list: TopicInput[] = [];
         for (const t of rawTopics) {
-            if (t.startsWith('  - ') || t.startsWith('\t- ')) {
+            if (/^[ \t]+-/.test(t)) {
                 if (list.length > 0) {
                     list[list.length - 1].subtopics.push({
                         id: Math.random().toString(36).substr(2, 9),
-                        title: t.replace(/^[ \t]+- /, '')
+                        title: t.replace(/^[ \t]+-[ \t]*/, '')
                     });
                 }
             } else {
-                const title = t.replace(/^- /, '');
+                const title = t.replace(/^-[ \t]*/, '');
                 list.push({ 
                     id: Math.random().toString(36).substr(2, 9), 
                     title, 

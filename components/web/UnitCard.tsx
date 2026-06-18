@@ -22,10 +22,10 @@ export function UnitCard({ unit, onEditTopics, onViewTopics }: UnitCardProps) {
     let currentTopic: { title: string, subtopics: string[] } | null = null;
     
     for (const t of unit.topics || []) {
-        if (t.startsWith('  - ') || t.startsWith('\t- ')) {
-            if (currentTopic) currentTopic.subtopics.push(t.replace(/^[ \t]+- /, ''));
+        if (/^[ \t]+-/.test(t)) {
+            if (currentTopic) currentTopic.subtopics.push(t.replace(/^[ \t]+-[ \t]*/, ''));
         } else {
-            const title = t.replace(/^- /, '');
+            const title = t.replace(/^-[ \t]*/, '');
             currentTopic = { title, subtopics: [] };
             parsedTopics.push(currentTopic);
         }
