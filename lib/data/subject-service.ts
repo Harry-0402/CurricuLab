@@ -88,7 +88,9 @@ export const SubjectService = {
             color: subject.color,
             description: subject.description,
             progress: subject.progress,
-            unit_count: subject.unitCount
+            unit_count: subject.unitCount,
+            gcr_keyword: subject.gcrKeyword,
+            syllabus_pdf_url: subject.syllabusPdfUrl
         };
 
         console.log('Updating subject:', subject.id, 'with payload:', payload);
