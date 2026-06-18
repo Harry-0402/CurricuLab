@@ -490,7 +490,7 @@ export function YoutubeLibraryContent() {
                                 </div>
                                 {/* Alternatives List */}
                                 <div className="md:w-[35%] overflow-y-auto p-4 flex flex-col gap-3 border-l border-gray-200 bg-white min-w-[300px]">
-                                    <h3 className="text-sm font-bold text-gray-900 mb-2 px-1">Top Matches</h3>
+                                    <h3 className="text-sm font-bold text-gray-900 mb-2 px-1">Related Videos</h3>
                                     {selectedVideo.videoPayload.map((alt: any) => (
                                         <button 
                                             key={alt.videoId} 

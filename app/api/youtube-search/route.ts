@@ -49,15 +49,15 @@ export async function GET(request: Request) {
             }
         }
 
-        // Scrape using yt-search
-        const searchResults = await ytSearch(searchQuery);
+        // Scrape using yt-search (force 1 page only to ensure < 2s latency)
+        const searchResults = await ytSearch({ query: searchQuery, pageEnd: 1 });
         
         if (!searchResults || !searchResults.videos || searchResults.videos.length === 0) {
             return NextResponse.json({ error: 'No results found on YouTube' }, { status: 404 });
         }
 
-        // Extract top 5-8 results
-        const topResults = searchResults.videos.slice(0, 8).map((v: any) => ({
+        // Extract up to 25 results to simulate standard YouTube search depth
+        const topResults = searchResults.videos.slice(0, 25).map((v: any) => ({
             videoId: v.videoId,
             title: v.title,
             thumbnail: v.thumbnail || v.image,
