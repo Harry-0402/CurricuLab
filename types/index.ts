@@ -15,6 +15,7 @@ export interface Semester {
   id: string;
   programId: string;
   programName?: string;  // joined for display
+  programCode?: string;  // added for display
   name: string;          // "Semester 2 (Jan–May 2025)"
   shortName: string;     // "Sem 2"
   number: number;

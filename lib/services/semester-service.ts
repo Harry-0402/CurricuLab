@@ -19,6 +19,7 @@ const mapSemester = (row: any): Semester => ({
     id: row.id,
     programId: row.program_id,
     programName: row.programs?.name,
+    programCode: row.programs?.code,
     name: row.name,
     shortName: row.short_name,
     number: row.number,
@@ -86,7 +87,7 @@ export async function deleteProgram(id: string): Promise<boolean> {
 export async function getSemesters(programId?: string): Promise<Semester[]> {
     let query = supabase
         .from('semesters')
-        .select('*, programs(name)')
+        .select('*, programs(name, code)')
         .order('number', { ascending: true });
 
     if (programId) query = query.eq('program_id', programId);
@@ -102,7 +103,7 @@ export async function getSemesters(programId?: string): Promise<Semester[]> {
 export async function getSemesterById(id: string): Promise<Semester | null> {
     const { data, error } = await supabase
         .from('semesters')
-        .select('*, programs(name)')
+        .select('*, programs(name, code)')
         .eq('id', id)
         .single();
 
@@ -113,7 +114,7 @@ export async function getSemesterById(id: string): Promise<Semester | null> {
 export async function getActiveSemesters(): Promise<Semester[]> {
     const { data, error } = await supabase
         .from('semesters')
-        .select('*, programs(name)')
+        .select('*, programs(name, code)')
         .eq('is_active', true)
         .order('number', { ascending: true });
 
@@ -134,7 +135,7 @@ export async function createSemester(
             academic_year: semester.academicYear,
             is_active: semester.isActive,
         }])
-        .select('*, programs(name)')
+        .select('*, programs(name, code)')
         .single();
 
     if (error || !data) {
@@ -156,7 +157,7 @@ export async function updateSemester(semester: Semester): Promise<Semester | nul
             is_active: semester.isActive,
         })
         .eq('id', semester.id)
-        .select('*, programs(name)')
+        .select('*, programs(name, code)')
         .single();
 
     if (error || !data) {

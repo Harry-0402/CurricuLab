@@ -112,6 +112,20 @@ export function StudentsTab() {
         }
     }
 
+    async function handleMakeStudent(userId: string) {
+        if (!confirm('Demote this user to student? They will lose admin access.')) return;
+        const { error } = await supabase
+            .from('profiles')
+            .update({ role: 'student' })
+            .eq('id', userId);
+        if (error) {
+            console.error(error);
+            alert('Failed to update role.');
+        } else {
+            setStudents(prev => prev.map(s => s.userId === userId ? { ...s, role: 'student' } : s));
+        }
+    }
+
     async function handleAddStudent() {
         if (!newEmail.trim()) { setAddError('Email is required.'); return; }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -271,7 +285,7 @@ export function StudentsTab() {
                                                     <option value="">— Not enrolled —</option>
                                                     {semesters.map(s => (
                                                         <option key={s.id} value={s.id}>
-                                                            {s.shortName}{s.academicYear ? ` (${s.academicYear})` : ''}
+                                                            {s.programCode ? `${s.programCode} - ` : ''}{s.shortName}{s.academicYear ? ` (${s.academicYear})` : ''}
                                                         </option>
                                                     ))}
                                                 </select>
@@ -292,6 +306,16 @@ export function StudentsTab() {
                                             >
                                                 <Icons.Shield size={12} />
                                                 Admin
+                                            </button>
+                                        )}
+                                        {student.userId && student.role === 'admin' && (
+                                            <button
+                                                onClick={() => handleMakeStudent(student.userId!)}
+                                                className="flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg transition-colors"
+                                                title="Demote to Student"
+                                            >
+                                                <Icons.User size={12} />
+                                                Student
                                             </button>
                                         )}
                                         <button
