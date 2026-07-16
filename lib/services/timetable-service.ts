@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/supabase/client";
+import { supabase, supabaseData } from "@/utils/supabase/client";
 import { TimetableEntry } from "@/types";
 import { ChangelogService } from "@/lib/services/changelog.service";
 
@@ -16,7 +16,7 @@ const mapTimetable = (t: any): TimetableEntry => ({
 });
 
 export const getTimetable = async (semesterId?: string): Promise<TimetableEntry[]> => {
-    let query = supabase.from('timetable').select('*');
+    let query = supabaseData.from('timetable').select('*');
     if (semesterId) query = query.eq('semester_id', semesterId);
     const { data, error } = await query;
     if (error || !data) return [];

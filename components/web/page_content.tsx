@@ -100,6 +100,7 @@ export default function WebHomePage() {
 
     // Fetch assignments and subjects
     useEffect(() => {
+        if (!mounted) return;
         const loadAssignmentsAndSubjects = async () => {
             if (!activeSemesterId) {
                 setAssignments([]);
@@ -121,7 +122,7 @@ export default function WebHomePage() {
             }
         };
         loadAssignmentsAndSubjects();
-    }, [activeSemesterId]);
+    }, [activeSemesterId, mounted]);
 
     const toggleCompletion = async (assignmentId: string) => {
         if (!user) return;
@@ -157,6 +158,7 @@ export default function WebHomePage() {
     const pendingAssignments = assignments.filter(a => !completedAssignments.has(a.id));
 
     useEffect(() => {
+        if (!mounted) return;
         const fetchAnnouncements = async () => {
             try {
                 const data = await getAnnouncements(activeSemesterId ?? undefined);
@@ -166,9 +168,10 @@ export default function WebHomePage() {
             }
         };
         fetchAnnouncements();
-    }, [setAnnouncements, activeSemesterId]);
+    }, [setAnnouncements, activeSemesterId, mounted]);
 
     useEffect(() => {
+        if (!mounted) return;
         const fetchTimetable = async () => {
             try {
                 const entries = await getTimetable(activeSemesterId ?? undefined);
@@ -178,7 +181,7 @@ export default function WebHomePage() {
             }
         };
         fetchTimetable();
-    }, [setTimetable, activeSemesterId]);
+    }, [setTimetable, activeSemesterId, mounted]);
 
 
     return (

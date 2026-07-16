@@ -63,7 +63,7 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const handleAdd = (day?: string, time?: string) => {
         if (!user) return;
         setInitialDay(day || 'Monday');
-        setInitialTime(time || '09:00 AM');
+        setInitialTime(time || '10:15 AM');
         setSelectedEntry(undefined);
         setIsModalOpen(true);
     };
@@ -75,14 +75,28 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     };
 
     const getEntryStyles = (code: string) => {
-        if (code.startsWith('PBA204')) return "bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-indigo-100 ring-indigo-400/30";
-        if (code.startsWith('PBA205')) return "bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-emerald-100 ring-emerald-400/30";
-        if (code.startsWith('PBA206')) return "bg-gradient-to-br from-rose-500 to-pink-700 text-white shadow-rose-100 ring-rose-400/30";
-        if (code.startsWith('PBA207')) return "bg-gradient-to-br from-amber-500 to-orange-700 text-white shadow-amber-100 ring-amber-400/30";
-        if (code.startsWith('PBA208')) return "bg-gradient-to-br from-sky-500 to-blue-700 text-white shadow-sky-100 ring-sky-400/30";
-        if (code.startsWith('PBA211')) return "bg-gradient-to-br from-violet-600 to-fuchsia-700 text-white shadow-fuchsia-100 ring-fuchsia-400/30";
-        if (code.startsWith('PBA212')) return "bg-gradient-to-br from-teal-500 to-cyan-700 text-white shadow-teal-100 ring-teal-400/30";
-        if (code.startsWith('PBA213')) return "bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-slate-100 ring-slate-400/30";
+        const norm = code.toUpperCase();
+        // Semester 2 mapping
+        if (norm.startsWith('PBA204')) return "bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-indigo-100 ring-indigo-400/30";
+        if (norm.startsWith('PBA205')) return "bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-emerald-100 ring-emerald-400/30";
+        if (norm.startsWith('PBA206')) return "bg-gradient-to-br from-rose-500 to-pink-700 text-white shadow-rose-100 ring-rose-400/30";
+        if (norm.startsWith('PBA207')) return "bg-gradient-to-br from-amber-500 to-orange-700 text-white shadow-amber-100 ring-amber-400/30";
+        if (norm.startsWith('PBA208')) return "bg-gradient-to-br from-sky-500 to-blue-700 text-white shadow-sky-100 ring-sky-400/30";
+        if (norm.startsWith('PBA211')) return "bg-gradient-to-br from-violet-600 to-fuchsia-700 text-white shadow-fuchsia-100 ring-fuchsia-400/30";
+        if (norm.startsWith('PBA212')) return "bg-gradient-to-br from-teal-500 to-cyan-700 text-white shadow-teal-100 ring-teal-400/30";
+        if (norm.startsWith('PBA213')) return "bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-slate-100 ring-slate-400/30";
+
+        // Semester 3 mapping
+        if (norm.startsWith('PBA301')) return "bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-emerald-100 ring-emerald-400/30";
+        if (norm.startsWith('PBA302')) return "bg-gradient-to-br from-rose-500 to-pink-700 text-white shadow-rose-100 ring-rose-400/30";
+        if (norm.startsWith('PBA303')) return "bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-indigo-100 ring-indigo-400/30";
+        if (norm.startsWith('PBA304')) return "bg-gradient-to-br from-amber-500 to-orange-700 text-white shadow-amber-100 ring-amber-400/30";
+        if (norm.startsWith('PBA309')) return "bg-gradient-to-br from-sky-500 to-blue-700 text-white shadow-sky-100 ring-sky-400/30";
+        if (norm.startsWith('PBA311')) return "bg-gradient-to-br from-violet-600 to-fuchsia-700 text-white shadow-fuchsia-100 ring-fuchsia-400/30";
+        if (norm.startsWith('PBAE03')) return "bg-gradient-to-br from-teal-500 to-cyan-700 text-white shadow-teal-100 ring-teal-400/30";
+        if (norm.startsWith('PBAGE')) return "bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-amber-100 ring-amber-400/30";
+        if (norm.startsWith('VAP')) return "bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-slate-100 ring-slate-400/30";
+
         return "bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-indigo-100 ring-indigo-400/30";
     };
 

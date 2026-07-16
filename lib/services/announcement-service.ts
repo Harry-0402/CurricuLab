@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/supabase/client";
+import { supabase, supabaseData } from "@/utils/supabase/client";
 import { Announcement } from "@/types";
 import { ChangelogService } from "@/lib/services/changelog.service";
 import { AuthService } from "@/lib/services/auth.service";
@@ -39,7 +39,7 @@ export const uploadAnnouncementAttachment = async (file: File): Promise<{ url: s
 };
 
 export const getAnnouncements = async (semesterId?: string): Promise<Announcement[]> => {
-    let query = supabase
+    let query = supabaseData
         .from('announcements')
         .select('*')
         .order('created_at', { ascending: false });
