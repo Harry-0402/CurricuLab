@@ -166,3 +166,94 @@ export async function getAuthorizedUsers(): Promise<{
         };
     });
 }
+
+// ─────────────────────────────────────────────────────────────
+// Helpers: Format email prefix as a human-readable name
+// ─────────────────────────────────────────────────────────────
+function formatNameFromEmail(email: string): string {
+    return email
+        .split('@')[0]
+        .replace(/[._\-0-9]+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, c => c.toUpperCase())
+        || email;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Sync: Upsert a fellow card in faculty_members for a student
+// Called when a student is added or their enrollment changes.
+// ─────────────────────────────────────────────────────────────
+export async function syncFellowRecord(
+    email: string,
+    semesterId: string | null,
+    fullName: string | null
+): Promise<boolean> {
+    // Check if fellow card already exists
+    const { data: existing } = await supabase
+        .from('faculty_members')
+        .select('id, name')
+        .ilike('email', email)
+        .eq('category', 'fellows')
+        .maybeSingle();
+
+    if (existing) {
+        // Update semester and name (if a real name is now available)
+        const updatePayload: Record<string, unknown> = { semester_id: semesterId };
+        if (fullName) updatePayload.name = fullName;
+
+        const { error } = await supabase
+            .from('faculty_members')
+            .update(updatePayload)
+            .eq('id', existing.id);
+
+        if (error) { console.error('syncFellowRecord update error:', error); return false; }
+        return true;
+    } else {
+        // Create new fellow card with best available name
+        const name = fullName || formatNameFromEmail(email);
+        const { error } = await supabase
+            .from('faculty_members')
+            .insert([{
+                name,
+                email: email.trim().toLowerCase(),
+                category: 'fellows',
+                status: 'MBA Student',
+                gender: 'male',
+                contact_no: '',
+                subject: 'Business Administration',
+                semester_id: semesterId,
+            }]);
+
+        if (error) { console.error('syncFellowRecord insert error:', error); return false; }
+        return true;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Check: Does a fellow card exist for this email?
+// ─────────────────────────────────────────────────────────────
+export async function getFellowByEmail(email: string): Promise<boolean> {
+    const { data } = await supabase
+        .from('faculty_members')
+        .select('id')
+        .ilike('email', email)
+        .eq('category', 'fellows')
+        .maybeSingle();
+
+    return !!data;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Delete: Remove a fellow card when a student loses access
+// ─────────────────────────────────────────────────────────────
+export async function deleteFellowByEmail(email: string): Promise<boolean> {
+    const { error } = await supabase
+        .from('faculty_members')
+        .delete()
+        .ilike('email', email)
+        .eq('category', 'fellows');
+
+    if (error) { console.error('deleteFellowByEmail error:', error); return false; }
+    return true;
+}
+

@@ -197,13 +197,26 @@ export function FacultyFellowsContent() {
                             </button>
                         )}
 
-                        <button
-                            onClick={handleAdd}
-                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all text-sm"
-                        >
-                            <Icons.Plus size={18} />
-                            <span>Add Member</span>
-                        </button>
+                        {activeTab === 'faculty' && (
+                            <button
+                                onClick={handleAdd}
+                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all text-sm"
+                            >
+                                <Icons.Plus size={18} />
+                                <span>Add Member</span>
+                            </button>
+                        )}
+                        {activeTab === 'fellows' && (
+                            <a
+                                href="/admin"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 px-6 py-3 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-2xl font-black hover:bg-indigo-100 transition-all text-sm"
+                            >
+                                <Icons.Settings size={18} />
+                                <span>Manage in Admin</span>
+                            </a>
+                        )}
                     </div>
                 </div>
 

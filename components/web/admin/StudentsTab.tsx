@@ -8,6 +8,9 @@ import {
     addAuthorizedUser,
     removeAuthorizedUser,
     updateUserEnrollment,
+    syncFellowRecord,
+    getFellowByEmail,
+    deleteFellowByEmail,
 } from '@/lib/services/enrollment-service';
 import { getSemesters } from '@/lib/services/semester-service';
 import { supabase } from '@/utils/supabase/client';
@@ -47,12 +50,23 @@ export function StudentsTab() {
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [isAdding, setIsAdding] = useState(false);
     const [addError, setAddError] = useState<string | null>(null);
+    const [fellowEmails, setFellowEmails] = useState<Set<string>>(new Set());
+    const [creatingCardFor, setCreatingCardFor] = useState<string | null>(null);
 
     async function loadAll() {
         setIsLoading(true);
         const [users, sems] = await Promise.all([getAuthorizedUsers(), getSemesters()]);
         setStudents(users);
         setSemesters(sems);
+
+        // Load which emails already have a fellow card
+        const { data: fellows } = await supabase
+            .from('faculty_members')
+            .select('email')
+            .eq('category', 'fellows');
+        const emailSet = new Set<string>((fellows ?? []).map((f: any) => f.email?.toLowerCase()).filter(Boolean));
+        setFellowEmails(emailSet);
+
         setIsLoading(false);
     }
 
@@ -77,11 +91,17 @@ export function StudentsTab() {
         setUpdatingId(userId);
         const ok = await updateUserEnrollment(userId, semesterId);
         if (ok) {
+            const updated = students.find(s => s.userId === userId);
             setStudents(prev => prev.map(s =>
                 s.userId === userId
                     ? { ...s, semesterId, semesterName: semesters.find(sem => sem.id === semesterId)?.name ?? null }
                     : s
             ));
+            // Keep fellow card in sync with new enrollment semester
+            if (updated?.email) {
+                await syncFellowRecord(updated.email, semesterId, updated.fullName);
+                setFellowEmails(prev => new Set([...prev, updated.email.toLowerCase()]));
+            }
         } else {
             alert('Failed to update enrollment.');
         }
@@ -89,10 +109,14 @@ export function StudentsTab() {
     }
 
     async function handleRemove(email: string) {
-        if (!confirm(`Remove "${email}" from authorized users? They will lose access.`)) return;
-        const ok = await removeAuthorizedUser(email);
+        if (!confirm(`Remove "${email}" from authorized users? They will lose access and their fellow card will be deleted.`)) return;
+        const [ok] = await Promise.all([
+            removeAuthorizedUser(email),
+            deleteFellowByEmail(email),
+        ]);
         if (ok) {
             setStudents(prev => prev.filter(s => s.email !== email));
+            setFellowEmails(prev => { const n = new Set(prev); n.delete(email.toLowerCase()); return n; });
         } else {
             alert('Failed to remove user.');
         }
@@ -126,6 +150,17 @@ export function StudentsTab() {
         }
     }
 
+    async function handleCreateCard(email: string, semesterId: string | null, fullName: string | null) {
+        setCreatingCardFor(email);
+        const ok = await syncFellowRecord(email, semesterId, fullName);
+        if (ok) {
+            setFellowEmails(prev => new Set([...prev, email.toLowerCase()]));
+        } else {
+            alert('Failed to create fellow card.');
+        }
+        setCreatingCardFor(null);
+    }
+
     async function handleAddStudent() {
         if (!newEmail.trim()) { setAddError('Email is required.'); return; }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -137,12 +172,16 @@ export function StudentsTab() {
 
         setIsAdding(true);
         setAddError(null);
-        const ok = await addAuthorizedUser(newEmail.trim());
+        const email = newEmail.trim().toLowerCase();
+        const ok = await addAuthorizedUser(email);
         if (ok) {
             setStudents(prev => [
                 ...prev,
-                { email: newEmail.trim().toLowerCase(), userId: null, fullName: null, role: null, semesterId: null, semesterName: null }
+                { email, userId: null, fullName: null, role: null, semesterId: null, semesterName: null }
             ]);
+            // Auto-create fellow card (no semester yet, name from email)
+            await syncFellowRecord(email, null, null);
+            setFellowEmails(prev => new Set([...prev, email]));
             setNewEmail('');
             setShowAddModal(false);
         } else {
@@ -178,13 +217,24 @@ export function StudentsTab() {
                         <p className="text-sm text-gray-400">{filtered.length} of {students.length} students</p>
                     )}
                 </div>
-                <button
-                    onClick={() => { setNewEmail(''); setAddError(null); setShowAddModal(true); }}
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
-                >
-                    <Icons.Plus size={16} />
-                    Add Student
-                </button>
+                <div className="flex items-center gap-2">
+                    <a
+                        href="/faculty-fellows"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 bg-white border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-600 hover:text-indigo-700 text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+                    >
+                        <Icons.Users size={15} />
+                        View Fellows
+                    </a>
+                    <button
+                        onClick={() => { setNewEmail(''); setAddError(null); setShowAddModal(true); }}
+                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+                    >
+                        <Icons.Plus size={16} />
+                        Add Student
+                    </button>
+                </div>
             </div>
 
             {/* Loading Skeleton */}
@@ -226,13 +276,17 @@ export function StudentsTab() {
                         <div className="divide-y divide-gray-50">
                             {/* Table Header */}
                             <div className="px-6 py-3 grid grid-cols-12 gap-4 bg-gray-50/70">
-                                <div className="col-span-4 text-xs font-black text-gray-400 uppercase tracking-wider">Student</div>
+                                <div className="col-span-3 text-xs font-black text-gray-400 uppercase tracking-wider">Student</div>
                                 <div className="col-span-2 text-xs font-black text-gray-400 uppercase tracking-wider">Role</div>
-                                <div className="col-span-3 text-xs font-black text-gray-400 uppercase tracking-wider">Enrollment</div>
+                                <div className="col-span-2 text-xs font-black text-gray-400 uppercase tracking-wider">Enrollment</div>
+                                <div className="col-span-2 text-xs font-black text-gray-400 uppercase tracking-wider">Fellow Card</div>
                                 <div className="col-span-3 text-xs font-black text-gray-400 uppercase tracking-wider text-right">Actions</div>
                             </div>
 
-                            {filtered.map((student, idx) => (
+                            {filtered.map((student, idx) => {
+                                const hasCard = fellowEmails.has(student.email.toLowerCase());
+                                const isCreating = creatingCardFor === student.email;
+                                return (
                                 <div
                                     key={student.email}
                                     className={cn(
@@ -241,7 +295,7 @@ export function StudentsTab() {
                                     )}
                                 >
                                     {/* Student Info */}
-                                    <div className="col-span-4 flex items-center gap-3 min-w-0">
+                                    <div className="col-span-3 flex items-center gap-3 min-w-0">
                                         <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
                                             <span className="text-xs font-black text-indigo-700">
                                                 {getInitials(student.fullName, student.email)}
@@ -273,7 +327,7 @@ export function StudentsTab() {
                                     </div>
 
                                     {/* Enrollment */}
-                                    <div className="col-span-3">
+                                    <div className="col-span-2">
                                         {student.userId ? (
                                             <div className="relative">
                                                 <select
@@ -285,7 +339,7 @@ export function StudentsTab() {
                                                     <option value="">— Not enrolled —</option>
                                                     {semesters.map(s => (
                                                         <option key={s.id} value={s.id}>
-                                                            {s.programCode ? `${s.programCode} - ` : ''}{s.shortName}{s.academicYear ? ` (${s.academicYear})` : ''}
+                                                            {s.shortName}{s.academicYear ? ` (${s.academicYear})` : ''}
                                                         </option>
                                                     ))}
                                                 </select>
@@ -293,6 +347,28 @@ export function StudentsTab() {
                                             </div>
                                         ) : (
                                             <span className="text-xs text-gray-300 italic">Not signed in yet</span>
+                                        )}
+                                    </div>
+
+                                    {/* Fellow Card Status */}
+                                    <div className="col-span-2 flex items-center gap-1.5">
+                                        {hasCard ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
+                                                <Icons.CheckSquare size={11} />
+                                                Linked
+                                            </span>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleCreateCard(student.email, student.semesterId, student.fullName)}
+                                                disabled={isCreating}
+                                                className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 px-2 py-1 rounded-lg transition-colors disabled:opacity-60 cursor-pointer"
+                                                title="Create fellow card for this student"
+                                            >
+                                                {isCreating
+                                                    ? <Icons.Loader2 size={11} className="animate-spin" />
+                                                    : <Icons.Plus size={11} />}
+                                                Create Card
+                                            </button>
                                         )}
                                     </div>
 
@@ -321,14 +397,15 @@ export function StudentsTab() {
                                         <button
                                             onClick={() => handleRemove(student.email)}
                                             className="flex items-center gap-1 text-xs font-semibold text-red-500 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg transition-colors"
-                                            title="Remove access"
+                                            title="Remove access and delete fellow card"
                                         >
                                             <Icons.Trash2 size={12} />
                                             Remove
                                         </button>
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
