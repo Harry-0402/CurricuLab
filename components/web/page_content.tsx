@@ -13,7 +13,7 @@ import { getTimetable } from '@/lib/services/timetable-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Subject, Assignment } from '@/types';
-import { getAssignments } from '@/lib/services/app.service';
+import { getAssignments, getSemesterAssignments } from '@/lib/services/app.service';
 import { SubjectService } from '@/lib/data/subject-service';
 
 
@@ -73,14 +73,8 @@ export default function WebHomePage() {
                 const fetchedSubjects = await SubjectService.getAll(activeSemesterId);
                 setSubjects(fetchedSubjects);
                 
-                if (fetchedSubjects.length > 0) {
-                    const allAssignmentsPromises = fetchedSubjects.map(subject => getAssignments(subject.id));
-                    const results = await Promise.all(allAssignmentsPromises);
-                    const flatAssignments = results.flat();
-                    setAssignments(flatAssignments);
-                } else {
-                    setAssignments([]);
-                }
+                const semesterAssignments = await getSemesterAssignments(activeSemesterId);
+                setAssignments(semesterAssignments);
             } catch (error) {
                 console.error("Failed to load assignments and subjects:", error);
             } finally {

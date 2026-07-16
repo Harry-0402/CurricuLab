@@ -25,6 +25,16 @@ export const getAssignments = async (subjectId?: string): Promise<Assignment[]> 
     return data.map(mapAssignment);
 };
 
+export const getSemesterAssignments = async (semesterId: string): Promise<Assignment[]> => {
+    const { data, error } = await supabase
+        .from('assignments')
+        .select('*, subjects!inner(semester_id)')
+        .eq('subjects.semester_id', semesterId);
+
+    if (error || !data) return [];
+    return data.map(mapAssignment);
+};
+
 export const getUpcomingAssignments = async (days: number, semesterId?: string | null): Promise<Assignment[]> => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
