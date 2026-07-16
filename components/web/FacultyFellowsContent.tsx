@@ -41,9 +41,9 @@ export function FacultyFellowsContent() {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const allMembers = await FacultyService.getAll(activeSemesterId ?? undefined);
+            const allMembers = await FacultyService.getAll(undefined);
             setFaculty(allMembers.filter(p => p.category === 'faculty'));
-            setFellows(allMembers.filter(p => p.category === 'fellows'));
+            setFellows(allMembers.filter(p => p.category === 'fellows' && (!activeSemesterId || p.semesterId === activeSemesterId)));
         } catch (error) {
             console.error("Failed to fetch faculty:", error);
             toast.error("Failed to load data. Please check your connection.");

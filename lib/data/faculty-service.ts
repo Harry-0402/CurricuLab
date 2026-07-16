@@ -154,5 +154,5 @@ export const INITIAL_DATA: Omit<Person, 'id'>[] = [
     { name: "Dr. Samadhan Bundhe", status: "Coordinator", category: "faculty", email: "samadhan.bundhe@sandipuniversity.edu.in", subject: "Data Visualization", gender: 'male', contactNo: "99600 17348" },
 
     // MBA(BA) Students (Sample for fallback)
-    { name: "Georgetta Diodae Wilson", status: "MBA Student", category: "fellows", email: "georgettawilson44@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7775066089", whatsappNo: "7775066089", prn: "250102041001" }
+    { name: "Georgetta Diodae Wilson", status: "MBA Student", category: "fellows", email: "georgettawilson44@gmail.com", subject: "Business Administration", gender: 'female', contactNo: "7775066089", whatsappNo: "7775066089", prn: "250102041001", semesterId: "d4e5f6a7-0003-0000-0000-000000000003" }
 ];
