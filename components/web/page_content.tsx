@@ -211,7 +211,6 @@ export default function WebHomePage() {
                 {mounted ? (
                     <>
                         <TimetableWidget entries={timetable} />
-                        <AnnouncementWidget announcements={announcements} />
 
                         {/* Pending Assignments Section */}
                         <div className="space-y-10">
@@ -339,6 +338,8 @@ export default function WebHomePage() {
                                 )}
                             </div>
                         </div>
+
+                        <AnnouncementWidget announcements={announcements} />
                     </>
                 ) : (
                     <>
@@ -346,13 +347,13 @@ export default function WebHomePage() {
                         <div className="h-64 bg-gray-50/50 rounded-[32px] border border-gray-100/50 animate-pulse flex items-center justify-center">
                             <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Loading Academic Roadmap...</span>
                         </div>
-                        {/* Announcements Skeleton */}
-                        <div className="h-64 bg-gray-50/50 rounded-[32px] border border-gray-100/50 animate-pulse flex items-center justify-center">
-                            <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Loading Announcements...</span>
-                        </div>
                         {/* Assignments Skeleton */}
                         <div className="h-64 bg-gray-50/50 rounded-[32px] border border-gray-100/50 animate-pulse flex items-center justify-center">
                             <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Loading Pending Assignments...</span>
+                        </div>
+                        {/* Announcements Skeleton */}
+                        <div className="h-64 bg-gray-50/50 rounded-[32px] border border-gray-100/50 animate-pulse flex items-center justify-center">
+                            <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Loading Announcements...</span>
                         </div>
                     </>
                 )}
