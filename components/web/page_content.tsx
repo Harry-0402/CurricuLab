@@ -13,8 +13,10 @@ import { getTimetable } from '@/lib/services/timetable-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Subject, Assignment } from '@/types';
-import { getAssignments, getSemesterAssignments } from '@/lib/services/app.service';
+import { getAssignments, getSemesterAssignments, createAssignment } from '@/lib/services/app.service';
 import { SubjectService } from '@/lib/data/subject-service';
+import { useToast } from '@/components/shared/Toast';
+import { AssignmentModal } from './AssignmentModal';
 
 
 export default function WebHomePage() {
@@ -29,10 +31,47 @@ export default function WebHomePage() {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [loadingAssignments, setLoadingAssignments] = useState(true);
+    const { showToast } = useToast();
+    const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    const handleSaveAssignment = async (data: Partial<Assignment>) => {
+        try {
+            const newAssignment = await createAssignment({
+                id: crypto.randomUUID(),
+                title: data.title || 'Untitled',
+                description: data.description || '',
+                questions: data.questions || [],
+                subjectId: data.subjectId || (subjects.length > 0 ? subjects[0].id : ''),
+                dueDate: data.dueDate || new Date().toISOString().split('T')[0],
+                unitId: data.unitId || undefined,
+                platform: data.platform
+            } as Assignment);
+
+            // Refetch or update local assignments list
+            setAssignments(prev => [...prev, newAssignment]);
+            showToast('Assignment created successfully!', 'success');
+
+            // Trigger push notification to class students
+            fetch('/api/push/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: 'New Assignment Created',
+                    message: `A new assignment "${newAssignment.title}" has been created. Due Date: ${newAssignment.dueDate}`,
+                    url: '/assignments',
+                    targetSemesterId: activeSemesterId
+                })
+            }).catch(console.error);
+        } catch (error) {
+            console.error("Failed to save assignment:", error);
+            showToast('Failed to save assignment', 'error');
+        }
+        setIsAssignmentModalOpen(false);
+    };
 
     // Load completed assignments
     useEffect(() => {
@@ -187,6 +226,24 @@ export default function WebHomePage() {
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Assignments you haven't finished yet</p>
                                     </div>
                                 </div>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => window.location.href = '/assignments'}
+                                        className="flex items-center gap-2 px-5 py-3 bg-white text-gray-900 border border-gray-200 rounded-2xl font-black text-xs hover:scale-105 hover:bg-gray-50 active:scale-95 transition-all shadow-sm group hover:shadow-md"
+                                    >
+                                        <Icons.ArrowRight size={14} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+                                        <span>View All</span>
+                                    </button>
+                                    {user && (
+                                        <button
+                                            onClick={() => setIsAssignmentModalOpen(true)}
+                                            className="flex items-center gap-2 px-5 py-3 bg-gray-900 text-white rounded-2xl font-black text-xs hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gray-200 group"
+                                        >
+                                            <Icons.Plus size={14} className="group-hover:rotate-90 transition-transform" />
+                                            <span>New Assignment</span>
+                                        </button>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Grid container */}
@@ -300,6 +357,13 @@ export default function WebHomePage() {
                     </>
                 )}
             </div>
+
+            <AssignmentModal
+                isOpen={isAssignmentModalOpen}
+                onClose={() => setIsAssignmentModalOpen(false)}
+                onSave={handleSaveAssignment}
+                subjects={subjects}
+            />
         </WebAppShell>
     );
 }
