@@ -18,7 +18,7 @@ import { FacultyService, Person, INITIAL_DATA } from '@/lib/data/faculty-service
 import { useSemester } from '@/components/providers/SemesterProvider';
 
 export function FacultyFellowsContent() {
-    const { activeSemesterId } = useSemester();
+    const { activeSemesterId, allSemesters } = useSemester();
     const [activeTab, setActiveTab] = useState<'faculty' | 'fellows'>('faculty');
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
     const [faculty, setFaculty] = useState<Person[]>([]);
@@ -280,6 +280,13 @@ export function FacultyFellowsContent() {
                                     )}
                                 >
                                     <div className="absolute top-0 w-full h-24 bg-gradient-to-b from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-t-[40px]" />
+
+                                    {/* Semester Badge */}
+                                    {person.category === 'fellows' && (
+                                        <div className="absolute top-6 left-6 z-10 bg-indigo-50/70 border border-indigo-100 text-indigo-600 text-[10px] font-black px-2.5 py-1 rounded-xl uppercase tracking-wider">
+                                            {allSemesters.find(s => s.id === person.semesterId)?.shortName || "Sem 3"}
+                                        </div>
+                                    )}
 
                                     {/* Menu Button */}
                                     <div className="absolute top-4 right-4 z-50">
