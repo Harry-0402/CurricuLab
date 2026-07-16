@@ -5,7 +5,7 @@ import { Icons } from '@/components/shared/Icons';
 import { useToast } from '@/components/shared/Toast';
 import { cn } from '@/lib/utils';
 import { Subject, Assignment, Unit } from '@/types';
-import { getSubjects, getAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
+import { getSubjects, getAssignments, getSemesterAssignments, createAssignment, updateAssignment, deleteAssignment, getUnits } from '@/lib/services/app.service';
 import { AiService } from '@/lib/services/ai-service';
 import { useSearchParams } from 'next/navigation';
 
@@ -51,6 +51,22 @@ export function AssignmentContent() {
     const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(null);
     const [completedAssignments, setCompletedAssignments] = useState<Set<string>>(new Set());
     const [currentUser, setCurrentUser] = useState<any>(null);
+
+    const getSubjectCardStyles = (subjectId: string) => {
+        const subject = subjects.find(s => s.id === subjectId);
+        const code = subject?.code || '';
+        const norm = code.toUpperCase();
+        if (norm.startsWith('PBA301')) return { border: 'hover:border-emerald-300 border-l-4 border-l-emerald-500', badgeBg: 'bg-emerald-50 text-emerald-700', hoverBg: 'hover:bg-emerald-50/10' };
+        if (norm.startsWith('PBA302')) return { border: 'hover:border-blue-300 border-l-4 border-l-blue-500', badgeBg: 'bg-blue-50 text-blue-700', hoverBg: 'hover:bg-blue-50/10' };
+        if (norm.startsWith('PBA303')) return { border: 'hover:border-indigo-300 border-l-4 border-l-indigo-500', badgeBg: 'bg-indigo-50 text-indigo-700', hoverBg: 'hover:bg-indigo-50/10' };
+        if (norm.startsWith('PBA304')) return { border: 'hover:border-purple-300 border-l-4 border-l-purple-500', badgeBg: 'bg-purple-50 text-purple-700', hoverBg: 'hover:bg-purple-50/10' };
+        if (norm.startsWith('PBA309')) return { border: 'hover:border-rose-300 border-l-4 border-l-rose-500', badgeBg: 'bg-rose-50 text-rose-700', hoverBg: 'hover:bg-rose-50/10' };
+        if (norm.startsWith('PBA311')) return { border: 'hover:border-amber-300 border-l-4 border-l-amber-500', badgeBg: 'bg-amber-50 text-amber-700', hoverBg: 'hover:bg-amber-50/10' };
+        if (norm.startsWith('PBAE03')) return { border: 'hover:border-teal-300 border-l-4 border-l-teal-500', badgeBg: 'bg-teal-50 text-teal-700', hoverBg: 'hover:bg-teal-50/10' };
+        if (norm.startsWith('PBAGE')) return { border: 'hover:border-orange-300 border-l-4 border-l-orange-500', badgeBg: 'bg-orange-50 text-orange-700', hoverBg: 'hover:bg-orange-50/10' };
+        if (norm.startsWith('VAP')) return { border: 'hover:border-cyan-300 border-l-4 border-l-cyan-500', badgeBg: 'bg-cyan-50 text-cyan-700', hoverBg: 'hover:bg-cyan-50/10' };
+        return { border: 'hover:border-gray-300 border-l-4 border-l-gray-400', badgeBg: 'bg-gray-50 text-gray-700', hoverBg: 'hover:bg-gray-50/10' };
+    };
 
     // Detail Modal State
     const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
@@ -108,10 +124,13 @@ export function AssignmentContent() {
                 // Priority: Query Param > Storage > Default
                 const validQuerySubject = fetchedSubjects.find(s => s.id === querySubjectId);
                 const storedSubjectId = localStorage.getItem('activeSubjectId');
+                const isStoredAll = storedSubjectId === 'all';
                 const validStoredSubject = fetchedSubjects.find(s => s.id === storedSubjectId);
 
                 if (validQuerySubject) {
                     setActiveSubjectId(validQuerySubject.id);
+                } else if (isStoredAll) {
+                    setActiveSubjectId('all');
                 } else {
                     setActiveSubjectId(validStoredSubject ? validStoredSubject.id : fetchedSubjects[0].id);
                 }
@@ -128,10 +147,25 @@ export function AssignmentContent() {
                 setLoading(true);
                 localStorage.setItem('activeSubjectId', activeSubjectId); // Persist subject selection logic
 
-                const [fetched, fetchedUnits] = await Promise.all([
-                    getAssignments(activeSubjectId),
-                    getUnits(activeSubjectId)
-                ]);
+                let fetched: Assignment[] = [];
+                let fetchedUnits: Unit[] = [];
+
+                if (activeSubjectId === 'all') {
+                    if (activeSemesterId) {
+                        fetched = await getSemesterAssignments(activeSemesterId);
+                        if (subjects.length > 0) {
+                            const allUnitsPromises = subjects.map(s => getUnits(s.id));
+                            const unitsResults = await Promise.all(allUnitsPromises);
+                            fetchedUnits = unitsResults.flat();
+                        }
+                    }
+                } else {
+                    [fetched, fetchedUnits] = await Promise.all([
+                        getAssignments(activeSubjectId),
+                        getUnits(activeSubjectId)
+                    ]);
+                }
+
                 setAssignments(fetched);
                 setUnits(fetchedUnits);
 
@@ -148,7 +182,7 @@ export function AssignmentContent() {
             }
         };
         loadAssignments();
-    }, [activeSubjectId, queryAssignmentId]);
+    }, [activeSubjectId, queryAssignmentId, activeSemesterId, subjects]);
 
     const activeSubject = subjects.find(s => s.id === activeSubjectId);
 
@@ -157,7 +191,7 @@ export function AssignmentContent() {
             if (editingAssignment) {
                 // Update
                 const updated = await updateAssignment({ ...editingAssignment, ...data } as Assignment);
-                if (updated.subjectId === activeSubjectId) {
+                if (activeSubjectId === 'all' || updated.subjectId === activeSubjectId) {
                     setAssignments(prev => prev.map(a => a.id === updated.id ? updated : a));
                 } else {
                     // Moved to another subject, remove from current view
@@ -171,13 +205,13 @@ export function AssignmentContent() {
                     title: data.title || 'Untitled',
                     description: data.description || '',
                     questions: data.questions || [],
-                    subjectId: data.subjectId || activeSubjectId!, // Use selected subject!
+                    subjectId: data.subjectId || (activeSubjectId !== 'all' ? activeSubjectId! : subjects[0]?.id || ''),
                     dueDate: data.dueDate || new Date().toISOString().split('T')[0],
                     unitId: data.unitId || undefined,
                     platform: data.platform
                 } as Assignment);
 
-                if (newAssignment.subjectId === activeSubjectId) {
+                if (activeSubjectId === 'all' || newAssignment.subjectId === activeSubjectId) {
                     setAssignments(prev => [...prev, newAssignment]);
                 }
                 showToast('Assignment created successfully!', 'success');
@@ -388,6 +422,22 @@ export function AssignmentContent() {
 
             {/* Subject Switcher - Consistent with Vault */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-2 no-scrollbar">
+                <button
+                    onClick={() => setActiveSubjectId('all')}
+                    className={cn(
+                        "px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all duration-300 flex items-center justify-center gap-1.5 border shadow-sm",
+                        activeSubjectId === 'all'
+                            ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100"
+                            : "bg-white text-gray-400 border-gray-100 hover:border-blue-200 hover:text-blue-600"
+                    )}
+                >
+                    <span className="text-[10px] font-black tracking-widest uppercase">
+                        All
+                    </span>
+                    {activeSubjectId === 'all' && (
+                        <div className="w-1 h-1 bg-white rounded-full shrink-0" />
+                    )}
+                </button>
                 {subjects.map((subject) => {
                     const isActive = activeSubjectId === subject.id;
                     return (
@@ -436,28 +486,38 @@ export function AssignmentContent() {
                         <p className="text-sm font-bold text-gray-400">Assignments are not Uploaded yet</p>
                     </div>
                 ) : (
-                    assignments.map((assignment) => (
-                        <div
-                            key={assignment.id}
-                            onClick={() => openDetailModal(assignment)}
-                            className="group bg-white border border-gray-100 rounded-[35px] p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer"
-                        >
-
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-start">
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500 ${completedAssignments.has(assignment.id) ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
-                                        <Icons.Calendar size={22} />
-                                    </div>
-                                    {/* Badges */}
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        {(() => {
-                                            const subject = subjects.find(s => s.id === assignment.subjectId);
-                                            return subject ? (
-                                                <span className="h-12 px-4 bg-indigo-100 text-indigo-700 rounded-2xl text-xs font-bold flex items-center justify-center">
-                                                    {subject.code}
-                                                </span>
-                                            ) : null;
-                                        })()}
+                    assignments.map((assignment) => {
+                        const cardStyles = getSubjectCardStyles(assignment.subjectId);
+                        return (
+                            <div
+                                key={assignment.id}
+                                onClick={() => openDetailModal(assignment)}
+                                className={cn(
+                                    "group bg-white border border-gray-100 rounded-[35px] p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer",
+                                    cardStyles.border,
+                                    cardStyles.hoverBg
+                                )}
+                            >
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-start">
+                                        <div className={cn(
+                                            "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500",
+                                            completedAssignments.has(assignment.id)
+                                                ? 'bg-green-50 text-green-600'
+                                                : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600'
+                                        )}>
+                                            <Icons.Calendar size={22} />
+                                        </div>
+                                        {/* Badges */}
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            {(() => {
+                                                const subject = subjects.find(s => s.id === assignment.subjectId);
+                                                return subject ? (
+                                                    <span className={cn("h-12 px-4 rounded-2xl text-xs font-bold flex items-center justify-center", cardStyles.badgeBg)}>
+                                                        {subject.code}
+                                                    </span>
+                                                ) : null;
+                                            })()}
                                         {assignment.unitId && (() => {
                                             const unitIndex = units.findIndex(u => u.id === assignment.unitId);
                                             return (
@@ -513,8 +573,9 @@ export function AssignmentContent() {
                                 </div>
                             </div>
                         </div>
-                    ))
-                )}
+                    );
+                })
+            )}
             </div>
 
             <AssignmentModal
@@ -526,7 +587,7 @@ export function AssignmentContent() {
                 onSave={handleSaveAssignment}
                 assignment={editingAssignment}
                 subjects={subjects}
-                activeSubjectId={activeSubjectId}
+                activeSubjectId={activeSubjectId === 'all' ? null : activeSubjectId}
             />
 
             {/* Detail Modal with AI Answer */}
