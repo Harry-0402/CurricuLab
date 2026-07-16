@@ -129,10 +129,10 @@ export function AssignmentContent() {
 
                 if (validQuerySubject) {
                     setActiveSubjectId(validQuerySubject.id);
-                } else if (isStoredAll) {
+                } else if (isStoredAll || !storedSubjectId) {
                     setActiveSubjectId('all');
                 } else {
-                    setActiveSubjectId(validStoredSubject ? validStoredSubject.id : fetchedSubjects[0].id);
+                    setActiveSubjectId(validStoredSubject ? validStoredSubject.id : 'all');
                 }
             } else {
                 setLoading(false);
