@@ -102,13 +102,7 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => window.location.href = '/faculty-lineup'}
-                        className="flex items-center gap-2 px-6 py-3 bg-white text-gray-900 border border-gray-200 rounded-2xl font-black text-sm hover:scale-105 hover:bg-gray-50 active:scale-95 transition-all shadow-sm hover:shadow-md group"
-                    >
-                        <Icons.Users size={18} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
-                        <span>Faculty Lineup</span>
-                    </button>
+
                     {user && (
                         <>
                             <button

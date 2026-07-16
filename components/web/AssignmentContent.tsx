@@ -450,6 +450,14 @@ export function AssignmentContent() {
                                     </div>
                                     {/* Badges */}
                                     <div className="flex items-center gap-2 flex-wrap">
+                                        {(() => {
+                                            const subject = subjects.find(s => s.id === assignment.subjectId);
+                                            return subject ? (
+                                                <span className="h-12 px-4 bg-indigo-100 text-indigo-700 rounded-2xl text-xs font-bold flex items-center justify-center">
+                                                    {subject.code}
+                                                </span>
+                                            ) : null;
+                                        })()}
                                         {assignment.unitId && (() => {
                                             const unitIndex = units.findIndex(u => u.id === assignment.unitId);
                                             return (
