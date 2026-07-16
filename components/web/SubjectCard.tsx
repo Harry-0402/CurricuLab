@@ -10,10 +10,9 @@ import { cn } from '@/lib/utils';
 
 interface SubjectCardProps {
     subject: Subject;
-    onEdit?: (subject: Subject) => void;
 }
 
-export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
+export function SubjectCard({ subject }: SubjectCardProps) {
     // ... (keep robust icon lookup) ...
     let IconComponent = (Icons as any)[subject.icon];
     let displayIcon = subject.icon;
@@ -38,33 +37,7 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
         displayIcon = '📚';
     }
 
-    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const { user, isAdmin } = useAuth();
-    const menuRef = React.useRef<HTMLDivElement>(null);
 
-    React.useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsMenuOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    const handleAction = (e: React.MouseEvent, action: string) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsMenuOpen(false);
-
-        if (action === 'Edit' && onEdit) {
-            onEdit(subject);
-        } else {
-            // Placeholder for other actions
-            console.log(`${action} subject ${subject.id}`);
-            toast.error(`${action} feature coming soon for ${subject.title}!`);
-        }
-    };
 
     return (
         <Link href={`/subject/${subject.id}`} className="block group h-full">
@@ -90,42 +63,7 @@ export function SubjectCard({ subject, onEdit }: SubjectCardProps) {
                         )}
                     </div>
 
-                    {isAdmin && (
-                        <div className="relative" ref={menuRef}>
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setIsMenuOpen(!isMenuOpen);
-                                }}
-                                className={cn(
-                                    "p-2 rounded-xl transition-all active:scale-95",
-                                    isMenuOpen ? "text-blue-600 bg-blue-50" : "text-gray-300 hover:text-blue-600 hover:bg-blue-50"
-                                )}
-                            >
-                                <Icons.MoreVertical size={20} />
-                            </button>
 
-                            {isMenuOpen && (
-                                <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 animate-in fade-in zoom-in-95 z-20">
-                                    {[
-                                        { label: 'Add Unit', icon: Icons.PlusCircle, color: 'text-blue-600' },
-                                        { label: 'Edit', icon: Icons.Edit, color: 'text-gray-600' },
-                                        { label: 'Remove', icon: Icons.Trash2, color: 'text-red-500' }
-                                    ].map((opt, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={(e) => handleAction(e, opt.label)}
-                                            className="w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-gray-50 transition-colors"
-                                        >
-                                            <opt.icon size={14} className={opt.color} />
-                                            <span className={opt.color}>{opt.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    )}
                 </div>
 
                 <div className="flex-1">
