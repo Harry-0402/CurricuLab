@@ -14,7 +14,7 @@ import {
     DialogDescription,
     DialogFooter,
 } from "@/components/shared/Dialog";
-import { FacultyService, Person, INITIAL_DATA } from '@/lib/data/faculty-service';
+import { FacultyService, Person } from '@/lib/data/faculty-service';
 import { useSemester } from '@/components/providers/SemesterProvider';
 
 export function FacultyFellowsContent() {
@@ -24,12 +24,11 @@ export function FacultyFellowsContent() {
     const [faculty, setFaculty] = useState<Person[]>([]);
     const [fellows, setFellows] = useState<Person[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
     const [openMenuId, setOpenMenuId] = useState<number | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [showSeedConfirm, setShowSeedConfirm] = useState(false);
     const [personToDelete, setPersonToDelete] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [isSeeding, setIsSeeding] = useState(false);
 
     // Form State
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -37,13 +36,15 @@ export function FacultyFellowsContent() {
     const [memberType, setMemberType] = useState<'faculty' | 'fellows'>('faculty');
     const [formData, setFormData] = useState<Partial<Person>>({});
 
-    // Fetch Data on Mount
-    const fetchData = async () => {
+    // Fetch Data
+    const fetchData = async (semId?: string | null) => {
         setIsLoading(true);
         try {
             const allMembers = await FacultyService.getAll(undefined);
             setFaculty(allMembers.filter(p => p.category === 'faculty'));
-            setFellows(allMembers.filter(p => p.category === 'fellows' && (!activeSemesterId || p.semesterId === activeSemesterId)));
+            setFellows(allMembers.filter(p =>
+                p.category === 'fellows' && (!semId || p.semesterId === semId)
+            ));
         } catch (error) {
             console.error("Failed to fetch faculty:", error);
             toast.error("Failed to load data. Please check your connection.");
@@ -52,9 +53,15 @@ export function FacultyFellowsContent() {
         }
     };
 
+    // Mount guard — prevents hydration blank on refresh
     useEffect(() => {
-        fetchData();
-    }, [activeSemesterId]);
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted) return;
+        fetchData(activeSemesterId);
+    }, [mounted, activeSemesterId]);
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -111,7 +118,7 @@ export function FacultyFellowsContent() {
                 await FacultyService.update(updatedPerson);
 
                 // Optimistic UI Update or Refetch (Refetch ensures consistency)
-                await fetchData();
+                await fetchData(activeSemesterId);
             } else {
                 // Add
                 const newPersonPayload = {
@@ -123,7 +130,7 @@ export function FacultyFellowsContent() {
                 } as any;
 
                 await FacultyService.add(newPersonPayload);
-                await fetchData();
+                await fetchData(activeSemesterId);
                 setActiveTab(memberType);
             }
 
@@ -133,23 +140,6 @@ export function FacultyFellowsContent() {
         } catch (error) {
             console.error("Save failed:", error);
             toast.error("Failed to save member. Please try again.");
-        }
-    };
-
-    const handleSeedData = async () => {
-        setIsSeeding(true);
-        try {
-            for (const person of INITIAL_DATA) {
-                await FacultyService.add(person);
-            }
-            await fetchData();
-            toast.success("Data seeded successfully!");
-            setShowSeedConfirm(false);
-        } catch (error) {
-            console.error("Seeding failed:", error);
-            toast.error("Failed to seed data. Check console for details.");
-        } finally {
-            setIsSeeding(false);
         }
     };
 
@@ -186,17 +176,6 @@ export function FacultyFellowsContent() {
                         <p className="text-gray-500 font-medium">Connect with the brilliant minds shaping our academic journey.</p>
                     </div>
                     <div className="flex gap-2">
-                        {/* Seed Data Button (Dev helper, shows only if list is empty) */}
-                        {faculty.length === 0 && fellows.length === 0 && !isLoading && (
-                            <button
-                                onClick={() => setShowSeedConfirm(true)}
-                                className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-2xl font-bold hover:bg-gray-200 transition-all text-sm"
-                            >
-                                <Icons.Database size={18} />
-                                <span>Seed Data</span>
-                            </button>
-                        )}
-
                         {activeTab === 'faculty' && (
                             <button
                                 onClick={handleAdd}
@@ -207,15 +186,10 @@ export function FacultyFellowsContent() {
                             </button>
                         )}
                         {activeTab === 'fellows' && (
-                            <a
-                                href="/admin"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-6 py-3 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-2xl font-black hover:bg-indigo-100 transition-all text-sm"
-                            >
-                                <Icons.Settings size={18} />
-                                <span>Manage in Admin</span>
-                            </a>
+                            <p className="text-xs text-gray-400 italic flex items-center gap-1.5">
+                                <Icons.Info size={13} className="text-gray-300 flex-shrink-0" />
+                                Fellows are managed from the Admin Panel
+                            </p>
                         )}
                     </div>
                 </div>
@@ -268,20 +242,10 @@ export function FacultyFellowsContent() {
                             isLoading={isDeleting}
                             icon="Trash2"
                         />
-                        <ConfirmationModal
-                            isOpen={showSeedConfirm}
-                            onClose={() => setShowSeedConfirm(false)}
-                            onConfirm={handleSeedData}
-                            title="Seed Default Data?"
-                            description="This will add the default mock faculty data to the database. This is typically used for development or initial setup."
-                            confirmText="Seed Data"
-                            variant="primary"
-                            isLoading={isSeeding}
-                            icon="Database"
-                        />
+
                         {currentList.length === 0 ? (
                             <div className="col-span-full py-12 text-center text-gray-400">
-                                <p>No members found. Add a member or seed data to get started.</p>
+                            <p>No members found.</p>
                             </div>
                         ) : (
                             currentList.map((person) => (
