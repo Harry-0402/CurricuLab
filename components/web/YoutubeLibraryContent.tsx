@@ -262,8 +262,45 @@ export function YoutubeLibraryContent() {
                 )}
             </div>
 
-            {/* ── Subject switcher ── */}
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {/* Subject + Unit — Mobile: 2 side-by-side dropdowns */}
+            <div className="block sm:hidden">
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <select
+                            value={activeSubjectId}
+                            onChange={(e) => { setActiveSubjectId(e.target.value); setSelectedVideo(null); setSelectedUnitId('all'); }}
+                            className="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 pr-8 cursor-pointer"
+                        >
+                            {subjects.map(subject => (
+                                <option key={subject.id} value={subject.id}>
+                                    {subject.code} — {subject.title}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            <Icons.ChevronDown size={14} className="text-gray-400" />
+                        </div>
+                    </div>
+                    <div className="relative flex-1">
+                        <select
+                            value={selectedUnitId}
+                            onChange={(e) => setSelectedUnitId(e.target.value)}
+                            className="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 pr-8 cursor-pointer"
+                        >
+                            <option value="all">All Units</option>
+                            {unitIds.map(uid => (
+                                <option key={uid} value={uid}>{UNIT_LABELS[uid] ?? uid}</option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            <Icons.ChevronDown size={14} className="text-gray-400" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Subject switcher — Desktop Pills */}
+            <div className="hidden sm:flex flex-wrap items-center gap-2 shrink-0">
                 {subjects.map(subject => {
                     const isActive = activeSubjectId === subject.id;
                     return (
@@ -304,8 +341,8 @@ export function YoutubeLibraryContent() {
                     )}
                 </div>
 
-                {/* Unit pills */}
-                <div className="flex flex-wrap items-center gap-2">
+            {/* Unit pills — Desktop only */}
+                <div className="hidden sm:flex flex-wrap items-center gap-2">
                     <button
                         onClick={() => setSelectedUnitId('all')}
                         className={cn(

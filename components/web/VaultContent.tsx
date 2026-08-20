@@ -521,8 +521,46 @@ Please review the document at the URL provided above and generate a highly detai
                 </div>
             </div>
 
-            {/* Subject Switcher */}
-            <div className="flex flex-wrap items-center gap-2 shrink-0 print:hidden">
+            {/* Subject Switcher — Mobile: Dropdown, Desktop: Pills */}
+            <div className="block sm:hidden print:hidden">
+                <div className="flex gap-2">
+                    {/* Subject Dropdown */}
+                    <div className="relative flex-1">
+                        <select
+                            value={activeSubjectId}
+                            onChange={(e) => { setActiveSubjectId(e.target.value); setSelectedResource(null); }}
+                            className="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8 cursor-pointer"
+                        >
+                            {subjects.map((subject) => (
+                                <option key={subject.id} value={subject.id}>
+                                    {subject.code} — {subject.title}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            <Icons.ChevronDown size={14} className="text-gray-400" />
+                        </div>
+                    </div>
+                    {/* Type Dropdown */}
+                    <div className="relative flex-1">
+                        <select
+                            value={selectedType}
+                            onChange={(e) => setSelectedType(e.target.value as any)}
+                            className="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8 cursor-pointer"
+                        >
+                            <option value="all">All Types</option>
+                            {Object.entries(TYPE_CONFIG).map(([key, config]) => (
+                                <option key={key} value={key}>{config.label}</option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            <Icons.ChevronDown size={14} className="text-gray-400" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {/* Desktop Pills */}
+            <div className="hidden sm:flex flex-wrap items-center gap-2 shrink-0 print:hidden">
                 {subjects.map((subject) => {
                     const isActive = activeSubjectId === subject.id;
                     return (
@@ -548,9 +586,8 @@ Please review the document at the URL provided above and generate a highly detai
                 })}
             </div>
 
-            {/* Filter Row */}
-            <div className="flex flex-col gap-4 shrink-0 print:hidden w-full">
-                {/* Type Filter Badges */}
+            {/* Type Filter — Desktop only (mobile handled above by dropdown) */}
+            <div className="hidden sm:flex flex-col gap-4 shrink-0 print:hidden w-full">
                 <div className="flex flex-wrap items-center gap-2 shrink-0">
                     <button
                         onClick={() => setSelectedType('all')}
@@ -583,7 +620,6 @@ Please review the document at the URL provided above and generate a highly detai
                         );
                     })}
                 </div>
-
             </div>
 
             <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl flex items-start gap-2 leading-relaxed shrink-0">

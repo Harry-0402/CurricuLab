@@ -21,48 +21,21 @@ export function CareerGatewayContent() {
                     </div>
 
                     <div className="w-full md:w-auto">
-                        {/* Mobile: 2x2 Grid */}
-                        <div className="grid grid-cols-2 gap-2 md:hidden">
-                            <button
-                                onClick={() => setActiveTab('lineup')}
-                                className={cn(
-                                    "px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5",
-                                    activeTab === 'lineup' ? "bg-blue-50 text-blue-600 shadow-sm border-2 border-blue-200" : "bg-gray-50 text-gray-500 hover:text-gray-900 border-2 border-gray-100"
-                                )}
+                        {/* Mobile: Dropdown */}
+                        <div className="block md:hidden relative">
+                            <select
+                                value={activeTab}
+                                onChange={(e) => setActiveTab(e.target.value as any)}
+                                className="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 cursor-pointer"
                             >
-                                <Icons.LayoutDashboard size={16} />
-                                <span>Lineup</span>
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('ai')}
-                                className={cn(
-                                    "px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5",
-                                    activeTab === 'ai' ? "bg-purple-50 text-purple-600 shadow-sm border-2 border-purple-200" : "bg-gray-50 text-gray-500 hover:text-gray-900 border-2 border-gray-100"
-                                )}
-                            >
-                                <Icons.Bot size={16} />
-                                <span>AI Coach</span>
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('resources')}
-                                className={cn(
-                                    "px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5",
-                                    activeTab === 'resources' ? "bg-orange-50 text-orange-600 shadow-sm border-2 border-orange-200" : "bg-gray-50 text-gray-500 hover:text-gray-900 border-2 border-gray-100"
-                                )}
-                            >
-                                <Icons.Library size={16} />
-                                <span>Resources</span>
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('jobs')}
-                                className={cn(
-                                    "px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5",
-                                    activeTab === 'jobs' ? "bg-green-50 text-green-600 shadow-sm border-2 border-green-200" : "bg-gray-50 text-gray-500 hover:text-gray-900 border-2 border-gray-100"
-                                )}
-                            >
-                                <Icons.Briefcase size={16} />
-                                <span>Jobs</span>
-                            </button>
+                                <option value="lineup">Interview Lineup</option>
+                                <option value="ai">AI Prep Coach</option>
+                                <option value="resources">Resources</option>
+                                <option value="jobs">Job Openings</option>
+                            </select>
+                            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                                <Icons.ChevronDown size={14} className="text-gray-400" />
+                            </div>
                         </div>
 
                         {/* Desktop: Horizontal Pills */}

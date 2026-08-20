@@ -151,25 +151,25 @@ export function ClassroomContent() {
         <WebAppShell>
             <div className="max-w-[1400px] mx-auto p-4 animate-in fade-in duration-500">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-12">
-                    <div className="space-y-2">
-                        <h1 className="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-[0.2em]">
+                <div className="flex items-center justify-between gap-2 md:gap-4 mb-6 md:mb-12">
+                    <div className="min-w-0">
+                        <h1 className="text-[10px] font-black text-blue-600 mb-0.5 uppercase tracking-[0.2em] hidden sm:block">
                             {selectedCourse ? 'Classroom' : 'Resources'}
                         </h1>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                             <h1 className={cn(
-                                "font-black text-gray-900 tracking-tight",
-                                selectedCourse ? "text-2xl md:text-3xl" : "text-3xl md:text-5xl"
+                                "font-black text-gray-900 tracking-tight truncate",
+                                selectedCourse ? "text-xl md:text-3xl" : "text-3xl md:text-5xl"
                             )}>
                                 {selectedCourse ? selectedCourse.name : 'Classroom'}
                             </h1>
                         </div>
                         {!selectedCourse && (
-                            <div className="space-y-3">
-                                <p className="text-gray-400 font-medium max-w-xl">
+                            <div className="space-y-2 mt-1">
+                                <p className="text-gray-400 font-medium max-w-xl text-sm hidden sm:block">
                                     Access your synced Google Classroom courses, assignments, and study materials in one place.
                                 </p>
-                                <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl flex items-start gap-2 leading-relaxed shrink-0 max-w-xl">
+                                <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3 rounded-2xl flex items-start gap-2 leading-relaxed max-w-xl hidden sm:flex">
                                     <Icons.Info size={14} className="shrink-0 mt-0.5 text-purple-500" />
                                     <span>
                                         <strong>Note:</strong> These are all of your enrolled Google Classrooms, displaying your coursework and synced materials irrespective of the semester you are currently browsing.
@@ -185,8 +185,7 @@ export function ClassroomContent() {
                                 onClick={() => setShowResetConfirm(true)}
                                 className="flex items-center justify-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-red-50 text-red-600 rounded-xl text-xs md:text-sm font-bold hover:bg-red-100 transition-all active:scale-95 shadow-sm border border-red-100 shrink-0"
                             >
-                                <Icons.RotateCcw size={16} className="md:hidden" />
-                                <Icons.RotateCcw size={18} className="hidden md:block" />
+                                <Icons.RotateCcw size={16} />
                                 <span className="hidden sm:inline">Reset Connection</span>
                                 <span className="sm:hidden">Reset</span>
                             </button>
@@ -198,8 +197,7 @@ export function ClassroomContent() {
                                     onClick={() => setSelectedCourse(null)}
                                     className="flex items-center justify-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gray-100 text-gray-600 rounded-xl text-xs md:text-sm font-bold hover:bg-gray-200 transition-all active:scale-95 shrink-0"
                                 >
-                                    <Icons.ArrowLeft size={14} className="md:hidden" />
-                                    <Icons.ArrowLeft size={16} className="hidden md:block" />
+                                    <Icons.ArrowLeft size={14} />
                                     <span className="hidden sm:inline">Back to All Classes</span>
                                     <span className="sm:hidden">Back</span>
                                 </button>
@@ -210,8 +208,7 @@ export function ClassroomContent() {
                                     rel="noopener noreferrer"
                                     className="flex items-center justify-center gap-2 px-3 py-2 md:px-6 md:py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-xs md:text-sm font-bold hover:bg-gray-50 transition-all shadow-sm whitespace-nowrap shrink-0"
                                 >
-                                    <Icons.ExternalLink size={14} className="md:hidden" />
-                                    <Icons.ExternalLink size={16} className="hidden md:block" />
+                                    <Icons.ExternalLink size={14} />
                                     <span className="hidden sm:inline">Open in Classroom</span>
                                     <span className="sm:hidden">Open</span>
                                 </a>
@@ -219,6 +216,14 @@ export function ClassroomContent() {
                         )}
                     </div>
                 </div>
+
+                {/* Mobile-only Note */}
+                {!selectedCourse && (
+                    <div className="block sm:hidden text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3 rounded-2xl flex items-start gap-2 leading-relaxed mb-4">
+                        <Icons.Info size={13} className="shrink-0 mt-0.5 text-purple-500" />
+                        <span>These are all of your enrolled Google Classrooms, irrespective of the semester.</span>
+                    </div>
+                )}
 
                 {/* Main Content Area */}
                 {isLoading || isCoursesLoading ? (

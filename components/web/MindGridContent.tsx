@@ -179,7 +179,26 @@ export default function MindGridContent() {
                 </div>
 
                 {/* Filters */}
-                <div className="flex gap-2 mb-10 overflow-x-auto no-scrollbar pb-2">
+                {/* Mobile: Dropdown */}
+                <div className="block md:hidden mb-6 relative">
+                    <select
+                        value={activeFilter}
+                        onChange={(e) => setActiveFilter(e.target.value as any)}
+                        className="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10 cursor-pointer"
+                    >
+                        <option value="All">Full Grid</option>
+                        {['openai', 'google', 'other'].map(filter => (
+                            <option key={filter} value={filter}>
+                                {PLATFORM_CONFIG[filter as keyof typeof PLATFORM_CONFIG]?.label || filter}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <Icons.ChevronDown size={14} className="text-gray-400" />
+                    </div>
+                </div>
+                {/* Desktop: Pills */}
+                <div className="hidden md:flex gap-2 mb-10 pb-2">
                     {['All', 'openai', 'google', 'other'].map((filter) => (
                         <button
                             key={filter}
