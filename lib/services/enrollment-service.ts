@@ -30,11 +30,11 @@ export async function getUserEnrollment(userId: string): Promise<UserEnrollment>
 // ─────────────────────────────────────────────────────────────
 export async function updateUserEnrollment(
     userId: string,
-    semesterId: string
+    semesterId: string | null
 ): Promise<boolean> {
     const { error } = await supabase
         .from('profiles')
-        .update({ class_id: semesterId })
+        .update({ class_id: semesterId || null })
         .eq('id', userId);
 
     if (error) {
@@ -198,7 +198,7 @@ export async function syncFellowRecord(
 
     if (existing) {
         // Update semester and name (if a real name is now available)
-        const updatePayload: Record<string, unknown> = { semester_id: semesterId };
+        const updatePayload: Record<string, unknown> = { semester_id: semesterId || null };
         if (fullName) updatePayload.name = fullName;
 
         const { error } = await supabase
@@ -221,7 +221,7 @@ export async function syncFellowRecord(
                 gender: 'male',
                 contact_no: '',
                 subject: 'Business Administration',
-                semester_id: semesterId,
+                semester_id: semesterId || null,
             }]);
 
         if (error) { console.error('syncFellowRecord insert error:', error); return false; }

@@ -119,13 +119,24 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
 
             const parsed = await AiService.parseAssignmentContent(smartPasteContent, fileData);
 
-            setFormData(prev => ({
-                ...prev,
-                title: parsed.title || prev.title,
-                dueDate: parsed.date || prev.dueDate,
-                description: parsed.description || prev.description,
-                questions: (parsed.questions || []).map((q: string) => ({ id: crypto.randomUUID(), text: q }))
-            }));
+            setFormData(prev => {
+                let inferredSubjectId = prev.subjectId;
+                if (parsed.subjectCode) {
+                    const matched = subjects.find(s => 
+                        s.code.toLowerCase().includes(parsed.subjectCode.toLowerCase()) || 
+                        parsed.subjectCode.toLowerCase().includes(s.code.toLowerCase())
+                    );
+                    if (matched) inferredSubjectId = matched.id;
+                }
+                return {
+                    ...prev,
+                    title: parsed.title || prev.title,
+                    dueDate: parsed.date || prev.dueDate,
+                    description: parsed.description || prev.description,
+                    subjectId: inferredSubjectId,
+                    questions: (parsed.questions || []).map((q: string) => ({ id: crypto.randomUUID(), text: q }))
+                };
+            });
 
             setShowSmartPaste(false);
             setSmartPasteContent('');

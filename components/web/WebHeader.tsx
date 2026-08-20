@@ -57,10 +57,18 @@ export function WebHeader() {
     }, {});
 
     return (
-        <header className="h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-8 flex items-center justify-between print:hidden">
-            <div>
-                <h1 className="text-sm font-medium text-gray-500 mb-0.5">Hello,</h1>
-                <p className="text-lg font-bold text-gray-900 capitalize">{user ? displayName : 'Guest'}</p>
+        <header className="h-16 lg:h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-4 lg:px-8 flex items-center justify-between print:hidden">
+            {/* Left: Hamburger & Logo */}
+            <div className="flex items-center gap-3">
+                <button className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
+                    <Icons.Menu size={24} />
+                </button>
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
+                        <img src="/curriculab-logo.png" alt="Logo" className="w-full h-full object-cover" />
+                    </div>
+                    <span className="text-xl font-extrabold text-gray-900 tracking-tight hidden sm:block">CurricuLab</span>
+                </div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -88,7 +96,7 @@ export function WebHeader() {
                     </button>
 
                     {showSemesterMenu && (
-                        <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        <div className="absolute right-0 lg:right-auto lg:left-0 top-full mt-2 w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 overflow-hidden">
                             <div className="p-3 border-b border-gray-50">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Switch Class</p>
                             </div>
@@ -149,23 +157,33 @@ export function WebHeader() {
 
                 {user ? (
                     <>
-                        <Link
-                            href="/profile"
-                            className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
-                            title="My Profile"
-                        >
-                            <Icons.User size={16} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
-                            <span className="text-xs font-bold text-gray-600 group-hover:text-indigo-600 transition-colors">Profile</span>
-                        </Link>
-
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-red-50 text-gray-700 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 group"
-                            title="Sign Out"
-                        >
-                            <Icons.LogOut size={16} className="text-gray-400 group-hover:text-red-600 transition-colors" />
-                            <span className="text-xs font-bold text-gray-600 group-hover:text-red-600 transition-colors">Logout</span>
+                        {/* Notification Bell */}
+                        <button className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                            <Icons.Bell size={24} />
+                            <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">3</span>
                         </button>
+
+                        {/* Profile & Logout */}
+                        <div className="flex items-center gap-3 ml-1">
+                            <Link href="/profile">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm border-2 border-white shadow-sm overflow-hidden relative">
+                                    {user.user_metadata?.avatar_url ? (
+                                        <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span>{displayName.charAt(0)}</span>
+                                    )}
+                                    <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-white"></div>
+                                </div>
+                            </Link>
+
+                            <button
+                                onClick={handleLogout}
+                                className="hidden lg:flex p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                                title="Sign Out"
+                            >
+                                <Icons.LogOut size={18} />
+                            </button>
+                        </div>
                     </>
                 ) : (
                     <Link

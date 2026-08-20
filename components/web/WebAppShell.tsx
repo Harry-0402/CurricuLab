@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { WebSidebar } from './WebSidebar';
 import { WebHeader } from './WebHeader';
+import { MobileBottomNav } from './MobileBottomNav';
 
 import { getUpcomingAssignments } from '@/lib/services/app.service';
 import { Assignment } from '@/types';
@@ -14,6 +15,9 @@ import { usePathname } from 'next/navigation';
 import { EnrollmentModal } from './EnrollmentModal';
 import { useSemester } from '../providers/SemesterProvider';
 import { useAuth } from '../providers/AuthProvider';
+import { useAppStore } from '@/lib/store/useAppStore';
+import { AnalyticaChat } from './AnalyticaChat';
+import { cn } from '@/lib/utils';
 
 function urlBase64ToUint8Array(base64String: string) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -35,6 +39,8 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
     const { user, isAuthLoading } = useAuth();
     const [showEnrollment, setShowEnrollment] = useState(false);
     const { enrolledSemesterId, isLoading: isSemesterLoading, refreshEnrollment } = useSemester();
+    const isAnalyticaOpen = useAppStore(state => state.isAnalyticaOpen);
+    const setAnalyticaOpen = useAppStore(state => state.setAnalyticaOpen);
 
     // Show enrollment modal if logged in but no class_id
     useEffect(() => {
@@ -168,8 +174,8 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
             <WebSidebar />
             <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden print:h-auto print:!overflow-visible print:block">
                 <WebHeader />
-                <div className="flex-1 flex overflow-hidden min-h-0 print:h-auto print:!overflow-visible print:block">
-                    <main className="flex-1 p-8 overflow-y-auto no-scrollbar scroll-smooth min-w-0 print:p-0 print:!overflow-visible print:block">
+                <div className="flex-1 flex overflow-hidden min-h-0 print:h-auto print:!overflow-visible print:block pb-20 lg:pb-0">
+                    <main className="flex-1 p-4 lg:p-8 overflow-y-auto no-scrollbar scroll-smooth min-w-0 print:p-0 print:!overflow-visible print:block">
                         <div className="max-w-7xl mx-auto print:max-w-none print:m-0 h-full">
                             {isRestricted ? (
                                 <RestrictedAccess 
@@ -232,6 +238,29 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
             )}
+            
+            <AnalyticaChat 
+                isOpen={isAnalyticaOpen} 
+                onClose={() => setAnalyticaOpen(false)} 
+            />
+
+            {/* Analytica Floating Action Button */}
+            {user && (
+                <button
+                    onClick={() => setAnalyticaOpen(true)}
+                    className={cn(
+                        "fixed bottom-24 lg:bottom-6 right-6 z-[60] flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-[0_8px_30px_rgba(79,70,229,0.3)] transition-all duration-300 ease-out hover:scale-110 hover:shadow-[0_8px_35px_rgba(79,70,229,0.5)] active:scale-95 group",
+                        isAnalyticaOpen ? "scale-0 opacity-0 pointer-events-none translate-y-4" : "scale-100 opacity-100 translate-y-0"
+                    )}
+                >
+                    <Icons.Sparkles size={24} className="group-hover:animate-pulse" />
+                    
+                    {/* Glow ring */}
+                    <div className="absolute inset-0 rounded-full border border-white/20 scale-[1.15]" />
+                </button>
+            )}
+
+            <MobileBottomNav />
         </div>
     );
 }

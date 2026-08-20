@@ -1,6 +1,7 @@
-import { FileText, Database, Code2, BookOpen, Settings, Home, Search, Calendar, CheckSquare, BarChart3, Clock, TrendingUp, PlusCircle, User, ChevronRight, ChevronLeft, ChevronDown, Bookmark as BookmarkIcon, Lightbulb, GraduationCap, PanelRight, Download, Check, Copy, Image as ImageIcon, Edit, Trash2, MoreVertical, Upload, Users, Bot, Send, Lock, LogIn, LogOut, Info, Share2, CheckCircle, Sparkles, Wand2, Loader2, X, Printer, AlertTriangle, AlertCircle, ArrowLeft, Plus, Link2, Globe, RefreshCw, Briefcase, Heart, Music, Youtube, ArrowUpRight, ExternalLink, ArrowRight, Key, LayoutGrid, Mail, Shield, Trophy, Zap, Bell, LayoutDashboard, Library, MapPin, Building, Banknote, Save, FolderKanban, Video, File, Folder, MessageCircle, UploadCloud, Activity, Eye, Pause, Play, RotateCcw, Quote, Maximize, Minimize, Sun, Moon, List, Paperclip, Camera, Cpu, Monitor, PenLine, Layers, Repeat, GripVertical } from "lucide-react";
+import { Menu, FileText, Database, Code2, BookOpen, Book, Settings, Home, Search, Calendar, CheckSquare, BarChart3, Clock, TrendingUp, PlusCircle, User, ChevronRight, ChevronLeft, ChevronDown, Bookmark as BookmarkIcon, Lightbulb, GraduationCap, PanelRight, Download, Check, Copy, Image as ImageIcon, Edit, Trash2, MoreVertical, Upload, Users, Bot, Send, Lock, LogIn, LogOut, Info, Share2, CheckCircle, Sparkles, Wand2, Loader2, X, Printer, AlertTriangle, AlertCircle, ArrowLeft, ArrowUp, ArrowDown, Plus, Link2, Globe, RefreshCw, Briefcase, Heart, Music, Youtube, ArrowUpRight, ExternalLink, ArrowRight, Key, LayoutGrid, Mail, Shield, Trophy, Zap, Bell, LayoutDashboard, Library, MapPin, Building, Banknote, Save, FolderKanban, Video, File, Folder, MessageCircle, UploadCloud, Activity, Eye, Pause, Play, RotateCcw, Quote, Maximize, Minimize, Sun, Moon, List, Paperclip, Camera, Cpu, Monitor, PenLine, Layers, Repeat, GripVertical, Archive, Grid, PlayCircle } from "lucide-react";
 
 export const Icons = {
+    Menu,
     List,
     Bell,
     Printer,
@@ -58,6 +59,8 @@ export const Icons = {
     Loader2,
     X,
     ArrowLeft,
+    ArrowUp,
+    ArrowDown,
     Link: Link2,
     Globe,
     RefreshCw,
@@ -74,6 +77,7 @@ export const Icons = {
     ExternalLink,
     ArrowRight,
     BookOpen,
+    Book,
     Key,
     LayoutGrid,
     Mail,
@@ -91,6 +95,7 @@ export const Icons = {
     Video,
     File,
     FolderOpen: Folder,
+    Folder,
     BarChart3,
     AlertCircle,
     MessageCircle,
@@ -111,5 +116,8 @@ export const Icons = {
     PenLine,
     Layers,
     Repeat,
-    GripVertical
+    GripVertical,
+    Archive,
+    Grid,
+    PlayCircle
 };

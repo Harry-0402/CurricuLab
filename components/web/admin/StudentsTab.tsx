@@ -381,7 +381,7 @@ export function StudentsTab() {
                                                 title="Promote to Admin"
                                             >
                                                 <Icons.Shield size={12} />
-                                                Admin
+                                                Make Admin
                                             </button>
                                         )}
                                         {student.userId && student.role === 'admin' && (
@@ -391,7 +391,7 @@ export function StudentsTab() {
                                                 title="Demote to Student"
                                             >
                                                 <Icons.User size={12} />
-                                                Student
+                                                Make Student
                                             </button>
                                         )}
                                         <button

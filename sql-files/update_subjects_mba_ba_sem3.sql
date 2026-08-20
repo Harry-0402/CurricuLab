@@ -11,21 +11,21 @@ SET
   icon = '📊'
 WHERE code = 'PBA311' AND semester_id = 'd4e5f6a7-0003-0000-0000-000000000003';
 
--- 2. Update PBAG04 -> PBAGE (Innovation, Business Models and Entrepreneurship)
+-- 2. Ensure PBAG04 (Innovation, Business Models and Entrepreneurship) is correct
 UPDATE public.subjects 
 SET 
-  code = 'PBAGE',
+  code = 'PBAG04',
   title = 'Innovation, Business Models and Entrepreneurship',
   icon = '💡'
-WHERE code = 'PBAG04' AND semester_id = 'd4e5f6a7-0003-0000-0000-000000000003';
+WHERE code IN ('PBAGE', 'PBAG04') AND semester_id = 'd4e5f6a7-0003-0000-0000-000000000003';
 
--- 3. Update PBA312 -> PBA309 (Business Communication Skills - III)
+-- 3. Ensure PBA312 (Business Communication Skills - III) is correct
 UPDATE public.subjects 
 SET 
-  code = 'PBA309',
+  code = 'PBA312',
   title = 'Business Communication Skills - III',
   icon = '💬'
-WHERE code = 'PBA312' AND semester_id = 'd4e5f6a7-0003-0000-0000-000000000003';
+WHERE code IN ('PBA309', 'PBA312') AND semester_id = 'd4e5f6a7-0003-0000-0000-000000000003';
 
 -- 4. Ensure VAP (Basics of Excel) exists
 INSERT INTO public.subjects (id, semester_id, code, title, icon, color, description, unit_count, progress)

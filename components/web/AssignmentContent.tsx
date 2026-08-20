@@ -21,6 +21,7 @@ import { AnswerDisplay } from './AnswerDisplay';
 
 import { useSemester } from '@/components/providers/SemesterProvider';
 import { SubjectService } from '@/lib/data/subject-service';
+import { useAppStore } from '@/lib/store/useAppStore';
 
 export function AssignmentContent() {
     const { activeSemesterId, setActiveSemester } = useSemester();
@@ -28,6 +29,8 @@ export function AssignmentContent() {
     const searchParams = useSearchParams();
     const querySubjectId = searchParams.get('subjectId');
     const queryAssignmentId = searchParams.get('assignmentId');
+    const setAnalyticaOpen = useAppStore(state => state.setAnalyticaOpen);
+    const setAnalyticaInput = useAppStore(state => state.setAnalyticaInput);
 
     // Automatically switch active semester to the subject's semester if deep-linked to a subject in another semester
     useEffect(() => {
@@ -683,9 +686,13 @@ export function AssignmentContent() {
                                                     const prompt = `Here is a list of questions for my assignment:\n\n${questionList}\n\n\nPlease help me answer them based on ${subjectName}.\n\nInstructions:\n- The language should be simple, clear, and humanoid.\n- The word limit should be in 110-120 words for each question.`;
 
                                                     navigator.clipboard.writeText(prompt).then(() => {
-                                                        showToast("Questions copied! Paste them into ChatGPT or Gemini to get solutions.", "success");
+                                                        showToast("Questions copied! Opening Analytica...", "success");
+                                                        setAnalyticaOpen(true);
+                                                        setAnalyticaInput(prompt);
                                                     }).catch(() => {
-                                                        showToast("Failed to copy. Please allow clipboard permissions.", "error");
+                                                        showToast("Failed to copy to clipboard, but opening Analytica...", "error");
+                                                        setAnalyticaOpen(true);
+                                                        setAnalyticaInput(prompt);
                                                     });
                                                 }}
                                                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-none rounded-2xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-all shadow-sm active:scale-95 shrink-0"
@@ -698,7 +705,7 @@ export function AssignmentContent() {
                                         <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl flex items-start gap-2 leading-relaxed">
                                             <Icons.Info size={14} className="shrink-0 mt-0.5 text-purple-500" />
                                             <span>
-                                                <strong>How to use:</strong> Click <strong>"Solve via AI (Copy Prompt)"</strong> above to copy a customized, structured prompt containing these questions to your clipboard. Paste it into your preferred AI (ChatGPT, Gemini, or Claude) to get comprehensive explanations instantly.
+                                                <strong>How to use:</strong> Click <strong>"Solve via AI"</strong> above to instantly open Analytica with a customized, structured prompt containing these questions. You can also paste it into ChatGPT, Gemini, or Claude.
                                             </span>
                                         </div>
                                         {selectedAssignment.questions.length === 0 && (

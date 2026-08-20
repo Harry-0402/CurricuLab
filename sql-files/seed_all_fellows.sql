@@ -4,9 +4,12 @@
 -- Run this in your Supabase SQL Editor to seed the database table.
 -- ================================================================
 
--- Optional: Clear existing fellows if you want a clean slate
--- DELETE FROM public.faculty_members WHERE category = 'fellows';
+-- Clear existing fellows (Semester 3)
+DELETE FROM public.faculty_members
+WHERE category = 'fellows'
+  AND semester_id = 'd4e5f6a7-0003-0000-0000-000000000003';
 
+-- Insert all 10 MBA(BA) Semester 3 students
 INSERT INTO public.faculty_members (
     prn,
     name,
@@ -29,14 +32,5 @@ VALUES
     ('250102041007', 'Chavan Harish Ravindra', '7030430756', 'hrchavan0402@gmail.com', 'fellows', 'MBA Student', 'Business Administration', 'male', '7030430756', 'd4e5f6a7-0003-0000-0000-000000000003'),
     ('250102041008', 'Anukriti Srivastava', '7007334139', 'anukritisrivastava04@gmail.com', 'fellows', 'MBA Student', 'Business Administration', 'female', '7007334139', 'd4e5f6a7-0003-0000-0000-000000000003'),
     ('250102041009', 'Divya Shahi', '9214867985', 'shahidivya38@gamil.com', 'fellows', 'MBA Student', 'Business Administration', 'female', '9214867985', 'd4e5f6a7-0003-0000-0000-000000000003'),
-    ('250102041010', 'Tejas Sanjay Patil', '9673662750', 'tejaspatil78787@gmail.com', 'fellows', 'MBA Student', 'Business Administration', 'male', '9673662750', 'd4e5f6a7-0003-0000-0000-000000000003')
-ON CONFLICT (prn) DO UPDATE SET 
-    name = EXCLUDED.name,
-    contact_no = EXCLUDED.contact_no,
-    email = EXCLUDED.email,
-    category = EXCLUDED.category,
-    status = EXCLUDED.status,
-    subject = EXCLUDED.subject,
-    gender = EXCLUDED.gender,
-    whatsapp_no = EXCLUDED.whatsapp_no,
-    semester_id = EXCLUDED.semester_id;
+    ('250102041010', 'Tejas Sanjay Patil', '9673662750', 'tejaspatil78787@gmail.com', 'fellows', 'MBA Student', 'Business Administration', 'male', '9673662750', 'd4e5f6a7-0003-0000-0000-000000000003');
+

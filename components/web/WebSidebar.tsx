@@ -83,7 +83,7 @@ export function WebSidebar() {
     };
 
     return (
-        <aside className="w-60 h-full border-r border-gray-100 bg-white flex flex-col sticky top-0 print:hidden overflow-y-auto custom-scrollbar">
+        <aside className="w-60 h-full border-r border-gray-100 bg-white hidden lg:flex flex-col sticky top-0 print:hidden overflow-y-auto custom-scrollbar">
             <div className="px-6 py-5 pb-2 flex items-center gap-3 shrink-0">
                 <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0">
                     <img

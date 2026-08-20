@@ -320,7 +320,8 @@ export function SubjectsAdminTab() {
                     {subjects.map(subject => (
                         <div
                             key={subject.id}
-                            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:border-indigo-100 transition-all group relative overflow-hidden"
+                            onClick={() => openEdit(subject)}
+                            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:border-indigo-100 transition-all group relative overflow-hidden cursor-pointer hover:shadow-md"
                         >
                             {/* Color accent bar */}
                             <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: subject.color }} />
@@ -342,7 +343,10 @@ export function SubjectsAdminTab() {
                                         <Icons.BookOpen size={11} className="text-indigo-400" />
                                         <span className="text-xs text-gray-400">{subject.unit_count} units</span>
                                         <button 
-                                            onClick={() => setUnitsModalSubject(subject)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setUnitsModalSubject(subject);
+                                            }}
                                             className="ml-2 text-[11px] font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 px-2 py-0.5 rounded transition-colors flex items-center gap-1"
                                         >
                                             <Icons.Edit size={10} />
@@ -355,13 +359,19 @@ export function SubjectsAdminTab() {
                             {/* Actions */}
                             <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
-                                    onClick={() => openEdit(subject)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openEdit(subject);
+                                    }}
                                     className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-600 text-gray-400 transition-colors"
                                 >
                                     <Icons.Edit size={13} />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(subject)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(subject);
+                                    }}
                                     className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-400 transition-colors"
                                 >
                                     <Icons.Trash2 size={13} />

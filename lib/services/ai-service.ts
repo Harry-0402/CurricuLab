@@ -554,6 +554,7 @@ Return ONLY the formatted answer in markdown format.`;
         Return ONLY raw JSON (no markdown formatting) with this exact structure:
         {
             "title": "Inferred Assignment Title",
+            "subjectCode": "Inferred Subject Code (e.g. PBA301, VAP) or null if not found",
             "date": "YYYY-MM-DD" (or null if not found),
             "questions": ["Question 1", "Question 2", ...],
             "description": "Any additional instructions, context, or notes (exclude the questions themselves)"
@@ -563,6 +564,7 @@ Return ONLY the formatted answer in markdown format.`;
         - If inputs contain a list of questions, generate a suitable title based on the content.
         - Questions should be cleaned up (remove numbering prefixes).
         - Description should capture general instructions.
+        - Look for subject codes like PBA301, PBA302, etc. and extract them.
         `;
 
         try {

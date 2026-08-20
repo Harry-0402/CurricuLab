@@ -14,6 +14,8 @@ interface AppState {
     announcements: Announcement[];
     isRightPanelMinimized: boolean;
     activeSemesterId: string | null; // which semester is currently being viewed
+    isAnalyticaOpen: boolean;
+    analyticaInput: string;
 
     // Actions
     addBookmark: (itemId: string, type: Bookmark['type']) => void;
@@ -38,6 +40,8 @@ interface AppState {
     deleteAnnouncement: (id: string) => void;
     setAnnouncements: (announcements: Announcement[]) => void;
     toggleRightPanel: () => void;
+    setAnalyticaOpen: (isOpen: boolean) => void;
+    setAnalyticaInput: (text: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -52,6 +56,8 @@ export const useAppStore = create<AppState>()(
             announcements: [],
             isRightPanelMinimized: true,
             activeSemesterId: null,
+            isAnalyticaOpen: false,
+            analyticaInput: '',
 
             addBookmark: (itemId, type) => set((state) => ({
                 bookmarks: [...state.bookmarks, { id: Math.random().toString(36).substr(2, 9), itemId, type, addedAt: new Date().toISOString() }]
@@ -108,6 +114,9 @@ export const useAppStore = create<AppState>()(
             toggleRightPanel: () => set((state) => ({
                 isRightPanelMinimized: !state.isRightPanelMinimized
             })),
+            
+            setAnalyticaOpen: (isOpen) => set({ isAnalyticaOpen: isOpen }),
+            setAnalyticaInput: (text) => set({ analyticaInput: text }),
         }),
         {
             name: 'curriculab-storage',

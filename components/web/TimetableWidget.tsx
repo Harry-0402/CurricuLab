@@ -77,63 +77,56 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const getEntryStyles = (code: string) => {
         const norm = code.toUpperCase();
         // Semester 2 mapping
-        if (norm.startsWith('PBA204')) return "bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-indigo-100 ring-indigo-400/30";
-        if (norm.startsWith('PBA205')) return "bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-emerald-100 ring-emerald-400/30";
-        if (norm.startsWith('PBA206')) return "bg-gradient-to-br from-rose-500 to-pink-700 text-white shadow-rose-100 ring-rose-400/30";
-        if (norm.startsWith('PBA207')) return "bg-gradient-to-br from-amber-500 to-orange-700 text-white shadow-amber-100 ring-amber-400/30";
-        if (norm.startsWith('PBA208')) return "bg-gradient-to-br from-sky-500 to-blue-700 text-white shadow-sky-100 ring-sky-400/30";
-        if (norm.startsWith('PBA211')) return "bg-gradient-to-br from-violet-600 to-fuchsia-700 text-white shadow-fuchsia-100 ring-fuchsia-400/30";
-        if (norm.startsWith('PBA212')) return "bg-gradient-to-br from-teal-500 to-cyan-700 text-white shadow-teal-100 ring-teal-400/30";
-        if (norm.startsWith('PBA213')) return "bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-slate-100 ring-slate-400/30";
+        if (norm.startsWith('PBA204')) return "bg-indigo-50 text-indigo-700";
+        if (norm.startsWith('PBA205')) return "bg-emerald-50 text-emerald-700";
+        if (norm.startsWith('PBA206')) return "bg-rose-50 text-rose-700";
+        if (norm.startsWith('PBA207')) return "bg-amber-50 text-amber-700";
+        if (norm.startsWith('PBA208')) return "bg-sky-50 text-sky-700";
+        if (norm.startsWith('PBA211')) return "bg-fuchsia-50 text-fuchsia-700";
+        if (norm.startsWith('PBA212')) return "bg-teal-50 text-teal-700";
+        if (norm.startsWith('PBA213')) return "bg-slate-100 text-slate-700";
 
         // Semester 3 mapping
-        if (norm.startsWith('PBA301')) return "bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-emerald-100 ring-emerald-400/30";
-        if (norm.startsWith('PBA302')) return "bg-gradient-to-br from-rose-500 to-pink-700 text-white shadow-rose-100 ring-rose-400/30";
-        if (norm.startsWith('PBA303')) return "bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-indigo-100 ring-indigo-400/30";
-        if (norm.startsWith('PBA304')) return "bg-gradient-to-br from-amber-500 to-orange-700 text-white shadow-amber-100 ring-amber-400/30";
-        if (norm.startsWith('PBA309')) return "bg-gradient-to-br from-sky-500 to-blue-700 text-white shadow-sky-100 ring-sky-400/30";
-        if (norm.startsWith('PBA311')) return "bg-gradient-to-br from-violet-600 to-fuchsia-700 text-white shadow-fuchsia-100 ring-fuchsia-400/30";
-        if (norm.startsWith('PBAE03')) return "bg-gradient-to-br from-teal-500 to-cyan-700 text-white shadow-teal-100 ring-teal-400/30";
-        if (norm.startsWith('PBAGE')) return "bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-amber-100 ring-amber-400/30";
-        if (norm.startsWith('VAP')) return "bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-slate-100 ring-slate-400/30";
+        if (norm.startsWith('PBA301')) return "bg-emerald-50 text-emerald-700";
+        if (norm.startsWith('PBA302')) return "bg-rose-50 text-rose-700";
+        if (norm.startsWith('PBA303')) return "bg-indigo-50 text-indigo-700";
+        if (norm.startsWith('PBA304')) return "bg-orange-50 text-orange-700";
+        if (norm.startsWith('PBA309')) return "bg-sky-50 text-sky-700";
+        if (norm.startsWith('PBA311')) return "bg-purple-50 text-purple-700";
+        if (norm.startsWith('PBAE03')) return "bg-teal-50 text-teal-700";
+        if (norm.startsWith('PBAGE')) return "bg-amber-50 text-amber-700";
+        if (norm.startsWith('VAP')) return "bg-gray-100 text-gray-700";
+        if (norm.startsWith('PBAG04')) return "bg-blue-50 text-blue-700";
+        if (norm.startsWith('PBA312')) return "bg-blue-50 text-blue-700";
 
-        return "bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-indigo-100 ring-indigo-400/30";
+        return "bg-indigo-50 text-indigo-700";
     };
 
     return (
         <div className="space-y-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
-                <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 ring-4 ring-blue-50">
-                        <Icons.Calendar size={28} />
+            <div className="flex flex-row items-center justify-between gap-2 md:gap-4 shrink-0">
+                <div className="flex items-center gap-3 md:gap-5">
+                    <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[14px] md:rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 ring-2 md:ring-4 ring-blue-50 shrink-0">
+                        <Icons.Calendar className="w-5 h-5 md:w-7 md:h-7" />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-black text-gray-900 tracking-tight">Academic Roadmap</h2>
-                        <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded-md uppercase tracking-wider">{activeSemester?.name ?? 'Loading...'}</span>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{activeSemester?.academicYear ?? ''}</span>
+                        <h2 className="text-lg md:text-3xl font-black text-gray-900 tracking-tight leading-none mb-1 md:mb-0">Academic Roadmap</h2>
+                        <div className="flex flex-wrap items-center gap-1 md:gap-2 mt-0.5 md:mt-1">
+                            <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[8px] md:text-[10px] font-black rounded-md uppercase tracking-wider">{activeSemester?.name ?? 'Loading...'}</span>
+                            <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">{activeSemester?.academicYear ?? ''}</span>
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
-
+                <div className="flex items-center gap-2 md:gap-3 shrink-0">
                     {user && (
-                        <>
-                            <button
-                                onClick={() => handleAdd()}
-                                className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gray-200 group"
-                            >
-                                <Icons.Plus size={18} className="group-hover:rotate-90 transition-transform" />
-                                <span>New Entry</span>
-                            </button>
-                            <button
-                                onClick={() => setIsSettingsOpen(true)}
-                                aria-label="Open widget settings"
-                                className="p-3 text-gray-400 hover:text-gray-900 hover:bg-white border border-transparent hover:border-gray-100 rounded-2xl transition-all shadow-none hover:shadow-sm"
-                            >
-                                <Icons.Settings size={22} />
-                            </button>
-                        </>
+                        <button
+                            onClick={() => handleAdd()}
+                            className="flex items-center gap-1 md:gap-2 px-3 py-2 md:px-6 md:py-3 bg-gray-900 text-white rounded-xl md:rounded-2xl font-black text-[10px] md:text-sm hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gray-200 group"
+                        >
+                            <Icons.Plus size={16} className="group-hover:rotate-90 transition-transform md:w-[18px] md:h-[18px]" />
+                            <span className="hidden sm:inline">New Entry</span>
+                            <span className="sm:hidden">New</span>
+                        </button>
                     )}
                 </div>
             </div>
@@ -146,13 +139,13 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
 
                 <div className="overflow-hidden relative z-10">
                     <div className="w-full">
-                        <div className="grid grid-cols-7 gap-2 md:gap-4 mb-4">
+                        <div className="grid grid-cols-[40px_repeat(6,1fr)] md:grid-cols-[70px_repeat(6,1fr)] gap-2 md:gap-4 mb-4">
                             <div className="flex items-center justify-center">
                                 <div className="w-px h-10 bg-gradient-to-b from-transparent via-gray-100 to-transparent" />
                             </div>
                             {DAYS.map(day => (
                                 <div key={day} className="bg-gray-50/50 p-2 md:p-3 rounded-2xl text-center border border-gray-100/50">
-                                    <span className="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-tighter md:tracking-[0.2em] block">{day.slice(0, 3)}</span>
+                                    <span className="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-widest block">{day.slice(0, 3)}</span>
                                     <span className="hidden md:block text-[10px] font-bold text-blue-500/60 mt-0.5 uppercase">Session</span>
                                 </div>
                             ))}
@@ -160,61 +153,37 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
 
                         <div className="space-y-4">
                             {TIME_SLOTS.map(time => (
-                                <div key={time} className="grid grid-cols-7 gap-2 md:gap-4 items-stretch group">
-                                    <div className="flex items-center justify-center">
-                                        <div className="flex flex-col items-end">
+                                <div key={time} className="grid grid-cols-[40px_repeat(6,1fr)] md:grid-cols-[70px_repeat(6,1fr)] gap-2 md:gap-4 items-stretch group">
+                                    <div className="flex items-start justify-center pt-2 md:pt-3">
+                                        <div className="flex flex-col items-center">
                                             <span className="text-[10px] md:text-xs font-black text-gray-400 group-hover:text-blue-600 transition-colors tabular-nums">{time.split(' ')[0]}</span>
-                                            <span className="text-[8px] md:text-[9px] font-black text-gray-300 uppercase tracking-tighter">{time.split(' ')[1]}</span>
+                                            <span className="text-[8px] md:text-[9px] font-black text-gray-300 uppercase tracking-widest">{time.split(' ')[1]}</span>
                                         </div>
                                     </div>
                                     {DAYS.map(day => {
                                         const entry = getEntry(day, time);
-                                        return (
-                                            <div key={`${day}-${time}`} className="relative h-full min-h-[100px]">
-                                                {entry ? (
-                                                    <div
-                                                        onClick={() => user && handleEdit(entry)}
-                                                        className={cn(
-                                                            "h-full p-2 md:p-4 rounded-2xl md:rounded-3xl border-2 border-transparent transition-all relative overflow-hidden flex flex-col justify-between shadow-lg",
-                                                            user ? "hover:scale-[1.03] hover:shadow-2xl cursor-pointer group/item ring-4 ring-transparent hover:ring-white" : "cursor-default ring-0",
-                                                            getEntryStyles(entry.subjectCode)
-                                                        )}
-                                                    >
-                                                        {/* Glow effect on hover */}
-                                                        {user && (
-                                                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
-                                                        )}
-
-                                                        <div className="space-y-0.5 md:space-y-1 relative z-10">
-                                                            <div className="flex items-center justify-between">
-                                                                <span className="text-[8px] md:text-[10px] font-black opacity-80 uppercase tracking-widest">{entry.subjectCode}</span>
-                                                                <div className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-white animate-pulse" />
-                                                            </div>
-                                                            <h4 className="text-[10px] md:text-sm font-black leading-tight drop-shadow-sm line-clamp-2 md:line-clamp-none">{entry.subjectTitle}</h4>
-                                                        </div>
-
-                                                        <div className="mt-auto space-y-1 md:space-y-2 relative z-10">
-                                                            <div className="flex items-center gap-1 md:gap-1.5">
-                                                                <Icons.Trend size={10} className="opacity-70" />
-                                                                <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest opacity-80 truncate">{entry.location}</span>
-                                                            </div>
-                                                            <div className="w-full h-0.5 md:h-1 bg-white/20 rounded-full overflow-hidden">
-                                                                <div
-                                                                    className={cn(
-                                                                        "h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-500",
-                                                                        getProgressWidthClass(entry.progress)
-                                                                    )}
-                                                                    data-progress={entry.progress}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <div
-                                                        onClick={() => user && handleAdd(day, time)}
+                                        return entry ? (
+                                            <div
+                                                key={`${day}-${time}`}
+                                                onClick={() => user && handleEdit(entry)}
+                                                className={cn(
+                                                    "h-full min-h-[100px] p-2 md:p-3 rounded-lg md:rounded-xl border border-transparent transition-all relative overflow-hidden flex flex-col justify-start gap-1",
+                                                    user ? "hover:scale-[1.03] hover:shadow-md cursor-pointer group/item" : "cursor-default",
+                                                    getEntryStyles(entry.subjectCode)
+                                                )}
+                                            >
+                                                <div className="space-y-0.5 relative z-10">
+                                                    <span className="text-[10px] font-black opacity-90 uppercase tracking-widest block">{entry.subjectCode}</span>
+                                                    <h4 className="text-[10px] md:text-xs font-bold leading-snug line-clamp-2 md:line-clamp-3">{entry.subjectTitle}</h4>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div
+                                                key={`${day}-${time}`}
+                                                onClick={() => user && handleAdd(day, time)}
                                                         className={cn(
                                                             "h-full rounded-2xl md:rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-1 md:gap-2",
-                                                            user ? "border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 group/empty cursor-pointer" : "border-gray-50 bg-gray-50/20 cursor-default"
+                                                            user ? "border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 group/empty cursor-pointer" : "border-gray-100 bg-gray-50/40 cursor-default"
                                                         )}
                                                     >
                                                         {user && (
@@ -222,8 +191,6 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                                                                 <Icons.Plus size={16} className="text-gray-300 group-hover/empty:text-blue-500 transition-colors" />
                                                             </div>
                                                         )}
-                                                    </div>
-                                                )}
                                             </div>
                                         );
                                     })}
