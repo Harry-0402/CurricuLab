@@ -16,8 +16,8 @@ export function CareerGatewayContent() {
                 {/* Header & Tabs */}
                 <div className="flex flex-col items-start gap-4 shrink-0">
                     <div>
-                        <h1 className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-[0.2em]">Tools</h1>
-                        <p className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">Career Gateway</p>
+                        <h1 className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-[0.2em] hidden sm:block">Tools</h1>
+                        <p className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">Career Gateway</p>
                     </div>
 
                     <div className="w-full md:w-auto">

@@ -154,12 +154,12 @@ export default function MindGridContent() {
 
             <div className="max-w-[1400px] mx-auto p-4 animate-in fade-in duration-500">
                 {/* Standardized Header */}
-                <div className="flex items-center justify-between mb-12">
-                    <div className="space-y-2">
-                        <h1 className="text-5xl font-black text-gray-900 tracking-tight flex items-center gap-4">
+                <div className="flex items-center justify-between gap-2 md:gap-4 mb-8 md:mb-12">
+                    <div className="space-y-1 md:space-y-2">
+                        <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight flex items-center gap-2 md:gap-4">
                             MindGrid
                         </h1>
-                        <p className="text-gray-400 font-medium max-w-xl">
+                        <p className="text-gray-400 font-medium max-w-xl text-xs md:text-base hidden sm:block">
                             Deploy specialized AI units to enhance your research and productivity.
                         </p>
                     </div>
@@ -169,10 +169,12 @@ export default function MindGridContent() {
                             setEditingAgent(null);
                             setShowAddModal(true);
                         }}
-                        className="flex items-center gap-3 px-6 py-4 bg-gray-900 text-white rounded-[24px] font-black uppercase tracking-widest text-xs shadow-xl shadow-gray-200 hover:scale-[1.02] transition-all active:scale-95"
+                        className="flex items-center justify-center gap-2 px-3 py-2.5 md:px-6 md:py-4 bg-gray-900 text-white rounded-xl md:rounded-[24px] font-black uppercase tracking-widest text-[10px] md:text-xs shadow-xl shadow-gray-200 hover:scale-[1.02] transition-all active:scale-95 shrink-0"
                     >
-                        <Icons.Plus size={18} />
-                        Sync New Intelligence
+                        <Icons.Plus size={16} className="md:hidden" />
+                        <Icons.Plus size={18} className="hidden md:block" />
+                        <span className="hidden sm:inline">Sync New Intelligence</span>
+                        <span className="sm:hidden">Sync</span>
                     </button>
                 </div>
 

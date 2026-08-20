@@ -206,16 +206,16 @@ Please act as an expert academic evaluator and professor. I want you to solve th
         <WebAppShell>
             <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto">
                 {/* Header & Search */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
+                <div className="flex items-center justify-between gap-2 md:gap-4 shrink-0">
                     <div>
-                        <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Tools</h1>
-                        <p className="text-4xl font-black text-gray-900 tracking-tight">PaperTrail PYQs</p>
+                        <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em] hidden sm:block">Tools</h1>
+                        <p className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 tracking-tight">PaperTrail PYQs</p>
                     </div>
-                    <div className="flex items-center gap-3 self-start md:self-auto">
+                    <div className="flex items-center gap-2 md:gap-3 shrink-0">
                         <button
                             onClick={handleCopyUniversalPrompt}
                             className={cn(
-                                "flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm active:scale-95 whitespace-nowrap",
+                                "flex items-center justify-center gap-2 px-3 py-2.5 md:px-5 md:py-3 rounded-xl font-bold text-xs md:text-sm transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0",
                                 copiedPrompt
                                     ? "bg-green-50 text-green-600 border border-green-200"
                                     : "bg-gradient-to-br from-purple-500 to-indigo-600 text-white hover:shadow-lg hover:shadow-purple-100"
@@ -224,21 +224,26 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                             {copiedPrompt ? (
                                 <>
                                     <Icons.Check size={16} className="text-green-500" />
-                                    <span>Prompt Copied!</span>
+                                    <span className="hidden sm:inline">Prompt Copied!</span>
+                                    <span className="sm:hidden">Copied</span>
                                 </>
                             ) : (
                                 <>
-                                    <Icons.Sparkles size={16} className="text-white" />
-                                    <span>AI Study Prompt</span>
+                                    <Icons.Sparkles size={16} />
+                                    <span className="hidden sm:inline">Copy Universal AI Prompt</span>
+                                    <span className="sm:hidden">Prompt</span>
                                 </>
                             )}
                         </button>
                         {isAdmin && (
-                            <button 
+                            <button
                                 onClick={openAddModal}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm active:scale-95 whitespace-nowrap"
+                                className="flex items-center justify-center gap-2 px-3 py-2.5 md:px-5 md:py-3 bg-gray-900 text-white rounded-xl font-bold text-xs md:text-sm hover:bg-black transition-all active:scale-95 shadow-sm whitespace-nowrap shrink-0"
                             >
-                                <Icons.Plus size={16} /> Add PYQ
+                                <Icons.Plus size={16} className="md:hidden" />
+                                <Icons.Plus size={18} className="hidden md:block" />
+                                <span className="hidden sm:inline">Add PYQ</span>
+                                <span className="sm:hidden">Add</span>
                             </button>
                         )}
                     </div>

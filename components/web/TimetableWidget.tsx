@@ -56,6 +56,13 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const { user } = useAuth();
 
+    const [activeDay, setActiveDay] = useState<string>(() => {
+        const today = new Date().getDay();
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayName = days[today];
+        return DAYS.includes(dayName) ? dayName : "Monday";
+    });
+
     const getEntry = (day: string, time: string) => {
         return entries.find(e => e.day === day && e.startTime === time);
     };
@@ -139,63 +146,156 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
 
                 <div className="overflow-hidden relative z-10">
                     <div className="w-full">
-                        <div className="grid grid-cols-[40px_repeat(6,1fr)] md:grid-cols-[70px_repeat(6,1fr)] gap-2 md:gap-4 mb-4">
-                            <div className="flex items-center justify-center">
-                                <div className="w-px h-10 bg-gradient-to-b from-transparent via-gray-100 to-transparent" />
-                            </div>
-                            {DAYS.map(day => (
-                                <div key={day} className="bg-gray-50/50 p-2 md:p-3 rounded-2xl text-center border border-gray-100/50">
-                                    <span className="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-widest block">{day.slice(0, 3)}</span>
-                                    <span className="hidden md:block text-[10px] font-bold text-blue-500/60 mt-0.5 uppercase">Session</span>
+                        {/* Desktop Grid View */}
+                        <div className="hidden md:block">
+                            <div className="grid grid-cols-[70px_repeat(6,1fr)] gap-4 mb-4">
+                                <div className="flex items-center justify-center">
+                                    <div className="w-px h-10 bg-gradient-to-b from-transparent via-gray-100 to-transparent" />
                                 </div>
-                            ))}
+                                {DAYS.map(day => (
+                                    <div key={day} className="bg-gray-50/50 p-3 rounded-2xl text-center border border-gray-100/50">
+                                        <span className="text-xs font-black text-gray-900 uppercase tracking-widest block">{day.slice(0, 3)}</span>
+                                        <span className="text-[10px] font-bold text-blue-500/60 mt-0.5 uppercase">Session</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="space-y-4">
+                                {TIME_SLOTS.map(time => (
+                                    <div key={time} className="grid grid-cols-[70px_repeat(6,1fr)] gap-4 items-stretch group">
+                                        <div className="flex items-start justify-center pt-3">
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-xs font-black text-gray-400 group-hover:text-blue-600 transition-colors tabular-nums">{time.split(' ')[0]}</span>
+                                                <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">{time.split(' ')[1]}</span>
+                                            </div>
+                                        </div>
+                                        {DAYS.map(day => {
+                                            const entry = getEntry(day, time);
+                                            return entry ? (
+                                                <div
+                                                    key={`${day}-${time}`}
+                                                    onClick={() => user && handleEdit(entry)}
+                                                    className={cn(
+                                                        "h-full min-h-[100px] p-3 rounded-xl border border-transparent transition-all relative overflow-hidden flex flex-col justify-start gap-1",
+                                                        user ? "hover:scale-[1.03] hover:shadow-md cursor-pointer group/item" : "cursor-default",
+                                                        getEntryStyles(entry.subjectCode)
+                                                    )}
+                                                >
+                                                    <div className="space-y-0.5 relative z-10">
+                                                        <span className="text-[10px] font-black opacity-90 uppercase tracking-widest block">{entry.subjectCode}</span>
+                                                        <h4 className="text-xs font-bold leading-snug line-clamp-3">{entry.subjectTitle}</h4>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    key={`${day}-${time}`}
+                                                    onClick={() => user && handleAdd(day, time)}
+                                                    className={cn(
+                                                        "h-full rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-2",
+                                                        user ? "border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 group/empty cursor-pointer" : "border-gray-100 bg-gray-50/40 cursor-default"
+                                                    )}
+                                                >
+                                                    {user && (
+                                                        <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover/empty:scale-110 group-hover/empty:bg-white group-hover/empty:shadow-sm transition-all">
+                                                            <Icons.Plus size={16} className="text-gray-300 group-hover/empty:text-blue-500 transition-colors" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
-                        <div className="space-y-4">
-                            {TIME_SLOTS.map(time => (
-                                <div key={time} className="grid grid-cols-[40px_repeat(6,1fr)] md:grid-cols-[70px_repeat(6,1fr)] gap-2 md:gap-4 items-stretch group">
-                                    <div className="flex items-start justify-center pt-2 md:pt-3">
-                                        <div className="flex flex-col items-center">
-                                            <span className="text-[10px] md:text-xs font-black text-gray-400 group-hover:text-blue-600 transition-colors tabular-nums">{time.split(' ')[0]}</span>
-                                            <span className="text-[8px] md:text-[9px] font-black text-gray-300 uppercase tracking-widest">{time.split(' ')[1]}</span>
-                                        </div>
-                                    </div>
-                                    {DAYS.map(day => {
-                                        const entry = getEntry(day, time);
-                                        return entry ? (
-                                            <div
-                                                key={`${day}-${time}`}
-                                                onClick={() => user && handleEdit(entry)}
-                                                className={cn(
-                                                    "h-full min-h-[100px] p-2 md:p-3 rounded-lg md:rounded-xl border border-transparent transition-all relative overflow-hidden flex flex-col justify-start gap-1",
-                                                    user ? "hover:scale-[1.03] hover:shadow-md cursor-pointer group/item" : "cursor-default",
-                                                    getEntryStyles(entry.subjectCode)
-                                                )}
-                                            >
-                                                <div className="space-y-0.5 relative z-10">
-                                                    <span className="text-[10px] font-black opacity-90 uppercase tracking-widest block">{entry.subjectCode}</span>
-                                                    <h4 className="text-[10px] md:text-xs font-bold leading-snug line-clamp-2 md:line-clamp-3">{entry.subjectTitle}</h4>
-                                                </div>
+                        {/* Mobile Timeline View */}
+                        <div className="block md:hidden">
+                            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4 mb-6 border-b border-gray-100">
+                                {DAYS.map(day => (
+                                    <button
+                                        key={day}
+                                        onClick={() => setActiveDay(day)}
+                                        className={cn(
+                                            "px-5 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
+                                            activeDay === day 
+                                                ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                                                : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                                        )}
+                                    >
+                                        {day.slice(0, 3)}
+                                    </button>
+                                ))}
+                            </div>
+                            
+                            <div className="flex flex-col gap-0">
+                                {TIME_SLOTS.map((time, idx) => {
+                                    const entry = getEntry(activeDay, time);
+                                    const timeParts = time.split(' ');
+                                    const isLast = idx === TIME_SLOTS.length - 1;
+                                    
+                                    return (
+                                        <div key={time} className="flex gap-4 relative items-center mb-4">
+                                            {/* Vertical Timeline Line */}
+                                            {!isLast && (
+                                                <div className="absolute left-[59px] top-[50%] h-[calc(100%+16px)] w-0.5 bg-gray-100 z-0" />
+                                            )}
+                                            
+                                            {/* Time Column */}
+                                            <div className="flex flex-col items-end w-[40px] shrink-0 relative z-10 bg-white">
+                                                <span className="text-[11px] font-black text-gray-900">{timeParts[0]}</span>
+                                                <span className="text-[9px] font-bold text-gray-400 tracking-wider">{timeParts[1]}</span>
                                             </div>
-                                        ) : (
-                                            <div
-                                                key={`${day}-${time}`}
-                                                onClick={() => user && handleAdd(day, time)}
+
+                                            {/* Dot */}
+                                            <div className="relative z-10 shrink-0 bg-white py-2">
+                                                <div className={cn(
+                                                    "w-3 h-3 rounded-full border-[3px] bg-white ring-4 ring-white",
+                                                    entry ? "border-blue-500" : "border-gray-200"
+                                                )} />
+                                            </div>
+
+                                            {/* Card Column */}
+                                            <div className="flex-1 relative z-10">
+                                                {entry ? (
+                                                    <div 
+                                                        onClick={() => user && handleEdit(entry)}
                                                         className={cn(
-                                                            "h-full rounded-2xl md:rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-1 md:gap-2",
-                                                            user ? "border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 group/empty cursor-pointer" : "border-gray-100 bg-gray-50/40 cursor-default"
+                                                            "p-4 rounded-2xl transition-all flex items-center justify-between gap-3 shadow-sm",
+                                                            getEntryStyles(entry.subjectCode),
+                                                            user && "cursor-pointer active:scale-[0.98]"
                                                         )}
                                                     >
-                                                        {user && (
-                                                            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover/empty:scale-110 group-hover/empty:bg-white group-hover/empty:shadow-sm transition-all">
-                                                                <Icons.Plus size={16} className="text-gray-300 group-hover/empty:text-blue-500 transition-colors" />
-                                                            </div>
+                                                        <div className="flex-1">
+                                                            <div className="text-[10px] font-black opacity-80 uppercase tracking-widest mb-1">{entry.subjectCode}</div>
+                                                            <div className="text-xs font-bold leading-snug">{entry.subjectTitle}</div>
+                                                        </div>
+                                                        <div className="w-10 h-10 rounded-xl bg-white/40 flex items-center justify-center shrink-0">
+                                                            <Icons.BookOpen size={18} className="opacity-70" />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div 
+                                                        onClick={() => user && handleAdd(activeDay, time)}
+                                                        className={cn(
+                                                            "p-4 rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50/50 flex items-center justify-center h-[72px]",
+                                                            user && "cursor-pointer hover:bg-gray-50 hover:border-gray-200 active:scale-[0.98]"
                                                         )}
+                                                    >
+                                                        {user ? (
+                                                            <div className="flex items-center gap-2 text-gray-400 font-bold text-xs">
+                                                                <Icons.Plus size={14} />
+                                                                <span>Add Class</span>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-gray-300 font-bold text-[10px] uppercase tracking-widest">Free</span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
-                                        );
-                                    })}
-                                </div>
-                            ))}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>

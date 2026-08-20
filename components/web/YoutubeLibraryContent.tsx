@@ -241,21 +241,23 @@ export function YoutubeLibraryContent() {
             {/* ── Header ── */}
             <div className="flex items-center justify-between shrink-0">
                 <div>
-                    <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Library</h1>
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-2xl bg-red-50">
-                            <Icons.Youtube className="text-red-600" size={28} />
+                    <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em] hidden sm:block">Library</h1>
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="p-2 rounded-xl sm:rounded-2xl bg-red-50 hidden sm:block">
+                            <Icons.Youtube className="text-red-600" size={20} className="sm:w-7 sm:h-7" />
                         </div>
-                        <p className="text-4xl font-black text-gray-900 tracking-tight">YouTube Library</p>
+                        <p className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 tracking-tight">YouTube Library</p>
                     </div>
                 </div>
                 {isAdmin && (
                     <button
                         onClick={handleOpenAddModal}
-                        className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-2xl font-bold text-sm hover:bg-red-700 hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95"
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 md:px-6 md:py-3 bg-red-600 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-sm hover:bg-red-700 hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 shrink-0"
                     >
-                        <Icons.Plus size={18} />
-                        Add Video
+                        <Icons.Plus size={16} className="md:hidden" />
+                        <Icons.Plus size={18} className="hidden md:block" />
+                        <span className="hidden sm:inline">Add Video</span>
+                        <span className="sm:hidden">Add</span>
                     </button>
                 )}
             </div>

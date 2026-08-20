@@ -464,18 +464,19 @@ Please review the document at the URL provided above and generate a highly detai
             {/* Header */}
             <div className="flex items-center justify-between shrink-0">
                 <div>
-                    <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em]">Library</h1>
-                    <p className="text-4xl font-black text-gray-900 tracking-tight">Knowledge Vault</p>
+                    <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em] hidden sm:block">Library</h1>
+                    <p className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">Knowledge Vault</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                     <div className="relative print:hidden">
                         <button
                             onClick={() => setShowExportMenu(!showExportMenu)}
-                            className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-900 px-6 py-4 rounded-[22px] transition-all border border-gray-100 shadow-sm"
+                            className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-900 px-3 py-2.5 md:px-6 md:py-4 rounded-xl md:rounded-[22px] transition-all border border-gray-100 shadow-sm shrink-0"
                         >
-                            <Icons.Download size={18} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Export</span>
-                            <Icons.ChevronDown size={14} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+                            <Icons.Download size={16} className="md:hidden" />
+                            <Icons.Download size={18} className="hidden md:block" />
+                            <span className="hidden sm:inline text-[10px] font-black uppercase tracking-widest">Export</span>
+                            <Icons.ChevronDown size={14} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''} hidden sm:block`} />
                         </button>
 
                         {showExportMenu && (
@@ -510,10 +511,12 @@ Please review the document at the URL provided above and generate a highly detai
 
                     <button
                         onClick={handleOpenAddModal}
-                        className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold text-sm hover:bg-black hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 ml-auto"
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 md:px-6 md:py-3 bg-gray-900 text-white rounded-xl md:rounded-2xl text-xs md:text-sm font-bold hover:bg-black hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 ml-auto shrink-0"
                     >
-                        <Icons.Plus size={18} />
-                        Add Resource
+                        <Icons.Plus size={16} className="md:hidden" />
+                        <Icons.Plus size={18} className="hidden md:block" />
+                        <span className="hidden sm:inline">Add Resource</span>
+                        <span className="sm:hidden">Add</span>
                     </button>
                 </div>
             </div>

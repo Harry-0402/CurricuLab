@@ -159,7 +159,7 @@ export function ClassroomContent() {
                         <div className="flex items-center gap-4">
                             <h1 className={cn(
                                 "font-black text-gray-900 tracking-tight",
-                                selectedCourse ? "text-3xl" : "text-4xl md:text-5xl"
+                                selectedCourse ? "text-2xl md:text-3xl" : "text-3xl md:text-5xl"
                             )}>
                                 {selectedCourse ? selectedCourse.name : 'Classroom'}
                             </h1>
@@ -179,14 +179,16 @@ export function ClassroomContent() {
                         )}
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4 shrink-0">
                         {!selectedCourse && isDriveConnected && (
                             <button
                                 onClick={() => setShowResetConfirm(true)}
-                                className="flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-sm font-bold hover:bg-red-100 transition-all active:scale-95 shadow-sm border border-red-100"
+                                className="flex items-center justify-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-red-50 text-red-600 rounded-xl text-xs md:text-sm font-bold hover:bg-red-100 transition-all active:scale-95 shadow-sm border border-red-100 shrink-0"
                             >
-                                <Icons.RotateCcw size={18} />
-                                <span>Reset Connection</span>
+                                <Icons.RotateCcw size={16} className="md:hidden" />
+                                <Icons.RotateCcw size={18} className="hidden md:block" />
+                                <span className="hidden sm:inline">Reset Connection</span>
+                                <span className="sm:hidden">Reset</span>
                             </button>
                         )}
 
@@ -194,20 +196,24 @@ export function ClassroomContent() {
                             <>
                                 <button
                                     onClick={() => setSelectedCourse(null)}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-200 transition-all active:scale-95"
+                                    className="flex items-center justify-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gray-100 text-gray-600 rounded-xl text-xs md:text-sm font-bold hover:bg-gray-200 transition-all active:scale-95 shrink-0"
                                 >
-                                    <Icons.ArrowLeft size={16} />
-                                    <span>Back to All Classes</span>
+                                    <Icons.ArrowLeft size={14} className="md:hidden" />
+                                    <Icons.ArrowLeft size={16} className="hidden md:block" />
+                                    <span className="hidden sm:inline">Back to All Classes</span>
+                                    <span className="sm:hidden">Back</span>
                                 </button>
 
                                 <a
                                     href={selectedCourse.alternateLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm whitespace-nowrap"
+                                    className="flex items-center justify-center gap-2 px-3 py-2 md:px-6 md:py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-xs md:text-sm font-bold hover:bg-gray-50 transition-all shadow-sm whitespace-nowrap shrink-0"
                                 >
-                                    <Icons.ExternalLink size={16} />
-                                    <span>Open in Classroom</span>
+                                    <Icons.ExternalLink size={14} className="md:hidden" />
+                                    <Icons.ExternalLink size={16} className="hidden md:block" />
+                                    <span className="hidden sm:inline">Open in Classroom</span>
+                                    <span className="sm:hidden">Open</span>
                                 </a>
                             </>
                         )}
