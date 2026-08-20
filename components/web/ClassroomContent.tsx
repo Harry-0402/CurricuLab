@@ -217,13 +217,7 @@ export function ClassroomContent() {
                     </div>
                 </div>
 
-                {/* Mobile-only Note */}
-                {!selectedCourse && (
-                    <div className="block sm:hidden text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3 rounded-2xl flex items-start gap-2 leading-relaxed mb-4">
-                        <Icons.Info size={13} className="shrink-0 mt-0.5 text-purple-500" />
-                        <span>These are all of your enrolled Google Classrooms, irrespective of the semester.</span>
-                    </div>
-                )}
+
 
                 {/* Main Content Area */}
                 {isLoading || isCoursesLoading ? (

@@ -622,7 +622,7 @@ Please review the document at the URL provided above and generate a highly detai
                 </div>
             </div>
 
-            <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl flex items-start gap-2 leading-relaxed shrink-0">
+            <div className="hidden sm:flex text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl items-start gap-2 leading-relaxed shrink-0">
                 <Icons.Info size={14} className="shrink-0 mt-0.5 text-purple-500" />
                 <span>
                     <strong>How to use:</strong> Click the <strong>"AI Prompt"</strong> button on any card to copy a structured prompt containing the document link and unit syllabus details. Paste it into your preferred AI (ChatGPT, Gemini, or Claude) to generate a detailed study guide.

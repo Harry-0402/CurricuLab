@@ -244,7 +244,7 @@ export function YoutubeLibraryContent() {
                     <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em] hidden sm:block">Library</h1>
                     <div className="flex items-center gap-2 sm:gap-3">
                         <div className="p-2 rounded-xl sm:rounded-2xl bg-red-50 hidden sm:block">
-                            <Icons.Youtube className="text-red-600" size={20} className="sm:w-7 sm:h-7" />
+                            <Icons.Youtube className="text-red-600 sm:w-7 sm:h-7" size={20} />
                         </div>
                         <p className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 tracking-tight">YouTube Library</p>
                     </div>
@@ -372,7 +372,7 @@ export function YoutubeLibraryContent() {
             </div>
 
             {/* ── Stats bar ── */}
-            <div className="flex items-center gap-2 text-[11px] font-medium text-red-600 bg-red-50/60 border border-red-100/60 px-4 py-3 rounded-2xl shrink-0">
+            <div className="hidden sm:flex items-center gap-2 text-[11px] font-medium text-red-600 bg-red-50/60 border border-red-100/60 px-4 py-3 rounded-2xl shrink-0">
                 <Icons.Youtube size={14} className="shrink-0 text-red-500" />
                 <span>
                     <strong>{filteredVideos.length}</strong> video{filteredVideos.length !== 1 ? 's' : ''}

@@ -726,7 +726,7 @@ export function AssignmentContent() {
                                             </button>
                                         </div>
                                         
-                                        <div className="text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl flex items-start gap-2 leading-relaxed">
+                                        <div className="hidden sm:flex text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl items-start gap-2 leading-relaxed">
                                             <Icons.Info size={14} className="shrink-0 mt-0.5 text-purple-500" />
                                             <span>
                                                 <strong>How to use:</strong> Click <strong>"Solve via AI"</strong> above to instantly open Analytica with a customized, structured prompt containing these questions. You can also paste it into ChatGPT, Gemini, or Claude.
