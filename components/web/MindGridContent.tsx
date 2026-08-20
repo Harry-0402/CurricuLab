@@ -156,7 +156,7 @@ export default function MindGridContent() {
                 {/* Standardized Header */}
                 <div className="flex items-center justify-between gap-2 md:gap-4 mb-8 md:mb-12">
                     <div className="space-y-1 md:space-y-2">
-                        <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight flex items-center gap-2 md:gap-4">
+                        <h1 className="text-2xl md:text-5xl font-black text-gray-900 tracking-tight flex items-center gap-2 md:gap-4">
                             MindGrid
                         </h1>
                         <p className="text-gray-400 font-medium max-w-xl text-xs md:text-base hidden sm:block">
@@ -225,7 +225,7 @@ export default function MindGridContent() {
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 pb-20">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 md:gap-8 pb-20">
                         {filteredAgents.map((agent) => (
                             <div
                                 key={agent.id}

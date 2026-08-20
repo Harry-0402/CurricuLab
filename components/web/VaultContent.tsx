@@ -465,7 +465,7 @@ Please review the document at the URL provided above and generate a highly detai
             <div className="flex items-center justify-between shrink-0">
                 <div>
                     <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em] hidden sm:block">Library</h1>
-                    <p className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">Knowledge Vault</p>
+                    <p className="text-2xl md:text-5xl font-black text-gray-900 tracking-tight">Knowledge Vault</p>
                 </div>
                 <div className="flex items-center gap-2 md:gap-3">
                     <div className="relative print:hidden">
@@ -662,7 +662,7 @@ Please review the document at the URL provided above and generate a highly detai
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-10">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 pb-10">
                         {Object.keys(TYPE_CONFIG).flatMap(typeKey => 
                             filteredResources.filter(r => r.type === typeKey)
                         ).map(resource => {

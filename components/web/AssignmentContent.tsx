@@ -411,8 +411,8 @@ export function AssignmentContent() {
             {/* Header Area */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-[0.2em]">Academic</h1>
-                    <p className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">Assignments</p>
+                    <h1 className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-[0.2em] hidden sm:block">Academic</h1>
+                    <p className="text-2xl md:text-5xl font-black text-gray-900 tracking-tight">Assignments</p>
                 </div>
                 <button
                     onClick={() => { setEditingAssignment(null); setIsModalOpen(true); }}
@@ -490,7 +490,7 @@ export function AssignmentContent() {
             </div>
 
             {/* Assignments Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                 {loading ? (
                     <div className="col-span-full py-20 flex flex-col items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />

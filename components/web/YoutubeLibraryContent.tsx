@@ -246,7 +246,7 @@ export function YoutubeLibraryContent() {
                         <div className="p-2 rounded-xl sm:rounded-2xl bg-red-50 hidden sm:block">
                             <Icons.Youtube className="text-red-600 sm:w-7 sm:h-7" size={20} />
                         </div>
-                        <p className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 tracking-tight">YouTube Library</p>
+                        <p className="text-2xl md:text-5xl font-black text-gray-900 tracking-tight">YouTube Library</p>
                     </div>
                 </div>
                 {isAdmin && (
@@ -402,7 +402,7 @@ export function YoutubeLibraryContent() {
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 pb-10">
                         {['unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', ''].flatMap(unitKey => 
                             filteredVideos.filter(v => (v.unitId || '') === unitKey)
                         ).map(video => (

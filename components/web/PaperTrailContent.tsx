@@ -208,8 +208,8 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                 {/* Header & Search */}
                 <div className="flex items-center justify-between gap-2 md:gap-4 shrink-0">
                     <div>
-                        <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em] hidden sm:block">Tools</h1>
-                        <p className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 tracking-tight">PaperTrail PYQs</p>
+                        <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em] hidden sm:block">Archive</h1>
+                        <p className="text-xl sm:text-3xl md:text-5xl font-black text-gray-900 tracking-tight">Paper Trail <span className="hidden sm:inline">PYQs</span></p>
                     </div>
                     <div className="flex items-center gap-2 md:gap-3 shrink-0">
                         <button
@@ -270,7 +270,7 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                 {/* Grid Content */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar pb-6 pr-2">
                     {isLoading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                             {[...Array(8)].map((_, i) => (
                                 <div key={i} className="bg-gray-100 animate-pulse h-48 rounded-3xl" />
                             ))}
@@ -281,7 +281,7 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                             <p className="font-bold">{searchQuery ? "No PYQs match your search." : "No PYQs available."}</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                             {pyqs.map(pyq => (
                                 <div key={pyq.id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all group flex flex-col relative">
                                     {isAdmin && (
