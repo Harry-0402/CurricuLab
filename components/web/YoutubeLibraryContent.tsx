@@ -409,25 +409,25 @@ export function YoutubeLibraryContent() {
                             <div
                                 key={video.id}
                                 onClick={() => handleCardClick(video)}
-                                className="bg-white rounded-3xl p-5 border border-gray-100 hover:border-red-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col"
+                                className="bg-white rounded-[24px] md:rounded-3xl p-3 md:p-5 border border-gray-100 hover:border-red-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
                             >
                                 {/* Play thumbnail */}
-                                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-red-50 to-red-100 mb-4 flex items-center justify-center shrink-0">
+                                <div className="relative w-full aspect-video rounded-xl md:rounded-2xl overflow-hidden bg-gradient-to-br from-red-50 to-red-100 mb-3 md:mb-4 flex items-center justify-center shrink-0">
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg shadow-red-200 group-hover:scale-110 transition-transform duration-300">
-                                            <Icons.Play className="text-white ml-1" size={22} fill="white" />
+                                        <div className="w-10 h-10 md:w-14 md:h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg shadow-red-200 group-hover:scale-110 transition-transform duration-300">
+                                            <Icons.Play className="text-white ml-0.5 md:ml-1 md:w-[22px] md:h-[22px]" size={16} fill="white" />
                                         </div>
                                     </div>
                                     <Icons.Youtube className="absolute bottom-3 right-3 text-red-300 opacity-60" size={20} />
                                 </div>
 
                                 {/* Meta */}
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-red-50 text-red-600 border border-red-100">
+                                <div className="flex items-center gap-1 md:gap-2 mb-2 flex-wrap">
+                                    <span className="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[8px] md:text-[10px] font-bold uppercase bg-red-50 text-red-600 border border-red-100 whitespace-nowrap">
                                         YouTube Video
                                     </span>
                                     {video.unitId && (
-                                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
+                                        <span className="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[8px] md:text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100 whitespace-nowrap">
                                             {video.unitId.replace('unit-', 'Unit ')}
                                         </span>
                                     )}
@@ -452,12 +452,12 @@ export function YoutubeLibraryContent() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-red-600 transition-colors flex-grow">
+                                <h3 className="text-sm md:text-base font-bold text-gray-900 line-clamp-3 md:line-clamp-2 leading-snug group-hover:text-red-600 transition-colors flex-grow">
                                     {video.title}
                                 </h3>
 
                                 {/* Footer */}
-                                <div className="pt-3 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400">
+                                <div className="pt-2 md:pt-3 mt-2 md:mt-3 border-t border-gray-50 flex items-center justify-between text-[9px] md:text-xs font-medium text-gray-400">
                                     <span>{new Date(video.createdAt || new Date()).toLocaleDateString()}</span>
                                     {scrapingVideoId === video.id ? (
                                         <span className="flex items-center gap-1 text-red-500 font-bold">

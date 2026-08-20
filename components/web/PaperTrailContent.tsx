@@ -283,7 +283,7 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                             {pyqs.map(pyq => (
-                                <div key={pyq.id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all group flex flex-col relative">
+                                <div key={pyq.id} className="bg-white rounded-[24px] md:rounded-3xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all group flex flex-col relative h-full">
                                     {isAdmin && (
                                         <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                             <button onClick={() => handleEditClick(pyq)} className="p-1.5 text-gray-400 hover:text-blue-600 bg-white shadow-sm rounded-lg border border-gray-100">
@@ -294,39 +294,39 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                                             </button>
                                         </div>
                                     )}
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600 shrink-0">
-                                            <Icons.FileText size={24} />
+                                    <div className="flex flex-col xl:flex-row xl:items-center items-start gap-2 md:gap-4 mb-3 md:mb-4">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600 shrink-0">
+                                            <Icons.FileText size={18} className="md:w-6 md:h-6" />
                                         </div>
                                         <div>
-                                            <div className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-0.5">{pyq.subjectCode}</div>
-                                            <div className="text-xs font-bold text-gray-500 line-clamp-1">{pyq.subjectTitle}</div>
+                                            <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-blue-600 mb-0.5">{pyq.subjectCode}</div>
+                                            <div className="text-[10px] md:text-xs font-bold text-gray-500 line-clamp-1">{pyq.subjectTitle}</div>
                                         </div>
                                     </div>
                                     
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 flex-1">
+                                    <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-2 line-clamp-3 md:line-clamp-2 flex-1">
                                         {pyq.title}
                                     </h3>
                                     
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest rounded-md">
+                                    <div className="flex items-center gap-1.5 md:gap-2 mb-3 md:mb-4 flex-wrap mt-auto">
+                                        <span className="px-2 py-0.5 md:py-1 bg-gray-100 text-gray-600 text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-md whitespace-nowrap">
                                             {pyq.year}
                                         </span>
-                                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest rounded-md">
+                                        <span className="px-2 py-0.5 md:py-1 bg-gray-100 text-gray-600 text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-md whitespace-nowrap">
                                             {pyq.type.toUpperCase()}
                                         </span>
                                     </div>
                                     
-                                    <div className="flex items-center justify-between gap-2 pt-4 border-t border-gray-50">
+                                    <div className="flex items-center justify-between gap-1.5 md:gap-2 pt-3 md:pt-4 border-t border-gray-50">
                                         <button 
                                             onClick={() => handlePreview(pyq)}
-                                            className="flex-1 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                                            className="flex-1 py-1.5 md:py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-[10px] md:text-xs font-bold rounded-lg md:rounded-xl transition-colors flex items-center justify-center gap-1 md:gap-2"
                                         >
-                                            <Icons.Eye size={14} /> Preview
+                                            <Icons.Eye size={12} className="md:w-3.5 md:h-3.5" /> Preview
                                         </button>
                                         <button 
                                             onClick={() => handleDownload(pyq)}
-                                            className="w-10 h-10 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all shrink-0"
+                                            className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg md:rounded-xl transition-all shrink-0"
                                             title="Download PDF/File"
                                         >
                                             <Icons.Download size={14} />

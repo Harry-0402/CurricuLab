@@ -229,21 +229,21 @@ export default function MindGridContent() {
                         {filteredAgents.map((agent) => (
                             <div
                                 key={agent.id}
-                                className="group relative bg-white border border-gray-100 p-8 rounded-[40px] transition-all hover:shadow-2xl hover:shadow-indigo-100 hover:-translate-y-2 overflow-hidden flex flex-col h-full"
+                                className="group relative bg-white border border-gray-100 p-4 md:p-8 rounded-[24px] md:rounded-[40px] transition-all hover:shadow-2xl hover:shadow-indigo-100 hover:-translate-y-2 overflow-hidden flex flex-col h-full"
                             >
                                 {/* Platform Badge */}
                                 {getPlatformBadge(agent.platform)}
 
                                 {/* Category */}
-                                <span className="text-indigo-600 text-[10px] font-black uppercase tracking-[0.2em] mb-4 block">
+                                <span className="text-indigo-600 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-2 md:mb-4 block">
                                     {agent.category}
                                 </span>
 
-                                <h3 className="text-2xl font-black text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                                <h3 className="text-base md:text-2xl font-black text-gray-900 mb-2 md:mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2 md:line-clamp-none">
                                     {agent.name}
                                 </h3>
 
-                                <p className="text-gray-500 text-sm leading-relaxed mb-8 font-medium">
+                                <p className="text-gray-500 text-[10px] md:text-sm leading-relaxed mb-4 md:mb-8 font-medium line-clamp-3 md:line-clamp-none flex-grow">
                                     {agent.description}
                                 </p>
 
@@ -252,30 +252,31 @@ export default function MindGridContent() {
                                         href={agent.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center text-xs font-black text-indigo-600 uppercase tracking-widest gap-2 bg-indigo-50 px-6 py-3 rounded-2xl hover:bg-indigo-600 hover:text-white transition-all group/btn"
+                                        className="flex items-center text-[9px] md:text-xs font-black text-indigo-600 uppercase tracking-widest gap-1 md:gap-2 bg-indigo-50 px-3 md:px-6 py-1.5 md:py-3 rounded-lg md:rounded-2xl hover:bg-indigo-600 hover:text-white transition-all group/btn whitespace-nowrap"
                                     >
-                                        Initialize Unit
-                                        <Icons.ChevronRight size={16} className="transition-transform group-hover/btn:translate-x-1" />
+                                        <span className="hidden xl:inline">Initialize Unit</span>
+                                        <span className="xl:hidden">Launch</span>
+                                        <Icons.ChevronRight size={14} className="transition-transform group-hover/btn:translate-x-1 shrink-0" />
                                     </a>
 
                                     {!agent.is_default && agent.user_id === currentUser?.id && (
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-1 md:gap-2 ml-2">
                                             <button
                                                 onClick={() => {
                                                     setEditingAgent(agent);
                                                     setShowAddModal(true);
                                                 }}
-                                                className="p-3 text-gray-300 hover:text-indigo-500 transition-colors rounded-xl hover:bg-indigo-50"
-                                                title="Edit Unit"
+                                                className="p-1.5 md:p-2 hover:bg-gray-100 rounded-lg md:rounded-xl text-gray-400 hover:text-blue-600 transition-colors shrink-0"
+                                                title="Edit Tool"
                                             >
-                                                <Icons.PenLine size={18} />
+                                                <Icons.Edit size={14} className="md:w-4 md:h-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteAgent(agent.id)}
-                                                className="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50"
-                                                title="Unregister Unit"
+                                                className="p-1.5 md:p-2 hover:bg-red-50 rounded-lg md:rounded-xl text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                                                title="Delete Tool"
                                             >
-                                                <Icons.Trash2 size={18} />
+                                                <Icons.Trash2 size={14} className="md:w-4 md:h-4" />
                                             </button>
                                         </div>
                                     )}

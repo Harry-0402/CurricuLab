@@ -520,7 +520,7 @@ export function AssignmentContent() {
                                 key={assignment.id}
                                 onClick={() => openDetailModal(assignment)}
                                 className={cn(
-                                    "group bg-white border border-gray-100 rounded-[35px] p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer",
+                                    "group bg-white border border-gray-100 rounded-[24px] md:rounded-[35px] p-4 md:p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer flex flex-col h-full",
                                     cardStyles.border,
                                     cardStyles.hoverBg
                                 )}
@@ -528,19 +528,19 @@ export function AssignmentContent() {
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-start">
                                         <div className={cn(
-                                            "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500",
+                                            "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-colors duration-500 shrink-0",
                                             completedAssignments.has(assignment.id)
                                                 ? 'bg-green-50 text-green-600'
                                                 : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600'
                                         )}>
-                                            <Icons.Calendar size={22} />
+                                            <Icons.Calendar size={18} className="md:w-[22px] md:h-[22px]" />
                                         </div>
                                         {/* Badges */}
-                                        <div className="flex items-center gap-2 flex-wrap">
+                                        <div className="flex flex-col items-end sm:items-center sm:flex-row gap-1.5 md:gap-2 flex-wrap">
                                             {(() => {
                                                 const subject = subjects.find(s => s.id === assignment.subjectId);
                                                 return subject ? (
-                                                    <span className={cn("h-12 px-4 rounded-2xl text-xs font-bold flex items-center justify-center", cardStyles.badgeBg)}>
+                                                    <span className={cn("h-6 md:h-12 px-2 md:px-4 rounded-lg md:rounded-2xl text-[9px] md:text-xs font-bold flex items-center justify-center whitespace-nowrap", cardStyles.badgeBg)}>
                                                         {subject.code}
                                                     </span>
                                                 ) : null;
@@ -548,53 +548,53 @@ export function AssignmentContent() {
                                         {assignment.unitId && (() => {
                                             const unitIndex = units.findIndex(u => u.id === assignment.unitId);
                                             return (
-                                                <span className="h-12 px-4 bg-purple-100 text-purple-700 rounded-2xl text-xs font-bold flex items-center justify-center">
+                                                <span className="h-6 md:h-12 px-2 md:px-4 bg-purple-100 text-purple-700 rounded-lg md:rounded-2xl text-[9px] md:text-xs font-bold flex items-center justify-center whitespace-nowrap">
                                                     Unit {unitIndex + 1}
                                                 </span>
                                             );
                                         })()}
                                         {assignment.platform && (
-                                            <span className="h-12 px-4 bg-blue-100 text-blue-700 rounded-2xl text-xs font-bold flex items-center justify-center">
+                                            <span className="h-6 md:h-12 px-2 md:px-4 bg-blue-100 text-blue-700 rounded-lg md:rounded-2xl text-[9px] md:text-xs font-bold flex items-center justify-center whitespace-nowrap">
                                                 {assignment.platform}
                                             </span>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <h3 className="text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors">
+                                <div className="space-y-1 md:space-y-2 mt-2 md:mt-0 flex-grow">
+                                    <h3 className="text-sm md:text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors line-clamp-3">
                                         {assignment.title}
                                     </h3>
-                                    <div className="flex items-center gap-2 text-sm font-bold text-gray-400">
-                                        <Icons.List size={14} className="text-gray-300" />
+                                    <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold text-gray-400">
+                                        <Icons.List size={12} className="md:w-3.5 md:h-3.5 text-gray-300 shrink-0" />
                                         <span>{assignment.questions.length} Questions</span>
                                     </div>
                                 </div>
 
-                                <div className="pt-4 flex items-center justify-between">
+                                <div className="pt-3 md:pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mt-auto">
                                     <div className="flex flex-col">
                                         <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Due Date</span>
-                                        <span className="text-sm font-black text-gray-900">{assignment.dueDate || 'No due date'}</span>
+                                        <span className="text-[10px] md:text-sm font-black text-gray-900">{assignment.dueDate || 'No due date'}</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 md:gap-2">
                                         <button
                                             onClick={(e) => toggleCompletion(e, assignment.id)}
-                                            className={`p-3 rounded-xl transition-all flex items-center gap-2 text-xs font-bold ${completedAssignments.has(assignment.id) ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                                            className={`p-2 md:p-3 rounded-lg md:rounded-xl transition-all flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs font-bold ${completedAssignments.has(assignment.id) ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
                                         >
-                                            <Icons.CheckSquare size={16} />
+                                            <Icons.CheckSquare size={14} className="md:w-4 md:h-4 shrink-0" />
                                             <span className="hidden sm:inline">{completedAssignments.has(assignment.id) ? 'Completed' : 'Mark Done'}</span>
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); openEditModal(assignment); }}
-                                            className="p-3 bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
+                                            className="p-2 md:p-3 bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-lg md:rounded-xl transition-all shrink-0"
                                         >
-                                            <Icons.Edit size={16} />
+                                            <Icons.Edit size={14} className="md:w-4 md:h-4" />
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(assignment.id); }}
-                                            className="p-3 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
+                                            className="p-2 md:p-3 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-lg md:rounded-xl transition-all shrink-0"
                                         >
-                                            <Icons.Delete size={16} />
+                                            <Icons.Delete size={14} className="md:w-4 md:h-4" />
                                         </button>
                                     </div>
                                 </div>
