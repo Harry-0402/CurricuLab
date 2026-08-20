@@ -19,10 +19,16 @@ export function MobileBottomNav() {
     ];
 
     const moreItems = [
-        { label: 'My Courses', href: '/subjects', icon: Icons.GraduationCap },
-        { label: 'PYQs', href: '/tools/papertrail', icon: Icons.FileText },
-        { label: 'YouTube Library', href: '/youtube-library', icon: Icons.Youtube },
+        { label: 'Docs', href: '/docs', icon: Icons.BookOpen },
+        { label: 'Faculty & Fellows', href: '/faculty-fellows', icon: Icons.GraduationCap },
+        { label: 'Community', href: '/community', icon: Icons.Users },
+        { label: 'Portfolio', href: '/tools/portfolio', icon: Icons.Layout },
+        { label: 'ResumeStudio', href: '/tools/resume', icon: Icons.FileText },
+        { label: 'Career Gateway', href: '/tools/career', icon: Icons.Briefcase },
         { label: 'MindGrid', href: '/tools/mindgrid', icon: Icons.LayoutGrid },
+        { label: 'YouTube Library', href: '/youtube-library', icon: Icons.Youtube },
+        { label: 'PYQs', href: '/tools/papertrail', icon: Icons.FileText },
+        { label: 'My Courses', href: '/subjects', icon: Icons.Subjects },
     ];
 
     return (
@@ -37,7 +43,7 @@ export function MobileBottomNav() {
 
             {/* Floating 'More' Menu Items */}
             <div className={cn(
-                "fixed bottom-[90px] right-2 z-[75] flex flex-col gap-3 items-end transition-all duration-300 lg:hidden",
+                "fixed bottom-[90px] right-2 z-[75] flex flex-col gap-3 items-end transition-all duration-300 lg:hidden max-h-[75vh] overflow-y-auto no-scrollbar pt-4 pb-2 px-2 -mr-2",
                 isMoreOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-10 pointer-events-none"
             )}>
                 {moreItems.map((item, idx) => (
@@ -61,7 +67,7 @@ export function MobileBottomNav() {
 
             {/* Bottom Navigation Bar */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-gray-100 z-[70] pb-[env(safe-area-inset-bottom)]">
-                <div className="flex items-center h-full overflow-x-auto snap-x snap-mandatory no-scrollbar px-2 w-full gap-1 sm:justify-around">
+                <div className="flex items-center justify-around h-full overflow-x-auto snap-x snap-mandatory no-scrollbar px-2 w-full">
                     {navItems.map((item) => {
                         const isMoreBtn = item.label === 'More';
                         const isActive = isMoreBtn ? isMoreOpen : (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)));

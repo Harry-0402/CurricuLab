@@ -546,13 +546,13 @@ Please review the document at the URL provided above and generate a highly detai
             </div>
 
             {/* Filter Row */}
-            <div className="flex items-center justify-between gap-4 shrink-0 print:hidden w-full overflow-hidden">
+            <div className="flex flex-col gap-4 shrink-0 print:hidden w-full">
                 {/* Type Filter Badges */}
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
                     <button
                         onClick={() => setSelectedType('all')}
                         className={cn(
-                            "px-3 py-1.5 rounded-[10px] text-[11px] font-bold transition-all border",
+                            "shrink-0 px-3 py-1.5 rounded-[10px] text-[11px] font-bold transition-all border",
                             selectedType === 'all'
                                 ? "bg-gray-900 text-white border-gray-900"
                                 : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
@@ -568,14 +568,14 @@ Please review the document at the URL provided above and generate a highly detai
                                 key={type}
                                 onClick={() => setSelectedType(type)}
                                 className={cn(
-                                    "px-3 py-1.5 rounded-[10px] text-[11px] font-bold transition-all border flex items-center gap-1.5",
+                                    "shrink-0 px-3 py-1.5 rounded-[10px] text-[11px] font-bold transition-all border flex items-center gap-1.5",
                                     isActive
                                         ? `${config.bgColor} ${config.color} border-current`
                                         : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
                                 )}
                             >
                                 <config.icon size={13} />
-                                {config.label}s
+                                {config.label === 'Case Study' ? 'Case Studies' : config.label === 'Other Resources' ? 'Other Resources' : `${config.label}s`}
                             </button>
                         );
                     })}
@@ -623,7 +623,7 @@ Please review the document at the URL provided above and generate a highly detai
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-10">
                         {Object.keys(TYPE_CONFIG).flatMap(typeKey => 
                             filteredResources.filter(r => r.type === typeKey)
                         ).map(resource => {

@@ -412,19 +412,21 @@ export function AssignmentContent() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-[0.2em]">Academic</h1>
-                    <p className="text-5xl font-black text-gray-900 tracking-tight">Assignments</p>
+                    <p className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">Assignments</p>
                 </div>
                 <button
                     onClick={() => { setEditingAssignment(null); setIsModalOpen(true); }}
-                    className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 md:px-8 md:py-4 bg-blue-600 text-white rounded-xl md:rounded-[22px] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 shrink-0"
                 >
-                    <Icons.Plus size={18} />
-                    <span>New Assignment</span>
+                    <Icons.Plus size={16} className="md:hidden" />
+                    <Icons.Plus size={18} className="hidden md:block" />
+                    <span className="hidden sm:inline">New Assignment</span>
+                    <span className="sm:hidden">New</span>
                 </button>
             </div>
 
-            {/* Subject Switcher - Consistent with Vault */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 no-scrollbar">
+            {/* Subject Switcher */}
+            <div className="flex items-center gap-1.5 pb-2 flex-wrap">
                 <button
                     onClick={() => setActiveSubjectId('all')}
                     className={cn(
@@ -466,7 +468,7 @@ export function AssignmentContent() {
             </div>
 
             {/* Assignments Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {loading ? (
                     <div className="col-span-full py-20 flex flex-col items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />

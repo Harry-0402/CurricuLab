@@ -58,11 +58,8 @@ export function WebHeader() {
 
     return (
         <header className="h-16 lg:h-20 border-b border-gray-100 bg-white sticky top-0 z-30 px-4 lg:px-8 flex items-center justify-between print:hidden">
-            {/* Left: Hamburger & Logo */}
-            <div className="flex items-center gap-3">
-                <button className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
-                    <Icons.Menu size={24} />
-                </button>
+            {/* Left: Logo */}
+            <div className="flex items-center gap-3 lg:hidden">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
                         <img src="/curriculab-logo.png" alt="Logo" className="w-full h-full object-cover" />
@@ -71,7 +68,7 @@ export function WebHeader() {
                 </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-auto">
 
                 {/* ── Semester Switcher ─────────────────────────────── */}
                 <div className="relative" ref={semesterMenuRef}>
@@ -157,11 +154,7 @@ export function WebHeader() {
 
                 {user ? (
                     <>
-                        {/* Notification Bell */}
-                        <button className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
-                            <Icons.Bell size={24} />
-                            <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">3</span>
-                        </button>
+
 
                         {/* Profile & Logout */}
                         <div className="flex items-center gap-3 ml-1">
@@ -178,7 +171,7 @@ export function WebHeader() {
 
                             <button
                                 onClick={handleLogout}
-                                className="hidden lg:flex p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                                className="flex p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                                 title="Sign Out"
                             >
                                 <Icons.LogOut size={18} />
