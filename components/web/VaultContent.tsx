@@ -678,22 +678,22 @@ Please review the document at the URL provided above and generate a highly detai
                                             setSelectedResource(resource);
                                         }
                                     }}
-                                    className="bg-white rounded-3xl p-6 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
+                                    className="bg-white rounded-3xl p-4 md:p-6 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
                                 >
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn("p-3 rounded-2xl transition-colors", config.bgColor)}>
-                                                <config.icon className={config.color} size={24} />
+                                    <div className="flex items-start justify-between mb-3 md:mb-4">
+                                        <div className="flex items-center gap-2 md:gap-3">
+                                            <div className={cn("p-2 md:p-3 rounded-2xl transition-colors shrink-0", config.bgColor)}>
+                                                <config.icon className={config.color} size={18} />
                                             </div>
-                                            <div className="flex items-center gap-2 flex-wrap">
+                                            <div className="flex flex-col items-start gap-1">
                                                 <span className={cn(
-                                                    "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border",
+                                                    "px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[9px] md:text-[10px] font-bold uppercase border whitespace-nowrap",
                                                     config.bgColor, config.color
                                                 )}>
                                                     {config.label}
                                                 </span>
                                                 {resource.unitId && (
-                                                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
+                                                    <span className="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[9px] md:text-[10px] font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100 whitespace-nowrap">
                                                         {resource.unitId.replace('unit-', 'Unit ')}
                                                     </span>
                                                 )}
@@ -721,12 +721,12 @@ Please review the document at the URL provided above and generate a highly detai
 
                                     <div className="flex-grow flex flex-col">
                                         <div className="flex-grow">
-                                            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                                            <h3 className="text-sm md:text-lg font-bold text-gray-900 line-clamp-2 md:line-clamp-3 leading-tight group-hover:text-blue-600 transition-colors">
                                                 {resource.title}
                                             </h3>
                                         </div>
 
-                                        <div className="pt-4 mt-3 border-t border-gray-50 flex items-center justify-between text-xs font-medium text-gray-400 flex-wrap gap-2">
+                                        <div className="pt-3 md:pt-4 mt-2 md:mt-3 border-t border-gray-50 flex flex-col md:flex-row items-start md:items-center justify-between text-[10px] md:text-xs font-medium text-gray-400 gap-2 md:gap-3">
                                             <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
                                             <div className="flex items-center gap-2">
                                                 {resource.type === 'study_note' && (
@@ -740,11 +740,12 @@ Please review the document at the URL provided above and generate a highly detai
                                                                             e.stopPropagation();
                                                                             setSelectedResource(existingDeck);
                                                                         }}
-                                                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-teal-50 text-teal-600 border-teal-100/50 hover:bg-teal-100 hover:text-teal-700"
+                                                                        className="flex items-center gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[9px] md:text-[11px] bg-teal-50 text-teal-600 border-teal-100/50 hover:bg-teal-100 hover:text-teal-700 whitespace-nowrap"
                                                                         title="See Flashcards"
                                                                     >
-                                                                        <Icons.Layers size={11} className="text-teal-500" />
-                                                                        <span>See Flashcards</span>
+                                                                        <Icons.Layers size={11} className="text-teal-500 shrink-0" />
+                                                                        <span className="hidden md:inline">See Flashcards</span>
+                                                                        <span className="md:hidden">Cards</span>
                                                                     </button>
                                                                 );
                                                             }
@@ -755,18 +756,19 @@ Please review the document at the URL provided above and generate a highly detai
                                                                         generateFlashcardsForResource(resource);
                                                                     }}
                                                                     disabled={isGeneratingFlashcards}
-                                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50"
+                                                                    className="flex items-center gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[9px] md:text-[11px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50 whitespace-nowrap"
                                                                     title="Auto-generate Flashcards"
                                                                 >
-                                                                    <Icons.Layers size={11} className="text-indigo-500" />
-                                                                    <span>Auto-Flashcard</span>
+                                                                    <Icons.Layers size={10} className="text-indigo-500 shrink-0" />
+                                                                    <span className="hidden md:inline">Auto-Flashcard</span>
+                                                                    <span className="md:hidden">Auto-Card</span>
                                                                 </button>
                                                             );
                                                         })()}
                                                         <button
                                                             onClick={(e) => handleCopyPrompt(e, resource)}
                                                             className={cn(
-                                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[11px]",
+                                                                "flex items-center gap-1 px-1.5 md:px-3 py-1 rounded-lg md:rounded-xl font-bold transition-all border shadow-sm text-[8px] md:text-[11px] whitespace-nowrap",
                                                                 copiedId === resource.id
                                                                     ? "bg-green-50 text-green-600 border-green-200"
                                                                     : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700"
@@ -775,20 +777,20 @@ Please review the document at the URL provided above and generate a highly detai
                                                         >
                                                             {copiedId === resource.id ? (
                                                                 <>
-                                                                    <Icons.Check size={11} className="text-green-500" />
+                                                                    <Icons.Check size={10} className="text-green-500 shrink-0" />
                                                                     <span>Copied!</span>
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <Icons.Sparkles size={11} className="text-purple-500" />
+                                                                    <Icons.Sparkles size={10} className="text-purple-500 shrink-0" />
                                                                     <span>AI Prompt</span>
                                                                 </>
                                                             )}
                                                         </button>
                                                     </>
                                                 )}
-                                                <span className="group-hover:translate-x-1 transition-transform text-blue-600 flex items-center gap-1 font-bold">
-                                                    Read More <Icons.ArrowRight size={12} />
+                                                <span className="hidden sm:flex group-hover:translate-x-1 transition-transform text-blue-600 items-center gap-1 font-bold whitespace-nowrap">
+                                                    Read More <Icons.ChevronRight size={14} />
                                                 </span>
                                             </div>
                                         </div>
