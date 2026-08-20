@@ -61,12 +61,6 @@ export function AnnouncementWidget({ announcements }: AnnouncementWidgetProps) {
                         >
                             <Icons.Plus size={22} className="group-hover:rotate-90 transition-transform" />
                         </button>
-                        <button
-                            onClick={() => setIsSettingsOpen(true)}
-                            className="p-3 text-gray-400 hover:text-gray-900 hover:bg-white border border-transparent hover:border-gray-100 rounded-2xl transition-all shadow-none hover:shadow-sm"
-                        >
-                            <Icons.Settings size={22} />
-                        </button>
                     </div>
                 )}
             </div>

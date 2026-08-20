@@ -426,7 +426,29 @@ export function AssignmentContent() {
             </div>
 
             {/* Subject Switcher */}
-            <div className="flex items-center gap-1.5 pb-2 flex-wrap">
+            {/* Mobile: Dropdown */}
+            <div className="block sm:hidden">
+                <div className="relative">
+                    <select
+                        value={activeSubjectId || 'all'}
+                        onChange={(e) => setActiveSubjectId(e.target.value === 'all' ? 'all' : e.target.value)}
+                        className="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 cursor-pointer"
+                    >
+                        <option value="all">All Subjects</option>
+                        {subjects.map((subject) => (
+                            <option key={subject.id} value={subject.id}>
+                                {subject.code} — {subject.title}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <Icons.ChevronDown size={16} className="text-gray-400" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Desktop: Pills */}
+            <div className="hidden sm:flex items-center gap-1.5 pb-2 flex-wrap">
                 <button
                     onClick={() => setActiveSubjectId('all')}
                     className={cn(
