@@ -370,14 +370,14 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                 )}
                                             </div>
                                             <p className="text-gray-600 mb-4 line-clamp-2">{work.description}</p>
-                                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mt-4 pt-4 border-t border-gray-50">
                                                 <div className="flex items-center gap-4">
                                                     <div className="flex gap-3 text-xs font-medium text-gray-400">
                                                         {work.maxPoints && <span>Points: {work.maxPoints}</span>}
                                                         {work.state && <span className="capitalize px-2 py-0.5 bg-gray-100 rounded text-gray-600">{work.state.toLowerCase()}</span>}
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                                                     {(() => {
                                                         const importedAssignment = importedAssignments.find(a => a.gcrId === work.id);
 
@@ -409,8 +409,8 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
                                                             </button>
                                                         );
                                                     })()}
-                                                    <div className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 group-hover:translate-x-1 transition-transform">
-                                                        Open Assignment <Icons.ChevronRight size={14} />
+                                                    <div className="inline-flex items-center justify-end gap-1.5 text-sm font-bold text-blue-600 group-hover:translate-x-1 transition-transform">
+                                                        Open Assignment <Icons.ChevronRight size={14} className="shrink-0" />
                                                     </div>
                                                 </div>
                                             </div>
