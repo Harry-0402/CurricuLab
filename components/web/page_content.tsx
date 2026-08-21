@@ -206,8 +206,8 @@ export default function WebHomePage() {
                 
                 {mounted ? (
                     <>
-                        {/* Top Stat Cards - 4 Column Grid on Mobile */}
-                        <div className="grid grid-cols-4 gap-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-6 w-[100vw] -ml-4 px-4 md:w-auto md:ml-0 md:px-0 lg:-ml-8 lg:px-8 xl:ml-0 xl:px-0 mb-4 md:mb-0">
+                        {/* Top Stat Cards - 4 Column Grid on all screens with proper spacing */}
+                        <div className="grid grid-cols-4 gap-3 sm:gap-4 lg:gap-6 w-full mb-6 md:mb-8">
                             <div className="w-full">
                                 <KPIStatCard
                                     label="Classes Today"

@@ -122,12 +122,22 @@ export function AnalyticaChat({ isOpen, onClose }: AnalyticaChatProps) {
 
     return (
         <div className={cn(
-            "fixed bottom-6 right-6 w-full max-w-[440px] h-[600px] max-h-[calc(100vh-48px)] bg-white shadow-2xl rounded-2xl z-[60] flex flex-col transform transition-all duration-300 ease-out border border-gray-200 overflow-hidden origin-bottom-right",
-            isOpen ? "scale-100 opacity-100 translate-y-0" : "scale-90 opacity-0 translate-y-4 pointer-events-none"
+            // Mobile: full screen, slides up from bottom
+            "fixed inset-0 w-full h-full bg-white z-[60] flex flex-col transform transition-all duration-300 ease-out overflow-hidden",
+            // Desktop (sm and up): floating panel in bottom-right corner
+            "sm:inset-auto sm:bottom-6 sm:right-6 sm:w-full sm:max-w-[440px] sm:h-[600px] sm:max-h-[calc(100vh-48px)] sm:shadow-2xl sm:rounded-2xl sm:border sm:border-gray-200 sm:origin-bottom-right",
+            isOpen 
+                ? "translate-y-0 opacity-100 scale-100 pointer-events-auto" 
+                : "translate-y-full opacity-0 pointer-events-none sm:translate-y-4 sm:opacity-0 sm:scale-90"
         )}>
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 shrink-0">
+            <div className="flex items-center justify-between p-4 pt-[calc(1rem+env(safe-area-inset-top))] sm:pt-4 border-b border-gray-100 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 shrink-0">
                 <div className="flex items-center gap-3">
+                    {/* Back arrow only visible on mobile */}
+                    <button onClick={onClose} className="p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors sm:hidden" title="Go back">
+                        <Icons.ArrowLeft size={20} />
+                    </button>
+                    
                     <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md">
                         <Icons.Sparkles size={18} />
                     </div>
@@ -142,7 +152,8 @@ export function AnalyticaChat({ isOpen, onClose }: AnalyticaChatProps) {
                     <button onClick={handleClear} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors" title="Clear Chat">
                         <Icons.Trash2 size={16} />
                     </button>
-                    <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors">
+                    {/* Close button only visible on desktop */}
+                    <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors hidden sm:block">
                         <Icons.X size={20} />
                     </button>
                 </div>
@@ -231,7 +242,7 @@ export function AnalyticaChat({ isOpen, onClose }: AnalyticaChatProps) {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-gray-100 bg-white shrink-0">
+            <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-4 border-t border-gray-100 bg-white shrink-0">
                 <div className="relative flex items-center">
                     <input 
                         type="text" 
