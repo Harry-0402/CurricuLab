@@ -6,8 +6,11 @@ import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 
+import { useAuth } from '@/components/providers/AuthProvider';
+
 export function MobileBottomNav() {
     const pathname = usePathname();
+    const { isAdmin } = useAuth();
     const [isMoreOpen, setIsMoreOpen] = useState(false);
 
     const navItems = [
@@ -18,7 +21,7 @@ export function MobileBottomNav() {
         { label: 'More', href: '#', icon: Icons.Menu, activeIcon: Icons.X },
     ];
 
-    const moreItems = [
+    const baseMoreItems = [
         { label: 'Docs', href: '/docs', icon: Icons.BookOpen },
         { label: 'Faculty & Fellows', href: '/faculty-fellows', icon: Icons.GraduationCap },
         { label: 'Community', href: '/community', icon: Icons.Users },
@@ -30,6 +33,10 @@ export function MobileBottomNav() {
         { label: 'PYQs', href: '/tools/papertrail', icon: Icons.FileText },
         { label: 'My Courses', href: '/subjects', icon: Icons.Subjects },
     ];
+
+    const moreItems = isAdmin
+        ? [{ label: 'Admin Panel', href: '/admin', icon: Icons.Settings }, ...baseMoreItems]
+        : baseMoreItems;
 
     return (
         <>
