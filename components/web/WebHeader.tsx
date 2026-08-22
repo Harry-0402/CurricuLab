@@ -93,7 +93,7 @@ export function WebHeader() {
                     </button>
 
                     {showSemesterMenu && (
-                        <div className="absolute right-0 lg:right-auto lg:left-0 top-full mt-2 w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 overflow-hidden">
                             <div className="p-3 border-b border-gray-50">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Switch Class</p>
                             </div>

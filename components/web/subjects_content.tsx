@@ -105,9 +105,9 @@ export default function WebSubjectsContent() {
                 </div>
 
                 {isLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="space-y-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:space-y-0">
                         {[...Array(6)].map((_, i) => (
-                            <div key={i} className="h-48 bg-gray-100 rounded-2xl animate-pulse" />
+                            <div key={i} className="h-20 sm:h-48 bg-gray-100 rounded-2xl sm:rounded-[32px] animate-pulse" />
                         ))}
                     </div>
                 ) : subjects.length === 0 ? (
@@ -117,7 +117,7 @@ export default function WebSubjectsContent() {
                         <p className="text-sm mt-1">An admin can add subjects from the Admin Panel.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="space-y-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:space-y-0">
                         {subjects.map((subject) => (
                             <SubjectCard
                                 key={subject.id}

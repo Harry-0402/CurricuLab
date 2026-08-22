@@ -189,7 +189,7 @@ export default function WebSubjectDetailContent() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="space-y-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:space-y-0">
                     {units.map((unit) => (
                         <UnitCard
                             key={unit.id}

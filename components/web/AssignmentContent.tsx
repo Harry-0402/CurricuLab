@@ -489,120 +489,132 @@ export function AssignmentContent() {
                 })}
             </div>
 
-            {/* Assignments Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+            {/* Assignments List */}
+            <div className="space-y-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-4 sm:space-y-0">
                 {loading ? (
                     <div className="col-span-full py-20 flex flex-col items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
                         <p className="text-sm font-bold text-gray-400">Loading...</p>
                     </div>
                 ) : subjects.length === 0 ? (
-                    <div className="col-span-full py-20 bg-gray-50 rounded-[35px] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
-                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-gray-300 mb-4 shadow-sm">
-                            <Icons.BookOpen size={28} />
+                    <div className="col-span-full py-16 bg-gray-50 rounded-3xl border border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
+                        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-gray-300 mb-4 shadow-sm">
+                            <Icons.BookOpen size={26} />
                         </div>
-                        <h3 className="text-xl font-black text-gray-900 mb-2">No Subjects Found</h3>
+                        <h3 className="text-lg font-black text-gray-900 mb-1">No Subjects Found</h3>
                         <p className="text-sm font-bold text-gray-400">There are no subjects in this semester.</p>
                     </div>
                 ) : assignments.length === 0 ? (
-                    <div className="col-span-full py-20 bg-gray-50 rounded-[35px] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
-                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-gray-300 mb-4 shadow-sm">
-                            <Icons.Calendar size={28} />
+                    <div className="col-span-full py-16 bg-gray-50 rounded-3xl border border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
+                        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-gray-300 mb-4 shadow-sm">
+                            <Icons.Calendar size={26} />
                         </div>
-                        <h3 className="text-xl font-black text-gray-900 mb-2">No Assignments Yet</h3>
-                        <p className="text-sm font-bold text-gray-400">Assignments are not Uploaded yet</p>
+                        <h3 className="text-lg font-black text-gray-900 mb-1">No Assignments Yet</h3>
+                        <p className="text-sm font-bold text-gray-400">Assignments are not uploaded yet</p>
                     </div>
                 ) : (
                     assignments.map((assignment) => {
                         const cardStyles = getSubjectCardStyles(assignment.subjectId);
+                        const subject = subjects.find(s => s.id === assignment.subjectId);
+                        const unitIndex = assignment.unitId ? units.findIndex(u => u.id === assignment.unitId) : -1;
+                        const isDone = completedAssignments.has(assignment.id);
                         return (
                             <div
                                 key={assignment.id}
                                 onClick={() => openDetailModal(assignment)}
                                 className={cn(
-                                    "group bg-white border border-gray-100 rounded-[24px] md:rounded-[35px] p-4 md:p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 relative overflow-hidden cursor-pointer flex flex-col h-full",
+                                    "group bg-white border border-gray-100 rounded-2xl sm:rounded-3xl cursor-pointer transition-all duration-300",
+                                    "hover:shadow-lg hover:shadow-blue-500/5 hover:border-gray-200",
+                                    // Mobile: horizontal row; desktop: vertical card
+                                    "flex sm:flex-col",
                                     cardStyles.border,
-                                    cardStyles.hoverBg
                                 )}
                             >
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-start">
+                                {/* Mobile: left accent strip */}
+                                <div className="sm:hidden w-1 rounded-l-2xl shrink-0" />
+
+                                {/* Content */}
+                                <div className="flex-1 p-3.5 sm:p-6 flex flex-col gap-3">
+                                    {/* Top: icon + badges */}
+                                    <div className="flex items-start justify-between gap-2">
                                         <div className={cn(
-                                            "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-colors duration-500 shrink-0",
-                                            completedAssignments.has(assignment.id)
-                                                ? 'bg-green-50 text-green-600'
-                                                : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600'
+                                            "w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 transition-colors",
+                                            isDone ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600'
                                         )}>
-                                            <Icons.Calendar size={18} className="md:w-[22px] md:h-[22px]" />
+                                            <Icons.Calendar size={16} className="sm:w-[18px] sm:h-[18px]" />
                                         </div>
-                                        {/* Badges */}
-                                        <div className="flex flex-col items-end sm:items-center sm:flex-row gap-1.5 md:gap-2 flex-wrap">
-                                            {(() => {
-                                                const subject = subjects.find(s => s.id === assignment.subjectId);
-                                                return subject ? (
-                                                    <span className={cn("h-6 md:h-12 px-2 md:px-4 rounded-lg md:rounded-2xl text-[9px] md:text-xs font-bold flex items-center justify-center whitespace-nowrap", cardStyles.badgeBg)}>
-                                                        {subject.code}
-                                                    </span>
-                                                ) : null;
-                                            })()}
-                                        {assignment.unitId && (() => {
-                                            const unitIndex = units.findIndex(u => u.id === assignment.unitId);
-                                            return (
-                                                <span className="h-6 md:h-12 px-2 md:px-4 bg-purple-100 text-purple-700 rounded-lg md:rounded-2xl text-[9px] md:text-xs font-bold flex items-center justify-center whitespace-nowrap">
+                                        <div className="flex flex-wrap justify-end gap-1">
+                                            {subject && (
+                                                <span className={cn("px-2 py-0.5 rounded-lg text-[10px] font-black whitespace-nowrap", cardStyles.badgeBg)}>
+                                                    {subject.code}
+                                                </span>
+                                            )}
+                                            {unitIndex >= 0 && (
+                                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-lg text-[10px] font-black whitespace-nowrap">
                                                     Unit {unitIndex + 1}
                                                 </span>
-                                            );
-                                        })()}
-                                        {assignment.platform && (
-                                            <span className="h-6 md:h-12 px-2 md:px-4 bg-blue-100 text-blue-700 rounded-lg md:rounded-2xl text-[9px] md:text-xs font-bold flex items-center justify-center whitespace-nowrap">
-                                                {assignment.platform}
+                                            )}
+                                            {assignment.platform && (
+                                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-black whitespace-nowrap">
+                                                    {assignment.platform}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Title + meta */}
+                                    <div className="flex-1">
+                                        <h3 className={cn(
+                                            "text-sm sm:text-base font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors line-clamp-2 sm:line-clamp-3",
+                                            isDone && 'line-through opacity-60'
+                                        )}>
+                                            {assignment.title}
+                                        </h3>
+                                        <div className="flex items-center gap-3 mt-1.5">
+                                            <span className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
+                                                <Icons.List size={10} className="text-gray-300" />
+                                                {assignment.questions.length}Q
                                             </span>
-                                        )}
+                                            {assignment.dueDate && (
+                                                <span className="text-[10px] font-bold text-gray-400">
+                                                    {assignment.dueDate}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="space-y-1 md:space-y-2 mt-2 md:mt-0 flex-grow">
-                                    <h3 className="text-sm md:text-lg font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors line-clamp-3">
-                                        {assignment.title}
-                                    </h3>
-                                    <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold text-gray-400">
-                                        <Icons.List size={12} className="md:w-3.5 md:h-3.5 text-gray-300 shrink-0" />
-                                        <span>{assignment.questions.length} Questions</span>
-                                    </div>
-                                </div>
-
-                                <div className="pt-3 md:pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mt-auto">
-                                    <div className="flex flex-col">
-                                        <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Due Date</span>
-                                        <span className="text-[10px] md:text-sm font-black text-gray-900">{assignment.dueDate || 'No due date'}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 md:gap-2">
+                                    {/* Actions */}
+                                    <div className="flex items-center gap-1.5 pt-2 border-t border-gray-50">
                                         <button
                                             onClick={(e) => toggleCompletion(e, assignment.id)}
-                                            className={`p-2 md:p-3 rounded-lg md:rounded-xl transition-all flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs font-bold ${completedAssignments.has(assignment.id) ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                                            className={cn(
+                                                "flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-black transition-all flex-1 sm:flex-none justify-center sm:justify-start",
+                                                isDone
+                                                    ? 'bg-green-50 text-green-700 hover:bg-green-100'
+                                                    : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                                            )}
                                         >
-                                            <Icons.CheckSquare size={14} className="md:w-4 md:h-4 shrink-0" />
-                                            <span className="hidden sm:inline">{completedAssignments.has(assignment.id) ? 'Completed' : 'Mark Done'}</span>
+                                            <Icons.CheckSquare size={12} />
+                                            <span className="hidden xs:inline">{isDone ? 'Done' : 'Mark'}</span>
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); openEditModal(assignment); }}
-                                            className="p-2 md:p-3 bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-lg md:rounded-xl transition-all shrink-0"
+                                            className="p-2 bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
                                         >
-                                            <Icons.Edit size={14} className="md:w-4 md:h-4" />
+                                            <Icons.Edit size={13} />
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(assignment.id); }}
-                                            className="p-2 md:p-3 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-lg md:rounded-xl transition-all shrink-0"
+                                            className="p-2 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
                                         >
-                                            <Icons.Delete size={14} className="md:w-4 md:h-4" />
+                                            <Icons.Delete size={13} />
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    );
-                })
-            )}
+                        );
+                    })
+                )}
             </div>
 
             <AssignmentModal
@@ -629,71 +641,70 @@ export function AssignmentContent() {
                     }
                 }}
             >
-                <DialogContent className="sm:max-w-5xl max-w-[95vw] h-[85vh] flex flex-col overflow-hidden border-0 bg-white shadow-2xl rounded-3xl p-0 gap-0">
+                <DialogContent className="sm:max-w-5xl max-w-[96vw] h-[88vh] flex flex-col overflow-hidden border-0 bg-white shadow-2xl rounded-3xl p-0 gap-0">
                     {selectedAssignment && (
                         <div className="flex flex-col h-full">
                             {/* Header Section */}
-                            <div className="p-8 pb-4 shrink-0">
+                            <div className="px-5 pt-5 pb-3 sm:px-8 sm:pt-8 sm:pb-4 shrink-0 border-b border-gray-50">
                                 <DialogHeader>
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div className="flex-1 pr-12">
-                                            <DialogTitle className="text-2xl font-black text-gray-900 pr-8">
+                                    <div className="flex items-start justify-between gap-3 pr-8">
+                                        <div className="flex-1 min-w-0">
+                                            <DialogTitle className="text-lg sm:text-2xl font-black text-gray-900 leading-tight">
                                                 {selectedAssignment.title}
                                             </DialogTitle>
                                             <DialogDescription asChild>
-                                                <div className="space-y-2 mt-2">
-                                                    <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-                                                        <Icons.Calendar size={14} />
-                                                        <span>Due: {selectedAssignment.dueDate || 'No due date'}</span>
-                                                        {selectedAssignment.unitId && (() => {
-                                                            const unitIndex = units.findIndex(u => u.id === selectedAssignment.unitId);
-                                                            return (
-                                                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
-                                                                    Unit {unitIndex + 1}
-                                                                </span>
-                                                            );
-                                                        })()}
-                                                        {selectedAssignment.platform && (
-                                                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
-                                                                {selectedAssignment.platform}
+                                                <div className="flex flex-wrap items-center gap-2 mt-2">
+                                                    <span className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
+                                                        <Icons.Calendar size={12} />
+                                                        {selectedAssignment.dueDate || 'No due date'}
+                                                    </span>
+                                                    {selectedAssignment.unitId && (() => {
+                                                        const unitIndex = units.findIndex(u => u.id === selectedAssignment.unitId);
+                                                        return (
+                                                            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-black">
+                                                                Unit {unitIndex + 1}
                                                             </span>
-                                                        )}
-                                                    </div>
+                                                        );
+                                                    })()}
+                                                    {selectedAssignment.platform && (
+                                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black">
+                                                            {selectedAssignment.platform}
+                                                        </span>
+                                                    )}
+                                                    {selectedAssignment.externalLink && selectedAssignment.platform === 'GCR' && (
+                                                        <a
+                                                            href={selectedAssignment.externalLink}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-1.5 px-2.5 py-0.5 bg-blue-600 text-white rounded-full text-[10px] font-black hover:bg-blue-700 transition-all active:scale-95"
+                                                        >
+                                                            <Icons.Google size={10} />
+                                                            Open in GCR
+                                                        </a>
+                                                    )}
                                                 </div>
                                             </DialogDescription>
                                         </div>
-
-                                        {selectedAssignment.externalLink && selectedAssignment.platform === 'GCR' && (
-                                            <a
-                                                href={selectedAssignment.externalLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95 shrink-0 mr-12"
-                                            >
-                                                <Icons.Google size={14} />
-                                                Open in Classroom
-                                            </a>
-                                        )}
                                     </div>
                                 </DialogHeader>
                             </div>
 
                             {/* Questions Section */}
-                            <div className="flex-1 overflow-y-auto px-8 pb-8 custom-scrollbar">
-                                <div className="space-y-8">
+                            <div className="flex-1 overflow-y-auto px-5 pb-6 sm:px-8 sm:pb-8 custom-scrollbar">
+                                <div className="space-y-5 pt-5">
                                     {selectedAssignment.description && (
-                                        <div className="p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">Instructions / Notes</h4>
+                                        <div className="p-4 bg-blue-50/60 rounded-2xl border border-blue-100">
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1.5">Instructions / Notes</h4>
                                             <p className="text-gray-700 font-medium leading-relaxed text-sm">
                                                 {selectedAssignment.description}
                                             </p>
                                         </div>
                                     )}
 
-                                    <div className="space-y-6">
-                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div className="space-y-4">
+                                        {/* Section header + AI button in same row */}
+                                        <div className="flex items-center justify-between gap-3">
                                             <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Assignment Questions</h4>
-                                            
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -706,9 +717,7 @@ export function AssignmentContent() {
                                                         .join('\n');
                                                     const targetSubject = subjects.find(s => s.id === selectedAssignment.subjectId);
                                                     const subjectName = targetSubject?.title || 'the subject';
-                                                    
                                                     const prompt = `Here is a list of questions for my assignment:\n\n${questionList}\n\n\nPlease help me answer them based on ${subjectName}.\n\nInstructions:\n- The language should be simple, clear, and humanoid.\n- The word limit should be in 110-120 words for each question.`;
-
                                                     navigator.clipboard.writeText(prompt).then(() => {
                                                         showToast("Questions copied! Opening Analytica...", "success");
                                                         setAnalyticaOpen(true);
@@ -719,36 +728,31 @@ export function AssignmentContent() {
                                                         setAnalyticaInput(prompt);
                                                     });
                                                 }}
-                                                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-none rounded-2xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-all shadow-sm active:scale-95 shrink-0"
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-sm shrink-0"
                                             >
-                                                <Icons.Sparkles size={14} className="text-white" />
-                                                Solve via AI (Copy Prompt)
+                                                <Icons.Sparkles size={12} />
+                                                Solve via AI
                                             </button>
                                         </div>
-                                        
-                                        <div className="hidden sm:flex text-[11px] font-medium text-purple-600 bg-purple-50/50 border border-purple-100/50 p-3.5 rounded-2xl items-start gap-2 leading-relaxed">
-                                            <Icons.Info size={14} className="shrink-0 mt-0.5 text-purple-500" />
-                                            <span>
-                                                <strong>How to use:</strong> Click <strong>"Solve via AI"</strong> above to instantly open Analytica with a customized, structured prompt containing these questions. You can also paste it into ChatGPT, Gemini, or Claude.
-                                            </span>
-                                        </div>
-                                        {selectedAssignment.questions.length === 0 && (
-                                            <div className="text-center py-10 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+
+                                        {selectedAssignment.questions.length === 0 ? (
+                                            <div className="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                                                 <p className="text-sm font-bold text-gray-400">No questions added to this assignment.</p>
                                             </div>
-                                        )}
-                                        {selectedAssignment.questions.map((q, idx) => (
-                                            <div key={q.id} className="bg-white border border-gray-100 rounded-[30px] p-6 shadow-sm space-y-4">
-                                                <div className="flex gap-4">
-                                                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400 shrink-0 mt-1">
-                                                        {idx + 1}
+                                        ) : (
+                                            <div className="space-y-2.5">
+                                                {selectedAssignment.questions.map((q, idx) => (
+                                                    <div key={q.id} className="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex gap-3">
+                                                        <div className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-[10px] font-black text-gray-400 shrink-0">
+                                                            {idx + 1}
+                                                        </div>
+                                                        <p className="text-gray-800 font-semibold text-sm leading-snug pt-0.5">
+                                                            {q.text}
+                                                        </p>
                                                     </div>
-                                                    <p className="text-gray-900 font-bold text-base leading-snug pt-1">
-                                                        {q.text}
-                                                    </p>
-                                                </div>
+                                                ))}
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
                                 </div>
                             </div>

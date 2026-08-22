@@ -270,9 +270,9 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                 {/* Grid Content */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar pb-6 pr-2">
                     {isLoading ? (
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+                        <div className="space-y-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-4 sm:space-y-0">
                             {[...Array(8)].map((_, i) => (
-                                <div key={i} className="bg-gray-100 animate-pulse h-48 rounded-3xl" />
+                                <div key={i} className="bg-gray-100 animate-pulse h-24 sm:h-48 rounded-2xl sm:rounded-3xl" />
                             ))}
                         </div>
                     ) : pyqs.length === 0 ? (
@@ -281,56 +281,64 @@ Please act as an expert academic evaluator and professor. I want you to solve th
                             <p className="font-bold">{searchQuery ? "No PYQs match your search." : "No PYQs available."}</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+                        <div className="space-y-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-4 sm:space-y-0">
                             {pyqs.map(pyq => (
-                                <div key={pyq.id} className="bg-white rounded-[24px] md:rounded-3xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all group flex flex-col relative h-full">
+                                <div key={pyq.id} className="bg-white rounded-2xl sm:rounded-3xl border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all group relative flex sm:flex-col">
                                     {isAdmin && (
-                                        <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                        <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                             <button onClick={() => handleEditClick(pyq)} className="p-1.5 text-gray-400 hover:text-blue-600 bg-white shadow-sm rounded-lg border border-gray-100">
-                                                <Icons.Edit size={14} />
+                                                <Icons.Edit size={13} />
                                             </button>
                                             <button onClick={() => handleDeleteClick(pyq.id)} className="p-1.5 text-gray-400 hover:text-red-600 bg-white shadow-sm rounded-lg border border-gray-100">
-                                                <Icons.Trash2 size={14} />
+                                                <Icons.Trash2 size={13} />
                                             </button>
                                         </div>
                                     )}
-                                    <div className="flex flex-col xl:flex-row xl:items-center items-start gap-2 md:gap-4 mb-3 md:mb-4">
-                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600 shrink-0">
-                                            <Icons.FileText size={18} className="md:w-6 md:h-6" />
+
+                                    {/* Content */}
+                                    <div className="flex-1 p-3.5 sm:p-5 flex flex-col gap-2">
+                                        {/* Icon + subject */}
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600 shrink-0">
+                                                <Icons.FileText size={16} className="sm:w-5 sm:h-5" />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-blue-600 truncate">{pyq.subjectCode}</div>
+                                                <div className="text-[10px] font-bold text-gray-400 truncate">{pyq.subjectTitle}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-blue-600 mb-0.5">{pyq.subjectCode}</div>
-                                            <div className="text-[10px] md:text-xs font-bold text-gray-500 line-clamp-1">{pyq.subjectTitle}</div>
+
+                                        {/* Title */}
+                                        <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 leading-tight flex-1 group-hover:text-blue-600 transition-colors">
+                                            {pyq.title}
+                                        </h3>
+
+                                        {/* Meta + actions */}
+                                        <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-50">
+                                            <div className="flex items-center gap-1 flex-wrap">
+                                                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-black uppercase rounded-md whitespace-nowrap">
+                                                    {pyq.year}
+                                                </span>
+                                                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-black uppercase rounded-md whitespace-nowrap">
+                                                    {pyq.type.toUpperCase()}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                <button
+                                                    onClick={() => handlePreview(pyq)}
+                                                    className="flex items-center gap-1 px-2.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 text-[10px] font-bold rounded-xl transition-colors"
+                                                >
+                                                    <Icons.Eye size={12} /> Preview
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDownload(pyq)}
+                                                    className="w-8 h-8 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all shrink-0"
+                                                    title="Download"
+                                                >
+                                                    <Icons.Download size={13} />
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-2 line-clamp-3 md:line-clamp-2 flex-1">
-                                        {pyq.title}
-                                    </h3>
-                                    
-                                    <div className="flex items-center gap-1.5 md:gap-2 mb-3 md:mb-4 flex-wrap mt-auto">
-                                        <span className="px-2 py-0.5 md:py-1 bg-gray-100 text-gray-600 text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-md whitespace-nowrap">
-                                            {pyq.year}
-                                        </span>
-                                        <span className="px-2 py-0.5 md:py-1 bg-gray-100 text-gray-600 text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-md whitespace-nowrap">
-                                            {pyq.type.toUpperCase()}
-                                        </span>
-                                    </div>
-                                    
-                                    <div className="flex items-center justify-between gap-1.5 md:gap-2 pt-3 md:pt-4 border-t border-gray-50">
-                                        <button 
-                                            onClick={() => handlePreview(pyq)}
-                                            className="flex-1 py-1.5 md:py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-[10px] md:text-xs font-bold rounded-lg md:rounded-xl transition-colors flex items-center justify-center gap-1 md:gap-2"
-                                        >
-                                            <Icons.Eye size={12} className="md:w-3.5 md:h-3.5" /> Preview
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDownload(pyq)}
-                                            className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg md:rounded-xl transition-all shrink-0"
-                                            title="Download PDF/File"
-                                        >
-                                            <Icons.Download size={14} />
-                                        </button>
                                     </div>
                                 </div>
                             ))}

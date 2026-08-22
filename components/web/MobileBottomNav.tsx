@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/shared/Icons';
@@ -8,7 +8,11 @@ import { cn } from '@/lib/utils';
 
 import { useAuth } from '@/components/providers/AuthProvider';
 
-export function MobileBottomNav() {
+interface MobileBottomNavProps {
+    isAnalyticaOpen?: boolean;
+}
+
+export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProps) {
     const pathname = usePathname();
     const { isAdmin } = useAuth();
     const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -37,6 +41,13 @@ export function MobileBottomNav() {
     const moreItems = isAdmin
         ? [{ label: 'Admin Panel', href: '/admin', icon: Icons.Settings }, ...baseMoreItems]
         : baseMoreItems;
+
+    // Close the More menu whenever Analytica opens
+    useEffect(() => {
+        if (isAnalyticaOpen) setIsMoreOpen(false);
+    }, [isAnalyticaOpen]);
+
+    if (isAnalyticaOpen) return null;
 
     return (
         <>

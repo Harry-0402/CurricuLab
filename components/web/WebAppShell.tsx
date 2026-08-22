@@ -260,7 +260,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                 </button>
             )}
 
-            <MobileBottomNav />
+            <MobileBottomNav isAnalyticaOpen={isAnalyticaOpen} />
         </div>
     );
 }
