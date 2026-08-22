@@ -160,24 +160,24 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[85vh]">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <div className="bg-white rounded-[32px] w-full max-w-lg shadow-2xl animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[85vh] m-4">
+                <div className="p-5 sm:p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <div>
-                        <h2 className="text-xl font-black text-gray-900">{initialData ? 'Edit Job' : 'Post a Job'}</h2>
-                        <p className="text-xs text-gray-500 font-medium mt-1">{initialData ? 'Update job details' : 'Share an opportunity with the community'}</p>
+                        <h2 className="text-lg sm:text-xl font-black text-gray-900">{initialData ? 'Edit Job' : 'Post a Job'}</h2>
+                        <p className="text-[10px] sm:text-xs text-gray-500 font-medium mt-1">{initialData ? 'Update job details' : 'Share an opportunity with the community'}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                         <Icons.X size={20} className="text-gray-500" />
                     </button>
                 </div>
 
-                <div className="p-6 overflow-y-auto">
+                <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar">
                     {/* Smart Paste Toggle */}
                     {!initialData && (
                         <div className="mb-6">
                             <button
                                 onClick={() => setShowPaste(!showPaste)}
-                                className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl text-indigo-700 font-bold text-sm hover:shadow-md transition-all group"
+                                className="w-full flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl text-indigo-700 font-bold text-xs sm:text-sm hover:shadow-md transition-all group"
                             >
                                 <span className="flex items-center gap-2">
                                     <Icons.Sparkles size={16} className={showPaste ? "text-indigo-600" : "animate-pulse text-indigo-600"} />
@@ -192,14 +192,14 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
                                         <button
                                             type="button"
                                             onClick={() => setPasteMode('text')}
-                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${pasteMode === 'text' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all ${pasteMode === 'text' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
                                         >
                                             Text
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setPasteMode('pdf')}
-                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${pasteMode === 'pdf' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all ${pasteMode === 'pdf' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
                                         >
                                             PDF / Image Upload
                                         </button>
@@ -207,17 +207,17 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
 
                                     {pasteMode === 'text' ? (
                                         <textarea
-                                            className="w-full p-4 bg-gray-50 border-2 border-indigo-100 focus:border-indigo-500 rounded-xl text-sm min-h-[120px] outline-none transition-all placeholder:text-gray-400"
+                                            className="w-full p-3 sm:p-4 bg-gray-50 border-2 border-indigo-100 focus:border-indigo-500 rounded-xl text-xs sm:text-sm min-h-[100px] sm:min-h-[120px] outline-none transition-all placeholder:text-gray-400"
                                             placeholder="Paste the message here... (e.g. 'Hiring Java Dev at Google, Bangalore...')"
                                             value={pasteContent}
                                             onChange={(e) => setPasteContent(e.target.value)}
                                         />
                                     ) : (
-                                        <div className="border-2 border-dashed border-indigo-200 rounded-xl p-6 flex flex-col items-center justify-center bg-indigo-50/50 hover:bg-indigo-50 transition-colors relative">
+                                        <div className="border-2 border-dashed border-indigo-200 rounded-xl p-5 sm:p-6 flex flex-col items-center justify-center bg-indigo-50/50 hover:bg-indigo-50 transition-colors relative">
                                             {pdfPreview ? (
                                                 <div className="w-full space-y-3">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-xs font-bold text-indigo-700 truncate max-w-[200px]">{pdfFile?.name}</span>
+                                                        <span className="text-[10px] sm:text-xs font-bold text-indigo-700 truncate max-w-[150px] sm:max-w-[200px]">{pdfFile?.name}</span>
                                                         <button
                                                             onClick={handleRemovePdf}
                                                             className="text-red-500 hover:text-red-600 p-1 hover:bg-red-50 rounded"
@@ -228,22 +228,22 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
                                                     {pdfFile?.type.startsWith('image/') ? (
                                                         <img
                                                             src={pdfPreview}
-                                                            className="w-full h-[200px] object-contain rounded-lg border border-gray-200 bg-white"
+                                                            className="w-full h-[150px] sm:h-[200px] object-contain rounded-lg border border-gray-200 bg-white"
                                                             alt="Preview"
                                                         />
                                                     ) : (
                                                         <iframe
                                                             src={pdfPreview}
-                                                            className="w-full h-[200px] rounded-lg border border-gray-200 bg-white"
+                                                            className="w-full h-[150px] sm:h-[200px] rounded-lg border border-gray-200 bg-white"
                                                             title="PDF Preview"
                                                         />
                                                     )}
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <Icons.UploadCloud className="text-indigo-400 mb-2" size={32} />
-                                                    <p className="text-sm font-bold text-indigo-900">Click to upload PDF or Image</p>
-                                                    <p className="text-xs text-indigo-500 mt-1">Maximum size: 5MB</p>
+                                                    <Icons.UploadCloud className="text-indigo-400 mb-2" size={28} />
+                                                    <p className="text-xs sm:text-sm font-bold text-indigo-900">Click to upload PDF or Image</p>
+                                                    <p className="text-[10px] sm:text-xs text-indigo-500 mt-1">Maximum size: 5MB</p>
                                                     <input
                                                         type="file"
                                                         accept="application/pdf,image/png,image/jpeg,image/webp"
@@ -259,7 +259,7 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
                                         type="button"
                                         onClick={handleSmartPaste}
                                         disabled={isAnalyzing || (pasteMode === 'text' && !pasteContent.trim()) || (pasteMode === 'pdf' && !pdfFile)}
-                                        className="w-full py-3 mt-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2"
+                                        className="w-full py-2.5 sm:py-3 mt-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed text-white rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2"
                                     >
                                         {isAnalyzing ? (
                                             <>
@@ -279,43 +279,43 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">Job Title</label>
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Job Title</label>
                             <input
                                 required
-                                className="w-full p-3 bg-gray-50 rounded-xl font-semibold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
+                                className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm font-bold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
                                 placeholder="e.g. Senior Product Designer"
                                 value={formData.title}
                                 onChange={e => setFormData({ ...formData, title: e.target.value })}
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">Company Name</label>
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Company Name</label>
                             <input
                                 required
-                                className="w-full p-3 bg-gray-50 rounded-xl font-semibold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
+                                className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm font-bold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
                                 placeholder="e.g. Acme Corp"
                                 value={formData.company}
                                 onChange={e => setFormData({ ...formData, company: e.target.value })}
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">Location</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Location</label>
                                 <input
                                     required
-                                    className="w-full p-3 bg-gray-50 rounded-xl font-semibold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
+                                    className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm font-bold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
                                     placeholder="e.g. New York, NY"
                                     value={formData.location}
                                     onChange={e => setFormData({ ...formData, location: e.target.value })}
                                 />
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">Type</label>
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Type</label>
                                 <select
-                                    className="w-full p-3 bg-gray-50 rounded-xl font-semibold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all appearance-none"
+                                    className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm font-bold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all appearance-none"
                                     value={formData.type}
                                     onChange={e => setFormData({ ...formData, type: e.target.value as any })}
                                 >
@@ -326,24 +326,24 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">Salary Range (Optional)</label>
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Salary Range (Optional)</label>
                             <input
-                                className="w-full p-3 bg-gray-50 rounded-xl font-semibold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
+                                className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm font-bold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
                                 placeholder="e.g. $80k - $120k"
                                 value={formData.salary_range}
                                 onChange={e => setFormData({ ...formData, salary_range: e.target.value })}
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">Application URL</label>
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Application URL</label>
                             <div className="relative">
-                                <Icons.Link className="absolute left-3 top-3.5 text-gray-400" size={16} />
+                                <Icons.Link className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 <input
                                     required
                                     type="url"
-                                    className="w-full pl-10 p-3 bg-gray-50 rounded-xl font-semibold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
+                                    className="w-full pl-11 pr-4 py-3 bg-gray-50 rounded-xl text-sm font-bold border-2 border-transparent focus:border-green-500 focus:bg-white outline-none transition-all"
                                     placeholder="https://"
                                     value={formData.url}
                                     onChange={e => setFormData({ ...formData, url: e.target.value })}
@@ -351,20 +351,20 @@ export function AddJobModal({ isOpen, onClose, onSuccess, initialData }: AddJobM
                             </div>
                         </div>
 
-                        <div className="pt-4 flex gap-3">
+                        <div className="pt-2 flex gap-3">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 py-3.5 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-colors"
+                                className="flex-1 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-colors text-xs uppercase tracking-widest"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="flex-1 py-3.5 rounded-xl font-bold bg-green-600 text-white hover:bg-green-700 transition-all shadow-lg shadow-green-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="flex-[2] sm:flex-1 py-3 rounded-xl font-bold bg-green-600 text-white hover:bg-green-700 transition-all shadow-lg shadow-green-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-xs uppercase tracking-widest"
                             >
-                                {loading ? <Icons.Loader2 className="animate-spin" /> : <Icons.CheckCircle size={18} />}
+                                {loading ? <Icons.Loader2 className="animate-spin" /> : <Icons.CheckCircle size={16} />}
                                 <span>{initialData ? 'Update Job' : 'Post Job'}</span>
                             </button>
                         </div>

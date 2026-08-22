@@ -46,47 +46,47 @@ export function AddPromptModal({ isOpen, onClose, onSuccess }: AddPromptModalPro
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-white rounded-[32px] w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                <div className="p-8 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight">Add Prompt</h2>
+            <div className="bg-white rounded-[32px] w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 m-4">
+                <div className="p-5 sm:p-8 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Add Prompt</h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
                         <Icons.X size={20} className="text-gray-400" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+                <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-4 sm:space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
                     {/* Title */}
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Title</label>
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Title</label>
                         <input
                             required
                             type="text"
                             placeholder="e.g., Python Code Refactorer"
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm font-bold text-gray-900"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         />
                     </div>
 
                     {/* Description */}
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Description</label>
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Description</label>
                         <textarea
                             required
                             rows={2}
                             placeholder="Briefly describe what this prompt does..."
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium resize-none"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm font-bold text-gray-900 resize-none"
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
                     </div>
 
                     {/* Category */}
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Category</label>
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Category</label>
                         <div className="relative">
                             <select
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium"
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white text-sm font-bold text-gray-900"
                                 value={formData.category}
                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                             >
@@ -97,32 +97,34 @@ export function AddPromptModal({ isOpen, onClose, onSuccess }: AddPromptModalPro
                     </div>
 
                     {/* Prompt Content */}
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Prompt Content</label>
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Prompt Content</label>
                         <textarea
                             required
                             rows={8}
                             placeholder="Enter the full prompt text here..."
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-sm leading-relaxed"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-mono text-xs sm:text-sm leading-relaxed"
                             value={formData.prompt}
                             onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
                         />
                     </div>
 
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                        {isLoading ? (
-                            <>
-                                <Icons.Loader2 size={20} className="animate-spin" />
-                                <span>Saving...</span>
-                            </>
-                        ) : (
-                            <span>Add Prompt Template</span>
-                        )}
-                    </button>
+                    <div className="pt-2">
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full py-3 sm:py-4 bg-gray-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <Icons.Loader2 size={16} className="animate-spin" />
+                                    <span>Saving...</span>
+                                </>
+                            ) : (
+                                <span>Add Prompt Template</span>
+                            )}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

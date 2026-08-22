@@ -191,22 +191,22 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-4 border border-blue-100 shadow-sm">
-                        <Icons.Analytics size={24} />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-blue-600 mb-2 sm:mb-4 border border-blue-100 shadow-sm">
+                        <Icons.Analytics size={20} className="sm:w-6 sm:h-6" />
                     </div>
-                    <DialogTitle>{announcement ? 'Edit Announcement' : 'New Announcement'}</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-lg sm:text-xl leading-tight">{announcement ? 'Edit Announcement' : 'New Announcement'}</DialogTitle>
+                    <DialogDescription className="text-xs sm:text-sm mt-1">
                         {announcement ? 'Update your broadcast to the academic community.' : 'Share an important update with all students.'}
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="type">Category</Label>
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 mt-4 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="type" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Category</Label>
                             <select
                                 id="type"
-                                className="w-full bg-white/50 border border-gray-100 rounded-2xl px-4 py-3 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none appearance-none cursor-pointer transition-all"
+                                className="w-full bg-white/50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none appearance-none cursor-pointer transition-all"
                                 value={formData.type}
                                 onChange={(e) => setFormData({ ...formData, type: e.target.value as Announcement['type'] })}
                                 disabled={isSubmitting}
@@ -216,12 +216,12 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                                 <option value="success">Success</option>
                             </select>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Attachment</Label>
+                        <div className="space-y-1.5">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Attachment</Label>
                             <div className="flex items-center gap-2">
                                 <label className="flex-1 cursor-pointer">
                                     <input type="file" className="hidden" onChange={handleFileChange} disabled={isSubmitting} />
-                                    <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl border border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all text-xs font-bold text-gray-500">
+                                    <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all text-xs font-bold text-gray-500 bg-white/50">
                                         <Icons.Paperclip size={14} />
                                         <span>{file || formData.attachmentUrl ? 'Change' : 'Attach File'}</span>
                                     </div>
@@ -230,13 +230,13 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="title">Headline</Label>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Headline</Label>
                         <input
                             id="title"
                             type="text"
                             placeholder="e.g. Mid-semester Results"
-                            className="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none placeholder:text-gray-400/80 transition-all shadow-sm"
+                            className="w-full bg-white/50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none placeholder:text-gray-400/80 transition-all shadow-sm"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             required
@@ -244,13 +244,13 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="content">Message Content</Label>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="content" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Message Content</Label>
                         <textarea
                             id="content"
                             rows={3}
                             placeholder="Type your detailed message here... (Tip: You can Paste images and PDFs too!)"
-                            className="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none placeholder:text-gray-400/80 transition-all shadow-sm resize-none"
+                            className="w-full bg-white/50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none placeholder:text-gray-400/80 transition-all shadow-sm resize-none"
                             value={formData.content}
                             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                             required
@@ -259,15 +259,15 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                     </div>
 
                     {(file || formData.attachmentUrl) && (
-                        <div className="relative group rounded-2xl border border-gray-100 bg-gray-50/50 p-2 overflow-hidden">
+                        <div className="relative group rounded-xl border border-gray-100 bg-gray-50/50 p-2 overflow-hidden">
                             <div className="flex items-center gap-3">
                                 {previewUrl && (file?.type.startsWith('image/') || announcement?.attachmentType?.startsWith('image/')) ? (
-                                    <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-200/50 bg-white">
+                                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl overflow-hidden border border-gray-200/50 bg-white">
                                         <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
                                     </div>
                                 ) : (
-                                    <div className="w-16 h-16 rounded-xl flex items-center justify-center bg-blue-50 text-blue-500 border border-blue-100">
-                                        {(file?.type === 'application/pdf' || formData.attachmentType === 'application/pdf') ? <Icons.FileText size={24} /> : <Icons.File size={24} />}
+                                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center bg-blue-50 text-blue-500 border border-blue-100">
+                                        {(file?.type === 'application/pdf' || formData.attachmentType === 'application/pdf') ? <Icons.FileText size={20} className="sm:w-6 sm:h-6" /> : <Icons.File size={20} className="sm:w-6 sm:h-6" />}
                                     </div>
                                 )}
                                 <div className="flex-1 min-w-0">
@@ -288,29 +288,29 @@ export function AnnouncementModal({ isOpen, onClose, announcement }: Announcemen
                         </div>
                     )}
 
-                    <div className="space-y-2">
-                        <Label htmlFor="resourceLink">Resource Link (Optional)</Label>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="resourceLink" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Resource Link (Optional)</Label>
                         <input
                             id="resourceLink"
                             type="url"
                             placeholder="https://example.com/resource"
-                            className="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none placeholder:text-gray-400/80 transition-all shadow-sm"
+                            className="w-full bg-white/50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none placeholder:text-gray-400/80 transition-all shadow-sm"
                             value={formData.resourceLink || ''}
                             onChange={(e) => setFormData({ ...formData, resourceLink: e.target.value })}
                             disabled={isSubmitting}
                         />
                     </div>
 
-                    <DialogFooter className="gap-2 pt-4">
+                    <DialogFooter className="gap-2 pt-2">
                         {announcement && (
-                            <Button type="button" variant="danger" className="rounded-2xl flex-1 md:flex-none" onClick={handleDelete} disabled={isSubmitting}>
+                            <Button type="button" variant="danger" className="rounded-xl flex-1 md:flex-none py-3" onClick={handleDelete} disabled={isSubmitting}>
                                 {isSubmitting ? 'Deleting...' : 'Delete'}
                             </Button>
                         )}
-                        <Button type="button" variant="ghost" onClick={onClose} className="rounded-2xl flex-1 md:flex-none" disabled={isSubmitting}>
+                        <Button type="button" variant="ghost" onClick={onClose} className="rounded-xl flex-1 md:flex-none py-3 bg-gray-50 hover:bg-gray-100 text-xs font-black uppercase tracking-widest" disabled={isSubmitting}>
                             Cancel
                         </Button>
-                        <Button type="submit" className="rounded-2xl flex-1 md:flex-none px-8" disabled={isSubmitting}>
+                        <Button type="submit" className="rounded-xl flex-[2] md:flex-none px-6 py-3 text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-100" disabled={isSubmitting}>
                             {isSubmitting ? 'Saving...' : (announcement ? 'Update Now' : 'Publish Update')}
                         </Button>
                     </DialogFooter>

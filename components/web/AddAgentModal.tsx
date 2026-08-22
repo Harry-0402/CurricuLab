@@ -44,43 +44,43 @@ export default function AddAgentModal({ isOpen, onClose, onSave, initialData }: 
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white w-full max-w-xl rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-                <form onSubmit={handleSubmit} className="p-10 space-y-8">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-white w-full max-w-xl rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 m-4">
+                <form onSubmit={handleSubmit} className="p-5 sm:p-10 space-y-6 sm:space-y-8 max-h-[85vh] overflow-y-auto custom-scrollbar">
                     {/* Header */}
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                            <h2 className="text-xl sm:text-3xl font-black text-gray-900 tracking-tight">
                                 {initialData ? 'Update AI Unit' : 'Register AI Unit'}
                             </h2>
-                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">
+                            <p className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">
                                 {initialData ? 'Modifying Intelligence Protocol' : 'Expanding MindGrid Intelligence'}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="w-12 h-12 rounded-2xl hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-colors"
+                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-colors"
                         >
-                            <Icons.X size={24} />
+                            <Icons.X size={20} className="sm:w-6 sm:h-6" />
                         </button>
                     </div>
 
-                    <div className="grid gap-6">
+                    <div className="grid gap-4 sm:gap-6">
                         {/* Name */}
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Unit Designation (Name)</label>
                             <input
                                 required
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 placeholder="e.g., Code Prophet"
-                                className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold transition-all"
+                                className="w-full px-4 py-3 sm:px-6 sm:py-4 bg-gray-50 rounded-xl sm:rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold transition-all"
                             />
                         </div>
 
                         {/* URL */}
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Access Frequency (URL)</label>
                             <input
                                 required
@@ -88,30 +88,30 @@ export default function AddAgentModal({ isOpen, onClose, onSave, initialData }: 
                                 value={formData.url}
                                 onChange={e => setFormData({ ...formData, url: e.target.value })}
                                 placeholder="https://chatgpt.com/g/..."
-                                className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold transition-all"
+                                className="w-full px-4 py-3 sm:px-6 sm:py-4 bg-gray-50 rounded-xl sm:rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold transition-all"
                             />
                         </div>
 
                         {/* Platform & Category Grid */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Core Engine</label>
                                 <select
                                     value={formData.platform}
                                     onChange={e => setFormData({ ...formData, platform: e.target.value as any })}
-                                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold appearance-none cursor-pointer"
+                                    className="w-full px-4 py-3 sm:px-6 sm:py-4 bg-gray-50 rounded-xl sm:rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold appearance-none cursor-pointer"
                                 >
                                     <option value="openai">OpenAI (GPT)</option>
                                     <option value="google">Google (Gem)</option>
                                     <option value="other">Other Interface</option>
                                 </select>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1.5">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Operational Field</label>
                                 <select
                                     value={formData.category}
                                     onChange={e => setFormData({ ...formData, category: e.target.value as any })}
-                                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold appearance-none cursor-pointer"
+                                    className="w-full px-4 py-3 sm:px-6 sm:py-4 bg-gray-50 rounded-xl sm:rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold appearance-none cursor-pointer"
                                 >
                                     <option value="General">General</option>
                                     <option value="Writing">Writing</option>
@@ -126,13 +126,13 @@ export default function AddAgentModal({ isOpen, onClose, onSave, initialData }: 
                         </div>
 
                         {/* Description */}
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Intelligence Overview</label>
                             <textarea
                                 value={formData.description}
                                 onChange={e => setFormData({ ...formData, description: e.target.value })}
                                 placeholder="Describe the unit's specialized capabilities..."
-                                className="w-full h-32 px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold resize-none transition-all"
+                                className="w-full h-24 sm:h-32 px-4 py-3 sm:px-6 sm:py-4 bg-gray-50 rounded-xl sm:rounded-2xl border-none focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-semibold resize-none transition-all"
                             />
                         </div>
                     </div>
@@ -141,9 +141,9 @@ export default function AddAgentModal({ isOpen, onClose, onSave, initialData }: 
                     <div className="pt-2">
                         <button
                             type="submit"
-                            className="w-full py-5 bg-gray-900 text-white rounded-[24px] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 active:scale-95"
+                            className="w-full py-4 sm:py-5 bg-gray-900 text-white rounded-xl sm:rounded-[24px] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 active:scale-95"
                         >
-                            {initialData ? <Icons.Save size={18} /> : <Icons.Plus size={18} />}
+                            {initialData ? <Icons.Save size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Icons.Plus size={16} className="sm:w-[18px] sm:h-[18px]" />}
                             {initialData ? 'Save Modifications' : 'Register Unit to Grid'}
                         </button>
                     </div>

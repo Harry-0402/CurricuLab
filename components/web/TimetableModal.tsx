@@ -105,11 +105,11 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-4 border border-blue-100 shadow-sm">
-                        <Icons.Calendar size={24} />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-blue-600 mb-2 sm:mb-4 border border-blue-100 shadow-sm">
+                        <Icons.Calendar size={20} className="sm:w-6 sm:h-6" />
                     </div>
-                    <DialogTitle>{entry ? 'Edit Session' : 'Schedule Session'}</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-lg sm:text-xl leading-tight">{entry ? 'Edit Session' : 'Schedule Session'}</DialogTitle>
+                    <DialogDescription className="text-xs sm:text-sm mt-1">
                         {entry ? 'Update the details of this existing session.' : 'Add a new subject session to your academic roadmap.'}
                     </DialogDescription>
                 </DialogHeader>
@@ -121,10 +121,10 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="day">Day of Week</Label>
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 mt-4 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="day" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Day of Week</Label>
                             <select
                                 id="day"
                                 aria-label="Select day of week"
@@ -137,8 +137,8 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                                 ))}
                             </select>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="time">Start Time</Label>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="time" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Start Time</Label>
                             <select
                                 id="time"
                                 aria-label="Select start time"
@@ -153,8 +153,8 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="title">Subject Title</Label>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Subject Title</Label>
                         <input
                             id="title"
                             type="text"
@@ -166,9 +166,9 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="code">Subject Code</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="code" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Subject Code</Label>
                             <input
                                 id="code"
                                 type="text"
@@ -179,8 +179,8 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                                 required
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="location">Location</Label>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Location</Label>
                             <input
                                 id="location"
                                 type="text"
@@ -193,16 +193,16 @@ export function TimetableModal({ isOpen, onClose, entry, initialDay, initialTime
                         </div>
                     </div>
 
-                    <DialogFooter className="gap-2 pt-4">
+                    <DialogFooter className="gap-2 pt-2">
                         {entry && (
-                            <Button type="button" variant="danger" className="rounded-2xl flex-1 md:flex-none" onClick={handleDelete}>
+                            <Button type="button" variant="danger" className="rounded-xl flex-1 md:flex-none py-3" onClick={handleDelete}>
                                 Delete
                             </Button>
                         )}
-                        <Button type="button" variant="ghost" onClick={onClose} className="rounded-2xl flex-1 md:flex-none">
+                        <Button type="button" variant="ghost" onClick={onClose} className="rounded-xl flex-1 md:flex-none py-3 text-xs font-black uppercase tracking-widest">
                             Cancel
                         </Button>
-                        <Button type="submit" className="rounded-2xl flex-1 md:flex-none px-8">
+                        <Button type="submit" className="rounded-xl flex-[2] md:flex-none px-6 py-3 text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-100">
                             {entry ? 'Update Session' : 'Save Session'}
                         </Button>
                     </DialogFooter>
