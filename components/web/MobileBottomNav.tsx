@@ -84,8 +84,8 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
             </div>
 
             {/* Bottom Navigation Bar */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-white/95 backdrop-blur-xl border-t border-gray-200 z-[70] shadow-[0_-8px_30px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]">
-                <div className="flex items-center justify-around h-full overflow-x-auto snap-x snap-mandatory no-scrollbar px-2 w-full">
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[70] shadow-[0_-8px_30px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]">
+                <div className="flex items-center justify-around h-20 overflow-x-auto snap-x snap-mandatory no-scrollbar px-2 w-full">
                     {navItems.map((item) => {
                         const isMoreBtn = item.label === 'More';
                         const isActionBtn = item.isAction;
@@ -118,7 +118,6 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
                                     <Icon 
                                         size={24} 
                                         strokeWidth={isActive ? 2.5 : 2} 
-                                        fill={isActive && !isMoreBtn ? "currentColor" : "none"}
                                         className={cn("transition-transform duration-300", isActive && "scale-110")}
                                     />
                                     {item.badge && !isMoreBtn && (
@@ -136,7 +135,7 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
                                 
                                 {/* Active Indicator Line (except for More button) */}
                                 {isActive && !isMoreBtn && (
-                                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-6 h-1 bg-indigo-600 rounded-t-full" />
+                                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-6 h-1 bg-indigo-600 rounded-full" />
                                 )}
                             </>
                         );
