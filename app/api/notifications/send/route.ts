@@ -22,14 +22,31 @@ export async function POST(request: Request) {
 
         const subject = title || "CurricuLab Notification";
 
-        const response = await fetch(scriptUrl, {
+        let response = await fetch(scriptUrl, {
             method: 'POST',
             body: JSON.stringify({
                 recipients: recipients,
                 subject: subject,
                 htmlBody: htmlBody
-            })
+            }),
+            redirect: 'manual'
         });
+
+        // Google Apps Script usually returns 302 Found and redirects to a googleusercontent.com URL
+        // By default, fetch converts POST to GET on 302, losing our payload. We manually follow it as POST.
+        if (response.status === 302 || response.status === 301 || response.status === 307) {
+            const redirectUrl = response.headers.get('location');
+            if (redirectUrl) {
+                response = await fetch(redirectUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        recipients: recipients,
+                        subject: subject,
+                        htmlBody: htmlBody
+                    })
+                });
+            }
+        }
 
         const result = await response.json();
         
