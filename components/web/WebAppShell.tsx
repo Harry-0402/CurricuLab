@@ -260,7 +260,9 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                 </button>
             )}
 
-            <MobileBottomNav isAnalyticaOpen={isAnalyticaOpen} />
+            {pathname !== '/admin' && !pathname.startsWith('/admin/') && (
+                <MobileBottomNav isAnalyticaOpen={isAnalyticaOpen} />
+            )}
         </div>
     );
 }
