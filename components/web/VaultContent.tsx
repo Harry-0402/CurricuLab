@@ -683,8 +683,8 @@ Please review the document at the URL provided above and generate a highly detai
                                     <div className="flex items-start justify-between mb-3 sm:mb-4">
                                         <div className="flex items-center gap-3">
                                             <div className={cn("p-2.5 rounded-xl sm:rounded-2xl transition-colors shrink-0", config.bgColor)}>
-                                                <config.icon className={config.color} size={18} className="sm:w-5 sm:h-5" />
-                                            </div>
+                                                 <config.icon className={cn(config.color, "sm:w-5 sm:h-5")} size={18} />
+                                             </div>
                                             <div className="flex flex-col items-start gap-0.5">
                                                 <div className="flex flex-wrap items-center gap-1">
                                                     <span className={cn(
