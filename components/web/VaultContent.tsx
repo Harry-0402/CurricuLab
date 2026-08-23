@@ -459,7 +459,7 @@ Please review the document at the URL provided above and generate a highly detai
 
 
     return (
-        <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto">
+        <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto overflow-x-hidden">
 
             {/* Header */}
             <div className="flex items-center justify-between shrink-0">
@@ -662,7 +662,7 @@ Please review the document at the URL provided above and generate a highly detai
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 pb-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 pb-10">
                         {Object.keys(TYPE_CONFIG).flatMap(typeKey => 
                             filteredResources.filter(r => r.type === typeKey)
                         ).map(resource => {
@@ -726,9 +726,9 @@ Please review the document at the URL provided above and generate a highly detai
                                             </h3>
                                         </div>
 
-                                        <div className="pt-3 md:pt-4 mt-2 md:mt-3 border-t border-gray-50 flex flex-col md:flex-row items-start md:items-center justify-between text-[10px] md:text-xs font-medium text-gray-400 gap-2 md:gap-3">
+                                        <div className="pt-3 md:pt-4 mt-2 md:mt-3 border-t border-gray-50 flex flex-col xl:flex-row items-start xl:items-center justify-between text-[10px] md:text-xs font-medium text-gray-400 gap-2 md:gap-3">
                                             <span>{new Date(resource.createdAt || new Date()).toLocaleDateString()}</span>
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex flex-wrap items-center gap-2">
                                                 {resource.type === 'study_note' && (
                                                     <>
                                                         {(() => {
