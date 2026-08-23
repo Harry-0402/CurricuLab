@@ -766,7 +766,7 @@ Please review the document at the URL provided above and generate a highly detai
 
             {/* Add/Edit Resource Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className="bg-white rounded-[32px] sm:rounded-[40px] shadow-2xl w-full max-w-2xl p-5 sm:p-8 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[85vh] overflow-y-auto custom-scrollbar">
                         <div className="flex justify-between items-center mb-6">
                             <div>
@@ -887,7 +887,7 @@ Please review the document at the URL provided above and generate a highly detai
 
             {/* View Resource Modal (Reading Mode) */}
             {selectedResource && !isModalOpen && !deleteConfirmId && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className="bg-white rounded-[24px] sm:rounded-[32px] w-full max-w-6xl h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 bg-white/50 backdrop-blur-xl rounded-t-[24px] sm:rounded-t-[32px]">
@@ -1045,7 +1045,7 @@ Please review the document at the URL provided above and generate a highly detai
             )}
 
             {deleteConfirmId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-in zoom-in-95 duration-200 border border-gray-100">
                         <div className="text-center space-y-4">
                             <div className="w-14 h-14 mx-auto bg-red-50 rounded-full flex items-center justify-center">
