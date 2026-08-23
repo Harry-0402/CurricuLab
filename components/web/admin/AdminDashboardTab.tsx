@@ -27,10 +27,10 @@ export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
                     getSubjects()
                 ]);
                 setStats({
-                    programs: progs.length,
-                    semesters: sems.length,
-                    subjects: subjs.length,
-                    students: users.filter((u: any) => u.role === 'student').length,
+                    programs: progs?.length || 0,
+                    semesters: sems?.length || 0,
+                    subjects: subjs?.length || 0,
+                    students: users?.length || 0,
                     loading: false
                 });
             } catch (error) {
@@ -74,7 +74,7 @@ export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
                         <Icons.GraduationCap size={20} />
                     </div>
                     <p className="text-3xl font-black text-gray-900">
-                        {stats.loading ? '-' : stats.programs}
+                        {stats.loading ? '-' : (stats.programs ?? 0)}
                     </p>
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Programs</p>
                 </div>
@@ -83,7 +83,7 @@ export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
                         <Icons.BookOpen size={20} />
                     </div>
                     <p className="text-3xl font-black text-gray-900">
-                        {stats.loading ? '-' : stats.semesters}
+                        {stats.loading ? '-' : (stats.semesters ?? 0)}
                     </p>
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Semesters</p>
                 </div>
@@ -92,7 +92,7 @@ export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
                         <Icons.Subjects size={20} />
                     </div>
                     <p className="text-3xl font-black text-gray-900">
-                        {stats.loading ? '-' : stats.subjects}
+                        {stats.loading ? '-' : (stats.subjects ?? 0)}
                     </p>
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Subjects</p>
                 </div>
@@ -101,7 +101,7 @@ export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
                         <Icons.Users size={20} />
                     </div>
                     <p className="text-3xl font-black text-gray-900">
-                        {stats.loading ? '-' : stats.students}
+                        {stats.loading ? '-' : (stats.students ?? 0)}
                     </p>
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Students</p>
                 </div>
