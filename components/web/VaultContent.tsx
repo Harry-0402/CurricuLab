@@ -662,7 +662,7 @@ Please review the document at the URL provided above and generate a highly detai
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 pb-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 pb-10">
                         {Object.keys(TYPE_CONFIG).flatMap(typeKey => 
                             filteredResources.filter(r => r.type === typeKey)
                         ).map(resource => {
