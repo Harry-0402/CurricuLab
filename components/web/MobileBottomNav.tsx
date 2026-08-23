@@ -85,7 +85,7 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
 
             {/* Bottom Navigation Bar */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[70] shadow-[0_-8px_30px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]">
-                <div className="flex items-center justify-around h-20 overflow-x-auto snap-x snap-mandatory no-scrollbar px-2 w-full">
+                <div className="flex items-center justify-around h-20 px-2 w-full">
                     {navItems.map((item) => {
                         const isMoreBtn = item.label === 'More';
                         const isActionBtn = item.isAction;
