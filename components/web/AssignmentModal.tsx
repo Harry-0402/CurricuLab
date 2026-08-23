@@ -113,11 +113,18 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
 
             setFormData(prev => {
                 let inferredSubjectId = prev.subjectId;
-                if (parsed.subjectCode) {
-                    const matched = subjects.find(s =>
-                        s.code.toLowerCase().includes(parsed.subjectCode.toLowerCase()) ||
-                        parsed.subjectCode.toLowerCase().includes(s.code.toLowerCase())
-                    );
+                if (parsed.subjectCode || parsed.subjectName) {
+                    const matched = subjects.find(s => {
+                        const codeMatch = parsed.subjectCode && (
+                            s.code.toLowerCase().includes(parsed.subjectCode.toLowerCase()) ||
+                            parsed.subjectCode.toLowerCase().includes(s.code.toLowerCase())
+                        );
+                        const nameMatch = parsed.subjectName && (
+                            s.title.toLowerCase().includes(parsed.subjectName.toLowerCase()) ||
+                            parsed.subjectName.toLowerCase().includes(s.title.toLowerCase())
+                        );
+                        return codeMatch || nameMatch;
+                    });
                     if (matched) inferredSubjectId = matched.id;
                 }
                 return {
