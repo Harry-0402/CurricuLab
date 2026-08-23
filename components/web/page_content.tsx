@@ -211,8 +211,13 @@ export default function WebHomePage() {
                             <div className="w-full">
                                 <KPIStatCard
                                     label="Classes Today"
-                                value={timetable.length > 0 ? timetable.length : 0}
-                                icon="Calendar"
+                                    value={(() => {
+                                        const todayDay = new Date().getDay();
+                                        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                                        const todayName = daysOfWeek[todayDay];
+                                        return timetable.filter(e => e.day === todayName).length;
+                                    })()}
+                                    icon="Calendar"
                                 />
                             </div>
                             <div className="w-full">
