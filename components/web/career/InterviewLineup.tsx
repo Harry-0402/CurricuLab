@@ -136,7 +136,7 @@ export function InterviewLineup() {
 
             {/* Add Modal */}
             {isAddOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
                     <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95">
                         <h3 className="text-xl font-black mb-4">Track New Application</h3>
                         <form onSubmit={handleAdd} className="space-y-4">

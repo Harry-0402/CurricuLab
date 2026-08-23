@@ -477,7 +477,7 @@ export function YoutubeLibraryContent() {
 
             {/* ── Video Viewer Modal ── */}
             {selectedVideo && !isModalOpen && !deleteConfirmId && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className={cn(
                         "bg-white rounded-[32px] w-full flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200 overflow-hidden",
                         selectedVideo.videoPayload?.length ? "max-w-5xl" : "max-w-5xl"
@@ -597,7 +597,7 @@ export function YoutubeLibraryContent() {
 
             {/* ── Add / Edit Modal ── */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-xl p-8 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-8">
                             <div>
@@ -709,7 +709,7 @@ export function YoutubeLibraryContent() {
 
             {/* ── Delete confirm ── */}
             {deleteConfirmId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-in zoom-in-95 duration-200 border border-gray-100">
                         <div className="text-center space-y-4">
                             <div className="w-14 h-14 mx-auto bg-red-50 rounded-full flex items-center justify-center">

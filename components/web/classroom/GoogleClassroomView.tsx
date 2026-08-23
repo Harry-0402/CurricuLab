@@ -593,7 +593,7 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
 
             {/* Assignment Preview Modal */}
             {selectedAssignment && (
-                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
                         {/* Modal Header */}
                         <div className="px-5 sm:px-8 py-4 sm:py-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
@@ -752,7 +752,7 @@ export function GoogleClassroomView({ isDriveConnected, connectGoogleDrive, sele
 
             {/* Preview Modal */}
             {previewUrl && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4 lg:p-12 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4 lg:p-12 animate-in fade-in duration-200">
                     <div className="bg-white rounded-3xl w-full h-full max-w-7xl overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                             <p className="font-bold text-gray-900 truncate text-sm sm:text-base">{previewTitle}</p>

@@ -76,7 +76,7 @@ export function CoverLetterModal({ isOpen, onClose, job }: CoverLetterModalProps
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
             <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[85vh]">
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <div>

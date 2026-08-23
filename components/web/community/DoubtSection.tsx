@@ -454,7 +454,7 @@ export function DoubtSection() {
 
             {/* Custom Modal for "Ask Doubt" */}
             {isAskModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl p-6 animate-in zoom-in-95 duration-200">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-xl font-bold text-gray-900">Ask a Doubt</h3>
@@ -530,7 +530,7 @@ export function DoubtSection() {
 
             {/* View Doubt & Comments Modal */}
             {selectedDoubt && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
                             <h3 className="font-bold text-gray-900">Discussion</h3>
