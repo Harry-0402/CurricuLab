@@ -40,7 +40,12 @@ const ROLE_COLORS: Record<string, string> = {
     student: 'bg-blue-100 text-blue-700',
 };
 
-export function StudentsTab() {
+interface StudentsTabProps {
+    initialAction?: string | null;
+    onActionComplete?: () => void;
+}
+
+export function StudentsTab({ initialAction, onActionComplete }: StudentsTabProps) {
     const [students, setStudents] = useState<AuthorizedUser[]>([]);
     const [semesters, setSemesters] = useState<Semester[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +77,16 @@ export function StudentsTab() {
 
     useEffect(() => {
         loadAll();
+    }, []);
 
+    useEffect(() => {
+        if (initialAction === 'add') {
+            setShowAddModal(true);
+            if (onActionComplete) onActionComplete();
+        }
+    }, [initialAction, onActionComplete]);
+
+    useEffect(() => {
         const channel = supabase.channel('realtime_students')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
                 loadAll();

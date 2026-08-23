@@ -7,11 +7,14 @@ import { SemestersTab } from './SemestersTab';
 import { SubjectsAdminTab } from './SubjectsAdminTab';
 import { StudentsTab } from './StudentsTab';
 import { TimetableAdminTab } from './TimetableAdminTab';
+import { AdminDashboardTab } from './AdminDashboardTab';
+import { AdminMobileBottomNav } from './AdminMobileBottomNav';
 import { cn } from '@/lib/utils';
 
-type AdminTab = 'programs' | 'semesters' | 'subjects' | 'students' | 'timetable';
+export type AdminTab = 'dashboard' | 'programs' | 'semesters' | 'subjects' | 'students' | 'timetable';
 
 const tabs: { id: AdminTab; label: string; icon: any; description: string }[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: Icons.LayoutDashboard, description: 'Overview and quick actions' },
     { id: 'programs', label: 'Programs', icon: Icons.GraduationCap, description: 'Manage degree programs' },
     { id: 'semesters', label: 'Semesters', icon: Icons.BookOpen, description: 'Manage semesters per program' },
     { id: 'subjects', label: 'Subjects', icon: Icons.Subjects, description: 'Add/edit subjects per semester' },
@@ -20,22 +23,30 @@ const tabs: { id: AdminTab; label: string; icon: any; description: string }[] = 
 ];
 
 export function AdminShell() {
-    const [activeTab, setActiveTab] = useState<AdminTab>('programs');
+    const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
+    const [activeAction, setActiveAction] = useState<string | null>(null);
+
+    const handleNavigate = (tab: AdminTab | string, action?: string) => {
+        setActiveTab(tab as AdminTab);
+        setActiveAction(action || null);
+    };
 
     const renderTab = () => {
         switch (activeTab) {
+            case 'dashboard': return <AdminDashboardTab onNavigate={handleNavigate} />;
             case 'programs': return <ProgramsTab />;
             case 'semesters': return <SemestersTab />;
             case 'subjects': return <SubjectsAdminTab />;
-            case 'students': return <StudentsTab />;
-            case 'timetable': return <TimetableAdminTab />;
+            case 'students': return <StudentsTab initialAction={activeAction} onActionComplete={() => setActiveAction(null)} />;
+            case 'timetable': return <TimetableAdminTab initialAction={activeAction} onActionComplete={() => setActiveAction(null)} />;
+            default: return <AdminDashboardTab onNavigate={handleNavigate} />;
         }
     };
 
     return (
-        <div className="h-screen bg-[#fafbfc] flex">
-            {/* Admin Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-100 flex flex-col sticky top-0 h-screen overflow-y-auto">
+        <div className="h-screen bg-[#fafbfc] flex overflow-hidden">
+            {/* Desktop Sidebar */}
+            <aside className="w-64 bg-white border-r border-gray-100 hidden lg:flex flex-col sticky top-0 h-screen overflow-y-auto">
                 {/* Logo */}
                 <div className="px-6 py-5 border-b border-gray-100">
                     <div className="flex items-center gap-3">
@@ -56,7 +67,7 @@ export function AdminShell() {
                         return (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
+                                onClick={() => handleNavigate(tab.id)}
                                 className={cn(
                                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all",
                                     isActive
@@ -84,10 +95,26 @@ export function AdminShell() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto">
-                <div className="max-w-5xl mx-auto p-8">
+            <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
+                {/* Mobile Header (replaces sidebar logo area) */}
+                <div className="lg:hidden px-4 py-4 border-b border-gray-100 bg-white sticky top-0 z-10 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center">
+                            <Icons.Settings size={16} className="text-white" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-black text-gray-900">Admin Panel</p>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">CurricuLab</p>
+                        </div>
+                    </div>
+                    <a href="/" className="text-indigo-600 p-2 bg-indigo-50 rounded-xl">
+                        <Icons.ArrowLeft size={18} />
+                    </a>
+                </div>
+
+                <div className="max-w-5xl mx-auto p-4 lg:p-8">
                     {/* Page Header */}
-                    <div className="mb-8">
+                    <div className="mb-8 hidden lg:block">
                         {tabs.filter(t => t.id === activeTab).map(tab => (
                             <div key={tab.id} className="flex items-center gap-3">
                                 <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
@@ -104,6 +131,9 @@ export function AdminShell() {
                     {renderTab()}
                 </div>
             </main>
+
+            {/* Mobile Bottom Navigation */}
+            <AdminMobileBottomNav activeTab={activeTab} onNavigate={handleNavigate} />
         </div>
     );
 }

@@ -64,7 +64,12 @@ function formatTime(time: string): string {
     }
 }
 
-export function TimetableAdminTab() {
+interface TimetableAdminTabProps {
+    initialAction?: string | null;
+    onActionComplete?: () => void;
+}
+
+export function TimetableAdminTab({ initialAction, onActionComplete }: TimetableAdminTabProps) {
     const [entries, setEntries] = useState<TimetableEntry[]>([]);
     const [semesters, setSemesters] = useState<Semester[]>([]);
     const [selectedSemesterId, setSelectedSemesterId] = useState<string>('');
@@ -79,6 +84,13 @@ export function TimetableAdminTab() {
     useEffect(() => {
         loadSemesters();
     }, []);
+
+    useEffect(() => {
+        if (initialAction === 'add') {
+            setShowAddModal(true);
+            if (onActionComplete) onActionComplete();
+        }
+    }, [initialAction, onActionComplete]);
 
     useEffect(() => {
         if (selectedSemesterId) {
