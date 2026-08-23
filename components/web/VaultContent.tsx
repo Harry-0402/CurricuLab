@@ -698,14 +698,14 @@ Please review the document at the URL provided above and generate a highly detai
                                                             {resource.unitId.replace('unit-', 'Unit ')}
                                                         </span>
                                                     )}
-                                                </div>
+</div>
                                                 <span className="text-[9px] font-medium text-gray-400 pl-0.5">
                                                     {new Date(resource.createdAt || new Date()).toLocaleDateString()}
                                                 </span>
                                             </div>
                                         </div>
                                         {isAdmin && (
-                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                 <button onClick={(e) => handleOpenEditModal(e, resource)} className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors" title="Edit">
                                                     <Icons.Edit size={14} className="sm:w-4 sm:h-4" />
                                                 </button>
