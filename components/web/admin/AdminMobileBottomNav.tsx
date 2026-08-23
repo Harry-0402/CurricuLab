@@ -36,7 +36,7 @@ export function AdminMobileBottomNav({ activeTab, onNavigate }: AdminMobileBotto
 
             {/* Floating 'More' Menu Items */}
             <div className={cn(
-                "fixed bottom-[90px] right-2 z-[75] flex flex-col gap-3 items-end transition-all duration-300 lg:hidden max-h-[75vh] overflow-y-auto no-scrollbar pt-4 pb-2 px-2 -mr-2",
+                "fixed bottom-[104px] right-6 z-[75] flex flex-col gap-3 items-end transition-all duration-300 lg:hidden max-h-[75vh] overflow-y-auto no-scrollbar pt-4 pb-2",
                 isMoreOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-10 pointer-events-none"
             )}>
                 {moreItems.map((item, idx) => (
@@ -61,8 +61,8 @@ export function AdminMobileBottomNav({ activeTab, onNavigate }: AdminMobileBotto
             </div>
 
             {/* Bottom Navigation Bar */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-gray-100 z-[70] pb-[env(safe-area-inset-bottom)]">
-                <div className="flex items-center justify-around h-full overflow-x-auto snap-x snap-mandatory no-scrollbar px-2 w-full">
+            <div className="lg:hidden fixed bottom-5 left-5 right-5 h-[72px] bg-white/90 backdrop-blur-xl border border-gray-200/60 rounded-[28px] z-[70] shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden">
+                <div className="flex items-center justify-around h-full overflow-x-auto snap-x snap-mandatory no-scrollbar px-2 w-full pb-[env(safe-area-inset-bottom)]">
                     {navItems.map((item) => {
                         const isMoreBtn = item.id === 'more';
                         const isActive = isMoreBtn ? isMoreOpen : (activeTab === item.id);
