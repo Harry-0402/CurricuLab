@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
-
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useAppStore } from '@/lib/store/useAppStore';
 
 interface MobileBottomNavProps {
     isAnalyticaOpen?: boolean;
@@ -16,16 +16,20 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
     const pathname = usePathname();
     const { isAdmin } = useAuth();
     const [isMoreOpen, setIsMoreOpen] = useState(false);
+    
+    // We get setAnalyticaOpen from the store directly now to trigger it
+    const setAnalyticaOpen = useAppStore(state => state.setAnalyticaOpen);
 
     const navItems = [
-        { label: 'Classroom', href: '/classroom', icon: Icons.Users, activeIcon: Icons.Users },
-        { label: 'Assignments', href: '/assignments', icon: Icons.CheckSquare, activeIcon: Icons.CheckSquare, badge: 6 },
         { label: 'Home', href: '/', icon: Icons.Home, activeIcon: Icons.Home },
+        { label: 'Assignments', href: '/assignments', icon: Icons.CheckSquare, activeIcon: Icons.CheckSquare, badge: 6 },
+        { label: 'Analytica', href: '#', icon: Icons.Bot, activeIcon: Icons.Bot, isAction: true },
         { label: 'Vault', href: '/vault', icon: Icons.Folder, activeIcon: Icons.Folder },
         { label: 'More', href: '#', icon: Icons.Menu, activeIcon: Icons.X },
     ];
 
     const baseMoreItems = [
+        { label: 'Classroom', href: '/classroom', icon: Icons.Users },
         { label: 'Faculty & Fellows', href: '/faculty-fellows', icon: Icons.GraduationCap },
         { label: 'Community', href: '/community', icon: Icons.Users },
         { label: 'MindGrid', href: '/tools/mindgrid', icon: Icons.LayoutGrid },
@@ -84,8 +88,29 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
                 <div className="flex items-center justify-around h-full overflow-x-auto snap-x snap-mandatory no-scrollbar px-2 w-full">
                     {navItems.map((item) => {
                         const isMoreBtn = item.label === 'More';
-                        const isActive = isMoreBtn ? isMoreOpen : (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)));
+                        const isActionBtn = item.isAction;
+                        const isActive = isMoreBtn ? isMoreOpen : (item.href !== '#' && (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))));
                         const Icon = isActive ? item.activeIcon : item.icon;
+
+                        if (isActionBtn) {
+                            return (
+                                <button 
+                                    key={item.label}
+                                    onClick={() => {
+                                        setIsMoreOpen(false);
+                                        setAnalyticaOpen(true);
+                                    }}
+                                    className="relative flex flex-col items-center justify-center shrink-0 w-16 h-full gap-1 snap-center -mt-6"
+                                >
+                                    <div className="bg-gradient-to-tr from-indigo-600 to-purple-600 text-white p-4 rounded-full shadow-[0_8px_30px_rgba(79,70,229,0.4)] active:scale-90 transition-transform flex items-center justify-center border-4 border-white">
+                                        <Icon size={24} strokeWidth={2.5} />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-gray-800">
+                                        {item.label}
+                                    </span>
+                                </button>
+                            );
+                        }
 
                         const content = (
                             <>
@@ -135,6 +160,7 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
                             <Link 
                                 key={item.label} 
                                 href={item.href}
+                                onClick={() => setIsMoreOpen(false)}
                                 className={cn(
                                     "relative flex flex-col items-center justify-center shrink-0 w-16 h-full gap-1 transition-colors snap-center",
                                     isActive ? "text-indigo-600" : "text-gray-400 hover:text-gray-600"

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { generateNotificationEmail, generateAssignmentEmail } from '@/lib/email-templates';
-import nodemailer from 'nodemailer';
 
 export async function POST(request: Request) {
     try {
@@ -11,28 +10,34 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, error: 'No recipients provided' }, { status: 400 });
         }
 
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
-            auth: {
-                user: process.env.SMTP_EMAIL,
-                pass: process.env.SMTP_APP_PASSWORD
-            }
-        });
-
         const htmlBody = type === 'Assignment' 
             ? generateAssignmentEmail({ title, dueDate, authorName: authorName || 'A Student', link, recipientCount: recipients.length })
             : generateNotificationEmail({ type, title, content, link, recipientCount: recipients.length });
 
-        await transporter.sendMail({
-            from: `"CurricuLab" <${process.env.SMTP_EMAIL}>`,
-            bcc: recipients.join(','),
-            subject: title || "CurricuLab Notification",
-            html: htmlBody
+        const scriptUrl = process.env.GOOGLE_APPS_SCRIPT_MAIL_URL;
+        if (!scriptUrl) {
+            console.error('[Email] Error: GOOGLE_APPS_SCRIPT_MAIL_URL is not defined in environment variables.');
+            return NextResponse.json({ success: false, error: 'Missing mailer configuration' }, { status: 500 });
+        }
+
+        const subject = title || "CurricuLab Notification";
+
+        const response = await fetch(scriptUrl, {
+            method: 'POST',
+            body: JSON.stringify({
+                recipients: recipients,
+                subject: subject,
+                htmlBody: htmlBody
+            })
         });
 
-        console.log(`[Email] Notification sent to ${recipients.length} recipients successfully.`);
+        const result = await response.json();
+        
+        if (result.status !== 'success') {
+            throw new Error(result.message || 'Apps Script returned an error');
+        }
+
+        console.log(`[Email] Notification routed through Apps Script to ${recipients.length} recipients successfully.`);
 
         return NextResponse.json({
             success: true,

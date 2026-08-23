@@ -249,8 +249,8 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                 <button
                     onClick={() => setAnalyticaOpen(true)}
                     className={cn(
-                        "fixed bottom-24 lg:bottom-6 right-6 z-[60] flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-[0_8px_30px_rgba(79,70,229,0.3)] transition-all duration-300 ease-out hover:scale-110 hover:shadow-[0_8px_35px_rgba(79,70,229,0.5)] active:scale-95 group",
-                        isAnalyticaOpen ? "scale-0 opacity-0 pointer-events-none translate-y-4" : "scale-100 opacity-100 translate-y-0"
+                        "hidden sm:flex fixed z-[60] bottom-6 right-6 w-14 h-14 bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-full shadow-[0_8px_30px_rgba(79,70,229,0.4)] hover:shadow-[0_8px_30px_rgba(79,70,229,0.6)] items-center justify-center transition-all hover:-translate-y-1 active:scale-95 group",
+                        isAnalyticaOpen && "opacity-0 pointer-events-none translate-y-10"
                     )}
                 >
                     <Icons.Sparkles size={24} className="group-hover:animate-pulse" />

@@ -459,10 +459,10 @@ Please review the document at the URL provided above and generate a highly detai
 
 
     return (
-        <div className="h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto overflow-x-hidden">
+        <div className="min-h-[calc(100vh-140px)] flex flex-col gap-6 max-w-[1800px] mx-auto overflow-x-hidden pb-10">
 
-            {/* Header */}
-            <div className="flex items-center justify-between shrink-0">
+            {/* Header - Sticky for mobile visibility */}
+            <div className="flex items-center justify-between shrink-0 sticky top-0 z-40 bg-white/80 backdrop-blur-md pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pt-0 sm:pb-0 sm:bg-transparent sm:backdrop-blur-none sm:relative">
                 <div>
                     <h1 className="text-[10px] font-black text-gray-300 mb-1 uppercase tracking-[0.2em] hidden sm:block">Library</h1>
                     <p className="text-2xl md:text-5xl font-black text-gray-900 tracking-tight">Knowledge Vault</p>
@@ -630,7 +630,7 @@ Please review the document at the URL provided above and generate a highly detai
             </div>
 
             {/* Main Content - Grid Layout or Review Mode */}
-            <div className="flex-1 overflow-y-auto min-h-0 print:hidden scrollbar-hide">
+            <div className="flex-1 print:hidden">
                 {reviewDeckId ? (
                     <div className="py-8">
                         <FlashcardReviewer
