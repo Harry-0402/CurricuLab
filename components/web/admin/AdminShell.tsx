@@ -95,7 +95,7 @@ export function AdminShell() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto pb-28 lg:pb-0">
+            <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
                 {/* Mobile Header (replaces sidebar logo area) */}
                 <div className="lg:hidden px-4 py-4 border-b border-gray-100 bg-white sticky top-0 z-10 flex items-center justify-between">
                     <div className="flex items-center gap-3">

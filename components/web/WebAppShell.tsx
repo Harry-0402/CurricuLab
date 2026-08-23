@@ -174,7 +174,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
             <WebSidebar />
             <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden print:h-auto print:!overflow-visible print:block">
                 <WebHeader />
-                <div className="flex-1 flex overflow-hidden min-h-0 print:h-auto print:!overflow-visible print:block pb-28 lg:pb-0">
+                <div className="flex-1 flex overflow-hidden min-h-0 print:h-auto print:!overflow-visible print:block pb-24 lg:pb-0">
                     <main className="flex-1 p-4 lg:p-8 overflow-y-auto no-scrollbar scroll-smooth min-w-0 print:p-0 print:!overflow-visible print:block">
                         <div className="max-w-7xl mx-auto print:max-w-none print:m-0 h-full">
                             {isRestricted ? (
