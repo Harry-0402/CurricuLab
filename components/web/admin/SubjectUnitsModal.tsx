@@ -225,17 +225,11 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto bg-gray-50/50 p-6 flex gap-6">
+                <div className="flex-1 overflow-y-auto bg-gray-50/50 p-4 md:p-6 flex flex-col lg:flex-row gap-4 md:gap-6">
                     {/* Left: List of Units */}
-                    <div className="flex-1 space-y-4">
+                    <div className="flex-1 space-y-4 order-2 lg:order-1">
                         <div className="flex items-center justify-between mb-2">
                             <h3 className="font-bold text-gray-900">Current Units ({units.length})</h3>
-                            <button
-                                onClick={handleAdd}
-                                className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
-                            >
-                                <Icons.Plus size={16} /> Add Unit
-                            </button>
                         </div>
 
                         {error && (
@@ -258,7 +252,7 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
                                 {units.map((unit, index) => (
                                     <div key={unit.id} className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:border-indigo-200 transition-colors group relative">
                                         <div className="absolute top-0 left-0 bottom-0 w-1 bg-indigo-500 rounded-l-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <div className="flex justify-between items-start gap-4">
+                                        <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full uppercase tracking-wider">Unit {index + 1}</span>
@@ -269,20 +263,20 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
                                                     {parseTopics(unit.topics || []).length} topics
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                                            <div className="flex items-center justify-end gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 pt-2 border-t border-gray-50 md:border-t-0 md:pt-0">
                                                 <button
                                                     onClick={() => handleEdit(unit)}
-                                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors"
+                                                    className="w-full md:w-8 h-8 flex items-center justify-center gap-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors text-xs font-semibold"
                                                     title="Edit Unit"
                                                 >
-                                                    <Icons.Edit size={14} />
+                                                    <Icons.Edit size={14} /> <span className="md:hidden">Edit</span>
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(unit.id)}
-                                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+                                                    className="w-full md:w-8 h-8 flex items-center justify-center gap-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors text-xs font-semibold"
                                                     title="Delete Unit"
                                                 >
-                                                    <Icons.Trash2 size={14} />
+                                                    <Icons.Trash2 size={14} /> <span className="md:hidden">Delete</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -293,8 +287,8 @@ export function SubjectUnitsModal({ subjectId, subjectCode, subjectTitle, onClos
                     </div>
 
                     {/* Right: Edit/Add Form */}
-                    <div className="w-96 shrink-0 flex flex-col max-h-full">
-                        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex flex-col h-full max-h-full overflow-hidden">
+                    <div className="w-full lg:w-96 shrink-0 flex flex-col lg:max-h-full order-1 lg:order-2">
+                        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex flex-col h-full lg:max-h-full overflow-hidden">
                             <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 shrink-0">
                                 <h3 className="font-bold text-gray-900">
                                     {editingUnit ? 'Edit Unit' : 'Add New Unit'}
