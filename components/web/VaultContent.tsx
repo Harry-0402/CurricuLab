@@ -678,73 +678,71 @@ Please review the document at the URL provided above and generate a highly detai
                                             setSelectedResource(resource);
                                         }
                                     }}
-                                    className="bg-white rounded-[24px] sm:rounded-[32px] p-5 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
+                                    className="bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-5 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
                                 >
-                                    <div className="flex items-start justify-between mb-4">
+                                    <div className="flex items-start justify-between mb-3 sm:mb-4">
                                         <div className="flex items-center gap-3">
-                                            <div className={cn("p-2.5 md:p-3 rounded-2xl transition-colors shrink-0", config.bgColor)}>
-                                                <config.icon className={config.color} size={20} />
+                                            <div className={cn("p-2.5 rounded-xl sm:rounded-2xl transition-colors shrink-0", config.bgColor)}>
+                                                <config.icon className={config.color} size={18} className="sm:w-5 sm:h-5" />
                                             </div>
-                                            <div className="flex flex-col items-start gap-1">
-                                                <div className="flex flex-wrap items-center gap-1.5">
+                                            <div className="flex flex-col items-start gap-0.5">
+                                                <div className="flex flex-wrap items-center gap-1">
                                                     <span className={cn(
-                                                        "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border",
+                                                        "px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-bold uppercase tracking-wider border",
                                                         config.bgColor, config.color
                                                     )}>
                                                         {config.label}
                                                     </span>
                                                     {resource.unitId && (
-                                                        <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-gray-50 text-gray-500 border border-gray-100">
+                                                        <span className="px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-bold uppercase tracking-wider bg-gray-50 text-gray-500 border border-gray-100">
                                                             {resource.unitId.replace('unit-', 'Unit ')}
                                                         </span>
                                                     )}
                                                 </div>
-                                                <span className="text-[10px] font-medium text-gray-400 pl-0.5">
+                                                <span className="text-[9px] font-medium text-gray-400 pl-0.5">
                                                     {new Date(resource.createdAt || new Date()).toLocaleDateString()}
                                                 </span>
                                             </div>
                                         </div>
                                         {isAdmin && (
                                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={(e) => handleOpenEditModal(e, resource)} className="p-1.5 md:p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-colors" title="Edit">
-                                                    <Icons.Edit size={16} />
+                                                <button onClick={(e) => handleOpenEditModal(e, resource)} className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-600 transition-colors" title="Edit">
+                                                    <Icons.Edit size={14} className="sm:w-4 sm:h-4" />
                                                 </button>
-                                                <button onClick={(e) => handleDeleteClick(e, resource.id)} className="p-1.5 md:p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-colors" title="Delete">
-                                                    <Icons.Trash2 size={16} />
+                                                <button onClick={(e) => handleDeleteClick(e, resource.id)} className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                                    <Icons.Trash2 size={14} className="sm:w-4 sm:h-4" />
                                                 </button>
                                             </div>
                                         )}
                                     </div>
 
                                     <div className="flex-grow flex flex-col justify-between">
-                                        <h3 className="text-sm md:text-base font-bold text-gray-900 line-clamp-3 leading-snug group-hover:text-blue-600 transition-colors mb-4">
+                                        <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 sm:line-clamp-3 leading-snug group-hover:text-blue-600 transition-colors mb-3 sm:mb-4">
                                             {resource.title}
                                         </h3>
 
-                                        <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between gap-2">
-                                            <div className="flex items-center gap-2">
+                                        <div className="mt-auto pt-3 sm:pt-4 border-t border-gray-50 flex items-center justify-between gap-2 w-full">
+                                            <div className="flex items-center gap-2 w-full">
                                                 {resource.type === 'study_note' && (
                                                     <>
                                                         {(() => {
                                                             const existingDeck = flashcardDecks.find(d => d._vaultResourceId === resource.id);
                                                             if (existingDeck) {
                                                                 return (
-                                                                    <button onClick={(e) => { e.stopPropagation(); setSelectedResource(existingDeck); }} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[10px] bg-teal-50 text-teal-600 border-teal-100/50 hover:bg-teal-100 hover:text-teal-700 whitespace-nowrap" title="See Flashcards">
+                                                                    <button onClick={(e) => { e.stopPropagation(); setSelectedResource(existingDeck); }} className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[10px] bg-teal-50 text-teal-600 border-teal-100/50 hover:bg-teal-100 hover:text-teal-700 whitespace-nowrap" title="See Flashcards">
                                                                         <Icons.Layers size={12} className="text-teal-500 shrink-0" />
-                                                                        <span className="hidden xl:inline">See Flashcards</span>
-                                                                        <span className="xl:hidden">Cards</span>
+                                                                        <span>Cards</span>
                                                                     </button>
                                                                 );
                                                             }
                                                             return (
-                                                                <button onClick={(e) => { e.stopPropagation(); generateFlashcardsForResource(resource); }} disabled={isGeneratingFlashcards} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[10px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50 whitespace-nowrap" title="Auto-generate Flashcards">
+                                                                <button onClick={(e) => { e.stopPropagation(); generateFlashcardsForResource(resource); }} disabled={isGeneratingFlashcards} className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[10px] bg-indigo-50 text-indigo-600 border-indigo-100/50 hover:bg-indigo-100 hover:text-indigo-700 disabled:opacity-50 whitespace-nowrap" title="Auto-generate Flashcards">
                                                                     <Icons.Layers size={12} className="text-indigo-500 shrink-0" />
-                                                                    <span className="hidden xl:inline">Auto-Flashcard</span>
-                                                                    <span className="xl:hidden">Auto-Card</span>
+                                                                    <span>Auto-Card</span>
                                                                 </button>
                                                             );
                                                         })()}
-                                                        <button onClick={(e) => handleCopyPrompt(e, resource)} className={cn("flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[10px] whitespace-nowrap", copiedId === resource.id ? "bg-green-50 text-green-600 border-green-200" : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700")} title="Generate AI Study Prompt">
+                                                        <button onClick={(e) => handleCopyPrompt(e, resource)} className={cn("flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold transition-all border shadow-sm text-[10px] whitespace-nowrap", copiedId === resource.id ? "bg-green-50 text-green-600 border-green-200" : "bg-purple-50 text-purple-600 border-purple-100/50 hover:bg-purple-100 hover:text-purple-700")} title="Generate AI Study Prompt">
                                                             {copiedId === resource.id ? (
                                                                 <><Icons.Check size={12} className="text-green-500 shrink-0" /><span>Copied!</span></>
                                                             ) : (
