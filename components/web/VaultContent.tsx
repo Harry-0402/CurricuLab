@@ -888,37 +888,37 @@ Please review the document at the URL provided above and generate a highly detai
             {/* View Resource Modal (Reading Mode) */}
             {selectedResource && !isModalOpen && !deleteConfirmId && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-white rounded-[32px] w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200">
+                    <div className="bg-white rounded-[24px] sm:rounded-[32px] w-full max-w-6xl h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200">
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white/50 backdrop-blur-xl rounded-t-[32px]">
-                            <div className="flex items-start gap-4">
-                                <div className={cn("p-3 rounded-2xl shrink-0 mt-1", TYPE_CONFIG[selectedResource.type].bgColor)}>
+                        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 bg-white/50 backdrop-blur-xl rounded-t-[24px] sm:rounded-t-[32px]">
+                            <div className="flex items-start gap-3 sm:gap-4 min-w-0 pr-2">
+                                <div className={cn("p-2 sm:p-3 rounded-xl sm:rounded-2xl shrink-0 mt-0.5 sm:mt-1", TYPE_CONFIG[selectedResource.type].bgColor)}>
                                     {React.createElement(TYPE_CONFIG[selectedResource.type].icon, {
                                         className: TYPE_CONFIG[selectedResource.type].color,
-                                        size: 24
+                                        size: 20
                                     })}
                                 </div>
-                                <div>
-                                    <div className="flex items-center gap-2 mb-1">
+                                <div className="min-w-0">
+                                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5">
                                         <span className={cn(
-                                            "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border",
+                                            "px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border whitespace-nowrap",
                                             TYPE_CONFIG[selectedResource.type].bgColor,
                                             TYPE_CONFIG[selectedResource.type].color
                                         )}>
                                             {TYPE_CONFIG[selectedResource.type].label}
                                         </span>
                                         {selectedResource.unitId && (
-                                            <span className="text-xs font-bold text-gray-400">
+                                            <span className="text-[10px] sm:text-xs font-bold text-gray-400 whitespace-nowrap">
                                                 • Unit {selectedResource.unitId.replace('unit-', '')}
                                             </span>
                                         )}
                                     </div>
-                                    <h2 className="text-xl font-black text-gray-900 leading-tight">
+                                    <h2 className="text-base sm:text-xl font-black text-gray-900 leading-snug truncate">
                                         {selectedResource.title}
                                     </h2>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                                 {/* Generate Flashcards Button */}
                                 {(selectedResource.type === 'study_note') && (htmlContent || selectedResource.link) && (
                                     (() => {
@@ -927,10 +927,10 @@ Please review the document at the URL provided above and generate a highly detai
                                             return (
                                                 <button
                                                     onClick={() => setSelectedResource(existingDeck)}
-                                                    className="flex items-center gap-2 px-4 py-2 bg-teal-100 text-teal-700 hover:bg-teal-200 rounded-xl font-bold text-sm transition-colors shadow-sm"
+                                                    className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-teal-100 text-teal-700 hover:bg-teal-200 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-colors shadow-sm shrink-0"
                                                     title="See Flashcards"
                                                 >
-                                                    <Icons.Layers size={16} />
+                                                    <Icons.Layers size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                                     <span className="hidden sm:inline">See Flashcards</span>
                                                 </button>
                                             );
@@ -939,10 +939,10 @@ Please review the document at the URL provided above and generate a highly detai
                                             <button
                                                 onClick={handleGenerateFlashcards}
                                                 disabled={isGeneratingFlashcards}
-                                                className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 shadow-sm"
+                                                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-colors disabled:opacity-50 shadow-sm shrink-0"
                                                 title="Generate Flashcards with AI"
                                             >
-                                                {isGeneratingFlashcards ? <Icons.Loader2 className="animate-spin" size={16} /> : <Icons.Sparkles size={16} />}
+                                                {isGeneratingFlashcards ? <Icons.Loader2 className="animate-spin w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Icons.Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                                                 <span className="hidden sm:inline">Auto-Flashcard</span>
                                             </button>
                                         );
@@ -956,18 +956,18 @@ Please review the document at the URL provided above and generate a highly detai
                                                 setReviewDeckId(selectedResource.id);
                                                 setSelectedResource(null);
                                             }}
-                                            className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 rounded-xl font-bold text-sm transition-colors shadow-sm shadow-teal-200"
+                                            className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-teal-600 text-white hover:bg-teal-700 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-colors shadow-sm shadow-teal-200 shrink-0"
                                             title="Start Flashcard Review Session"
                                         >
-                                            <Icons.Layers size={16} />
-                                            <span className="hidden sm:inline">Start Review Session</span>
+                                            <Icons.Layers size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                            <span className="hidden sm:inline">Start Review</span>
                                         </button>
                                         <button
                                             onClick={() => handleDeleteDeck(selectedResource as VaultResource & { _vaultResourceId: string })}
-                                            className="p-3 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-full transition-colors"
+                                            className="p-2 sm:p-3 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-full transition-colors shrink-0"
                                             title="Delete Flashcards"
                                         >
-                                            <Icons.Trash2 size={20} />
+                                            <Icons.Trash2 size={20} className="w-4 h-4 sm:w-5 sm:h-5" />
                                         </button>
                                     </>
                                 )}
@@ -983,17 +983,17 @@ Please review the document at the URL provided above and generate a highly detai
                                                 window.open(selectedResource.link, '_blank');
                                             }
                                         }}
-                                        className="p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-blue-600"
+                                        className="p-2 sm:p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-blue-600 shrink-0"
                                         title="Open in new tab"
                                     >
-                                        <Icons.ExternalLink size={20} />
+                                        <Icons.ExternalLink size={20} className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </button>
                                 )}
                                 <button
                                     onClick={() => setSelectedResource(null)}
-                                    className="p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900"
+                                    className="p-2 sm:p-3 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900 shrink-0"
                                 >
-                                    <Icons.X size={24} />
+                                    <Icons.X size={24} className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </button>
                             </div>
                         </div>
