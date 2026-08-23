@@ -108,6 +108,18 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
                 recipients = await AuthService.getSubscribers();
             }
             
+            // Fetch current user for author name
+            const user = await AuthService.getCurrentUser();
+            let authorName = 'A Student';
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+                if (profile?.full_name) {
+                    authorName = profile.full_name;
+                } else if (user.email) {
+                    authorName = user.email.split('@')[0];
+                }
+            }
+
             if (recipients.length === 0) return;
 
             await fetch('/api/notifications/send', {
@@ -119,7 +131,9 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
                     content: `A new assignment "${assignment.title}" has been posted. Due date: ${assignment.dueDate || 'No due date'}.`,
                     link: 'https://curriculab-sj6g.onrender.com/assignments',
                     linkText: 'View Assignment',
-                    recipients: recipients
+                    recipients: recipients,
+                    authorName: authorName,
+                    dueDate: assignment.dueDate
                 })
             });
         } catch (err) {
