@@ -103,8 +103,8 @@ export const generateNotificationEmail = ({ type, title, content, link, linkText
                     <tr>
                         <td align="center" style="padding-top: 20px;">
                             ${recipientCount > 0 ? `
-                            <p style="color: #D97706; font-size: 13px; margin: 0 0 10px 0; background: #FFFBEB; padding: 12px; border-radius: 8px; border: 1px solid #FCD34D;">
-                                ⚠️ <strong>Demo Mode:</strong> This is a broadcast simulation. In production, this email would be sent to all ${recipientCount} registered user${recipientCount !== 1 ? 's' : ''}.
+                            <p style="color: #9CA3AF; font-size: 12px; margin: 0 0 10px 0;">
+                                This email was sent to ${recipientCount} registered user${recipientCount !== 1 ? 's' : ''}.
                             </p>
                             ` : ''}
                             <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
@@ -200,8 +200,8 @@ export const generateAssignmentEmail = ({ title, dueDate, authorName, link, reci
                     <tr>
                         <td align="center" style="padding-top: 20px;">
                             ${recipientCount > 0 ? `
-                            <p style="color: #D97706; font-size: 13px; margin: 0 0 10px 0; background: #FFFBEB; padding: 12px; border-radius: 8px; border: 1px solid #FCD34D;">
-                                ⚠️ <strong>Demo Mode:</strong> This email was sent to ${recipientCount} registered user${recipientCount !== 1 ? 's' : ''}.
+                            <p style="color: #9CA3AF; font-size: 12px; margin: 0 0 10px 0;">
+                                This email was sent to ${recipientCount} registered user${recipientCount !== 1 ? 's' : ''}.
                             </p>
                             ` : ''}
                             <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
