@@ -287,14 +287,14 @@ export function StudentsTab({ initialAction, onActionComplete }: StudentsTabProp
                             </div>
                         </div>
                     ) : (
-                        <div className="divide-y divide-gray-50">
-                            {/* Table Header */}
-                            <div className="px-6 py-3 grid grid-cols-12 gap-4 bg-gray-50/70">
+                        <div className="flex flex-col md:divide-y md:divide-gray-50">
+                            {/* Table Header (Desktop Only) */}
+                            <div className="hidden md:grid px-6 py-3 grid-cols-12 gap-4 bg-gray-50/70 border-b border-gray-100">
                                 <div className="col-span-3 text-xs font-black text-gray-400 uppercase tracking-wider">Student</div>
                                 <div className="col-span-2 text-xs font-black text-gray-400 uppercase tracking-wider">Role</div>
-                                <div className="col-span-2 text-xs font-black text-gray-400 uppercase tracking-wider">Enrollment</div>
+                                <div className="col-span-3 text-xs font-black text-gray-400 uppercase tracking-wider">Enrollment</div>
                                 <div className="col-span-2 text-xs font-black text-gray-400 uppercase tracking-wider">Fellow Card</div>
-                                <div className="col-span-3 text-xs font-black text-gray-400 uppercase tracking-wider text-right">Actions</div>
+                                <div className="col-span-2 text-xs font-black text-gray-400 uppercase tracking-wider text-right">Actions</div>
                             </div>
 
                             {filtered.map((student, idx) => {
@@ -304,32 +304,45 @@ export function StudentsTab({ initialAction, onActionComplete }: StudentsTabProp
                                 <div
                                     key={student.email}
                                     className={cn(
-                                        "px-6 py-4 grid grid-cols-12 gap-4 items-center hover:bg-indigo-50/30 transition-colors",
+                                        "p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 gap-4 items-start md:items-center hover:bg-indigo-50/30 transition-colors border-b border-gray-100 md:border-0 last:border-0",
                                         idx % 2 === 0 ? "bg-white" : "bg-gray-50/20"
                                     )}
                                 >
-                                    {/* Student Info */}
-                                    <div className="col-span-3 flex items-center gap-3 min-w-0">
-                                        <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                                            <span className="text-xs font-black text-indigo-700">
-                                                {getInitials(student.fullName, student.email)}
-                                            </span>
+                                    {/* Student Info & Mobile Header */}
+                                    <div className="col-span-3 flex items-start md:items-center gap-3 w-full min-w-0 justify-between md:justify-start">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="w-10 h-10 md:w-9 md:h-9 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                                                <span className="text-xs md:text-xs font-black text-indigo-700">
+                                                    {getInitials(student.fullName, student.email)}
+                                                </span>
+                                            </div>
+                                            <div className="min-w-0">
+                                                {student.fullName ? (
+                                                    <p className="text-sm md:text-sm font-bold md:font-semibold text-gray-900 truncate">{student.fullName}</p>
+                                                ) : (
+                                                    <p className="text-xs text-gray-400 italic">Not signed in yet</p>
+                                                )}
+                                                <p className="text-xs text-gray-400 truncate flex items-center gap-1 mt-0.5">
+                                                    <Icons.Mail size={10} />
+                                                    {student.email}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="min-w-0">
-                                            {student.fullName ? (
-                                                <p className="text-sm font-semibold text-gray-900 truncate">{student.fullName}</p>
-                                            ) : (
-                                                <p className="text-xs text-gray-400 italic">Not signed in yet</p>
-                                            )}
-                                            <p className="text-xs text-gray-400 truncate flex items-center gap-1">
-                                                <Icons.Mail size={10} />
-                                                {student.email}
-                                            </p>
+                                        {/* Mobile Role Badge */}
+                                        <div className="md:hidden">
+                                            <span className={cn(
+                                                "text-[10px] uppercase tracking-wide font-black px-2 py-1 rounded-full",
+                                                student.role
+                                                    ? (ROLE_COLORS[student.role] ?? 'bg-gray-100 text-gray-500')
+                                                    : 'bg-gray-100 text-gray-400 italic'
+                                            )}>
+                                                {student.role ?? 'pending'}
+                                            </span>
                                         </div>
                                     </div>
 
-                                    {/* Role */}
-                                    <div className="col-span-2">
+                                    {/* Role (Desktop) */}
+                                    <div className="hidden md:block col-span-2">
                                         <span className={cn(
                                             "text-xs font-bold px-2.5 py-1 rounded-full",
                                             student.role
@@ -341,14 +354,15 @@ export function StudentsTab({ initialAction, onActionComplete }: StudentsTabProp
                                     </div>
 
                                     {/* Enrollment */}
-                                    <div className="col-span-2">
+                                    <div className="col-span-3 w-full">
+                                        <div className="md:hidden text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Enrollment</div>
                                         {student.userId ? (
                                             <div className="relative">
                                                 <select
                                                     value={student.semesterId ?? ''}
                                                     onChange={e => handleChangeEnrollment(student.userId!, e.target.value)}
                                                     disabled={updatingId === student.userId}
-                                                    className="appearance-none w-full bg-gray-50 border border-gray-200 rounded-lg pl-2.5 pr-7 py-1.5 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer disabled:opacity-50"
+                                                    className="appearance-none w-full bg-gray-50 border border-gray-200 rounded-lg pl-3 pr-8 py-2 md:py-1.5 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer disabled:opacity-50"
                                                 >
                                                     <option value="">— Not enrolled —</option>
                                                     {semesters.map(s => (
@@ -357,7 +371,7 @@ export function StudentsTab({ initialAction, onActionComplete }: StudentsTabProp
                                                         </option>
                                                     ))}
                                                 </select>
-                                                <Icons.ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                                <Icons.ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                             </div>
                                         ) : (
                                             <span className="text-xs text-gray-300 italic">Not signed in yet</span>
@@ -365,55 +379,56 @@ export function StudentsTab({ initialAction, onActionComplete }: StudentsTabProp
                                     </div>
 
                                     {/* Fellow Card Status */}
-                                    <div className="col-span-2 flex items-center gap-1.5">
+                                    <div className="col-span-2 flex items-center gap-1.5 w-full">
+                                        <div className="md:hidden flex-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fellow Card</div>
                                         {hasCard ? (
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
-                                                <Icons.CheckSquare size={11} />
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg">
+                                                <Icons.CheckSquare size={12} />
                                                 Linked
                                             </span>
                                         ) : (
                                             <button
                                                 onClick={() => handleCreateCard(student.email, student.semesterId, student.fullName)}
                                                 disabled={isCreating}
-                                                className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 px-2 py-1 rounded-lg transition-colors disabled:opacity-60 cursor-pointer"
+                                                className="inline-flex items-center justify-center gap-1.5 text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-60 cursor-pointer w-full md:w-auto"
                                                 title="Create fellow card for this student"
                                             >
                                                 {isCreating
-                                                    ? <Icons.Loader2 size={11} className="animate-spin" />
-                                                    : <Icons.Plus size={11} />}
+                                                    ? <Icons.Loader2 size={12} className="animate-spin" />
+                                                    : <Icons.Plus size={12} />}
                                                 Create Card
                                             </button>
                                         )}
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="col-span-3 flex items-center justify-end gap-2">
+                                    <div className="col-span-2 flex items-center md:justify-end gap-2 w-full pt-3 md:pt-0 border-t border-gray-100 md:border-0 mt-2 md:mt-0">
                                         {student.userId && student.role !== 'admin' && (
                                             <button
                                                 onClick={() => handleMakeAdmin(student.userId!)}
-                                                className="flex items-center gap-1 text-xs font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 px-2.5 py-1.5 rounded-lg transition-colors"
+                                                className="flex flex-1 md:flex-none justify-center items-center gap-1.5 text-xs font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 px-3 py-2 md:px-2.5 md:py-1.5 rounded-lg transition-colors"
                                                 title="Promote to Admin"
                                             >
-                                                <Icons.Shield size={12} />
+                                                <Icons.Shield size={14} className="md:w-3 md:h-3" />
                                                 Make Admin
                                             </button>
                                         )}
                                         {student.userId && student.role === 'admin' && (
                                             <button
                                                 onClick={() => handleMakeStudent(student.userId!)}
-                                                className="flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg transition-colors"
+                                                className="flex flex-1 md:flex-none justify-center items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-2 md:px-2.5 md:py-1.5 rounded-lg transition-colors"
                                                 title="Demote to Student"
                                             >
-                                                <Icons.User size={12} />
+                                                <Icons.User size={14} className="md:w-3 md:h-3" />
                                                 Make Student
                                             </button>
                                         )}
                                         <button
                                             onClick={() => handleRemove(student.email)}
-                                            className="flex items-center gap-1 text-xs font-semibold text-red-500 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg transition-colors"
+                                            className="flex flex-1 md:flex-none justify-center items-center gap-1.5 text-xs font-semibold text-red-500 bg-red-50 hover:bg-red-100 px-3 py-2 md:px-2.5 md:py-1.5 rounded-lg transition-colors"
                                             title="Remove access and delete fellow card"
                                         >
-                                            <Icons.Trash2 size={12} />
+                                            <Icons.Trash2 size={14} className="md:w-3 md:h-3" />
                                             Remove
                                         </button>
                                     </div>
