@@ -2,6 +2,7 @@ import { supabase } from "@/utils/supabase/client";
 import { Assignment } from "@/types";
 import { ChangelogService } from "@/lib/services/changelog.service";
 import { AuthService } from "@/lib/services/auth.service";
+import { getStudentsInSemester } from "@/lib/services/enrollment-service";
 
 const mapAssignment = (a: any): Assignment => ({
     id: a.id,
@@ -88,20 +89,43 @@ export const createAssignment = async (assignment: Assignment): Promise<Assignme
 
     // Send Email Notification (Async/Non-blocking)
     (async () => {
-        const recipients = await AuthService.getSubscribers();
-        await fetch('/api/notifications/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: 'Assignment',
-                title: assignment.title,
-                content: `A new assignment "${assignment.title}" has been posted. Due date: ${assignment.dueDate || 'No due date'}.`,
-                link: 'https://curriculab-sj6g.onrender.com/assignments',
-                linkText: 'View Assignment',
-                recipients: recipients
-            })
-        });
-    })().catch(err => console.error("Failed to send notification:", err));
+        try {
+            // Get the semester ID for the assignment's subject
+            const { data: subjectData } = await supabase
+                .from('subjects')
+                .select('semester_id')
+                .eq('id', assignment.subjectId)
+                .single();
+                
+            let recipients: string[] = [];
+            
+            if (subjectData?.semester_id) {
+                // Fetch only students enrolled in this specific semester
+                const students = await getStudentsInSemester(subjectData.semester_id);
+                recipients = students.map(s => s.email).filter(Boolean);
+            } else {
+                // Fallback if semester not found
+                recipients = await AuthService.getSubscribers();
+            }
+            
+            if (recipients.length === 0) return;
+
+            await fetch('/api/notifications/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'Assignment',
+                    title: assignment.title,
+                    content: `A new assignment "${assignment.title}" has been posted. Due date: ${assignment.dueDate || 'No due date'}.`,
+                    link: 'https://curriculab-sj6g.onrender.com/assignments',
+                    linkText: 'View Assignment',
+                    recipients: recipients
+                })
+            });
+        } catch (err) {
+            console.error("Failed to send notification:", err);
+        }
+    })();
 
     return mapAssignment(data);
 };
