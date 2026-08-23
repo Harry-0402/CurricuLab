@@ -678,7 +678,7 @@ Please review the document at the URL provided above and generate a highly detai
                                             setSelectedResource(resource);
                                         }
                                     }}
-                                    className="bg-white rounded-[24px] sm:rounded-[32px] p-5 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full min-h-[220px]"
+                                    className="bg-white rounded-[24px] sm:rounded-[32px] p-5 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative flex flex-col h-full"
                                 >
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
@@ -754,9 +754,7 @@ Please review the document at the URL provided above and generate a highly detai
                                                     </>
                                                 )}
                                             </div>
-                                            <span className="hidden sm:flex shrink-0 group-hover:translate-x-1 transition-transform text-blue-600 items-center gap-1 font-bold text-[11px] whitespace-nowrap ml-auto">
-                                                Read More <Icons.ChevronRight size={14} />
-                                            </span>
+
                                         </div>
                                     </div>
                                 </div>
