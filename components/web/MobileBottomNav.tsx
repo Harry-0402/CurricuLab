@@ -19,10 +19,51 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
     
     // We get setAnalyticaOpen from the store directly now to trigger it
     const setAnalyticaOpen = useAppStore(state => state.setAnalyticaOpen);
+    const activeSemesterId = useAppStore(state => state.activeSemesterId);
+    const { user } = useAuth();
+    const [incompleteCount, setIncompleteCount] = useState<number | undefined>(undefined);
+
+    const fetchIncompleteCount = async () => {
+        if (!user || !activeSemesterId) {
+            setIncompleteCount(undefined);
+            return;
+        }
+        try {
+            const { getSemesterAssignments } = await import('@/lib/services/app.service');
+            const { supabase } = await import('@/utils/supabase/client');
+            
+            const semesterAssignments = await getSemesterAssignments(activeSemesterId);
+            const { data, error } = await supabase
+                .from('user_completed_assignments')
+                .select('assignment_id')
+                .eq('user_id', user.id);
+                
+            if (error) throw error;
+            
+            const completedIds = new Set((data || []).map(d => d.assignment_id));
+            const incomplete = semesterAssignments.filter(a => !completedIds.has(a.id));
+            setIncompleteCount(incomplete.length > 0 ? incomplete.length : undefined);
+        } catch (e) {
+            console.error("Failed to load incomplete count:", e);
+        }
+    };
+
+    useEffect(() => {
+        fetchIncompleteCount();
+
+        const handleUpdate = () => {
+            fetchIncompleteCount();
+        };
+
+        window.addEventListener('assignments-updated', handleUpdate);
+        return () => {
+            window.removeEventListener('assignments-updated', handleUpdate);
+        };
+    }, [user, activeSemesterId]);
 
     const navItems = [
         { label: 'Home', href: '/', icon: Icons.Home, activeIcon: Icons.Home },
-        { label: 'Assignments', href: '/assignments', icon: Icons.CheckSquare, activeIcon: Icons.CheckSquare, badge: 6 },
+        { label: 'Assignments', href: '/assignments', icon: Icons.CheckSquare, activeIcon: Icons.CheckSquare, badge: incompleteCount },
         { label: 'Analytica', href: '#', icon: Icons.Bot, activeIcon: Icons.Bot, isAction: true },
         { label: 'Vault', href: '/vault', icon: Icons.Folder, activeIcon: Icons.Folder },
         { label: 'More', href: '#', icon: Icons.Menu, activeIcon: Icons.X },

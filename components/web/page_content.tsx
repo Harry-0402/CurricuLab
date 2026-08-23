@@ -81,6 +81,7 @@ export default function WebHomePage() {
                     targetSemesterId: activeSemesterId
                 })
             }).catch(console.error);
+            window.dispatchEvent(new CustomEvent('assignments-updated'));
         } catch (error) {
             console.error("Failed to save assignment:", error);
             showToast('Failed to save assignment', 'error');
@@ -165,6 +166,7 @@ export default function WebHomePage() {
                     .from('user_completed_assignments')
                     .insert({ user_id: user.id, assignment_id: assignmentId });
             }
+            window.dispatchEvent(new CustomEvent('assignments-updated'));
         } catch (error) {
             console.error("Failed to toggle completion:", error);
         }

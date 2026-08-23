@@ -231,6 +231,7 @@ export function AssignmentContent() {
                     })
                 }).catch(console.error);
             }
+            window.dispatchEvent(new CustomEvent('assignments-updated'));
         } catch (error) {
             console.error("Failed to save assignment:", error);
             showToast('Failed to save assignment', 'error');
@@ -264,6 +265,7 @@ export function AssignmentContent() {
                 .from('user_completed_assignments')
                 .insert({ user_id: currentUser.id, assignment_id: assignmentId });
         }
+        window.dispatchEvent(new CustomEvent('assignments-updated'));
     };
 
     const handleDeleteAssignment = async (id: string) => {
@@ -271,6 +273,7 @@ export function AssignmentContent() {
             await deleteAssignment(id);
             setAssignments(prev => prev.filter(a => a.id !== id));
             showToast('Assignment deleted successfully', 'success');
+            window.dispatchEvent(new CustomEvent('assignments-updated'));
         } catch (error) {
             console.error("Failed to delete assignment:", error);
             showToast('Failed to delete assignment', 'error');
