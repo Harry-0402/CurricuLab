@@ -335,13 +335,14 @@ export function TimetableAdminTab({ initialAction, onActionComplete }: Timetable
                                 {/* Entries */}
                                 <div className="divide-y divide-gray-50">
                                     {dayEntries.map(entry => (
-                                        <div key={entry.id} className="px-5 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors group">
+                                        <div key={entry.id} className="px-4 md:px-5 py-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 hover:bg-gray-50/50 transition-colors group">
                                             {/* Time */}
-                                            <div className="w-28 flex-shrink-0">
+                                            <div className="flex items-center md:items-start md:flex-col gap-2 md:gap-0 w-full md:w-28 flex-shrink-0 border-b border-gray-50 pb-2 md:border-0 md:pb-0">
                                                 <p className="text-xs font-black text-gray-700">
                                                     {formatTime(entry.start_time)}
                                                 </p>
-                                                <p className="text-xs text-gray-400">
+                                                <span className="md:hidden text-xs font-bold text-gray-300">-</span>
+                                                <p className="text-xs font-semibold text-gray-400">
                                                     {formatTime(entry.end_time)}
                                                 </p>
                                             </div>
@@ -356,16 +357,16 @@ export function TimetableAdminTab({ initialAction, onActionComplete }: Timetable
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                                                <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                                                     {entry.location && (
-                                                        <span className="text-xs text-gray-400 flex items-center gap-1">
-                                                            <Icons.MapPin size={10} />
+                                                        <span className="text-xs font-semibold text-gray-400 flex items-center gap-1">
+                                                            <Icons.MapPin size={12} />
                                                             {entry.location}
                                                         </span>
                                                     )}
                                                     {entry.teacher && (
-                                                        <span className="text-xs text-gray-400 flex items-center gap-1">
-                                                            <Icons.User size={10} />
+                                                        <span className="text-xs font-semibold text-gray-400 flex items-center gap-1">
+                                                            <Icons.User size={12} />
                                                             {entry.teacher}
                                                         </span>
                                                     )}
@@ -373,18 +374,20 @@ export function TimetableAdminTab({ initialAction, onActionComplete }: Timetable
                                             </div>
 
                                             {/* Actions */}
-                                            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center justify-end gap-2 w-full md:w-auto pt-3 md:pt-0 border-t border-gray-50 md:border-0 mt-1 md:mt-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => openEdit(entry)}
-                                                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-600 text-gray-400 transition-colors"
+                                                    className="flex flex-1 md:flex-none justify-center items-center gap-1.5 px-3 py-2 md:p-0 md:w-7 md:h-7 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-600 text-gray-500 transition-colors text-xs font-semibold"
                                                 >
                                                     <Icons.Edit size={13} />
+                                                    <span className="md:hidden">Edit</span>
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(entry)}
-                                                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-400 transition-colors"
+                                                    className="flex flex-1 md:flex-none justify-center items-center gap-1.5 px-3 py-2 md:p-0 md:w-7 md:h-7 rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 transition-colors text-xs font-semibold"
                                                 >
                                                     <Icons.Trash2 size={13} />
+                                                    <span className="md:hidden">Delete</span>
                                                 </button>
                                             </div>
                                         </div>
