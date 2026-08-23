@@ -26,12 +26,8 @@ export function MobileBottomNav({ isAnalyticaOpen = false }: MobileBottomNavProp
     ];
 
     const baseMoreItems = [
-        { label: 'Docs', href: '/docs', icon: Icons.BookOpen },
         { label: 'Faculty & Fellows', href: '/faculty-fellows', icon: Icons.GraduationCap },
         { label: 'Community', href: '/community', icon: Icons.Users },
-        { label: 'Portfolio', href: '/tools/portfolio', icon: Icons.Layout },
-        { label: 'ResumeStudio', href: '/tools/resume', icon: Icons.FileText },
-        { label: 'Career Gateway', href: '/tools/career', icon: Icons.Briefcase },
         { label: 'MindGrid', href: '/tools/mindgrid', icon: Icons.LayoutGrid },
         { label: 'YouTube Library', href: '/youtube-library', icon: Icons.Youtube },
         { label: 'PYQs', href: '/tools/papertrail', icon: Icons.FileText },
