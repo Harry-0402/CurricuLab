@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Icons } from '@/components/shared/Icons';
 import { getAuthorizedUsers } from '@/lib/services/enrollment-service';
-import { getSemesters } from '@/lib/services/semester-service';
+import { getSemesters, getPrograms } from '@/lib/services/semester-service';
+import { getSubjects } from '@/lib/services/app.service';
 
 interface AdminDashboardTabProps {
     onNavigate: (tab: string, action?: string) => void;
@@ -9,21 +10,27 @@ interface AdminDashboardTabProps {
 
 export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
     const [stats, setStats] = useState({
-        students: 0,
+        programs: 0,
         semesters: 0,
+        subjects: 0,
+        students: 0,
         loading: true
     });
 
     useEffect(() => {
         async function loadStats() {
             try {
-                const [users, sems] = await Promise.all([
+                const [users, sems, progs, subjs] = await Promise.all([
                     getAuthorizedUsers(),
-                    getSemesters()
+                    getSemesters(),
+                    getPrograms(),
+                    getSubjects()
                 ]);
                 setStats({
-                    students: users.filter((u: any) => u.role === 'student').length,
+                    programs: progs.length,
                     semesters: sems.length,
+                    subjects: subjs.length,
+                    students: users.filter((u: any) => u.role === 'student').length,
                     loading: false
                 });
             } catch (error) {
@@ -64,21 +71,39 @@ export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
                     <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mb-3">
+                        <Icons.GraduationCap size={20} />
+                    </div>
+                    <p className="text-3xl font-black text-gray-900">
+                        {stats.loading ? '-' : stats.programs}
+                    </p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Programs</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
+                    <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mb-3">
+                        <Icons.BookOpen size={20} />
+                    </div>
+                    <p className="text-3xl font-black text-gray-900">
+                        {stats.loading ? '-' : stats.semesters}
+                    </p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Semesters</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
+                    <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mb-3">
+                        <Icons.Subjects size={20} />
+                    </div>
+                    <p className="text-3xl font-black text-gray-900">
+                        {stats.loading ? '-' : stats.subjects}
+                    </p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Subjects</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
+                    <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-3">
                         <Icons.Users size={20} />
                     </div>
                     <p className="text-3xl font-black text-gray-900">
                         {stats.loading ? '-' : stats.students}
                     </p>
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Students</p>
-                </div>
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
-                    <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mb-3">
-                        <Icons.GraduationCap size={20} />
-                    </div>
-                    <p className="text-3xl font-black text-gray-900">
-                        {stats.loading ? '-' : stats.semesters}
-                    </p>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Semesters</p>
                 </div>
             </div>
 
