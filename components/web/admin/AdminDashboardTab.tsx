@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Icons } from '@/components/shared/Icons';
-import { getAuthorizedUsers, getSemesters } from '@/lib/services/admin.service';
+import { getAuthorizedUsers } from '@/lib/services/enrollment-service';
+import { getSemesters } from '@/lib/services/semester-service';
 
 interface AdminDashboardTabProps {
     onNavigate: (tab: string, action?: string) => void;
@@ -21,7 +22,7 @@ export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
                     getSemesters()
                 ]);
                 setStats({
-                    students: users.filter(u => u.role === 'student').length,
+                    students: users.filter((u: any) => u.role === 'student').length,
                     semesters: sems.length,
                     loading: false
                 });
@@ -37,14 +38,14 @@ export function AdminDashboardTab({ onNavigate }: AdminDashboardTabProps) {
         {
             title: 'Add Student',
             description: 'Authorize a new student email',
-            icon: Icons.UserPlus,
+            icon: Icons.Users,
             color: 'bg-blue-50 text-blue-600 border-blue-100',
             action: () => onNavigate('students', 'add')
         },
         {
             title: 'Add Timetable',
             description: 'Schedule a new class session',
-            icon: Icons.CalendarPlus,
+            icon: Icons.Clock,
             color: 'bg-emerald-50 text-emerald-600 border-emerald-100',
             action: () => onNavigate('timetable', 'add')
         },
