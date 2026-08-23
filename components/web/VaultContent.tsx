@@ -805,26 +805,26 @@ Please review the document at the URL provided above and generate a highly detai
             {/* Add/Edit Resource Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl p-8 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-8">
+                    <div className="bg-white rounded-[32px] sm:rounded-[40px] shadow-2xl w-full max-w-2xl p-5 sm:p-8 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[85vh] overflow-y-auto custom-scrollbar">
+                        <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tight">{editingId ? 'Edit Resource' : 'Add New Resource'}</h2>
-                                <p className="text-sm text-gray-500 mt-1">Fill in the details below to {editingId ? 'update' : 'create'} a resource.</p>
+                                <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">{editingId ? 'Edit Resource' : 'Add New Resource'}</h2>
+                                <p className="text-xs sm:text-sm text-gray-500 mt-1">Fill in the details below to {editingId ? 'update' : 'create'} a resource.</p>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                <Icons.X size={24} className="text-gray-400" />
+                            <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-gray-100 rounded-xl sm:rounded-full transition-colors">
+                                <Icons.X size={20} className="sm:w-6 sm:h-6 text-gray-400" />
                             </button>
                         </div>
 
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                             <div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Subject</label>
+                                    <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Subject</label>
                                     <div className="relative">
                                         <select
                                             value={formData.subjectId}
                                             onChange={(e) => setFormData({ ...formData, subjectId: e.target.value })}
-                                            className="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none transition-all hover:bg-gray-100"
+                                            className="w-full px-4 py-3 sm:p-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none transition-all hover:bg-gray-100 pr-10"
                                         >
                                             <option value="">Select Subject...</option>
                                             {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
@@ -834,9 +834,9 @@ Please review the document at the URL provided above and generate a highly detai
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Unit <span className="text-gray-300 font-normal normal-case">(Optional)</span></label>
+                                    <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Unit <span className="text-gray-300 font-normal normal-case">(Optional)</span></label>
                                     <div className="flex gap-2">
                                         {[1, 2, 3, 4, 5].map(unit => {
                                             const unitId = `unit-${unit}`;
@@ -861,12 +861,12 @@ Please review the document at the URL provided above and generate a highly detai
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Type</label>
+                                    <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Type</label>
                                     <div className="relative">
                                         <select
                                             value={formData.type}
                                             onChange={(e) => setFormData({ ...formData, type: e.target.value as VaultResourceType })}
-                                            className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
+                                            className="w-full px-4 py-3 sm:p-3 bg-gray-50 border-none rounded-xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none pr-10"
                                         >
                                             {(['study_note', 'question_bank', 'case_study', 'project', 'revision_note', 'other_resources'] as VaultResourceType[]).map(type => {
                                                 const config = TYPE_CONFIG[type];
@@ -883,29 +883,29 @@ Please review the document at the URL provided above and generate a highly detai
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Title</label>
+                                <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Title</label>
                                 <input
                                     type="text"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                     placeholder="Enter a descriptive title..."
-                                    className="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
+                                    className="w-full px-4 py-3 sm:p-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">Resource Link</label>
+                                <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Resource Link</label>
                                 <div className="relative">
                                     <input
                                         type="url"
                                         value={formData.link || ''}
                                         onChange={(e) => setFormData({ ...formData, link: e.target.value })}
                                         placeholder="https://..."
-                                        className="w-full p-4 pl-10 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
+                                        className="w-full px-4 py-3 sm:p-4 pl-10 sm:pl-10 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
                                     />
                                     <Icons.Link className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 </div>
-                                <p className="text-xs text-gray-400 mt-2 pl-1">
+                                <p className="text-[10px] sm:text-xs text-gray-400 mt-2 pl-1">
                                     Paste the deployed HTML, PDF, or Drive URL here.
                                 </p>
                             </div>
@@ -913,9 +913,9 @@ Please review the document at the URL provided above and generate a highly detai
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving || !formData.title || !formData.subjectId || !formData.link}
-                                className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-[22px] text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 active:scale-[0.98]"
+                                className="w-full py-4 sm:py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl sm:rounded-[22px] text-xs sm:text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 active:scale-[0.98]"
                             >
-                                {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Save size={18} /> : <Icons.Plus size={18} />)}
+                                {isSaving ? <Icons.Loader2 className="animate-spin" /> : (editingId ? <Icons.Save size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Icons.Plus size={16} className="sm:w-[18px] sm:h-[18px]" />)}
                                 {isSaving ? (editingId ? 'Updating...' : 'Saving...') : (editingId ? 'Update Resource' : 'Add Resource')}
                             </button>
                         </div>
