@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/shared/Dialog";
+
 import { Icons } from "@/components/shared/Icons";
 import { cn } from "@/lib/utils";
 import { Assignment, Subject, Unit } from "@/types";
@@ -140,198 +140,147 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
         }
     };
 
+    if (!isOpen) return null;
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-[32px] sm:rounded-[40px] shadow-2xl w-full max-w-2xl p-5 sm:p-8 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[85vh] overflow-y-auto custom-scrollbar relative">
+                
+                {/* Floating Smart Paste Button */}
+                {!showSmartPaste && !assignment && (
+                    <button
+                        type="button"
+                        onClick={() => setShowSmartPaste(true)}
+                        className="absolute bottom-5 right-5 sm:bottom-8 sm:right-8 w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-purple-200 hover:scale-105 active:scale-95 transition-all z-10"
+                        title="Smart Paste with AI"
+                    >
+                        <Icons.Sparkles size={24} className="sm:w-7 sm:h-7" />
+                    </button>
+                )}
+
                 {!showSmartPaste ? (
                     <>
-                        <DialogHeader>
-                            {/* Header: icon + title row, Smart Paste below on mobile */}
-                            <div className="flex items-start gap-3 mb-2">
-                                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-100 shrink-0">
-                                    <Icons.Calendar size={18} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <DialogTitle className="text-base sm:text-lg leading-tight">
-                                        {assignment ? 'Edit Assignment' : 'New Assignment'}
-                                    </DialogTitle>
-                                    <DialogDescription className="text-[11px] mt-0.5">
-                                        {assignment ? 'Update assignment details' : 'Add a new academic task'}
-                                    </DialogDescription>
-                                </div>
-                                {!assignment && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowSmartPaste(true)}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-all active:scale-95 shrink-0 mr-8 sm:mr-10"
-                                    >
-                                        <Icons.Sparkles size={11} />
-                                        <span className="hidden xs:inline">Smart </span>Paste
-                                    </button>
-                                )}
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">{assignment ? 'Edit Assignment' : 'Add New Assignment'}</h2>
+                                <p className="text-xs sm:text-sm text-gray-500 mt-1">Fill in the details below to {assignment ? 'update' : 'create'} an assignment.</p>
                             </div>
-                        </DialogHeader>
+                            <button type="button" onClick={onClose} className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-gray-100 rounded-xl sm:rounded-full transition-colors shrink-0">
+                                <Icons.X size={20} className="sm:w-6 sm:h-6 text-gray-400" />
+                            </button>
+                        </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                            {/* Subject & Unit Wrapper */}
+                            <div className="space-y-4 sm:space-y-6">
+                                {/* Subject */}
+                                <div>
+                                    <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Subject</label>
+                                    <div className="relative">
+                                        <select
+                                            value={formData.subjectId}
+                                            onChange={(e) => setFormData({ ...formData, subjectId: e.target.value })}
+                                            className="w-full px-4 py-3 sm:p-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none transition-all hover:bg-gray-100 pr-10"
+                                        >
+                                            <option value="">Select Subject...</option>
+                                            {subjects.map(s => <option key={s.id} value={s.id}>{s.code} - {s.title}</option>)}
+                                        </select>
+                                        <Icons.ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                    </div>
+                                </div>
+
+                                {/* Unit */}
+                                <div>
+                                    <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Unit <span className="text-gray-300 font-normal normal-case">(Optional)</span></label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {units.map(u => {
+                                            const isActive = formData.unitId === u.id;
+                                            return (
+                                                <button
+                                                    key={u.id}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, unitId: isActive ? '' : u.id })}
+                                                    className={cn(
+                                                        "flex-1 min-w-[60px] h-10 sm:h-12 rounded-xl text-xs font-bold transition-all border",
+                                                        isActive
+                                                            ? "bg-gray-900 text-white border-gray-900 shadow-md"
+                                                            : "bg-white text-gray-400 border-gray-100 hover:border-gray-200 hover:bg-gray-50"
+                                                    )}
+                                                >
+                                                    U{u.order}
+                                                </button>
+                                            );
+                                        })}
+                                        {units.length === 0 && (
+                                            <div className="text-xs text-gray-400 font-medium py-2 px-1">Select a subject first to see units</div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* Title */}
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Title</label>
+                            <div>
+                                <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Title</label>
                                 <input
+                                    type="text"
                                     required
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    placeholder="e.g., Operational Efficiency Report"
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+                                    placeholder="Enter a descriptive title..."
+                                    className="w-full px-4 py-3 sm:p-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100"
                                 />
                             </div>
 
-                            {/* Subject — full width */}
-                            <div className="space-y-1.5 relative">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Subject</label>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsSubjectPickerOpen(!isSubjectPickerOpen)}
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 flex items-center justify-between hover:bg-white hover:border-blue-500/30 transition-all active:scale-[0.98]"
-                                >
-                                    <div className="flex items-center gap-2 min-w-0">
-                                        {subjects.find(s => s.id === formData.subjectId) && (
-                                            <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded-md text-[10px] uppercase font-black shrink-0">
-                                                {subjects.find(s => s.id === formData.subjectId)?.code}
-                                            </span>
-                                        )}
-                                        <span className="truncate text-sm">
-                                            {subjects.find(s => s.id === formData.subjectId)?.title || 'Select Subject'}
-                                        </span>
+                            {/* Due Date + Platform */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <div>
+                                    <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Due Date</label>
+                                    <div className="relative">
+                                        <input
+                                            type="date"
+                                            value={formData.dueDate || ''}
+                                            onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                                            className="w-full px-4 py-3 sm:p-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all hover:bg-gray-100 appearance-none"
+                                        />
                                     </div>
-                                    <Icons.ChevronDown className={cn("text-gray-400 transition-transform shrink-0 ml-2", isSubjectPickerOpen && "rotate-180")} size={16} />
-                                </button>
-
-                                {isSubjectPickerOpen && (
-                                    <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-200">
-                                        <div className="relative mb-3">
-                                            <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                                            <input
-                                                autoFocus
-                                                value={subjectSearch}
-                                                onChange={(e) => setSubjectSearch(e.target.value)}
-                                                placeholder="Search code or title..."
-                                                className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-9 pr-4 py-2 text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                                            />
-                                        </div>
-                                        <div className="max-h-[180px] overflow-y-auto custom-scrollbar space-y-1">
-                                            {subjects
-                                                .filter(s =>
-                                                    s.code.toLowerCase().includes(subjectSearch.toLowerCase()) ||
-                                                    s.title.toLowerCase().includes(subjectSearch.toLowerCase())
-                                                )
-                                                .map(s => (
-                                                    <button
-                                                        key={s.id}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setFormData({ ...formData, subjectId: s.id, unitId: '' });
-                                                            setIsSubjectPickerOpen(false);
-                                                            setSubjectSearch('');
-                                                        }}
-                                                        className={cn(
-                                                            "w-full flex items-center gap-2 px-3 py-2 rounded-xl transition-all text-left group",
-                                                            formData.subjectId === s.id
-                                                                ? "bg-blue-600 text-white shadow-md shadow-blue-100"
-                                                                : "hover:bg-blue-50 text-gray-700 font-bold"
-                                                        )}
-                                                    >
-                                                        <span className={cn(
-                                                            "px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider shrink-0",
-                                                            formData.subjectId === s.id
-                                                                ? "bg-white/20 text-white"
-                                                                : "bg-gray-100 text-gray-400 group-hover:bg-blue-200 group-hover:text-blue-600"
-                                                        )}>
-                                                            {s.code}
-                                                        </span>
-                                                        <span className="text-xs truncate">{s.title}</span>
-                                                        {formData.subjectId === s.id && (
-                                                            <Icons.Check className="ml-auto shrink-0" size={14} />
-                                                        )}
-                                                    </button>
-                                                ))
-                                            }
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Unit — full width */}
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Unit</label>
-                                <select
-                                    value={formData.unitId || ''}
-                                    onChange={(e) => setFormData({ ...formData, unitId: e.target.value })}
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all appearance-none cursor-pointer"
-                                >
-                                    <option value="">Select Unit (Optional)</option>
-                                    {units.map(u => {
-                                        const cleanTitle = u.title.replace(/^Unit\s+[IVXLCDM\d]+\s*:\s*/i, '');
-                                        return (
-                                            <option key={u.id} value={u.id}>Unit {u.order}: {cleanTitle}</option>
-                                        );
-                                    })}
-                                </select>
-                            </div>
-
-                            {/* Due Date + Platform — 2-col on sm+, stacked on mobile */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Due Date</label>
-                                    <input
-                                        type="date"
-                                        value={formData.dueDate || ''}
-                                        onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all cursor-pointer"
-                                    />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Platform</label>
-                                    <div className="flex gap-2">
-                                        {['ERP', 'GCR', 'Other'].map((p) => (
-                                            <button
-                                                key={p}
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, platform: p as any })}
-                                                className={cn(
-                                                    "flex-1 py-3 rounded-xl text-xs font-bold transition-all border",
-                                                    formData.platform === p
-                                                        ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-100"
-                                                        : "bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100"
-                                                )}
-                                            >
-                                                {p}
-                                            </button>
-                                        ))}
+                                <div>
+                                    <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Platform</label>
+                                    <div className="relative">
+                                        <select
+                                            value={formData.platform}
+                                            onChange={(e) => setFormData({ ...formData, platform: e.target.value as any })}
+                                            className="w-full px-4 py-3 sm:p-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none transition-all hover:bg-gray-100 pr-10"
+                                        >
+                                            <option value="ERP">ERP</option>
+                                            <option value="GCR">Google Classroom (GCR)</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <Icons.ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Questions */}
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between ml-1">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Questions</label>
+                            <div>
+                                <div className="flex items-center justify-between mb-1.5 sm:mb-2 pl-1">
+                                    <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Questions</label>
                                     <button
                                         type="button"
                                         onClick={() => {
                                             const newQuestions = [...(formData.questions || []), { id: crypto.randomUUID(), text: '' }];
                                             setFormData({ ...formData, questions: newQuestions });
                                         }}
-                                        className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700 transition-all"
+                                        className="flex items-center gap-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-blue-600 hover:text-blue-700 transition-colors"
                                     >
-                                        <Icons.Plus size={12} />
+                                        <Icons.Plus size={14} />
                                         Add Question
                                     </button>
                                 </div>
-
-                                <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+                                <div className="space-y-3 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                                     {(formData.questions || []).length === 0 && (
-                                        <div className="text-center py-5 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                                            <p className="text-xs font-bold text-gray-400">No questions added yet</p>
+                                        <div className="text-center py-6 sm:py-8 bg-gray-50 rounded-xl sm:rounded-2xl border border-dashed border-gray-200">
+                                            <p className="text-xs sm:text-sm font-bold text-gray-400">No questions added yet</p>
                                         </div>
                                     )}
                                     {(formData.questions || []).map((q, index) => (
@@ -346,7 +295,7 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
                                                     setFormData({ ...formData, questions: newQuestions });
                                                 }}
                                                 placeholder={`Question ${index + 1}`}
-                                                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all resize-none pr-10"
+                                                className="w-full px-4 py-3 sm:p-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100 resize-none pr-10"
                                             />
                                             <button
                                                 type="button"
@@ -354,141 +303,129 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
                                                     const newQuestions = (formData.questions || []).filter((_, i) => i !== index);
                                                     setFormData({ ...formData, questions: newQuestions });
                                                 }}
-                                                className="absolute right-3 top-3 p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                                className="absolute right-2 sm:right-3 top-2 sm:top-3 p-1.5 sm:p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg sm:rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
                                             >
-                                                <Icons.X size={13} />
+                                                <Icons.X size={16} />
                                             </button>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Notes */}
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Additional Notes (Optional)</label>
+                            {/* Additional Notes */}
+                            <div>
+                                <label className="block text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2 pl-1">Additional Notes <span className="text-gray-300 font-normal normal-case">(Optional)</span></label>
                                 <textarea
                                     rows={2}
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     placeholder="Add any extra instructions or notes here..."
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all resize-none"
+                                    className="w-full px-4 py-3 sm:p-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none placeholder:font-medium placeholder:text-gray-400 transition-all hover:bg-gray-100 resize-none"
                                 />
                             </div>
 
-                            <DialogFooter className="pt-2 flex flex-row gap-2">
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    className="flex-1 sm:flex-none px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 transition-all active:scale-95"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 sm:flex-none px-6 py-3 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95"
-                                >
-                                    {assignment ? 'Update' : 'Create Assignment'}
-                                </button>
-                            </DialogFooter>
+                            <button
+                                type="submit"
+                                disabled={!formData.title || !formData.subjectId}
+                                className="w-full py-4 sm:py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl sm:rounded-[22px] text-xs sm:text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 active:scale-[0.98]"
+                            >
+                                {assignment ? <Icons.Save size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Icons.Plus size={16} className="sm:w-[18px] sm:h-[18px]" />}
+                                {assignment ? 'Update Assignment' : 'Add Assignment'}
+                            </button>
                         </form>
                     </>
                 ) : (
-                    <div className="py-2 space-y-4">
-                        <DialogHeader>
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-purple-100 shrink-0">
-                                    <Icons.Sparkles size={18} />
-                                </div>
-                                <div>
-                                    <DialogTitle>Smart Paste</DialogTitle>
-                                    <DialogDescription>
-                                        Paste your messy assignment details below, and AI will structure it for you.
-                                    </DialogDescription>
-                                </div>
-                            </div>
-                        </DialogHeader>
-
-                        <div className="space-y-3">
-                            <textarea
-                                value={smartPasteContent}
-                                onChange={(e) => setSmartPasteContent(e.target.value)}
-                                onPaste={handlePaste}
-                                placeholder="Paste assignment text here... (You can also paste images directly!)"
-                                className="w-full h-32 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:bg-white transition-all resize-none"
-                            />
-
-                            {smartPasteFile ? (
-                                <div className="flex items-center justify-between bg-purple-50 border border-purple-100 rounded-xl p-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
-                                            <Icons.FileText size={16} />
-                                        </div>
-                                        <div className="text-xs">
-                                            <p className="font-bold text-gray-900 truncate max-w-[180px]">{smartPasteFile.name}</p>
-                                            <p className="text-gray-500">{(smartPasteFile.size / 1024).toFixed(1)} KB</p>
-                                        </div>
+                    // Smart Paste Modal Layout
+                    <>
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <div className="flex items-center gap-2 sm:gap-3 mb-1">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-purple-100 shrink-0">
+                                        <Icons.Sparkles size={18} className="sm:w-5 sm:h-5" />
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setSmartPasteFile(null)}
-                                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                    >
-                                        <Icons.X size={14} />
-                                    </button>
+                                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Smart Paste</h2>
                                 </div>
-                            ) : (
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="file"
-                                        id="smart-paste-file"
-                                        className="hidden"
-                                        accept="image/*,application/pdf"
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) setSmartPasteFile(file);
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="smart-paste-file"
-                                        className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 border-dashed rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 cursor-pointer transition-all"
-                                    >
-                                        <Icons.Paperclip size={14} />
-                                        Attach Image or PDF
-                                    </label>
-                                    <span className="text-[10px] text-gray-400 font-medium">Optional</span>
-                                </div>
-                            )}
+                                <p className="text-xs sm:text-sm text-gray-500 mt-2">Paste messy details below, and AI will structure it for you.</p>
+                            </div>
+                            <button onClick={() => { setShowSmartPaste(false); setSmartPasteContent(''); setSmartPasteFile(null); }} className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-gray-100 rounded-xl sm:rounded-full transition-colors shrink-0">
+                                <Icons.X size={20} className="sm:w-6 sm:h-6 text-gray-400" />
+                            </button>
                         </div>
 
-                        <div className="flex items-center gap-3 pt-1">
-                            <button
-                                type="button"
-                                onClick={() => { setShowSmartPaste(false); setSmartPasteContent(''); setSmartPasteFile(null); }}
-                                className="flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-all active:scale-95 bg-gray-50 hover:bg-gray-100"
-                            >
-                                Cancel
-                            </button>
+                        <div className="space-y-4 sm:space-y-6">
+                            <div>
+                                <textarea
+                                    value={smartPasteContent}
+                                    onChange={(e) => setSmartPasteContent(e.target.value)}
+                                    onPaste={handlePaste}
+                                    placeholder="Paste assignment text here... (You can also paste images directly!)"
+                                    className="w-full h-40 sm:h-48 px-4 py-3 sm:p-5 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-purple-500 outline-none placeholder:text-gray-400 transition-all hover:bg-gray-100 resize-none"
+                                />
+
+                                {smartPasteFile ? (
+                                    <div className="flex items-center justify-between bg-purple-50 border border-purple-100 rounded-xl sm:rounded-2xl p-3 sm:p-4 mt-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center text-purple-600 shrink-0">
+                                                <Icons.FileText size={16} className="sm:w-5 sm:h-5" />
+                                            </div>
+                                            <div className="text-xs sm:text-sm min-w-0">
+                                                <p className="font-bold text-gray-900 truncate max-w-[200px] sm:max-w-[300px]">{smartPasteFile.name}</p>
+                                                <p className="text-gray-500">{(smartPasteFile.size / 1024).toFixed(1)} KB</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSmartPasteFile(null)}
+                                            className="p-2 sm:p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg sm:rounded-xl transition-all shrink-0"
+                                        >
+                                            <Icons.X size={16} className="sm:w-5 sm:h-5" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-3 mt-3">
+                                        <input
+                                            type="file"
+                                            id="smart-paste-file"
+                                            className="hidden"
+                                            accept="image/*,application/pdf"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) setSmartPasteFile(file);
+                                            }}
+                                        />
+                                        <label
+                                            htmlFor="smart-paste-file"
+                                            className="flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gray-50 border border-gray-200 border-dashed rounded-xl sm:rounded-xl text-xs sm:text-sm font-bold text-gray-500 hover:bg-gray-100 hover:border-gray-300 hover:text-gray-700 cursor-pointer transition-all"
+                                        >
+                                            <Icons.Paperclip size={14} className="sm:w-4 sm:h-4" />
+                                            Attach Image or PDF
+                                        </label>
+                                        <span className="text-[10px] sm:text-xs text-gray-400 font-medium">Optional</span>
+                                    </div>
+                                )}
+                            </div>
+
                             <button
                                 type="button"
                                 onClick={handleSmartPaste}
                                 disabled={isProcessingPaste || (!smartPasteContent.trim() && !smartPasteFile)}
                                 className={cn(
-                                    "flex-[2] py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2",
+                                    "w-full py-4 sm:py-4 mt-2 rounded-xl sm:rounded-[22px] text-xs sm:text-sm font-black uppercase tracking-widest shadow-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 active:scale-[0.98]",
                                     isProcessingPaste
-                                        ? "bg-gray-400 cursor-not-allowed"
-                                        : "bg-gradient-to-r from-purple-500 to-indigo-600 shadow-purple-200 hover:shadow-xl hover:scale-[1.02]"
+                                        ? "bg-gray-400 text-white"
+                                        : "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-purple-200 hover:shadow-2xl"
                                 )}
                             >
                                 {isProcessingPaste ? (
-                                    <><Icons.Loader2 size={14} className="animate-spin" /> Processing...</>
+                                    <><Icons.Loader2 size={16} className="animate-spin sm:w-[18px] sm:h-[18px]" /> Processing...</>
                                 ) : (
-                                    <><Icons.Wand2 size={14} /> Magic Process</>
+                                    <><Icons.Wand2 size={16} className="sm:w-[18px] sm:h-[18px]" /> Magic Process</>
                                 )}
                             </button>
                         </div>
-                    </div>
+                    </>
                 )}
-            </DialogContent>
-        </Dialog>
+            </div>
+        </div>
     );
 }
