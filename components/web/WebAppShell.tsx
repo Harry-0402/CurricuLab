@@ -249,7 +249,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                 <button
                     onClick={() => setAnalyticaOpen(true)}
                     className={cn(
-                        "flex fixed z-[60] bottom-24 right-4 sm:bottom-6 sm:right-6 w-14 h-14 bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-full shadow-[0_8px_30px_rgba(79,70,229,0.4)] hover:shadow-[0_8px_30px_rgba(79,70,229,0.6)] items-center justify-center transition-all hover:-translate-y-1 active:scale-95 group",
+                        "hidden sm:flex fixed z-[60] bottom-6 right-6 w-14 h-14 bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-full shadow-[0_8px_30px_rgba(79,70,229,0.4)] hover:shadow-[0_8px_30px_rgba(79,70,229,0.6)] items-center justify-center transition-all hover:-translate-y-1 active:scale-95 group",
                         isAnalyticaOpen && "opacity-0 pointer-events-none translate-y-10"
                     )}
                 >
@@ -260,9 +260,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                 </button>
             )}
 
-            {pathname !== '/admin' && !pathname.startsWith('/admin/') && (
-                <MobileBottomNav isAnalyticaOpen={isAnalyticaOpen} />
-            )}
+            <MobileBottomNav isAnalyticaOpen={isAnalyticaOpen} />
         </div>
     );
 }
