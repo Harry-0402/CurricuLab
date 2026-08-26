@@ -56,6 +56,23 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const { user } = useAuth();
 
+    // Dynamically calculate time slots by combining defaults with actual entries
+    const dynamicTimeSlots = Array.from(new Set([
+        ...TIME_SLOTS,
+        ...entries.map(e => e.startTime)
+    ])).sort((a, b) => {
+        const parseTime = (time: string) => {
+            if (!time) return 0;
+            const [timePart, ampm] = time.split(' ');
+            if (!timePart || !ampm) return 0;
+            let [h, m] = timePart.split(':').map(Number);
+            if (ampm.toUpperCase() === 'PM' && h !== 12) h += 12;
+            if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+            return h * 60 + (m || 0);
+        };
+        return parseTime(a) - parseTime(b);
+    });
+
     const [activeDay, setActiveDay] = useState<string>(() => {
         const today = new Date().getDay();
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -161,7 +178,7 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                             </div>
 
                             <div className="space-y-4">
-                                {TIME_SLOTS.map(time => (
+                                {dynamicTimeSlots.map(time => (
                                     <div key={time} className="grid grid-cols-[70px_repeat(6,1fr)] gap-4 items-stretch group">
                                         <div className="flex items-start justify-center pt-3">
                                             <div className="flex flex-col items-center">
@@ -228,10 +245,10 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
                             </div>
                             
                             <div className="flex flex-col gap-0">
-                                {TIME_SLOTS.map((time, idx) => {
+                                {dynamicTimeSlots.map((time, idx) => {
                                     const entry = getEntry(activeDay, time);
-                                    const timeParts = time.split(' ');
-                                    const isLast = idx === TIME_SLOTS.length - 1;
+                                    const timeParts = time?.split(' ') || ['', ''];
+                                    const isLast = idx === dynamicTimeSlots.length - 1;
                                     
                                     return (
                                         <div key={time} className="flex gap-4 relative items-center mb-4">
