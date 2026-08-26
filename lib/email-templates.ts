@@ -74,8 +74,8 @@ export const generateNotificationEmail = ({ type, title, content, link, linkText
                             ${link ? `
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
-                                    <td align="center">
-                                        <a href="${link}" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4);">
+                                    <td align="center" style="text-align: center;">
+                                        <a href="${link}" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4); margin: 0 auto;">
                                             ${linkText}
                                         </a>
                                     </td>
@@ -173,8 +173,8 @@ export const generateAssignmentEmail = ({ title, dueDate, authorName, link, reci
                             ${dueDate ? `<p style="color: ${mutedColor}; font-size: 14px; text-align: center; margin: 0 0 30px 0;">Due Date: ${dueDate}</p>` : '<div style="margin-bottom: 30px;"></div>'}
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
-                                    <td align="center">
-                                        <a href="${link}" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4);">
+                                    <td align="center" style="text-align: center;">
+                                        <a href="${link}" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4); margin: 0 auto;">
                                             View Assignment
                                         </a>
                                     </td>
