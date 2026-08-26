@@ -56,30 +56,41 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const { user } = useAuth();
 
-    // Dynamically calculate time slots by combining defaults with actual entries
-    const dynamicTimeSlots = Array.from(new Set([
-        ...TIME_SLOTS,
-        ...entries.map(e => e.startTime).filter(Boolean)
-    ])).sort((a, b) => {
-        const parseTime = (time: string) => {
-            if (!time) return 0;
-            const parts = time.trim().split(/\s+/);
-            const timePart = parts[0];
-            const ampm = parts[1];
-            
-            if (!timePart) return 0;
-            let [h, m] = timePart.split(':').map(Number);
-            if (isNaN(h)) h = 0;
-            if (isNaN(m)) m = 0;
-            
-            if (ampm) {
-                if (ampm.toUpperCase() === 'PM' && h !== 12) h += 12;
-                if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
-            }
-            return h * 60 + m;
-        };
-        return parseTime(a) - parseTime(b);
-    });
+    const parseTime = (time: string) => {
+        if (!time) return -1;
+        const parts = time.trim().split(/\s+/);
+        const timePart = parts[0];
+        const ampm = parts[1];
+        
+        if (!timePart) return -1;
+        let [h, m] = timePart.split(':').map(Number);
+        if (isNaN(h)) h = 0;
+        if (isNaN(m)) m = 0;
+        
+        if (ampm) {
+            if (ampm.toUpperCase() === 'PM' && h !== 12) h += 12;
+            if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+        }
+        return h * 60 + m;
+    };
+
+    const formatTo12Hour = (minutes: number) => {
+        if (minutes < 0) return '';
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        const period = h >= 12 ? 'PM' : 'AM';
+        const displayH = h % 12 || 12;
+        return `${displayH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${period}`;
+    };
+
+    // Dynamically calculate time slots by combining defaults with actual entries, deduplicated by absolute time
+    const uniqueTimeMinutes = Array.from(new Set([
+        ...TIME_SLOTS.map(parseTime),
+        ...entries.map(e => parseTime(e.startTime)).filter(t => t >= 0)
+    ])).sort((a, b) => a - b);
+    
+    // We will map these minutes back to a standard 12-hour display string for the grid
+    const dynamicTimeSlots = uniqueTimeMinutes.map(formatTo12Hour);
 
     const [activeDay, setActiveDay] = useState<string>(() => {
         const today = new Date().getDay();
@@ -88,8 +99,9 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
         return DAYS.includes(dayName) ? dayName : "Monday";
     });
 
-    const getEntry = (day: string, time: string) => {
-        return entries.find(e => e.day === day && e.startTime === time);
+    const getEntry = (day: string, timeString: string) => {
+        const targetMinutes = parseTime(timeString);
+        return entries.find(e => e.day === day && parseTime(e.startTime) === targetMinutes);
     };
 
     const handleAdd = (day?: string, time?: string) => {
