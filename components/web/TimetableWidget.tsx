@@ -59,16 +59,24 @@ export function TimetableWidget({ entries }: TimetableWidgetProps) {
     // Dynamically calculate time slots by combining defaults with actual entries
     const dynamicTimeSlots = Array.from(new Set([
         ...TIME_SLOTS,
-        ...entries.map(e => e.startTime)
+        ...entries.map(e => e.startTime).filter(Boolean)
     ])).sort((a, b) => {
         const parseTime = (time: string) => {
             if (!time) return 0;
-            const [timePart, ampm] = time.split(' ');
-            if (!timePart || !ampm) return 0;
+            const parts = time.trim().split(/\s+/);
+            const timePart = parts[0];
+            const ampm = parts[1];
+            
+            if (!timePart) return 0;
             let [h, m] = timePart.split(':').map(Number);
-            if (ampm.toUpperCase() === 'PM' && h !== 12) h += 12;
-            if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
-            return h * 60 + (m || 0);
+            if (isNaN(h)) h = 0;
+            if (isNaN(m)) m = 0;
+            
+            if (ampm) {
+                if (ampm.toUpperCase() === 'PM' && h !== 12) h += 12;
+                if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+            }
+            return h * 60 + m;
         };
         return parseTime(a) - parseTime(b);
     });
