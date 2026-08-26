@@ -72,10 +72,10 @@ export const generateNotificationEmail = ({ type, title, content, link, linkText
 
                             <!-- Button Action -->
                             ${link ? `
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto;">
                                 <tr>
-                                    <td align="center" style="text-align: center;">
-                                        <a href="${link}" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4); margin: 0 auto;">
+                                    <td align="center" style="border-radius: 8px; background-color: ${primaryColor};">
+                                        <a href="${link}" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4); min-width: 150px; text-align: center;">
                                             ${linkText}
                                         </a>
                                     </td>
@@ -183,10 +183,10 @@ export const generateDueReminderEmail = ({ assignments, recipientCount = 1 }: Re
                             ${assignmentsHtml}
 
                             <div style="margin-top: 30px; text-align: center;">
-                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto;">
                                     <tr>
-                                        <td align="center" style="text-align: center;">
-                                            <a href="https://curriculab-sj6g.onrender.com/dashboard" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4); margin: 0 auto;">
+                                        <td align="center" style="border-radius: 8px; background-color: ${primaryColor};">
+                                            <a href="https://curriculab-sj6g.onrender.com/dashboard" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4); min-width: 150px; text-align: center;">
                                                 Go to Dashboard
                                             </a>
                                         </td>
@@ -276,10 +276,10 @@ export const generateAssignmentEmail = ({ title, dueDate, authorName, link, reci
                                 A new assignment has been posted by <strong>${authorName}</strong>.
                             </p>
                             ${dueDate ? `<p style="color: ${mutedColor}; font-size: 14px; text-align: center; margin: 0 0 30px 0;">Due Date: ${dueDate}</p>` : '<div style="margin-bottom: 30px;"></div>'}
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto;">
                                 <tr>
-                                    <td align="center" style="text-align: center;">
-                                        <a href="${link}" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4); margin: 0 auto;">
+                                    <td align="center" style="border-radius: 8px; background-color: ${primaryColor};">
+                                        <a href="${link}" target="_blank" style="background-color: ${primaryColor}; color: ${white}; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.4); min-width: 150px; text-align: center;">
                                             View Assignment
                                         </a>
                                     </td>
