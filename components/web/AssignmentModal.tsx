@@ -151,7 +151,7 @@ export function AssignmentModal({ isOpen, onClose, onSave, assignment, subjects,
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-white rounded-[32px] sm:rounded-[40px] shadow-2xl w-full max-w-2xl p-5 sm:p-8 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[85vh] overflow-y-auto custom-scrollbar relative">
+            <div className="bg-white rounded-[32px] sm:rounded-[40px] shadow-2xl w-full max-w-2xl p-5 sm:p-8 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[85vh] overflow-y-auto no-scrollbar relative">
                 
                 {/* Floating Smart Paste Button */}
                 {!showSmartPaste && !assignment && (
