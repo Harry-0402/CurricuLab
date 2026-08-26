@@ -7,6 +7,8 @@ import { Icons } from '@/components/shared/Icons';
 import { cn } from '@/lib/utils';
 import { useAppStore } from '@/lib/store/useAppStore';
 
+import { useSemester } from '@/components/providers/SemesterProvider';
+
 interface AnalyticaChatProps {
     isOpen: boolean;
     onClose: () => void;
@@ -18,6 +20,11 @@ export function AnalyticaChat({ isOpen, onClose }: AnalyticaChatProps) {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    
+    // Hooks for Tier 3 System Context
+    const { activeSemester } = useSemester();
+    const timetable = useAppStore(state => state.timetable);
+    
     const analyticaInput = useAppStore(state => state.analyticaInput);
     const setAnalyticaInput = useAppStore(state => state.setAnalyticaInput);
 
@@ -84,11 +91,29 @@ export function AnalyticaChat({ isOpen, onClose }: AnalyticaChatProps) {
         setIsLoading(true);
         
         try {
+            // Tier 1: Sliding Window - Keep only the last 6 messages (3 interactions) to save memory/tokens
+            const MAX_HISTORY = 6;
+            const recentMessages = messages.slice(-MAX_HISTORY);
+            
+            // Tier 3: System Context Injection - Pass relevant student state to the AI backend
+            let contextString = "You are Analytica, an AI study assistant for CurricuLab.";
+            // Add semester context if available (imported from useSemester above)
+            if (activeSemester) {
+                contextString += ` The student is currently in semester: ${activeSemester.name}.`;
+            }
+            if (timetable && timetable.length > 0) {
+                const subjects = Array.from(new Set(timetable.map(t => t.subjectTitle))).join(', ');
+                contextString += ` Their subjects include: ${subjects}.`;
+            }
+
             // Prepare messages format for Groq/OpenRouter API
-            // Note: we take the updated messages from the state variable before we pushed userMessage, so we need to construct it manually
-            const apiMessages = [...messages, userMessage].map(m => ({
+            const apiMessages = [
+                { role: 'system', content: contextString },
+                ...recentMessages, 
+                userMessage
+            ].map(m => ({
                 role: m.role,
-                content: m.text
+                content: m.text || m.content // handle system message vs user message format
             }));
 
             const response = await fetch('/api/chat', {
