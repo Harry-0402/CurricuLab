@@ -244,7 +244,6 @@ export default function WebHomePage() {
                                     value={completedCount}
                                     icon="CheckCircle"
                                     color="#14b8a6"
-                                    progress={assignments.length > 0 ? (completedCount / assignments.length) * 100 : 0}
                                 />
                             </div>
                         </div>
