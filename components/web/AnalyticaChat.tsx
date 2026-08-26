@@ -107,14 +107,15 @@ export function AnalyticaChat({ isOpen, onClose }: AnalyticaChatProps) {
             }
 
             // Prepare messages format for Groq/OpenRouter API
+            const formattedHistory = [...recentMessages, userMessage].map(m => ({
+                role: m.role,
+                content: m.text
+            }));
+            
             const apiMessages = [
                 { role: 'system', content: contextString },
-                ...recentMessages, 
-                userMessage
-            ].map(m => ({
-                role: m.role,
-                content: m.text || m.content // handle system message vs user message format
-            }));
+                ...formattedHistory
+            ];
 
             const response = await fetch('/api/chat', {
                 method: 'POST',
