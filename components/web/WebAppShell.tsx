@@ -187,7 +187,6 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
                             )}
                         </div>
                     </main>
-
                 </div>
             </div>
 
@@ -203,7 +202,7 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
             )}
 
             {showDueAlert && dueAlerts.length > 0 && (
-                <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-right-10 fade-in duration-300">
+                <div className="hidden sm:block fixed bottom-6 right-6 z-50 animate-in slide-in-from-right-10 fade-in duration-300">
                     <div className="bg-white rounded-2xl shadow-2xl border border-red-100 p-5 max-w-sm w-full relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500" />
                         <button
