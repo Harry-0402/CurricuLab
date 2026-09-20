@@ -10,11 +10,11 @@ import { cn } from '@/lib/utils';
 
 
 export function WebHeader() {
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const [showSemesterMenu, setShowSemesterMenu] = useState(false);
     const semesterMenuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
-    const { activeSemester, activeSemesterId, enrolledSemesterId, allSemesters, setActiveSemester, isBrowsing } = useSemester();
+    const { activeSemester, activeSemesterId, enrolledSemesterId, enrolledSemester, allSemesters, setActiveSemester, isBrowsing } = useSemester();
 
     // Close menu on outside click
     useEffect(() => {
@@ -48,8 +48,21 @@ export function WebHeader() {
 
     const displayName = getDisplayName();
 
+    // Determine enrolled program
+    const currentEnrolledSem = enrolledSemester ?? allSemesters.find(s => s.id === enrolledSemesterId);
+    const enrolledProgramId = currentEnrolledSem?.programId;
+    const enrolledProgramName = currentEnrolledSem?.programName;
+
+    // Filter available semesters: if student is enrolled in a program and not an admin, only show semesters from their enrolled program
+    const visibleSemesters = (!isAdmin && (enrolledProgramId || enrolledProgramName))
+        ? allSemesters.filter(sem =>
+            (enrolledProgramId && sem.programId === enrolledProgramId) ||
+            (enrolledProgramName && sem.programName === enrolledProgramName)
+        )
+        : allSemesters;
+
     // Group semesters by program name
-    const semestersByProgram = allSemesters.reduce<Record<string, typeof allSemesters>>((acc, sem) => {
+    const semestersByProgram = visibleSemesters.reduce<Record<string, typeof allSemesters>>((acc, sem) => {
         const key = sem.programName ?? 'Other';
         if (!acc[key]) acc[key] = [];
         acc[key].push(sem);

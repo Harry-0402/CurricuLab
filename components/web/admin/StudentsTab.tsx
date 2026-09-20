@@ -367,7 +367,7 @@ export function StudentsTab({ initialAction, onActionComplete }: StudentsTabProp
                                                     <option value="">— Not enrolled —</option>
                                                     {semesters.map(s => (
                                                         <option key={s.id} value={s.id}>
-                                                            {s.shortName}{s.academicYear ? ` (${s.academicYear})` : ''}
+                                                            {s.programName ? `${s.programName} — ` : ''}{s.shortName}{s.academicYear ? ` (${s.academicYear})` : ''}
                                                         </option>
                                                     ))}
                                                 </select>
